@@ -25,7 +25,7 @@
   - Keep the uploaded image visible during loading
   - Acceptance: Smooth transition from upload to loading state, looks polished
 
-- [ ] 5. Build the `/api/analyze` endpoint — Claude Vision bet extraction
+- [x] 5. Build the `/api/analyze` endpoint — Claude Vision bet extraction
   - Create `src/app/api/analyze/route.ts`
   - Accept POST with base64 image
   - Call Claude Vision (claude-sonnet-4-6) with a detailed prompt to extract bet details
