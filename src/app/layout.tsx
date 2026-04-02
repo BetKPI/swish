@@ -1,21 +1,28 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
-  title: "Swish — Smart Bet Analysis",
+  title: "swish — know before you bet",
   description:
-    "Upload a screenshot of your sports bet and get instant charts, stats, and analytics.",
+    "Screenshot any bet. Get the stats that actually matter — in seconds.",
+  openGraph: {
+    title: "swish — know before you bet",
+    description:
+      "Screenshot any bet. Get the stats that actually matter — in seconds.",
+    siteName: "swish",
+  },
+  twitter: {
+    card: "summary",
+    title: "swish — know before you bet",
+    description:
+      "Screenshot any bet. Get the stats that actually matter — in seconds.",
+  },
 };
 
 export const viewport: Viewport = {
@@ -31,25 +38,26 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="en" className={`${inter.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <header className="border-b border-border px-4 py-3">
-          <div className="max-w-3xl mx-auto flex items-center gap-2">
-            <span className="text-2xl">🏀</span>
-            <h1 className="text-xl font-bold tracking-tight">
-              <span className="text-accent">Swish</span>
-            </h1>
-            <span className="text-muted text-sm hidden sm:inline">
-              — smart bet analysis
+        <header className="border-b border-border/50 px-4 py-4">
+          <div className="max-w-4xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-emerald-400 flex items-center justify-center text-white font-black text-lg">
+                S
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-foreground">
+                swish
+              </h1>
+            </div>
+            <span className="text-muted text-xs sm:text-sm">
+              know before you bet
             </span>
           </div>
         </header>
         <main className="flex-1">{children}</main>
-        <footer className="border-t border-border px-4 py-4 text-center text-xs text-muted">
-          For entertainment only. Not financial advice. Gamble responsibly.
+        <footer className="border-t border-border/50 px-4 py-4 text-center text-xs text-muted">
+          For entertainment only. Not financial advice. Please gamble responsibly.
         </footer>
       </body>
     </html>

@@ -1,9 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
 import { fetchAllTeamData } from "@/lib/espn";
 import type { BetExtraction } from "@/types";
-
-const client = new Anthropic();
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,28 +15,55 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY not configured" },
+        { status: 500 }
+      );
+    }
+
     // Fetch ESPN data for teams
     const espnData = await fetchAllTeamData(
       extraction.sport,
       extraction.teams
     );
 
-    // Ask Claude to analyze the data and produce charts
+    // Ask Gemini to analyze the data and produce charts
     const analysisPrompt = buildAnalysisPrompt(extraction, espnData);
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6-20250514",
-      max_tokens: 4096,
-      messages: [
-        {
-          role: "user",
-          content: analysisPrompt,
-        },
-      ],
-    });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: analysisPrompt }],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 4096,
+          },
+        }),
+      }
+    );
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
+    if (!response.ok) {
+      const err = await response.text();
+      console.error("Gemini API error:", err);
+      return NextResponse.json(
+        { error: "Failed to generate stats" },
+        { status: 500 }
+      );
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
       return NextResponse.json(
         { error: "No analysis generated" },
         { status: 500 }
@@ -47,7 +71,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Parse the JSON response — handle markdown code blocks
-    let jsonText = textBlock.text.trim();
+    let jsonText = text.trim();
     if (jsonText.startsWith("```")) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }

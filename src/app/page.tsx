@@ -1,8 +1,14 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import type { AppState, BetExtraction, ChartConfig, StatDataPoint } from "@/types";
+import type {
+  AppState,
+  BetExtraction,
+  ChartConfig,
+  StatDataPoint,
+} from "@/types";
 import AnalysisResults from "@/components/AnalysisResults";
+import ExampleShowcase from "@/components/ExampleShowcase";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("upload");
@@ -72,7 +78,7 @@ export default function Home() {
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
 
-      setStatusMsg("Fetching stats...");
+      setStatusMsg("Pulling the numbers that matter...");
       const statsRes = await fetch("/api/stats", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -104,80 +110,122 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 w-full">
+    <div className="w-full">
       {state === "upload" && (
-        <div className="space-y-6">
-          <div className="text-center space-y-2">
-            <h2 className="text-2xl font-bold">Analyze Your Bet</h2>
-            <p className="text-muted text-sm">
-              Upload a screenshot of your sports bet for instant analysis
-            </p>
+        <>
+          {/* Hero section */}
+          <div className="text-center px-4 pt-8 sm:pt-20 pb-10 sm:pb-16">
+            <div className="max-w-3xl mx-auto space-y-6">
+              <h2 className="text-3xl sm:text-6xl font-black tracking-tight leading-[1.1]">
+                Every bet has a story.
+                <br />
+                <span className="text-accent">Check the stats first.</span>
+              </h2>
+              <p className="text-muted text-base sm:text-xl max-w-xl mx-auto">
+                Screenshot any sports bet. We&apos;ll pull the stats that
+                actually matter — props, spreads, totals, any sport.
+              </p>
+
+              {/* Upload CTA */}
+              <div className="max-w-lg mx-auto pt-2">
+                <div
+                  onDragOver={(e) => {
+                    e.preventDefault();
+                    setDragOver(true);
+                  }}
+                  onDragLeave={() => setDragOver(false)}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  className={`rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all ${
+                    dragOver
+                      ? "bg-accent/15 border-2 border-dashed border-accent"
+                      : imagePreview
+                      ? "bg-surface border border-accent/50"
+                      : "bg-surface hover:bg-surface-light border-2 border-dashed border-border hover:border-accent/50"
+                  }`}
+                >
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/png,image/jpeg,image/webp"
+                    onChange={handleFileInput}
+                    className="hidden"
+                  />
+
+                  {imagePreview ? (
+                    <div className="space-y-4">
+                      <img
+                        src={imagePreview}
+                        alt="Bet screenshot"
+                        className="max-h-56 mx-auto rounded-lg"
+                      />
+                      <p className="text-muted text-sm">Tap to swap it out</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="mx-auto w-12 h-12 rounded-full bg-surface-light flex items-center justify-center">
+                        <svg className="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-lg sm:text-xl font-semibold">
+                        Upload a screenshot of your bet
+                      </p>
+                      <p className="text-muted text-sm">
+                        Tap here or drag and drop — FanDuel, DraftKings, Bet365, any app
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {imagePreview && (
+                  <button
+                    onClick={analyze}
+                    className="w-full mt-3 py-4 px-6 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-lg cursor-pointer"
+                  >
+                    Break It Down
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
 
-          <div
-            onDragOver={(e) => {
-              e.preventDefault();
-              setDragOver(true);
-            }}
-            onDragLeave={() => setDragOver(false)}
-            onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
-            className={`border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all ${
-              dragOver
-                ? "border-accent bg-accent/10"
-                : imagePreview
-                ? "border-accent/50 bg-surface"
-                : "border-border hover:border-accent/50 bg-surface"
-            }`}
-          >
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              onChange={handleFileInput}
-              className="hidden"
-            />
+          {/* Divider */}
+          <div className="border-t border-border/30" />
 
-            {imagePreview ? (
-              <div className="space-y-4">
-                <img
-                  src={imagePreview}
-                  alt="Bet screenshot"
-                  className="max-h-64 mx-auto rounded-lg"
-                />
-                <p className="text-muted text-sm">Click to change image</p>
-              </div>
-            ) : (
-              <div className="space-y-3 py-4">
-                <div className="text-4xl">📸</div>
-                <p className="text-lg font-medium">
-                  Drop your bet screenshot here
-                </p>
-                <p className="text-muted text-sm">
-                  or click to browse — PNG, JPG, WEBP up to 10MB
-                </p>
-              </div>
-            )}
+          {/* Example output */}
+          <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16">
+            <ExampleShowcase />
           </div>
 
-          {imagePreview && (
-            <button
-              onClick={analyze}
-              className="w-full py-3 px-6 bg-accent hover:bg-accent/90 text-white font-semibold rounded-xl transition-colors text-lg"
-            >
-              Analyze This Bet
-            </button>
-          )}
-        </div>
+          {/* Bottom CTA */}
+          <div className="border-t border-border/30" />
+          <div className="text-center px-4 py-12 sm:py-16">
+            <div className="max-w-lg mx-auto space-y-4">
+              <p className="text-2xl sm:text-3xl font-bold">
+                Your gut is good.
+                <br />
+                Your gut + data is better.
+              </p>
+              <p className="text-muted">Takes 10 seconds. Totally free.</p>
+              <button
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+                className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"
+              >
+                Try It Now
+              </button>
+            </div>
+          </div>
+        </>
       )}
 
       {state === "analyzing" && (
-        <div className="space-y-6 text-center">
+        <div className="max-w-4xl mx-auto px-4 space-y-8 text-center pt-20">
           {imagePreview && (
             <img
               src={imagePreview}
               alt="Bet screenshot"
-              className="max-h-48 mx-auto rounded-lg opacity-75"
+              className="max-h-48 mx-auto rounded-lg opacity-60"
             />
           )}
           <div className="space-y-4">
@@ -188,13 +236,13 @@ export default function Home() {
       )}
 
       {state === "error" && (
-        <div className="space-y-4 text-center">
-          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6">
+        <div className="max-w-4xl mx-auto px-4 space-y-4 text-center pt-20">
+          <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-6 max-w-md mx-auto">
             <p className="text-red-400">{error}</p>
           </div>
           <button
             onClick={reset}
-            className="py-2 px-6 bg-surface-light hover:bg-border text-foreground rounded-xl transition-colors"
+            className="py-2.5 px-6 bg-surface-light hover:bg-border text-foreground rounded-xl transition-colors cursor-pointer"
           >
             Try Again
           </button>
@@ -202,13 +250,15 @@ export default function Home() {
       )}
 
       {state === "results" && extraction && (
-        <AnalysisResults
-          extraction={extraction}
-          charts={charts}
-          stats={stats}
-          summary={summary}
-          onReset={reset}
-        />
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          <AnalysisResults
+            extraction={extraction}
+            charts={charts}
+            stats={stats}
+            summary={summary}
+            onReset={reset}
+          />
+        </div>
       )}
     </div>
   );

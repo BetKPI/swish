@@ -50,7 +50,7 @@ export default function AnalysisResults({
             </div>
             {extraction.confidence < 0.7 && (
               <p className="text-yellow-400 text-xs mt-2">
-                Low confidence extraction — double-check the details above
+                Heads up — we&apos;re not 100% sure we read this right. Double-check the details above.
               </p>
             )}
           </div>
@@ -61,7 +61,7 @@ export default function AnalysisResults({
       {summary && (
         <div className="bg-surface rounded-xl p-4">
           <h3 className="font-semibold text-sm mb-2 text-accent">
-            Analysis
+            The Breakdown
           </h3>
           <p className="text-sm text-foreground/90 leading-relaxed">
             {summary}
@@ -97,7 +97,7 @@ export default function AnalysisResults({
         onClick={onReset}
         className="w-full py-3 px-6 bg-surface-light hover:bg-border text-foreground font-semibold rounded-xl transition-colors"
       >
-        Analyze Another Bet
+        Run Another One
       </button>
     </div>
   );

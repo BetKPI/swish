@@ -3,18 +3,25 @@
 @theme inline {
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
-  --color-surface: #1a1a1a;
-  --color-surface-light: #2a2a2a;
-  --color-border: #333333;
+  --color-surface: #141414;
+  --color-surface-light: #222222;
+  --color-border: #2a2a2a;
   --color-accent: #10b981;
   --color-accent-gold: #f59e0b;
-  --color-muted: #888888;
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: #777777;
+  --font-sans: var(--font-inter);
 }
 
 body {
   background: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

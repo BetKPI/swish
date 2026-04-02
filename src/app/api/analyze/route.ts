@@ -1,7 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
-
-const client = new Anthropic();
 
 const EXTRACTION_PROMPT = `You are an expert sports betting analyst. Analyze this screenshot of a sports bet and extract structured information.
 
@@ -28,39 +25,68 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "No image provided" }, { status: 400 });
     }
 
-    const response = await client.messages.create({
-      model: "claude-sonnet-4-6-20250514",
-      max_tokens: 1024,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: "image/png",
-                data: image,
-              },
-            },
-            {
-              type: "text",
-              text: EXTRACTION_PROMPT,
-            },
-          ],
-        },
-      ],
-    });
-
-    const textBlock = response.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
       return NextResponse.json(
-        { error: "No text response from Claude" },
+        { error: "GEMINI_API_KEY not configured" },
         { status: 500 }
       );
     }
 
-    const extraction = JSON.parse(textBlock.text);
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  inlineData: {
+                    mimeType: "image/png",
+                    data: image,
+                  },
+                },
+                {
+                  text: EXTRACTION_PROMPT,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.1,
+            maxOutputTokens: 1024,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error("Gemini API error:", err);
+      return NextResponse.json(
+        { error: "Failed to analyze image" },
+        { status: 500 }
+      );
+    }
+
+    const data = await response.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+    if (!text) {
+      return NextResponse.json(
+        { error: "No response from Gemini" },
+        { status: 500 }
+      );
+    }
+
+    // Parse JSON — handle markdown code blocks
+    let jsonText = text.trim();
+    if (jsonText.startsWith("```")) {
+      jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+    }
+    const extraction = JSON.parse(jsonText);
 
     return NextResponse.json({ extraction });
   } catch (error) {
