@@ -1,6 +1,6 @@
 # Tasks
 
-- [ ] 1. Initialize Next.js 14+ project with TypeScript, Tailwind CSS, and App Router
+- [x] 1. Initialize Next.js 14+ project with TypeScript, Tailwind CSS, and App Router
   - Run `npx create-next-app@latest . --typescript --tailwind --app --eslint --src-dir --import-alias "@/*"` (accept defaults)
   - Install dependencies: `recharts`, `@anthropic-ai/sdk`
   - Verify `npm run dev` starts without errors
