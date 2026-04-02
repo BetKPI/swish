@@ -43,7 +43,7 @@
   - Return: array of ChartConfig objects + summary text + key stat data points
   - Acceptance: Given a structured bet, returns relevant stats, chart configs, and summary
 
-- [ ] 7. Build the results UI — charts and analysis display
+- [x] 7. Build the results UI — charts and analysis display
   - Create `src/components/ChartDisplay.tsx` — renders a single chart based on ChartConfig
   - Support chart types: line (Recharts LineChart), bar (BarChart), distribution (BarChart styled as histogram), table (HTML table)
   - Create `src/components/AnalysisResults.tsx` — renders the full analysis: summary, key stats, all charts

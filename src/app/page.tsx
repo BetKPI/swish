@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import type { AppState, BetExtraction, ChartConfig, StatDataPoint } from "@/types";
+import AnalysisResults from "@/components/AnalysisResults";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("upload");
@@ -200,24 +201,14 @@ export default function Home() {
         </div>
       )}
 
-      {state === "results" && (
-        <div className="space-y-6">
-          <div className="text-center">
-            <h2 className="text-2xl font-bold">Analysis Complete</h2>
-            <p className="text-muted text-sm mt-1">
-              {extraction?.description}
-            </p>
-          </div>
-          {summary && (
-            <div className="bg-surface rounded-xl p-4 text-sm">{summary}</div>
-          )}
-          <button
-            onClick={reset}
-            className="w-full py-3 px-6 bg-surface-light hover:bg-border text-foreground font-semibold rounded-xl transition-colors"
-          >
-            Analyze Another Bet
-          </button>
-        </div>
+      {state === "results" && extraction && (
+        <AnalysisResults
+          extraction={extraction}
+          charts={charts}
+          stats={stats}
+          summary={summary}
+          onReset={reset}
+        />
       )}
     </div>
   );
