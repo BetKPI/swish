@@ -8,7 +8,7 @@ history — you must check both to understand what's already been done.
 
 Read `.ralph/prd.md` for the full product requirements document.
 
-**GOATbets** is a web app where users upload a screenshot of a sports bet, and the app provides bet-type-specific charts, stats, and analytics — like doing stock research before placing a bet.
+**Swish** is a web app where users upload a screenshot of a sports bet, and the app provides bet-type-specific charts, stats, and analytics — like doing stock research before placing a bet.
 
 ## Tasks
 
@@ -29,7 +29,7 @@ will be checked off.
 ## Technical Notes
 
 - **Stack**: Next.js 14+ (App Router), TypeScript, Tailwind CSS, Recharts, Anthropic SDK
-- **Working directory**: This is a fresh project in `C:/Users/scott/Desktop/GOATbets`
+- **Working directory**: This is a fresh project in `C:/Users/scott/Desktop/swish`
 - **Platform**: Windows 11 with bash shell (Git Bash). Use Unix-style paths in code, but be aware of the Windows environment.
 - **Node/npm**: Already installed and available globally
 - **Claude Vision**: Use `claude-sonnet-4-6` model for vision calls (fast + cheap). The Anthropic SDK is `@anthropic-ai/sdk`.

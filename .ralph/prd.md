@@ -1,8 +1,8 @@
-# GOATbets — Product Requirements Document
+# Swish — Product Requirements Document
 
 ## Overview
 
-GOATbets is a web app that lets sports bettors upload a screenshot of a bet they're considering, and instantly get relevant charts, stats, and analytics to help them make an informed decision — similar to how a stock trader researches before buying.
+Swish is a web app that lets sports bettors upload a screenshot of a bet they're considering, and instantly get relevant charts, stats, and analytics to help them make an informed decision — similar to how a stock trader researches before buying.
 
 The key differentiator is **bet-type-specific analysis**. The app doesn't just show generic team stats. It figures out what data actually matters for the specific bet. For example:
 - **First basket prop (Joel Embiid)** → tip-off win %, first shot %, team first basket %, Embiid's scoring in first 2 minutes
@@ -100,7 +100,7 @@ Single Next.js app with:
 - Single page — no navigation needed for MVP
 - States: empty (upload prompt) → loading (analyzing...) → results (charts + summary)
 - "Analyze Another Bet" button to reset
-- GOATbets logo/branding at the top
+- Swish logo/branding at the top
 - Mobile-first responsive design
 
 ## Data Model (In-Memory Only for MVP)

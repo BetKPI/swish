@@ -12,7 +12,7 @@
   - Acceptance: Types compile without errors, folder structure is clean
 
 - [ ] 3. Build the main page UI — upload state
-  - Create dark-themed layout in `src/app/layout.tsx` with GOATbets branding
+  - Create dark-themed layout in `src/app/layout.tsx` with Swish branding
   - Build `src/app/page.tsx` with drag-and-drop + click-to-upload zone
   - Handle file selection, preview, and validation (PNG/JPG/WEBP, max 10MB)
   - Style with Tailwind — dark theme, modern sports aesthetic
@@ -61,7 +61,7 @@
 
 - [ ] 9. Polish and mobile optimization
   - Fine-tune responsive layouts for mobile
-  - Add GOATbets logo/header with subtle goat emoji or icon
+  - Add Swish logo/header with subtle goat emoji or icon
   - Add footer with disclaimer ("For entertainment only. Not financial advice. Gamble responsibly.")
   - Optimize loading states and transitions
   - Ensure charts are touch-friendly and readable on small screens
