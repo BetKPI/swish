@@ -33,7 +33,7 @@
   - Return the structured extraction
   - Acceptance: Sending a bet screenshot returns accurate structured bet data
 
-- [ ] 6. Build the `/api/stats` endpoint — bet-type-specific data fetching
+- [x] 6. Build the `/api/stats` endpoint — bet-type-specific data fetching
   - Create `src/app/api/stats/route.ts`
   - Accept POST with the structured bet extraction
   - Step 1: Call Claude to determine what stats are most relevant for this specific bet type (e.g., for "first basket" → tip-off win %, first shot stats, etc.)
