@@ -52,7 +52,7 @@
   - Dark-themed, responsive
   - Acceptance: Charts render correctly for all types, look good on mobile, summary is readable
 
-- [ ] 8. Wire up the full flow end-to-end
+- [x] 8. Wire up the full flow end-to-end
   - Connect frontend upload → `/api/analyze` → `/api/stats` → results display
   - Handle errors gracefully (show error message, allow retry)
   - Handle edge cases: low confidence extraction (show warning), partial data (show what we have)
