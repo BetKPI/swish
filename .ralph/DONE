@@ -1,0 +1,16 @@
+Swish MVP — Complete
+
+All 10 tasks completed successfully. Here's what was built:
+
+1. Next.js 16 project with TypeScript, Tailwind CSS, App Router
+2. Shared types: BetExtraction, BetAnalysis, StatDataPoint, ChartConfig, AppState
+3. Dark-themed upload UI with drag-and-drop, file validation, image preview
+4. Loading state with animated spinner and cycling status messages
+5. /api/analyze endpoint — Claude Vision (claude-sonnet-4-6) extracts bet details from screenshots
+6. /api/stats endpoint — Fetches ESPN data, then Claude generates bet-type-specific charts and analysis
+7. Results UI — AnalysisResults and ChartDisplay components with Recharts (line, bar, distribution, table)
+8. Full end-to-end flow wired: upload → analyze → stats → results with error handling
+9. Mobile-optimized with viewport config, responsive layouts, touch-friendly charts
+10. Production-ready: clean build, .env.example, README with setup instructions
+
+Stack: Next.js 16, TypeScript, Tailwind CSS, Recharts, Anthropic SDK, ESPN API
