@@ -19,7 +19,7 @@
   - Mobile-responsive
   - Acceptance: Can drag or click to upload an image, see preview, looks great on mobile
 
-- [ ] 4. Build the loading/analyzing state UI
+- [x] 4. Build the loading/analyzing state UI
   - Show loading state after user uploads: animated spinner/skeleton with status messages
   - Status messages cycle through: "Reading your bet...", "Fetching stats...", "Building charts..."
   - Keep the uploaded image visible during loading
