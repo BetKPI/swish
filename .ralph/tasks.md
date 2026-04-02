@@ -11,7 +11,7 @@
   - Create `src/lib/` directory for utility modules
   - Acceptance: Types compile without errors, folder structure is clean
 
-- [ ] 3. Build the main page UI — upload state
+- [x] 3. Build the main page UI — upload state
   - Create dark-themed layout in `src/app/layout.tsx` with Swish branding
   - Build `src/app/page.tsx` with drag-and-drop + click-to-upload zone
   - Handle file selection, preview, and validation (PNG/JPG/WEBP, max 10MB)
