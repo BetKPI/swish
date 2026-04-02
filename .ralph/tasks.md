@@ -59,7 +59,7 @@
   - Test with real bet screenshots from various sportsbooks
   - Acceptance: Full flow works — upload screenshot, see charts and analysis within 15 seconds
 
-- [ ] 9. Polish and mobile optimization
+- [x] 9. Polish and mobile optimization
   - Fine-tune responsive layouts for mobile
   - Add Swish logo/header with subtle goat emoji or icon
   - Add footer with disclaimer ("For entertainment only. Not financial advice. Gamble responsibly.")
