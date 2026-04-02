@@ -6,7 +6,7 @@
   - Verify `npm run dev` starts without errors
   - Acceptance: Project runs on localhost, has TypeScript + Tailwind configured
 
-- [ ] 2. Set up project structure and shared types
+- [x] 2. Set up project structure and shared types
   - Create `src/types/index.ts` with BetAnalysis, StatDataPoint, ChartConfig interfaces from PRD
   - Create `src/lib/` directory for utility modules
   - Acceptance: Types compile without errors, folder structure is clean
