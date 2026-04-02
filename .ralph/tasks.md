@@ -67,7 +67,7 @@
   - Ensure charts are touch-friendly and readable on small screens
   - Acceptance: Looks great and works smoothly on both desktop and mobile
 
-- [ ] 10. Prepare for Vercel deployment
+- [x] 10. Prepare for Vercel deployment
   - Create `.env.example` with required environment variables
   - Add `ANTHROPIC_API_KEY` to `.env.local` (gitignored)
   - Verify `npm run build` succeeds with no errors
