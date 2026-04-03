@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     }
 
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -87,6 +87,32 @@ export async function POST(request: NextRequest) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
     const extraction = JSON.parse(jsonText);
+
+    // Log parlay extractions to Discord for debugging
+    if (extraction.betType === "parlay") {
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl) {
+        const legs = extraction.legs || [];
+        const legSummary = legs.map((l: { description?: string; teams?: string[]; sport?: string }, i: number) =>
+          `Leg ${i + 1}: ${l.description || "?"} | Teams: ${l.teams?.join(", ") || "MISSING"} | Sport: ${l.sport || "MISSING"}`
+        ).join("\n");
+        fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            embeds: [{
+              title: `Parlay Extracted — ${legs.length} legs`,
+              color: legs.every((l: { teams?: string[] }) => l.teams?.length > 0) ? 0x10b981 : 0xf59e0b,
+              fields: [
+                { name: "Description", value: (extraction.description || "?").slice(0, 200), inline: false },
+                { name: "Legs", value: legSummary.slice(0, 1024) || "No legs", inline: false },
+              ],
+              timestamp: new Date().toISOString(),
+            }],
+          }),
+        }).catch(() => {});
+      }
+    }
 
     return NextResponse.json({ extraction });
   } catch (error) {
