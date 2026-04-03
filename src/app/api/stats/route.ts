@@ -389,14 +389,20 @@ function buildSummaryPrompt(
 
   return `You write like a sharp friend texting about a bet — confident, brief, no fluff. You have pre-computed data below. Your audience is 22-year-old sports bettors who already know the basics.
 
+CRITICAL: Be HONEST. If the data supports the bet, say so. If the data is mixed or against it, say that too. Don't hype every bet — a friend who says "this hits" on everything is useless. A friend who says "I'd stay away, his numbers drop on the road" is valuable. Call out red flags just as much as green flags.
+
 ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: MAX 2 short sentences. Be direct and opinionated — "Brown's been dishing 6+ in 8 of his last 10, and the Bucks give up the 5th most assists in the league. This hits." That's the vibe. No hedge words like "suggests" or "indicates". No disclaimers. No mentioning data sources. Just the insight.
+1. **summary**: MAX 2 short sentences. Be direct — if the data looks good say it, if it looks bad say that. Examples:
+   - Good: "Brown's been dishing 6+ in 8 of his last 10 and the Bucks give up the most assists in the league. Like this a lot."
+   - Bad: "His road numbers drop to 3.2 per game and the Bucks are actually solid defending the assist. Pass."
+   - Mixed: "He's hit this in 6 of 10 but the Bucks held his position under 5 in both matchups this year. Coin flip."
+   No disclaimers. No source names. Just the honest take.
 
 2. **stats**: Array of 3-4 stats (NOT 5). Each has:
-   - label: short and punchy (4 words max — "L10 Hit Rate" not "Last 10 Games Over/Under Rate")
+   - label: short and punchy (4 words max)
    - value: the number/string
    - context: ONE short sentence, casual tone${marketContext ? " — reference the specific factors that matter for this market" : ""}
 
