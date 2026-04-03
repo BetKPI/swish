@@ -36,18 +36,27 @@ function getLeagueInfoOrThrow(sport: string): { sport: string; league: string } 
 }
 
 const BASE = "https://site.api.espn.com/apis/site/v2/sports";
+const WEB_BASE = "https://site.web.api.espn.com/apis/common/v3/sports";
 const CORE_BASE = "https://sports.core.api.espn.com/v2/sports";
 
-// ── Player search & stats ──────────────────────────────────────────
+// ── Player search & game log ───────────────────────────────────────
 
+export interface ESPNPlayerGameLog {
+  date: string;
+  opponent: string;
+  home: boolean;
+  stats: Record<string, string | number>;
+}
+
+/**
+ * Search for a player using ESPN's site API, then try roster fallback.
+ */
 export async function searchPlayer(
   sport: string,
   playerName: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
   try {
-    // ESPN roster search: find team first, then search roster
-    // Alternatively, use the athletes endpoint
     const res = await fetch(
       `${BASE}/${s}/${league}/athletes?limit=100&search=${encodeURIComponent(playerName)}`
     );
@@ -57,7 +66,7 @@ export async function searchPlayer(
       if (athletes.length > 0) return athletes[0];
     }
 
-    // Fallback: search across all teams
+    // Fallback: search across team rosters (slower but more reliable)
     const teamsRes = await fetch(`${BASE}/${s}/${league}/teams?limit=100`);
     if (!teamsRes.ok) return null;
     const teamsData = await teamsRes.json();
@@ -89,6 +98,55 @@ export async function searchPlayer(
   }
 }
 
+/**
+ * Fetch player's full season game log from ESPN web API.
+ * Returns per-game stats with opponent, date, home/away.
+ */
+export async function getPlayerGameLog(
+  sport: string,
+  playerId: string
+): Promise<ESPNPlayerGameLog[]> {
+  const { sport: s, league } = getLeagueInfoOrThrow(sport);
+  try {
+    const res = await fetch(
+      `${WEB_BASE}/${s}/${league}/athletes/${playerId}/gamelog`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+
+    const labels: string[] = data.labels || [];
+    const eventDetails = data.events || {};
+    const seasonType = data.seasonTypes?.[0]; // Regular season
+    if (!seasonType) return [];
+
+    const games: ESPNPlayerGameLog[] = [];
+    for (const cat of seasonType.categories || []) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      for (const ev of (cat.events || []) as any[]) {
+        const info = eventDetails[ev.eventId] || {};
+        const statValues = ev.stats || [];
+        const stats: Record<string, string | number> = {};
+        labels.forEach((label, i) => {
+          const val = statValues[i];
+          // Try to parse as number, keep as string if it contains non-numeric chars (like "12-25")
+          const num = Number(val);
+          stats[label] = !isNaN(num) && !String(val).includes("-") ? num : val;
+        });
+        games.push({
+          date: info.gameDate || "",
+          opponent: info.opponent?.displayName || info.opponent?.abbreviation || "Unknown",
+          home: info.homeAway === "home",
+          stats,
+        });
+      }
+    }
+
+    return games;
+  } catch {
+    return [];
+  }
+}
+
 export async function getPlayerStats(
   sport: string,
   playerId: string
@@ -99,29 +157,6 @@ export async function getPlayerStats(
       `${BASE}/${s}/${league}/athletes/${playerId}/statistics`
     );
     if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
-}
-
-export async function getPlayerGameLog(
-  sport: string,
-  playerId: string
-): Promise<Record<string, unknown> | null> {
-  const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(
-      `${BASE}/${s}/${league}/athletes/${playerId}/gamelog`
-    );
-    if (!res.ok) {
-      // Try core API as fallback
-      const coreRes = await fetch(
-        `${CORE_BASE}/${s}/leagues/${league}/athletes/${playerId}/statisticslog`
-      );
-      if (!coreRes.ok) return null;
-      return coreRes.json();
-    }
     return res.json();
   } catch {
     return null;
@@ -149,7 +184,7 @@ export async function fetchPlayerData(
 
     const [stats, gameLog] = await Promise.all([
       getPlayerStats(sport, playerId),
-      getPlayerGameLog(sport, playerId),
+      getPlayerGameLog(sport, String(playerId)),
     ]);
 
     results[name] = { player, stats, gameLog };

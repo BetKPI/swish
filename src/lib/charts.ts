@@ -305,29 +305,76 @@ function buildPlayerPropCharts(
     const pData = players[playerName];
     if (!pData) continue;
 
-    const propAnalysis = pData.propAnalysis;
-    const gameLog = pData.gameLog;
-    const seasonAverages = pData.seasonAverages || pData.seasonStats;
     const line = extraction.line ?? 0;
-    const stat = propAnalysis?.stat || "pts";
-    const statLabel = formatStatLabel(stat);
+    const market = extraction.market || "Points";
+
+    // Determine stat key from market
+    const statKey = mapMarketToStatKey(market);
+    const statLabel = formatStatLabel(statKey);
+
+    // ESPN game log label mapping
+    const espnStatMap: Record<string, string> = {
+      pts: "PTS", reb: "REB", ast: "AST", stl: "STL", blk: "BLK",
+      fg3m: "3PT", turnover: "TO", pra: "_pra",
+      // MLB
+      hits: "H", homeRuns: "HR", rbi: "RBI", strikeOuts: "SO",
+      stolenBases: "SB", totalBases: "TB",
+    };
+
+    // Try propAnalysis first (BDL/MLB), fall back to ESPN game log
+    let propAnalysis = pData.propAnalysis;
+    const gameLog = pData.gameLog;
+
+    // If no prop analysis but we have ESPN game logs, compute it
+    if (!propAnalysis && Array.isArray(gameLog) && gameLog.length > 0 && gameLog[0]?.stats) {
+      const espnLabel = espnStatMap[statKey] || statLabel;
+      const values = gameLog.map((g: { date: string; opponent: string; home: boolean; stats: Record<string, string | number> }) => {
+        let val: number;
+        if (statKey === "pra") {
+          val = (Number(g.stats.PTS) || 0) + (Number(g.stats.REB) || 0) + (Number(g.stats.AST) || 0);
+        } else if (statKey === "fg3m" && g.stats["3PT"]) {
+          // "3PT" is "4-10" format, extract made
+          const parts = String(g.stats["3PT"]).split("-");
+          val = Number(parts[0]) || 0;
+        } else {
+          val = Number(g.stats[espnLabel]) || 0;
+        }
+        return { date: g.date, value: val, hit: val > line, opponent: g.opponent, home: g.home };
+      });
+
+      const hitCount = values.filter((v) => v.hit).length;
+      const total = values.length;
+      const average = total > 0 ? Math.round((values.reduce((s, v) => s + v.value, 0) / total) * 10) / 10 : 0;
+      const last5 = values.slice(-5);
+      const last5Avg = last5.length > 0 ? Math.round((last5.reduce((s, v) => s + v.value, 0) / last5.length) * 10) / 10 : 0;
+
+      propAnalysis = {
+        stat: statKey,
+        line,
+        hitCount,
+        totalGames: total,
+        hitRate: total > 0 ? hitCount / total : 0,
+        average,
+        last5Avg,
+        trend: "stable" as const,
+        gameValues: values,
+      };
+    }
 
     // 1. Game log trend with prop line — THE key chart
     const gameValues = propAnalysis?.gameValues;
     if (gameValues && gameValues.length > 0) {
       const data = gameValues
         .slice(-15)
-        .reverse()
         .map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => ({
-          game: `G${i + 1}`,
+          game: g.opponent ? shortenName(g.opponent) : `G${i + 1}`,
           [statLabel]: g.value,
           propLine: line,
-          hit: g.hit ? "Over" : "Under",
         }));
       charts.push({
         type: "line",
-        title: `${playerName} — ${statLabel} vs ${line} Line`,
-        relevance: `Game-by-game ${statLabel} with the prop line overlaid — instantly see the hit rate`,
+        title: `${playerName} — ${statLabel} This Season`,
+        relevance: `Game-by-game ${statLabel} with the ${line} prop line — ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over`,
         data,
         xKey: "game",
         yKeys: [statLabel, "propLine"],
@@ -335,7 +382,7 @@ function buildPlayerPropCharts(
     }
 
     // 2. Hit rate summary bar
-    if (propAnalysis) {
+    if (propAnalysis && propAnalysis.totalGames > 0) {
       const data = [
         { label: "Over", count: propAnalysis.hitCount },
         { label: "Under", count: propAnalysis.totalGames - propAnalysis.hitCount },
@@ -343,7 +390,7 @@ function buildPlayerPropCharts(
       charts.push({
         type: "bar",
         title: `Hit Rate: ${statLabel} Over ${line}`,
-        relevance: `${propAnalysis.hitCount}/${propAnalysis.totalGames} games (${Math.round(propAnalysis.hitRate * 100)}%) — ${propAnalysis.trend} trend`,
+        relevance: `${propAnalysis.hitCount}/${propAnalysis.totalGames} games (${Math.round(propAnalysis.hitRate * 100)}%) — season hit rate`,
         data,
         xKey: "label",
         yKeys: ["count"],
@@ -351,37 +398,67 @@ function buildPlayerPropCharts(
     }
 
     // 3. Season average vs line vs last 5 comparison
-    if (propAnalysis || seasonAverages) {
-      const avg = propAnalysis?.average ?? getSeasonAvgForStat(seasonAverages, stat);
-      const last5 = propAnalysis?.last5Avg ?? avg;
-      if (avg > 0) {
-        const data = [
-          { metric: "Season Avg", value: avg },
-          { metric: "Last 5 Avg", value: last5 },
-          { metric: "Prop Line", value: line },
-        ];
+    if (propAnalysis && propAnalysis.average > 0) {
+      const data = [
+        { metric: "Season Avg", value: propAnalysis.average },
+        { metric: "Last 5 Avg", value: propAnalysis.last5Avg },
+        { metric: "Prop Line", value: line },
+      ];
+      charts.push({
+        type: "bar",
+        title: `${playerName} — Average vs Line`,
+        relevance: `Season average (${propAnalysis.average}) and recent form (${propAnalysis.last5Avg}) compared to the ${line} line`,
+        data,
+        xKey: "metric",
+        yKeys: ["value"],
+      });
+    }
+
+    // 4. Home/away split from game log
+    if (gameValues && gameValues.length > 3) {
+      const homeGames = gameValues.filter((g: { home?: boolean }) => g.home);
+      const awayGames = gameValues.filter((g: { home?: boolean }) => !g.home);
+      if (homeGames.length >= 2 && awayGames.length >= 2) {
+        const avg = (arr: { value: number }[]) => Math.round((arr.reduce((s: number, v: { value: number }) => s + v.value, 0) / arr.length) * 10) / 10;
         charts.push({
           type: "bar",
-          title: `${playerName} — Average vs Line`,
-          relevance: `Season average (${avg}) and recent form (${last5}) compared to the ${line} line`,
-          data,
-          xKey: "metric",
-          yKeys: ["value"],
+          title: `${playerName} — ${statLabel} Home vs Away`,
+          relevance: `Home avg: ${avg(homeGames)}, Away avg: ${avg(awayGames)}`,
+          data: [
+            { venue: "Home", average: avg(homeGames), propLine: line },
+            { venue: "Away", average: avg(awayGames), propLine: line },
+          ],
+          xKey: "venue",
+          yKeys: ["average", "propLine"],
         });
       }
     }
 
-    // 4. Home/away split if we have game log data
-    if (gameLog && Array.isArray(gameLog) && gameLog.length > 0) {
-      const homeAway = computeHomeAwaySplit(gameLog, stat, line);
-      if (homeAway) {
+    // 5. vs Opponent if we have enough data
+    if (gameValues && extraction.teams && extraction.teams.length > 0) {
+      const opponentName = extraction.teams.find((t) =>
+        !gameValues.some((g: { opponent?: string }) => g.opponent?.toLowerCase().includes(t.toLowerCase()))
+      ) || extraction.teams[1] || extraction.teams[0];
+
+      const vsOpponent = gameValues.filter((g: { opponent?: string }) => {
+        const opp = g.opponent?.toLowerCase() || "";
+        return extraction.teams?.some((t) => opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp));
+      });
+
+      if (vsOpponent.length > 0) {
+        const avg = (arr: { value: number }[]) => Math.round((arr.reduce((s: number, v: { value: number }) => s + v.value, 0) / arr.length) * 10) / 10;
+        const data = vsOpponent.map((g: { date: string; value: number; opponent?: string }, i: number) => ({
+          game: g.date ? new Date(g.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }) : `G${i + 1}`,
+          [statLabel]: g.value,
+          propLine: line,
+        }));
         charts.push({
           type: "bar",
-          title: `${playerName} — ${statLabel} Home vs Away`,
-          relevance: "Venue split can reveal significant performance differences",
-          data: homeAway,
-          xKey: "venue",
-          yKeys: ["average", "propLine"],
+          title: `${playerName} — ${statLabel} vs ${opponentName}`,
+          relevance: `${vsOpponent.length} games against this opponent — avg ${avg(vsOpponent)}`,
+          data,
+          xKey: "game",
+          yKeys: [statLabel, "propLine"],
         });
       }
     }
