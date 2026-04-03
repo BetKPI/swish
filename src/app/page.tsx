@@ -97,6 +97,12 @@ export default function Home() {
       if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
       const statsData = await statsRes.json();
 
+      if (statsData.parlay) {
+        setExtraction(analyzeData.extraction);
+        setState("parlay");
+        return;
+      }
+
       if (statsData.unsupported) {
         setExtraction(analyzeData.extraction);
         setCharts([]);
@@ -289,6 +295,31 @@ export default function Home() {
             className="py-3 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
           >
             Try Another Bet
+          </button>
+        </div>
+      )}
+
+      {state === "parlay" && (
+        <div className="max-w-4xl mx-auto px-4 space-y-6 text-center pt-20">
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Bet screenshot"
+              className="max-h-48 mx-auto rounded-lg opacity-40"
+            />
+          )}
+          <div className="bg-surface border border-border rounded-xl p-8 max-w-md mx-auto space-y-4">
+            <div className="text-4xl">🎰</div>
+            <h3 className="text-xl font-bold">Parlays coming soon</h3>
+            <p className="text-muted text-sm leading-relaxed">
+              We can only analyze single bets right now. Try uploading one leg at a time — you&apos;ll get much deeper stats that way.
+            </p>
+          </div>
+          <button
+            onClick={reset}
+            className="py-3 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
+          >
+            Try a Single Bet
           </button>
         </div>
       )}
