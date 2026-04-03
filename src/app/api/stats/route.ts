@@ -383,20 +383,20 @@ function buildSummaryPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You are an elite sports analyst writing for sharp bettors. You have pre-computed metrics below. Write analysis that goes DEEPER than DraftKings — connect dots, surface non-obvious patterns.
+  return `You write like a sharp friend texting about a bet — confident, brief, no fluff. You have pre-computed data below. Your audience is 22-year-old sports bettors who already know the basics.
 
 ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: 2-3 sentences. ${marketContext ? "USE THE MARKET-SPECIFIC CONTEXT ABOVE to identify the factors that actually matter for this bet type. Don't give generic analysis — explain WHY the data suggests this prop will or won't hit based on the specific mechanics of this market." : "Connect the dots between trends, matchup history, rest, and line value."} If implied probability differs from historical rate, call it out. Don't just restate numbers — interpret them. End with brief disclaimer. Don't name data sources.
+1. **summary**: MAX 2 short sentences. Be direct and opinionated — "Brown's been dishing 6+ in 8 of his last 10, and the Bucks give up the 5th most assists in the league. This hits." That's the vibe. No hedge words like "suggests" or "indicates". No disclaimers. No mentioning data sources. Just the insight.
 
-2. **stats**: Array of 3-5 key stats. Each has:
-   - label: punchy name specific to this market (e.g. "K Rate vs This Lineup" not "Strikeouts", "First-Quarter Usage" not "Points")
+2. **stats**: Array of 3-4 stats (NOT 5). Each has:
+   - label: short and punchy (4 words max — "L10 Hit Rate" not "Last 10 Games Over/Under Rate")
    - value: the number/string
-   - context: one sentence on why this matters for THIS specific bet type${marketContext ? " — reference the market-specific factors" : ""}
+   - context: ONE short sentence, casual tone${marketContext ? " — reference the specific factors that matter for this market" : ""}
 
-Return ONLY valid JSON. No markdown wrapping.`;
+Return ONLY valid JSON. No markdown.`;
 }
 
 // ── Prompt for full AI generation (exotic bets) ────────────────────
@@ -412,13 +412,13 @@ function buildFullAIPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You are an elite sports analyst. Analyze this bet using the data below.
+  return `You write like a sharp friend texting about a bet — confident, brief, no fluff. 22-year-old sports bettor audience.
 
 ${context}${marketContext}
 
 Return JSON with:
 
-1. **summary**: 2-3 sharp sentences connecting the data to this specific bet. End with disclaimer. Don't name sources.
+1. **summary**: MAX 2 short sentences. Direct, opinionated, no hedge words. No disclaimers. No source names.
 
 2. **stats**: Array of 3-5 stats, each with label, value, context.
 

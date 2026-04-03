@@ -193,6 +193,7 @@ function extractRecord(raw: Record<string, unknown>): {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const r = raw as any;
   const recordItems =
+    r?.record?.team?.record?.items ||
     r?.record?.team?.recordItems ||
     r?.record?.items ||
     [];
@@ -217,6 +218,7 @@ function extractHomeAwayRecord(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const r = raw as any;
   const recordItems =
+    r?.record?.team?.record?.items ||
     r?.record?.team?.recordItems ||
     r?.record?.items ||
     [];
