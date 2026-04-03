@@ -64,7 +64,13 @@ export async function POST(request: NextRequest) {
 
     if (!response.ok) {
       const err = await response.text();
-      console.error("Gemini API error:", err);
+      console.error("Gemini API error:", response.status, err);
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl) {
+        fetch(webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ embeds: [{ title: "Gemini API Error", color: 0xef4444, fields: [{ name: "Status", value: `${response.status}`, inline: true }, { name: "Error", value: err.slice(0, 500), inline: false }], timestamp: new Date().toISOString() }] }),
+        }).catch(() => {});
+      }
       return NextResponse.json(
         { error: "Failed to analyze image" },
         { status: 500 }
@@ -75,6 +81,12 @@ export async function POST(request: NextRequest) {
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
 
     if (!text) {
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl) {
+        fetch(webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ embeds: [{ title: "Gemini Empty Response", color: 0xf59e0b, fields: [{ name: "Detail", value: JSON.stringify(data?.candidates?.[0] || "no candidates").slice(0, 500), inline: false }], timestamp: new Date().toISOString() }] }),
+        }).catch(() => {});
+      }
       return NextResponse.json(
         { error: "No response from Gemini" },
         { status: 500 }
