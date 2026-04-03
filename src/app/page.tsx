@@ -87,6 +87,15 @@ export default function Home() {
       if (!statsRes.ok) throw new Error("Failed to fetch stats");
       const statsData = await statsRes.json();
 
+      if (statsData.unsupported) {
+        setExtraction(analyzeData.extraction);
+        setCharts([]);
+        setStats([]);
+        setSummary("");
+        setState("unsupported");
+        return;
+      }
+
       setCharts(statsData.charts || []);
       setStats(statsData.stats || []);
       setSummary(statsData.summary || "");
@@ -245,6 +254,31 @@ export default function Home() {
             className="py-2.5 px-6 bg-surface-light hover:bg-border text-foreground rounded-xl transition-colors cursor-pointer"
           >
             Try Again
+          </button>
+        </div>
+      )}
+
+      {state === "unsupported" && extraction && (
+        <div className="max-w-4xl mx-auto px-4 space-y-6 text-center pt-20">
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Bet screenshot"
+              className="max-h-48 mx-auto rounded-lg opacity-40"
+            />
+          )}
+          <div className="bg-surface border border-border rounded-xl p-8 max-w-md mx-auto space-y-4">
+            <div className="text-4xl">😬</div>
+            <h3 className="text-xl font-bold">We don&apos;t have that yet</h3>
+            <p className="text-muted text-sm leading-relaxed">
+              We read your bet ({extraction.sport} — {extraction.betType.replace("_", "/")}) but don&apos;t have the data to break it down right now. Try a different bet — we work best with NFL, NBA, MLB, NHL, and college sports.
+            </p>
+          </div>
+          <button
+            onClick={reset}
+            className="py-3 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
+          >
+            Try Another Bet
           </button>
         </div>
       )}

@@ -39,13 +39,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} h-full antialiased`}>
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/logo.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <header className="border-b border-border/50 px-4 py-4">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-accent to-emerald-400 flex items-center justify-center text-white font-black text-lg">
-                S
-              </div>
+              <img src="/logo.svg" alt="swish" className="w-9 h-9 rounded-lg" />
               <h1 className="text-xl font-bold tracking-tight text-foreground">
                 swish
               </h1>

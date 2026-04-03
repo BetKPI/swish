@@ -112,15 +112,22 @@ export async function fetchAllTeamData(
   sport: string,
   teamNames: string[]
 ): Promise<Record<string, unknown>> {
+  const key = sport.toUpperCase();
+  if (!SPORT_MAP[key]) {
+    return { _unsupported: true, _sport: sport };
+  }
+
   const results: Record<string, unknown> = {};
+  let anyFound = false;
 
   for (const name of teamNames) {
     const team = await searchTeam(sport, name);
     if (!team) {
-      results[name] = { error: "Team not found" };
+      results[name] = null;
       continue;
     }
 
+    anyFound = true;
     const teamId = (team as { id: string }).id;
     const [stats, record, schedule] = await Promise.all([
       getTeamStats(sport, teamId),
@@ -134,6 +141,10 @@ export async function fetchAllTeamData(
       record,
       recentGames: extractRecentGames(schedule),
     };
+  }
+
+  if (!anyFound) {
+    return { _unsupported: true, _sport: sport };
   }
 
   return results;

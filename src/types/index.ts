@@ -41,4 +41,4 @@ export interface TableColumn {
   label: string;
 }
 
-export type AppState = 'upload' | 'analyzing' | 'results' | 'error';
+export type AppState = 'upload' | 'analyzing' | 'results' | 'error' | 'unsupported';
