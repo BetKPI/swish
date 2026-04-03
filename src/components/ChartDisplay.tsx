@@ -11,6 +11,7 @@ import {
   Tooltip,
   ResponsiveContainer,
   Legend,
+  ReferenceLine,
 } from "recharts";
 import type { ChartConfig } from "@/types";
 
@@ -55,14 +56,25 @@ function RechartsLine({
   const ys =
     yKeys || Object.keys(data[0] || {}).filter((k) => k !== x);
 
+  // Detect if propLine/ouLine is a constant reference line
+  const refLineKeys = ys.filter((k) => {
+    const vals = data.map((d) => Number(d[k])).filter((v) => !isNaN(v));
+    return vals.length > 1 && vals.every((v) => v === vals[0]) && vals[0] > 0;
+  });
+  const regularKeys = ys.filter((k) => !refLineKeys.includes(k));
+  const refLineValue = refLineKeys.length > 0 ? Number(data[0]?.[refLineKeys[0]]) : null;
+
   return (
     <ResponsiveContainer width="100%" height={220}>
       <LineChart data={data}>
         <CartesianGrid strokeDasharray="3 3" stroke="#333" />
         <XAxis
           dataKey={x}
-          tick={{ fill: "#888", fontSize: 11 }}
+          tick={{ fill: "#888", fontSize: 10 }}
           stroke="#333"
+          angle={-30}
+          textAnchor="end"
+          height={50}
         />
         <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
         <Tooltip
@@ -74,7 +86,16 @@ function RechartsLine({
           }}
         />
         <Legend wrapperStyle={{ fontSize: 11 }} />
-        {ys.map((key, i) => (
+        {refLineValue != null && (
+          <ReferenceLine
+            y={refLineValue}
+            stroke="#f59e0b"
+            strokeDasharray="6 4"
+            strokeWidth={2}
+            label={{ value: `Line: ${refLineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
+          />
+        )}
+        {regularKeys.map((key, i) => (
           <Line
             key={key}
             type="monotone"
