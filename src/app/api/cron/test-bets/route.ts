@@ -258,10 +258,15 @@ async function testBet(
 
   try {
     // Call our own stats endpoint
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL
+      || (process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : null)
+      || (process.env.VERCEL_URL
+        ? `https://${process.env.VERCEL_URL}`
+        : "https://swish-jet.vercel.app");
 
+    console.log(`[QA] Testing: ${label} → ${baseUrl}/api/stats`);
     const res = await fetch(`${baseUrl}/api/stats`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
