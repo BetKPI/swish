@@ -301,13 +301,24 @@ export async function POST(request: NextRequest) {
       // Analyze legs directly — no HTTP round-trip
       const legResults = await Promise.all(
         legs.slice(0, 6).map(async (leg) => {
+          // If leg has no teams, try to inherit from parent extraction
           if (!leg.teams || leg.teams.length === 0) {
-            return { leg, error: true, data: null };
+            if (extraction.teams && extraction.teams.length > 0) {
+              leg.teams = extraction.teams;
+            } else {
+              return { leg, error: true, data: null };
+            }
+          }
+          // Ensure leg has a sport
+          if (!leg.sport && extraction.sport) {
+            leg.sport = extraction.sport;
           }
           try {
             const data = await analyzeSingleBet(leg, apiKey);
             return { leg, error: false, data };
-          } catch {
+          } catch (e) {
+            console.error(`[Parlay] Leg failed: ${leg.description}`, e);
+            logToDiscord("error", leg as BetExtraction, `Parlay leg failed: ${(e as Error).message?.slice(0, 150)}`);
             return { leg, error: true, data: null };
           }
         })
