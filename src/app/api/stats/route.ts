@@ -161,6 +161,53 @@ async function callGemini(
   return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
 }
 
+/**
+ * Log bet failures/events to Discord automatically — no user action needed.
+ */
+async function logToDiscord(
+  type: "unsupported" | "error" | "empty_parlay" | "analysis_fail",
+  extraction: BetExtraction,
+  detail?: string
+) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const colors: Record<string, number> = {
+    unsupported: 0xf59e0b,  // yellow
+    error: 0xef4444,         // red
+    empty_parlay: 0xf59e0b,  // yellow
+    analysis_fail: 0xef4444, // red
+  };
+
+  const titles: Record<string, string> = {
+    unsupported: "Unsupported Bet Submitted",
+    error: "Analysis Error",
+    empty_parlay: "Parlay — No Legs Detected",
+    analysis_fail: "Analysis Returned Empty",
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: titles[type] || type,
+          color: colors[type] || 0x6366f1,
+          fields: [
+            { name: "Bet", value: extraction.description || "Unknown", inline: false },
+            { name: "Sport / Type", value: `${extraction.sport} — ${extraction.betType?.replace("_", "/")}`, inline: true },
+            { name: "Teams", value: extraction.teams?.join(" vs ") || "?", inline: true },
+            ...(extraction.players?.length ? [{ name: "Players", value: extraction.players.join(", "), inline: true }] : []),
+            ...(detail ? [{ name: "Detail", value: detail.slice(0, 200), inline: false }] : []),
+          ],
+          timestamp: new Date().toISOString(),
+        }],
+      }),
+    });
+  } catch { /* silent */ }
+}
+
 function parseGeminiJSON(text: string): Record<string, unknown> {
   let jsonText = text.trim();
   if (jsonText.startsWith("```")) {
@@ -186,6 +233,7 @@ export async function POST(request: NextRequest) {
       // Analyze each leg individually
       const legs = extraction.legs || [];
       if (legs.length === 0) {
+        logToDiscord("empty_parlay", extraction, "No legs extracted from screenshot");
         return NextResponse.json({ parlay: true, legs: [] });
       }
 
@@ -244,6 +292,7 @@ export async function POST(request: NextRequest) {
     console.log(`[Stats] Data source: ${source}`);
 
     if (teamData._unsupported) {
+      logToDiscord("unsupported", extraction, `Source: ${source}, Reason: ${teamData._reason || "no data"}`);
       return NextResponse.json({ unsupported: true });
     }
 
@@ -306,6 +355,13 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error("Stats error:", error);
+    // Try to log to Discord — extraction may not be available if parsing failed
+    try {
+      const body = await request.clone().json().catch(() => null);
+      if (body?.extraction) {
+        logToDiscord("error", body.extraction, error instanceof Error ? error.message : "Unknown error");
+      }
+    } catch { /* silent */ }
     return NextResponse.json(
       { error: "Failed to generate stats" },
       { status: 500 }

@@ -91,6 +91,24 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ extraction });
   } catch (error) {
     console.error("Analyze error:", error);
+    // Log to Discord
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+    if (webhookUrl) {
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          embeds: [{
+            title: "Screenshot Analysis Failed",
+            color: 0xef4444,
+            fields: [
+              { name: "Error", value: (error instanceof Error ? error.message : "Unknown").slice(0, 200), inline: false },
+            ],
+            timestamp: new Date().toISOString(),
+          }],
+        }),
+      }).catch(() => {});
+    }
     return NextResponse.json(
       { error: "Failed to analyze image" },
       { status: 500 }
