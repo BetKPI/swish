@@ -135,6 +135,47 @@ async function executeFetch(
   }
 }
 
+async function logChatToDiscord(
+  question: string,
+  extraction: { sport?: string; betType?: string; teams?: string[]; description?: string },
+  result: "chart" | "no_data" | "fetched" | "error",
+  detail?: string
+) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const colors: Record<string, number> = {
+    chart: 0x10b981,    // green — answered
+    fetched: 0x6366f1,  // purple — had to fetch new data
+    no_data: 0xf59e0b,  // yellow — couldn't answer
+    error: 0xef4444,    // red — crashed
+  };
+
+  const icons: Record<string, string> = {
+    chart: "\u2705", fetched: "\u{1F50D}", no_data: "\u{1F6AB}", error: "\u274C",
+  };
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: `${icons[result] || "?"} Chat: "${question.slice(0, 80)}"`,
+          color: colors[result] || 0x6366f1,
+          fields: [
+            { name: "Bet", value: extraction.description || `${extraction.sport} ${extraction.betType}`, inline: true },
+            { name: "Teams", value: extraction.teams?.join(" vs ") || "?", inline: true },
+            { name: "Result", value: result, inline: true },
+            ...(detail ? [{ name: "Detail", value: detail.slice(0, 200), inline: false }] : []),
+          ],
+          timestamp: new Date().toISOString(),
+        }],
+      }),
+    });
+  } catch { /* silent */ }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { message, extraction, computedData } = await request.json();
@@ -217,6 +258,7 @@ RULES:
 
     // Case 1: Can answer from existing data
     if (!triage.need_fetch && !triage.no_data && triage.chart) {
+      logChatToDiscord(message, extraction, "chart", triage.message as string);
       return NextResponse.json({
         type: "chart",
         message: triage.message || "Here you go.",
@@ -226,6 +268,7 @@ RULES:
 
     // Case 3: Data doesn't exist
     if (triage.no_data) {
+      logChatToDiscord(message, extraction, "no_data", triage.message as string);
       return NextResponse.json({
         type: "no_data",
         message: triage.message || "We don't have the data for that.",
@@ -238,6 +281,7 @@ RULES:
       const fetchedData = await executeFetch(triage.fetch as FetchAction, sport);
 
       if (!fetchedData) {
+        logChatToDiscord(message, extraction, "no_data", `Fetch failed: ${JSON.stringify(triage.fetch)}`);
         return NextResponse.json({
           type: "no_data",
           message: "We tried to pull that data but couldn't find it. The player or team might not be in our system.",
@@ -274,6 +318,7 @@ RULES:
 
       const chartText = await callGemini(chartPrompt, apiKey);
       if (!chartText) {
+        logChatToDiscord(message, extraction, "error", "Gemini returned empty after data fetch");
         return NextResponse.json({
           type: "no_data",
           message: "Got the data but couldn't generate the chart — try rephrasing.",
@@ -281,16 +326,22 @@ RULES:
       }
 
       const chartResult = parseJSON(chartText);
+      logChatToDiscord(message, extraction, "fetched", `Action: ${(triage.fetch as Record<string,unknown>).action}`);
       return NextResponse.json(chartResult);
     }
 
     // Fallback
+    logChatToDiscord(message, extraction, "no_data", "Fell through to fallback");
     return NextResponse.json({
       type: "no_data",
       message: triage.message || "Not sure how to handle that — try a different question.",
     });
   } catch (error) {
     console.error("Chat error:", error);
+    try {
+      const body = await request.clone().json().catch(() => ({}));
+      logChatToDiscord(body.message || "?", body.extraction || {}, "error", (error as Error).message);
+    } catch { /* silent */ }
     return NextResponse.json({
       type: "no_data",
       message: "Something went wrong — try again.",
