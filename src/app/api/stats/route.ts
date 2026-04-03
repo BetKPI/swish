@@ -213,15 +213,18 @@ export async function POST(request: NextRequest) {
     if (isDeterministic && charts.length > 0) {
       // Common bet: AI only writes summary + stats
       const text = await callGemini(summaryPrompt, apiKey);
-      if (!text) {
-        return NextResponse.json(
-          { error: "Failed to generate analysis" },
-          { status: 500 }
-        );
+      let aiResult: Record<string, unknown> = {};
+      if (text) {
+        try {
+          aiResult = parseGeminiJSON(text);
+        } catch (e) {
+          console.error("[Stats] Failed to parse Gemini summary JSON:", e, "\nRaw:", text?.slice(0, 300));
+          // Still return charts even if AI summary fails
+          aiResult = { summary: "Analysis available in the charts below.", stats: [] };
+        }
       }
-      const aiResult = parseGeminiJSON(text);
       return NextResponse.json({
-        summary: aiResult.summary || "",
+        summary: aiResult.summary || "Analysis available in the charts below.",
         stats: aiResult.stats || [],
         charts,
         _computed: {
@@ -233,17 +236,19 @@ export async function POST(request: NextRequest) {
       // Exotic bet: AI generates everything (smarter model)
       const fullPrompt = buildFullAIPrompt(extraction, computed, teamData);
       const text = await callGemini(fullPrompt, apiKey);
-      if (!text) {
-        return NextResponse.json(
-          { error: "Failed to generate analysis" },
-          { status: 500 }
-        );
+      let aiResult: Record<string, unknown> = {};
+      if (text) {
+        try {
+          aiResult = parseGeminiJSON(text);
+        } catch (e) {
+          console.error("[Stats] Failed to parse Gemini full JSON:", e, "\nRaw:", text?.slice(0, 300));
+          aiResult = { summary: "We pulled the data but couldn't generate the full analysis. Try again.", stats: [], charts: [] };
+        }
       }
-      const aiResult = parseGeminiJSON(text);
       return NextResponse.json({
         summary: aiResult.summary || "",
         stats: aiResult.stats || [],
-        charts: aiResult.charts || charts,
+        charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
         _computed: {
           oddsAnalysis: computed.oddsAnalysis,
           source,

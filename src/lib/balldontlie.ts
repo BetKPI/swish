@@ -142,12 +142,18 @@ export async function getSeasonAverages(
   playerId: number,
   season?: number
 ): Promise<BDLSeasonAverages | null> {
+  if (!isAvailable()) return null;
   const yr = season || getCurrentSeason();
   try {
     const res = await fetch(
       `${BASE}/season_averages?season=${yr}&player_ids[]=${playerId}`,
       { headers: headers() }
     );
+    if (res.status === 401 || res.status === 403) {
+      console.log("[BDL] season_averages requires paid plan — marking unavailable");
+      markAuthFailed();
+      return null;
+    }
     if (!res.ok) return null;
     const data = await res.json();
     return data.data?.[0] || null;
@@ -160,6 +166,7 @@ export async function getPlayerGameLog(
   playerId: number,
   last: number = 10
 ): Promise<BDLGameStats[]> {
+  if (!isAvailable()) return [];
   const season = getCurrentSeason();
   try {
     const res = await fetch(
@@ -290,6 +297,12 @@ export async function fetchNBAData(
         getSeasonAverages(player.id),
         getPlayerGameLog(player.id, 15),
       ]);
+
+      // If stats endpoints failed (free tier), flag to fall through to ESPN
+      if (!seasonAverages && gameLog.length === 0) {
+        console.log(`[BDL] Stats unavailable for ${name} (free tier?) — will fall through to ESPN`);
+        return { _unsupported: true, _reason: "stats_restricted" };
+      }
 
       const entry: BDLPlayerData = { player, seasonAverages, gameLog };
 
