@@ -72,16 +72,11 @@ export async function GET(request: NextRequest) {
   const chatResults: { question: string; type: string; message: string }[] = [];
   const start = Date.now();
 
-  // Run bets in parallel (batches of 5 to avoid hammering)
-  for (let i = 0; i < TEST_BETS.length; i += 5) {
-    const batch = TEST_BETS.slice(i, i + 5);
-    await Promise.all(batch.map((bet) => testBet(results, bet)));
-  }
-
-  // Run chat questions in parallel
-  await Promise.all(
-    CHAT_QUESTIONS.map((cq) => testChat(chatResults, cq))
-  );
+  // Run ALL bets + chat in one big parallel blast
+  await Promise.all([
+    ...TEST_BETS.map((bet) => testBet(results, bet)),
+    ...CHAT_QUESTIONS.map((cq) => testChat(chatResults, cq)),
+  ]);
 
   const totalMs = Date.now() - start;
   const passed = results.filter((r) => r.status === "pass").length;
