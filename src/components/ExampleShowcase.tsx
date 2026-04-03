@@ -202,7 +202,7 @@ export default function ExampleShowcase() {
           The stats behind the bet
         </h3>
         <p className="text-muted text-sm max-w-lg mx-auto">
-          Not box scores. The specific numbers for your specific bet — props, spreads, totals, any sport.
+          Not box scores. The specific numbers for your specific bet — props, spreads, totals.
         </p>
       </div>
 

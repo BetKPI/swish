@@ -8,6 +8,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://swish-jet.vercel.app"),
   title: "swish — know before you bet",
   description:
     "Screenshot any bet. Get the stats that actually matter — in seconds.",
@@ -16,12 +17,14 @@ export const metadata: Metadata = {
     description:
       "Screenshot any bet. Get the stats that actually matter — in seconds.",
     siteName: "swish",
+    images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "swish — know before you bet",
     description:
       "Screenshot any bet. Get the stats that actually matter — in seconds.",
+    images: ["/og.png"],
   },
 };
 

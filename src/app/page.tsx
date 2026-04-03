@@ -68,23 +68,33 @@ export default function Home() {
     setError("");
 
     try {
+      const timeout = (ms: number) => new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Taking too long — try again or use a clearer screenshot")), ms)
+      );
+
       setStatusMsg("Reading your bet...");
-      const analyzeRes = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ image: imageBase64 }),
-      });
-      if (!analyzeRes.ok) throw new Error("Failed to analyze bet screenshot");
+      const analyzeRes = await Promise.race([
+        fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image: imageBase64 }),
+        }),
+        timeout(30000),
+      ]);
+      if (!analyzeRes.ok) throw new Error("Couldn't read that image — try a clearer screenshot");
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
 
       setStatusMsg("Pulling the numbers that matter...");
-      const statsRes = await fetch("/api/stats", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ extraction: analyzeData.extraction }),
-      });
-      if (!statsRes.ok) throw new Error("Failed to fetch stats");
+      const statsRes = await Promise.race([
+        fetch("/api/stats", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ extraction: analyzeData.extraction }),
+        }),
+        timeout(30000),
+      ]);
+      if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
       const statsData = await statsRes.json();
 
       if (statsData.unsupported) {
@@ -132,7 +142,7 @@ export default function Home() {
               </h2>
               <p className="text-muted text-base sm:text-xl max-w-xl mx-auto">
                 Screenshot any sports bet. We&apos;ll pull the stats that
-                actually matter — props, spreads, totals, any sport.
+                actually matter — props, spreads, totals across NFL, NBA, MLB, NHL, and more.
               </p>
 
               {/* Upload CTA */}
