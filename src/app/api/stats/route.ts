@@ -246,6 +246,10 @@ export async function POST(request: NextRequest) {
 
       const legResults = await Promise.all(
         legs.slice(0, 6).map(async (leg) => {
+          // Skip legs with no teams — can't analyze without them
+          if (!leg.teams || leg.teams.length === 0) {
+            return { leg, error: true, data: null };
+          }
           try {
             const res = await fetch(`${baseUrl}/api/stats`, {
               method: "POST",

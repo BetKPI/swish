@@ -13,7 +13,7 @@ Return a JSON object with these fields:
 - description: A human-readable one-sentence summary of the bet
 - confidence: Your confidence in the extraction from 0 to 1 (1 = very confident)
 
-For parlays, set betType to "parlay" and include a "legs" array where each leg has the same structure (without nested legs).
+For parlays, set betType to "parlay" and include a "legs" array where each leg has the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). CRITICAL: each leg MUST include the "teams" array with the team names involved in that leg — even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
 
 Respond ONLY with valid JSON, no markdown or explanation.`;
 
