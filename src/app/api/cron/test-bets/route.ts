@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
+// Allow up to 5 minutes for QA run
+export const maxDuration = 300;
+
 const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports";
 
 // Common prop bet templates per sport
@@ -55,8 +58,8 @@ export async function GET(request: NextRequest) {
 
     console.log(`[QA] Found ${nbaGames.length} NBA, ${mlbGames.length} MLB games`);
 
-    // Generate and test NBA bets
-    for (const game of nbaGames.slice(0, 4)) {
+    // Generate and test NBA bets (2 games to stay within timeout)
+    for (const game of nbaGames.slice(0, 2)) {
       // Moneyline
       await testBet(results, {
         sport: "NBA",
@@ -110,8 +113,8 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Generate and test MLB bets
-    for (const game of mlbGames.slice(0, 4)) {
+    // Generate and test MLB bets (2 games to stay within timeout)
+    for (const game of mlbGames.slice(0, 2)) {
       // Moneyline
       await testBet(results, {
         sport: "MLB",
