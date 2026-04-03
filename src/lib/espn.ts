@@ -327,13 +327,21 @@ function extractRecentGames(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((e: any) => {
         const comp = e.competitions?.[0];
+        // Score can be a number, string, or object { value, displayValue }
+        const parseScore = (s: unknown): string => {
+          if (s == null) return "0";
+          if (typeof s === "object" && s !== null) {
+            return String((s as { displayValue?: string; value?: number }).displayValue ?? (s as { value?: number }).value ?? 0);
+          }
+          return String(s);
+        };
         return {
           date: e.date,
           name: e.name,
           homeTeam: comp?.competitors?.[0]?.team?.displayName,
-          homeScore: comp?.competitors?.[0]?.score,
+          homeScore: parseScore(comp?.competitors?.[0]?.score),
           awayTeam: comp?.competitors?.[1]?.team?.displayName,
-          awayScore: comp?.competitors?.[1]?.score,
+          awayScore: parseScore(comp?.competitors?.[1]?.score),
         };
       });
   } catch {

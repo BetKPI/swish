@@ -41,4 +41,17 @@ export interface TableColumn {
   label: string;
 }
 
+export interface ParlayLegResult {
+  description: string;
+  sport: string;
+  betType: string;
+  teams: string[];
+  odds: string;
+  summary: string | null;
+  stats: StatDataPoint[];
+  charts: ChartConfig[];
+  error: boolean;
+  unsupported: boolean;
+}
+
 export type AppState = 'upload' | 'analyzing' | 'results' | 'error' | 'unsupported' | 'parlay';

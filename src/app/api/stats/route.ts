@@ -182,7 +182,52 @@ export async function POST(request: NextRequest) {
     }
 
     if (extraction.betType === "parlay") {
-      return NextResponse.json({ parlay: true });
+      // Analyze each leg individually
+      const legs = extraction.legs || [];
+      if (legs.length === 0) {
+        return NextResponse.json({ parlay: true, legs: [] });
+      }
+
+      // Call ourselves for each leg in parallel (max 6 legs to stay in timeout)
+      const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
+        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+        : process.env.VERCEL_URL
+          ? `https://${process.env.VERCEL_URL}`
+          : "https://swish-jet.vercel.app";
+
+      const legResults = await Promise.all(
+        legs.slice(0, 6).map(async (leg) => {
+          try {
+            const res = await fetch(`${baseUrl}/api/stats`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ extraction: leg }),
+            });
+            if (!res.ok) return { leg, error: true, data: null };
+            const data = await res.json();
+            return { leg, error: false, data };
+          } catch {
+            return { leg, error: true, data: null };
+          }
+        })
+      );
+
+      return NextResponse.json({
+        parlay: true,
+        legCount: legs.length,
+        legs: legResults.map((r) => ({
+          description: r.leg.description,
+          sport: r.leg.sport,
+          betType: r.leg.betType,
+          teams: r.leg.teams,
+          odds: r.leg.odds,
+          summary: r.data?.summary || null,
+          stats: r.data?.stats || [],
+          charts: r.data?.charts || [],
+          error: r.error,
+          unsupported: r.data?.unsupported || false,
+        })),
+      });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;

@@ -6,8 +6,10 @@ import type {
   BetExtraction,
   ChartConfig,
   StatDataPoint,
+  ParlayLegResult,
 } from "@/types";
 import AnalysisResults from "@/components/AnalysisResults";
+import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
 
 export default function Home() {
@@ -19,6 +21,7 @@ export default function Home() {
   const [stats, setStats] = useState<StatDataPoint[]>([]);
   const [summary, setSummary] = useState<string>("");
   const [computedData, setComputedData] = useState<Record<string, unknown> | null>(null);
+  const [parlayLegs, setParlayLegs] = useState<ParlayLegResult[]>([]);
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -86,20 +89,23 @@ export default function Home() {
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
 
-      setStatusMsg("Pulling the numbers that matter...");
+      const isParlay = analyzeData.extraction?.betType === "parlay";
+      setStatusMsg(isParlay ? "Breaking down each leg..." : "Pulling the numbers that matter...");
+      const statsTimeout = isParlay ? 60000 : 30000;
       const statsRes = await Promise.race([
         fetch("/api/stats", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ extraction: analyzeData.extraction }),
         }),
-        timeout(30000),
+        timeout(statsTimeout),
       ]);
       if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
       const statsData = await statsRes.json();
 
       if (statsData.parlay) {
         setExtraction(analyzeData.extraction);
+        setParlayLegs(statsData.legs || []);
         setState("parlay");
         return;
       }
@@ -133,6 +139,7 @@ export default function Home() {
     setStats([]);
     setSummary("");
     setComputedData(null);
+    setParlayLegs([]);
     setError("");
     setStatusMsg("");
   }, []);
@@ -302,28 +309,38 @@ export default function Home() {
         </div>
       )}
 
-      {state === "parlay" && (
-        <div className="max-w-4xl mx-auto px-4 space-y-6 text-center pt-20">
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Bet screenshot"
-              className="max-h-48 mx-auto rounded-lg opacity-40"
+      {state === "parlay" && extraction && (
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          {parlayLegs.length > 0 ? (
+            <ParlayResults
+              extraction={extraction}
+              legs={parlayLegs}
+              onReset={reset}
             />
+          ) : (
+            <div className="space-y-6 text-center pt-12">
+              {imagePreview && (
+                <img
+                  src={imagePreview}
+                  alt="Bet screenshot"
+                  className="max-h-48 mx-auto rounded-lg opacity-40"
+                />
+              )}
+              <div className="bg-surface border border-border rounded-xl p-8 max-w-md mx-auto space-y-4">
+                <div className="text-4xl">🎰</div>
+                <h3 className="text-xl font-bold">Couldn&apos;t break down this parlay</h3>
+                <p className="text-muted text-sm leading-relaxed">
+                  We detected a parlay but couldn&apos;t identify the individual legs. Try a clearer screenshot or upload each leg separately.
+                </p>
+              </div>
+              <button
+                onClick={reset}
+                className="py-3 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
+              >
+                Try Again
+              </button>
+            </div>
           )}
-          <div className="bg-surface border border-border rounded-xl p-8 max-w-md mx-auto space-y-4">
-            <div className="text-4xl">🎰</div>
-            <h3 className="text-xl font-bold">Parlays coming soon</h3>
-            <p className="text-muted text-sm leading-relaxed">
-              We can only analyze single bets right now. Try uploading one leg at a time — you&apos;ll get much deeper stats that way.
-            </p>
-          </div>
-          <button
-            onClick={reset}
-            className="py-3 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
-          >
-            Try a Single Bet
-          </button>
         </div>
       )}
 
