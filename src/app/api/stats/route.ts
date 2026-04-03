@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchAllTeamData } from "@/lib/espn";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
+import { fetchNHLData } from "@/lib/nhlstats";
 import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
 import type { BetExtraction } from "@/types";
@@ -81,6 +82,41 @@ async function fetchSportData(
     }
   }
 
+  // NHL: use NHL Stats API
+  const isNHL = sport === "NHL" || sport === "HOCKEY";
+  if (isNHL) {
+    console.log("[Stats] Using NHL Stats API for hockey data");
+    const nhlData = await fetchNHLData(
+      extraction.teams,
+      extraction.players,
+      extraction.market,
+      extraction.line
+    );
+
+    if (!nhlData._unsupported) {
+      // Supplement with ESPN for record/schedule data
+      const espnData = await fetchAllTeamData(extraction.sport, extraction.teams);
+      for (const team of extraction.teams) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const espnTeam = (espnData as any)?.[team];
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const nhlTeam = nhlData[team] as any;
+        if (espnTeam && nhlTeam) {
+          if (!nhlTeam.recentGames?.length && espnTeam.recentGames) {
+            nhlTeam.recentGames = espnTeam.recentGames;
+          }
+          if (!nhlTeam.record && espnTeam.record) {
+            nhlTeam.record = espnTeam.record;
+          }
+        } else if (espnTeam && !nhlData[team]) {
+          nhlData[team] = espnTeam;
+        }
+      }
+      return { data: nhlData, source: "nhlstats+espn" };
+    }
+  }
+
+  // Default: ESPN for NFL, college, soccer, etc.
   console.log(`[Stats] Using ESPN for ${extraction.sport}`);
   const espnData = await fetchAllTeamData(
     extraction.sport,
