@@ -7,12 +7,24 @@
 
 const BASE = "https://api.balldontlie.io/v1";
 
-// BDL requires an API key now (free tier). We'll use the public fallback
-// endpoint if no key is set, otherwise use the key.
+// BDL requires an API key (free tier at balldontlie.io).
 function headers(): Record<string, string> {
   const key = process.env.BDL_API_KEY;
   if (key) return { Authorization: key };
   return {};
+}
+
+// Track if we've gotten a 401 so we stop wasting requests
+let authFailed = false;
+
+function isAvailable(): boolean {
+  if (authFailed) return false;
+  return !!process.env.BDL_API_KEY;
+}
+
+function markAuthFailed() {
+  authFailed = true;
+  console.log("[BDL] API key missing or invalid — all BDL calls will be skipped this invocation");
 }
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -69,17 +81,40 @@ export interface BDLSeasonAverages {
 export async function searchPlayer(
   playerName: string
 ): Promise<BDLPlayer | null> {
+  if (!isAvailable()) return null;
   try {
+    // Try last name search first (most reliable on BDL)
+    const parts = playerName.trim().split(/\s+/);
+    const lastName = parts.length > 1 ? parts.slice(-1)[0] : parts[0];
+    const firstName = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
+
     const res = await fetch(
-      `${BASE}/players?search=${encodeURIComponent(playerName)}&per_page=5`,
+      `${BASE}/players?search=${encodeURIComponent(lastName)}&per_page=15`,
       { headers: headers() }
     );
+    if (res.status === 401 || res.status === 403) {
+      markAuthFailed();
+      return null;
+    }
     if (!res.ok) {
       console.log(`[BDL] Player search failed: ${res.status}`);
       return null;
     }
     const data = await res.json();
-    const players: BDLPlayer[] = Array.isArray(data?.data) ? data.data : [];
+    let players: BDLPlayer[] = Array.isArray(data?.data) ? data.data : [];
+
+    // If no results with last name, try first_name + last_name params
+    if (players.length === 0 && firstName) {
+      const res2 = await fetch(
+        `${BASE}/players?first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&per_page=5`,
+        { headers: headers() }
+      );
+      if (res2.ok) {
+        const data2 = await res2.json();
+        players = Array.isArray(data2?.data) ? data2.data : [];
+      }
+    }
+
     if (players.length === 0) return null;
 
     // Try exact match first, then partial
@@ -87,7 +122,17 @@ export async function searchPlayer(
     const exact = players.find(
       (p) => `${p.first_name} ${p.last_name}`.toLowerCase() === nameLower
     );
-    return exact || players[0];
+    if (exact) return exact;
+
+    // Partial match on first name if we have it
+    if (firstName) {
+      const partial = players.find(
+        (p) => p.first_name.toLowerCase().startsWith(firstName.toLowerCase())
+      );
+      if (partial) return partial;
+    }
+
+    return players[0];
   } catch {
     return null;
   }
@@ -149,8 +194,13 @@ export async function getTeamStats(
 export async function searchTeam(
   teamName: string
 ): Promise<{ id: number; full_name: string; abbreviation: string } | null> {
+  if (!isAvailable()) return null;
   try {
     const res = await fetch(`${BASE}/teams?per_page=30`, { headers: headers() });
+    if (res.status === 401 || res.status === 403) {
+      markAuthFailed();
+      return null;
+    }
     if (!res.ok) return null;
     const data = await res.json();
     const teams = data.data || [];
@@ -201,6 +251,12 @@ export async function fetchNBAData(
   market?: string,
   line?: number
 ): Promise<Record<string, unknown>> {
+  // If no API key, skip BDL entirely
+  if (!isAvailable()) {
+    console.log("[BDL] No API key — skipping Ball Don't Lie, falling through to ESPN");
+    return { _unsupported: true, _reason: "no_api_key" };
+  }
+
   const results: Record<string, unknown> = {};
   let anyFound = false;
 
