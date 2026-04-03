@@ -91,7 +91,7 @@ export default function Home() {
 
       const isParlay = analyzeData.extraction?.betType === "parlay";
       setStatusMsg(isParlay ? "Breaking down each leg..." : "Pulling the numbers that matter...");
-      const statsTimeout = isParlay ? 60000 : 30000;
+      const statsTimeout = isParlay ? 55000 : 30000;
       const statsRes = await Promise.race([
         fetch("/api/stats", {
           method: "POST",

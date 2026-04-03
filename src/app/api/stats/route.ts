@@ -8,6 +8,8 @@ import { buildCharts } from "@/lib/charts";
 import { getMarketContext } from "@/lib/markets";
 import type { BetExtraction } from "@/types";
 
+export const maxDuration = 60;
+
 // Common bet types that get deterministic charts
 const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop"];
 
