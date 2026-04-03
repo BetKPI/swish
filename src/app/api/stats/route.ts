@@ -3,13 +3,14 @@ import { fetchAllTeamData } from "@/lib/espn";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
 import { computeAnalysis } from "@/lib/analytics";
+import { buildCharts } from "@/lib/charts";
 import type { BetExtraction } from "@/types";
 
+// Common bet types that get deterministic charts
+const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop"];
+
 /**
- * Route data fetching to the best API for each sport:
- * - NBA/Basketball → Ball Don't Lie (player stats, game logs) + ESPN (team schedule)
- * - MLB/Baseball → MLB Stats API (player stats, splits, game logs) + ESPN (team schedule)
- * - Everything else → ESPN
+ * Route data fetching to the best API for each sport.
  */
 async function fetchSportData(
   extraction: BetExtraction
@@ -18,7 +19,6 @@ async function fetchSportData(
   const isNBA = sport === "NBA" || sport === "BASKETBALL";
   const isMLB = sport === "MLB" || sport === "BASEBALL";
 
-  // NBA: use Ball Don't Lie for rich player/team data, supplement with ESPN for schedule
   if (isNBA) {
     console.log("[Stats] Using Ball Don't Lie for NBA data");
     const bdlData = await fetchNBAData(
@@ -29,12 +29,7 @@ async function fetchSportData(
     );
 
     if (!bdlData._unsupported) {
-      // Supplement with ESPN team schedule data for recent games
-      const espnData = await fetchAllTeamData(
-        extraction.sport,
-        extraction.teams
-      );
-      // Merge ESPN schedule into BDL data
+      const espnData = await fetchAllTeamData(extraction.sport, extraction.teams);
       for (const team of extraction.teams) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const espnTeam = (espnData as any)?.[team];
@@ -53,10 +48,8 @@ async function fetchSportData(
       }
       return { data: bdlData, source: "balldontlie+espn" };
     }
-    // Fall through to ESPN if BDL fails
   }
 
-  // MLB: use MLB Stats API
   if (isMLB) {
     console.log("[Stats] Using MLB Stats API for baseball data");
     const mlbData = await fetchMLBData(
@@ -67,11 +60,7 @@ async function fetchSportData(
     );
 
     if (!mlbData._unsupported) {
-      // Supplement with ESPN for anything missing
-      const espnData = await fetchAllTeamData(
-        extraction.sport,
-        extraction.teams
-      );
+      const espnData = await fetchAllTeamData(extraction.sport, extraction.teams);
       for (const team of extraction.teams) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const espnTeam = (espnData as any)?.[team];
@@ -92,7 +81,6 @@ async function fetchSportData(
     }
   }
 
-  // Default: ESPN for NFL, NHL, college, soccer, etc.
   console.log(`[Stats] Using ESPN for ${extraction.sport}`);
   const espnData = await fetchAllTeamData(
     extraction.sport,
@@ -100,6 +88,47 @@ async function fetchSportData(
     extraction.betType === "player_prop" ? extraction.players : undefined
   );
   return { data: espnData, source: "espn" };
+}
+
+/**
+ * Call Gemini for AI-generated content.
+ * Uses Pro for summaries/exotic bets, flash-lite for nothing anymore.
+ */
+async function callGemini(
+  prompt: string,
+  apiKey: string,
+  model: string = "gemini-2.5-flash"
+): Promise<string | null> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.3,
+          maxOutputTokens: 4096,
+        },
+      }),
+    }
+  );
+
+  if (!response.ok) {
+    console.error("Gemini API error:", await response.text());
+    return null;
+  }
+
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+}
+
+function parseGeminiJSON(text: string): Record<string, unknown> {
+  let jsonText = text.trim();
+  if (jsonText.startsWith("```")) {
+    jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  }
+  return JSON.parse(jsonText);
 }
 
 export async function POST(request: NextRequest) {
@@ -115,7 +144,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Reject parlays early
     if (extraction.betType === "parlay") {
       return NextResponse.json({ parlay: true });
     }
@@ -128,7 +156,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch data from the best API for this sport
+    // 1. Fetch sport-specific data
     const { data: teamData, source } = await fetchSportData(extraction);
     console.log(`[Stats] Data source: ${source}`);
 
@@ -136,60 +164,58 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ unsupported: true });
     }
 
-    // Compute metrics in code — don't make Gemini do math
+    // 2. Compute metrics
     const computed = computeAnalysis(teamData, extraction);
 
-    // Build a bet-type-specific prompt with pre-computed data
-    const analysisPrompt = buildAnalysisPrompt(extraction, computed, teamData);
+    // 3. Build charts — deterministic for common bets, AI for exotic
+    const isDeterministic = DETERMINISTIC_BET_TYPES.includes(extraction.betType);
+    let charts = isDeterministic
+      ? buildCharts(extraction.betType, computed, extraction, teamData)
+      : [];
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: analysisPrompt }],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 4096,
-          },
-        }),
+    // 4. Build summary prompt (AI always writes the narrative)
+    const summaryPrompt = buildSummaryPrompt(extraction, computed, teamData);
+
+    if (isDeterministic && charts.length > 0) {
+      // Common bet: AI only writes summary + stats
+      const text = await callGemini(summaryPrompt, apiKey);
+      if (!text) {
+        return NextResponse.json(
+          { error: "Failed to generate analysis" },
+          { status: 500 }
+        );
       }
-    );
-
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Gemini API error:", err);
-      return NextResponse.json(
-        { error: "Failed to generate stats" },
-        { status: 500 }
-      );
+      const aiResult = parseGeminiJSON(text);
+      return NextResponse.json({
+        summary: aiResult.summary || "",
+        stats: aiResult.stats || [],
+        charts,
+        _computed: {
+          oddsAnalysis: computed.oddsAnalysis,
+          source,
+        },
+      });
+    } else {
+      // Exotic bet: AI generates everything (smarter model)
+      const fullPrompt = buildFullAIPrompt(extraction, computed, teamData);
+      const text = await callGemini(fullPrompt, apiKey);
+      if (!text) {
+        return NextResponse.json(
+          { error: "Failed to generate analysis" },
+          { status: 500 }
+        );
+      }
+      const aiResult = parseGeminiJSON(text);
+      return NextResponse.json({
+        summary: aiResult.summary || "",
+        stats: aiResult.stats || [],
+        charts: aiResult.charts || charts,
+        _computed: {
+          oddsAnalysis: computed.oddsAnalysis,
+          source,
+        },
+      });
     }
-
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      return NextResponse.json(
-        { error: "No analysis generated" },
-        { status: 500 }
-      );
-    }
-
-    // Parse the JSON response — handle markdown code blocks
-    let jsonText = text.trim();
-    if (jsonText.startsWith("```")) {
-      jsonText = jsonText
-        .replace(/^```(?:json)?\n?/, "")
-        .replace(/\n?```$/, "");
-    }
-    const analysis = JSON.parse(jsonText);
-
-    return NextResponse.json(analysis);
   } catch (error) {
     console.error("Stats error:", error);
     return NextResponse.json(
@@ -199,162 +225,124 @@ export async function POST(request: NextRequest) {
   }
 }
 
-function buildAnalysisPrompt(
+// ── Prompt for summary + stats only (common bets) ──────────────────
+
+function buildSummaryPrompt(
   extraction: BetExtraction,
   computed: ReturnType<typeof computeAnalysis>,
-  rawTeamData: Record<string, unknown>
+  rawData: Record<string, unknown>
 ): string {
-  const { teamMetrics, headToHead, oddsAnalysis, betTypeInsights } = computed;
+  const context = buildDataContext(extraction, computed, rawData);
 
-  // Build the context block with pre-computed data
-  let context = `BET DETAILS:
-Sport: ${extraction.sport}
-Type: ${extraction.betType}
-Teams: ${extraction.teams.join(" vs ")}
-Odds: ${extraction.odds}`;
-
-  if (extraction.line != null) context += `\nLine: ${extraction.line}`;
-  if (extraction.market) context += `\nMarket: ${extraction.market}`;
-  if (extraction.players.length > 0)
-    context += `\nPlayers: ${extraction.players.join(", ")}`;
-
-  // Odds-implied probability section
-  if (oddsAnalysis) {
-    context += `\n\nODDS ANALYSIS:
-Implied Probability: ${oddsAnalysis.impliedProbabilityFormatted}`;
-    if (oddsAnalysis.actualWinRate !== undefined) {
-      context += `
-Historical Rate: ${oddsAnalysis.actualWinRateFormatted}
-Edge: ${oddsAnalysis.edgeFormatted} (${oddsAnalysis.hasValue ? "potential value" : "odds may be fair or overpriced"})`;
-    }
-  }
-
-  // Team metrics section
-  context += "\n\nTEAM METRICS (pre-computed from game data):";
-  for (const [name, metrics] of Object.entries(teamMetrics)) {
-    context += `\n\n${name}:
-  Record: ${metrics.record.wins}-${metrics.record.losses} (${(metrics.record.pct * 100).toFixed(0)}%)`;
-    if (metrics.homeRecord)
-      context += `\n  Home: ${metrics.homeRecord.wins}-${metrics.homeRecord.losses}`;
-    if (metrics.awayRecord)
-      context += `\n  Away: ${metrics.awayRecord.wins}-${metrics.awayRecord.losses}`;
-    context += `
-  Current Streak: ${metrics.streak.type}${metrics.streak.count}
-  Last 5: ${metrics.recentForm.last5.join("-")} (${metrics.recentForm.wins}-${metrics.recentForm.losses})
-  Avg Points For: ${metrics.scoring.avgPointsFor} (Last 5: ${metrics.scoring.last5AvgFor})
-  Avg Points Against: ${metrics.scoring.avgPointsAgainst} (Last 5: ${metrics.scoring.last5AvgAgainst})
-  Avg Total: ${metrics.scoring.avgTotalPoints} (Last 5: ${metrics.scoring.last5AvgTotal})`;
-    if (metrics.restDays !== undefined)
-      context += `\n  Rest Days: ${metrics.restDays}`;
-    if (metrics.ats)
-      context += `\n  ATS: ${metrics.ats.covers}-${metrics.ats.fails}${metrics.ats.pushes > 0 ? `-${metrics.ats.pushes}` : ""} (${(metrics.ats.coverRate * 100).toFixed(0)}% cover rate)`;
-    if (metrics.overUnder)
-      context += `\n  O/U: ${metrics.overUnder.overs}-${metrics.overUnder.unders}${metrics.overUnder.pushes > 0 ? `-${metrics.overUnder.pushes}` : ""} (${(metrics.overUnder.overRate * 100).toFixed(0)}% over rate, avg total: ${metrics.overUnder.avgTotal})`;
-
-    // Recent game log
-    context += "\n  Recent Games:";
-    for (const g of metrics.recentGames.slice(-5)) {
-      context += `\n    ${g.date ? new Date(g.date).toLocaleDateString() : "?"} vs ${g.opponent}: ${g.teamScore}-${g.opponentScore} (${g.won ? "W" : "L"}, ${g.home ? "Home" : "Away"}, margin: ${g.margin > 0 ? "+" : ""}${g.margin}, total: ${g.totalPoints})`;
-    }
-  }
-
-  // Head-to-head section
-  if (headToHead) {
-    context += `\n\nHEAD-TO-HEAD (recent matchups):
-  ${extraction.teams[0]} wins: ${headToHead.team1Wins}, ${extraction.teams[1]} wins: ${headToHead.team2Wins}
-  Avg Margin: ${headToHead.avgMargin > 0 ? "+" : ""}${headToHead.avgMargin} (${extraction.teams[0]} perspective)
-  Avg Total: ${headToHead.avgTotal}`;
-    for (const g of headToHead.games) {
-      context += `\n    ${g.date ? new Date(g.date).toLocaleDateString() : "?"} vs ${g.opponent}: ${g.teamScore}-${g.opponentScore} (${g.won ? "W" : "L"}, total: ${g.totalPoints})`;
-    }
-  }
-
-  // Bet-type-specific insights
-  if (Object.keys(betTypeInsights).length > 1) {
-    context += `\n\nBET-TYPE INSIGHTS (${extraction.betType}):
-${JSON.stringify(betTypeInsights, null, 2)}`;
-  }
-
-  // Player data for props
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const playerData = (rawTeamData as any)?._players;
-  if (playerData && Object.keys(playerData).length > 0) {
-    context += `\n\nPLAYER DATA:
-${JSON.stringify(playerData, null, 2)}`;
-  }
-
-  return `You are an elite sports analytics expert — the kind that works for sharp betting groups and DFS syndicates. You have pre-computed metrics below. Your job is to produce analysis that goes DEEPER than what DraftKings or FanDuel shows.
+  return `You are an elite sports analyst writing for sharp bettors. You have pre-computed metrics below. Write analysis that goes DEEPER than DraftKings — connect dots, surface non-obvious patterns.
 
 ${context}
 
-Based on the bet type "${extraction.betType}" and all the data above, produce an analysis with:
+Return JSON with ONLY these keys:
 
-1. **summary**: A 2-3 sentence analysis that surfaces NON-OBVIOUS insights. Don't just restate the record — connect the dots: scoring trends + rest days + matchup history + line value. If the odds-implied probability differs from the historical rate, call that out. End with a brief disclaimer. Do NOT name data sources.
+1. **summary**: 2-3 sentences. Connect the dots between trends, matchup history, rest, and line value. If implied probability differs from historical rate, call it out. Don't just restate numbers — interpret them. End with brief disclaimer. Don't name data sources.
 
-2. **stats**: Array of 3-5 key stat data points, each with:
-   - label: stat name (make these punchy, not generic — e.g. "ATS Cover Rate" not "Record")
-   - value: the value (number or string)
+2. **stats**: Array of 3-5 key stats. Each has:
+   - label: punchy name (e.g. "ATS Cover Rate" not "Record", "Hit Rate Over 26.5" not "Prop Stats")
+   - value: the number/string
    - context: one sentence on why this matters for THIS specific bet
 
-3. **charts**: Array of 3-5 chart configurations. For each chart:
-   - type: "line", "bar", "distribution", or "table"
-   - title: descriptive chart title
-   - relevance: one sentence explaining why this chart matters for the bet
-   - data: array of data point objects with consistent keys
-   - xKey: the key to use for X axis
-   - yKeys: array of keys to plot on Y axis
-   - For tables: include "columns" array with {key, label} objects
-
-CHART REQUIREMENTS BY BET TYPE:
-${getBetTypeChartGuidance(extraction.betType)}
-
-CRITICAL RULES:
-- Use ONLY the pre-computed data above. Do NOT invent data points.
-- The numbers are already computed — reference them directly in stats and charts.
-- If the implied probability vs historical rate shows an edge, make that a featured stat.
-- Charts should tell a story that helps the bettor understand the bet, not just display numbers.
-- Data keys must be camelCase strings.
-- Do NOT reference any data sources by name.
-- Return ONLY valid JSON with keys: summary, stats, charts.`;
+Return ONLY valid JSON. No markdown wrapping.`;
 }
 
-function getBetTypeChartGuidance(betType: string): string {
-  switch (betType) {
-    case "spread":
-      return `- Margin of victory trend (line chart showing last games' margins)
-- ATS performance breakdown (bar chart: covers vs fails)
-- Home/away margin comparison (bar chart)
-- Head-to-head results table (if available)
-- Scoring trend showing if team is trending toward or away from covering`;
+// ── Prompt for full AI generation (exotic bets) ────────────────────
 
-    case "over_under":
-      return `- Combined scoring trend (line chart: total points per game)
-- Each team's scoring output trend (line chart)
-- Over/under hit rate (bar chart: overs vs unders at this line)
-- Pace comparison or scoring averages (bar chart)
-- If available, head-to-head totals`;
+function buildFullAIPrompt(
+  extraction: BetExtraction,
+  computed: ReturnType<typeof computeAnalysis>,
+  rawData: Record<string, unknown>
+): string {
+  const context = buildDataContext(extraction, computed, rawData);
 
-    case "moneyline":
-      return `- Win probability comparison (bar chart: implied vs historical)
-- Recent form trend (line chart: wins/losses over last games)
-- Home/away win rate comparison
-- Point differential trend (line chart)
-- Head-to-head results if available`;
+  return `You are an elite sports analyst. Analyze this exotic/niche bet using the data below.
 
-    case "player_prop":
-      return `- Player stat trend over recent games (line chart)
-- Player average vs prop line comparison (bar chart)
-- Hit rate for this prop (how often the player exceeds the line)
-- Game log table with relevant stat
-- If available, performance vs this opponent`;
+${context}
 
-    case "game_prop":
-      return `- Relevant stat trends for both teams
-- Historical rate of this prop hitting
-- Comparison table of relevant metrics`;
+Return JSON with:
 
-    default:
-      return `- Use charts that best illustrate the key factors for this bet
-- Show trends, comparisons, and historical rates`;
+1. **summary**: 2-3 sharp sentences connecting the data to this specific bet. End with disclaimer. Don't name sources.
+
+2. **stats**: Array of 3-5 stats, each with label, value, context.
+
+3. **charts**: Array of 2-4 chart configs. Each has:
+   - type: "line", "bar", "distribution", or "table"
+   - title: descriptive title
+   - relevance: one sentence on why it matters
+   - data: array of objects with consistent keys
+   - xKey, yKeys (for line/bar), columns (for table, array of {key, label})
+   - ONLY use data from above. Do NOT invent data points.
+   - Keys must be camelCase.
+
+Return ONLY valid JSON.`;
+}
+
+// ── Shared data context builder ────────────────────────────────────
+
+function buildDataContext(
+  extraction: BetExtraction,
+  computed: ReturnType<typeof computeAnalysis>,
+  rawData: Record<string, unknown>
+): string {
+  const { teamMetrics, headToHead, oddsAnalysis, betTypeInsights } = computed;
+
+  let ctx = `BET: ${extraction.sport} ${extraction.betType} — ${extraction.teams.join(" vs ")}`;
+  if (extraction.odds) ctx += ` (${extraction.odds})`;
+  if (extraction.line != null) ctx += ` Line: ${extraction.line}`;
+  if (extraction.market) ctx += ` Market: ${extraction.market}`;
+  if (extraction.players.length > 0) ctx += ` Players: ${extraction.players.join(", ")}`;
+
+  if (oddsAnalysis) {
+    ctx += `\n\nODDS: Implied ${oddsAnalysis.impliedProbabilityFormatted}`;
+    if (oddsAnalysis.actualWinRate !== undefined) {
+      ctx += `, Historical ${oddsAnalysis.actualWinRateFormatted}, Edge ${oddsAnalysis.edgeFormatted}`;
+    }
   }
+
+  for (const [name, m] of Object.entries(teamMetrics)) {
+    ctx += `\n\n${name}: ${m.record.wins}-${m.record.losses} (${(m.record.pct * 100).toFixed(0)}%)`;
+    if (m.homeRecord) ctx += ` | Home ${m.homeRecord.wins}-${m.homeRecord.losses}`;
+    if (m.awayRecord) ctx += ` | Away ${m.awayRecord.wins}-${m.awayRecord.losses}`;
+    ctx += `\n  Streak: ${m.streak.type}${m.streak.count} | Last 5: ${m.recentForm.last5.join("")}`;
+    ctx += `\n  Scoring: ${m.scoring.avgPointsFor} for / ${m.scoring.avgPointsAgainst} against (L5: ${m.scoring.last5AvgFor}/${m.scoring.last5AvgAgainst})`;
+    ctx += `\n  Avg Total: ${m.scoring.avgTotalPoints} (L5: ${m.scoring.last5AvgTotal})`;
+    if (m.restDays !== undefined) ctx += ` | Rest: ${m.restDays}d`;
+    if (m.ats) ctx += `\n  ATS: ${m.ats.covers}-${m.ats.fails} (${(m.ats.coverRate * 100).toFixed(0)}%)`;
+    if (m.overUnder) ctx += `\n  O/U: ${m.overUnder.overs}-${m.overUnder.unders} over (${(m.overUnder.overRate * 100).toFixed(0)}%, avg ${m.overUnder.avgTotal})`;
+
+    for (const g of m.recentGames.slice(-5)) {
+      ctx += `\n    ${g.date ? new Date(g.date).toLocaleDateString() : "?"} ${g.won ? "W" : "L"} ${g.teamScore}-${g.opponentScore} vs ${g.opponent} (${g.home ? "H" : "A"}, margin ${g.margin > 0 ? "+" : ""}${g.margin})`;
+    }
+  }
+
+  if (headToHead) {
+    ctx += `\n\nH2H: ${headToHead.team1Wins}-${headToHead.team2Wins}, avg margin ${headToHead.avgMargin > 0 ? "+" : ""}${headToHead.avgMargin}, avg total ${headToHead.avgTotal}`;
+  }
+
+  if (Object.keys(betTypeInsights).length > 1) {
+    ctx += `\n\nINSIGHTS: ${JSON.stringify(betTypeInsights)}`;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerData = (rawData as any)?._players;
+  if (playerData) {
+    for (const [pName, pData] of Object.entries(playerData)) {
+      if (!pData) continue;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = pData as any;
+      if (p.propAnalysis) {
+        const pa = p.propAnalysis;
+        ctx += `\n\n${pName} PROP: ${pa.stat} over ${pa.line} — hit ${pa.hitCount}/${pa.totalGames} (${Math.round(pa.hitRate * 100)}%), avg ${pa.average}, L5 avg ${pa.last5Avg}, trend ${pa.trend}`;
+      }
+      if (p.seasonAverages || p.seasonStats) {
+        ctx += `\n  Season: ${JSON.stringify(p.seasonAverages || p.seasonStats)}`;
+      }
+    }
+  }
+
+  return ctx;
 }

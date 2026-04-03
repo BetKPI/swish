@@ -18,6 +18,7 @@ export default function Home() {
   const [charts, setCharts] = useState<ChartConfig[]>([]);
   const [stats, setStats] = useState<StatDataPoint[]>([]);
   const [summary, setSummary] = useState<string>("");
+  const [computedData, setComputedData] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -115,6 +116,7 @@ export default function Home() {
       setCharts(statsData.charts || []);
       setStats(statsData.stats || []);
       setSummary(statsData.summary || "");
+      setComputedData(statsData._computed || null);
       setState("results");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -130,6 +132,7 @@ export default function Home() {
     setCharts([]);
     setStats([]);
     setSummary("");
+    setComputedData(null);
     setError("");
     setStatusMsg("");
   }, []);
@@ -331,6 +334,7 @@ export default function Home() {
             charts={charts}
             stats={stats}
             summary={summary}
+            computedData={computedData ?? undefined}
             onReset={reset}
           />
         </div>

@@ -2,12 +2,14 @@
 
 import type { BetExtraction, ChartConfig, StatDataPoint } from "@/types";
 import ChartDisplay from "./ChartDisplay";
+import AnalysisChat from "./AnalysisChat";
 
 interface AnalysisResultsProps {
   extraction: BetExtraction;
   charts: ChartConfig[];
   stats: StatDataPoint[];
   summary: string;
+  computedData?: Record<string, unknown>;
   onReset: () => void;
 }
 
@@ -16,6 +18,7 @@ export default function AnalysisResults({
   charts,
   stats,
   summary,
+  computedData,
   onReset,
 }: AnalysisResultsProps) {
   return (
@@ -91,6 +94,14 @@ export default function AnalysisResults({
       {charts.map((chart, i) => (
         <ChartDisplay key={i} config={chart} />
       ))}
+
+      {/* Interactive Chat */}
+      {computedData && (
+        <AnalysisChat
+          extraction={extraction}
+          computedData={computedData}
+        />
+      )}
 
       {/* Reset Button */}
       <button
