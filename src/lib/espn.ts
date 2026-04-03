@@ -57,6 +57,21 @@ export async function searchPlayer(
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
   try {
+    // Fast: ESPN site search API
+    const searchRes = await fetch(
+      `https://site.web.api.espn.com/apis/common/v3/search?query=${encodeURIComponent(playerName)}&limit=5&type=player&sport=${s}&league=${league}`
+    );
+    if (searchRes.ok) {
+      const searchData = await searchRes.json();
+      const results = searchData.items || searchData.results || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const match = results.find((r: any) => r.type === "player");
+      if (match) {
+        return { id: match.id, displayName: match.displayName || match.name, ...match };
+      }
+    }
+
+    // Fallback: athletes endpoint
     const res = await fetch(
       `${BASE}/${s}/${league}/athletes?limit=100&search=${encodeURIComponent(playerName)}`
     );
@@ -66,32 +81,6 @@ export async function searchPlayer(
       if (athletes.length > 0) return athletes[0];
     }
 
-    // Fallback: search across team rosters (slower but more reliable)
-    const teamsRes = await fetch(`${BASE}/${s}/${league}/teams?limit=100`);
-    if (!teamsRes.ok) return null;
-    const teamsData = await teamsRes.json();
-    const teams = teamsData.sports?.[0]?.leagues?.[0]?.teams || [];
-
-    for (const t of teams) {
-      const teamId = t.team?.id;
-      if (!teamId) continue;
-      const rosterRes = await fetch(
-        `${BASE}/${s}/${league}/teams/${teamId}/roster`
-      );
-      if (!rosterRes.ok) continue;
-      const rosterData = await rosterRes.json();
-      const athletes2 = rosterData.athletes || [];
-      for (const group of athletes2) {
-        const items = group.items || [];
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const match = items.find((a: any) => {
-          const full = a.fullName?.toLowerCase() || a.displayName?.toLowerCase() || "";
-          const search = playerName.toLowerCase();
-          return full.includes(search) || search.includes(full);
-        });
-        if (match) return { ...match, teamId, teamName: t.team?.displayName };
-      }
-    }
     return null;
   } catch {
     return null;
