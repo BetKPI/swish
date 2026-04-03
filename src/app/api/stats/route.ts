@@ -298,47 +298,68 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ parlay: true, legs: [] });
       }
 
-      // Analyze legs directly — no HTTP round-trip
-      const legResults = await Promise.all(
-        legs.slice(0, 6).map(async (leg) => {
-          // If leg has no teams, try to inherit from parent extraction
-          if (!leg.teams || leg.teams.length === 0) {
-            if (extraction.teams && extraction.teams.length > 0) {
-              leg.teams = extraction.teams;
-            } else {
-              return { leg, error: true, data: null };
-            }
-          }
-          // Ensure leg has a sport
-          if (!leg.sport && extraction.sport) {
-            leg.sport = extraction.sport;
-          }
+      // Step 1: Fix up legs — inherit missing teams/sport from parent
+      const fixedLegs = legs.slice(0, 6).map((leg) => {
+        if (!leg.teams || leg.teams.length === 0) {
+          leg.teams = extraction.teams || [];
+        }
+        if (!leg.sport) leg.sport = extraction.sport;
+        return leg;
+      });
+
+      // Step 2: Fetch data for ALL legs in parallel (no Gemini calls yet)
+      const legData = await Promise.all(
+        fixedLegs.map(async (leg) => {
+          if (leg.teams.length === 0) return { leg, teamData: null, computed: null, charts: [] };
           try {
-            const data = await analyzeSingleBet(leg, apiKey);
-            return { leg, error: false, data };
-          } catch (e) {
-            console.error(`[Parlay] Leg failed: ${leg.description}`, e);
-            logToDiscord("error", leg as BetExtraction, `Parlay leg failed: ${(e as Error).message?.slice(0, 150)}`);
-            return { leg, error: true, data: null };
+            const { data: teamData } = await fetchSportData(leg);
+            if (teamData._unsupported) return { leg, teamData: null, computed: null, charts: [] };
+            const computed = computeAnalysis(teamData, leg);
+            const isDeterministic = DETERMINISTIC_BET_TYPES.includes(leg.betType);
+            const charts = isDeterministic
+              ? buildCharts(leg.betType, computed, leg, teamData)
+              : [];
+            return { leg, teamData, computed, charts };
+          } catch {
+            return { leg, teamData: null, computed: null, charts: [] };
           }
         })
       );
 
+      // Step 3: ONE Gemini call for all leg summaries
+      const batchPrompt = buildParlayBatchPrompt(legData);
+      const batchText = await callGemini(batchPrompt, apiKey);
+      let legSummaries: Record<string, unknown>[] = [];
+      if (batchText) {
+        try {
+          const parsed = parseGeminiJSON(batchText);
+          legSummaries = (parsed.legs as Record<string, unknown>[]) || [];
+        } catch (e) {
+          console.error("[Parlay] Batch summary parse failed:", e);
+        }
+      }
+
+      // Step 4: Combine charts + summaries
+      const finalLegs = legData.map((ld, i) => {
+        const aiLeg = legSummaries[i] || {};
+        return {
+          description: ld.leg.description,
+          sport: ld.leg.sport,
+          betType: ld.leg.betType,
+          teams: ld.leg.teams,
+          odds: ld.leg.odds,
+          summary: (aiLeg.summary as string) || null,
+          stats: (aiLeg.stats as unknown[]) || [],
+          charts: ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [],
+          error: !ld.teamData,
+          unsupported: !ld.teamData,
+        };
+      });
+
       return NextResponse.json({
         parlay: true,
         legCount: legs.length,
-        legs: legResults.map((r) => ({
-          description: r.leg.description,
-          sport: r.leg.sport,
-          betType: r.leg.betType,
-          teams: r.leg.teams,
-          odds: r.leg.odds,
-          summary: r.data?.summary || null,
-          stats: r.data?.stats || [],
-          charts: r.data?.charts || [],
-          error: r.error,
-          unsupported: r.data?.unsupported || false,
-        })),
+        legs: finalLegs,
       });
     }
 
@@ -433,6 +454,39 @@ Return ONLY valid JSON.`;
 }
 
 // ── Shared data context builder ────────────────────────────────────
+
+// ── Parlay batch prompt — one Gemini call for all legs ─────────────
+
+function buildParlayBatchPrompt(
+  legData: { leg: BetExtraction; teamData: Record<string, unknown> | null; computed: ReturnType<typeof computeAnalysis> | null; charts: unknown[] }[]
+): string {
+  let context = `You write like a sharp friend texting about a bet — confident, brief, honest. Analyze each leg of this parlay separately.
+
+CRITICAL: Be HONEST per leg. If data supports it, say so. If not, say pass. Not every leg is good.
+
+`;
+
+  legData.forEach((ld, i) => {
+    context += `\n=== LEG ${i + 1}: ${ld.leg.description} ===\n`;
+    if (ld.computed && ld.teamData) {
+      context += buildDataContext(ld.leg, ld.computed, ld.teamData);
+      const mc = ld.leg.market ? getMarketContext(ld.leg.market, ld.leg.sport) : "";
+      if (mc) context += mc;
+    } else {
+      context += "No data available for this leg.\n";
+    }
+  });
+
+  return `${context}
+
+Return JSON with ONE key "legs" — an array with ${legData.length} objects (one per leg, same order). Each object has:
+- summary: MAX 1-2 sentences, honest take on this leg
+- stats: array of 2-3 stats, each with label (4 words max), value, context (1 sentence)
+
+Example: {"legs":[{"summary":"...","stats":[...]},{"summary":"...","stats":[...]}]}
+
+Return ONLY valid JSON. No markdown.`;
+}
 
 function buildDataContext(
   extraction: BetExtraction,
