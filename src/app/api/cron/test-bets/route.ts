@@ -58,117 +58,46 @@ export async function GET(request: NextRequest) {
 
     console.log(`[QA] Found ${nbaGames.length} NBA, ${mlbGames.length} MLB games`);
 
-    // Generate and test NBA bets (1 game to fit in 60s free tier)
-    for (const game of nbaGames.slice(0, 1)) {
-      // Moneyline
-      await testBet(results, {
-        sport: "NBA",
-        betType: "moneyline",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        odds: "-110",
-        description: `${game.away.name} ML vs ${game.home.name}`,
-        confidence: 0.9,
-      });
+    // Build all bet configs first
+    const bets: Record<string, unknown>[] = [];
 
-      // Spread
-      await testBet(results, {
-        sport: "NBA",
-        betType: "spread",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        line: -3.5,
-        odds: "-110",
-        description: `${game.away.name} -3.5 vs ${game.home.name}`,
-        confidence: 0.9,
-      });
-
-      // Over/Under
-      await testBet(results, {
-        sport: "NBA",
-        betType: "over_under",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        line: 220.5,
-        odds: "-110",
-        description: `Over 220.5 — ${game.away.name} vs ${game.home.name}`,
-        confidence: 0.9,
-      });
-
-      // Player prop — 1 real player from the game
-      const nbaPlayer = game.players[0];
-      if (nbaPlayer) {
+    // NBA — 1 game, 4 bet types
+    const nbaGame = nbaGames[0];
+    if (nbaGame) {
+      const t = [nbaGame.away.name, nbaGame.home.name];
+      bets.push(
+        { sport: "NBA", betType: "moneyline", teams: t, players: [], odds: "-110", description: `${t[0]} ML vs ${t[1]}`, confidence: 0.9 },
+        { sport: "NBA", betType: "spread", teams: t, players: [], line: -3.5, odds: "-110", description: `${t[0]} -3.5 vs ${t[1]}`, confidence: 0.9 },
+        { sport: "NBA", betType: "over_under", teams: t, players: [], line: 220.5, odds: "-110", description: `Over 220.5 — ${t[0]} vs ${t[1]}`, confidence: 0.9 },
+      );
+      const p = nbaGame.players[0];
+      if (p) {
         const prop = NBA_PROPS[Math.floor(Math.random() * NBA_PROPS.length)];
-        const line = prop.lineFn(nbaPlayer.pts || 20);
-        await testBet(results, {
-          sport: "NBA",
-          betType: "player_prop",
-          teams: [game.away.name, game.home.name],
-          players: [nbaPlayer.name],
-          market: prop.market,
-          line,
-          odds: "-115",
-          description: `${nbaPlayer.name} Over ${line} ${prop.market}`,
-          confidence: 0.85,
-        });
+        const line = prop.lineFn(p.pts || 20);
+        bets.push({ sport: "NBA", betType: "player_prop", teams: t, players: [p.name], market: prop.market, line, odds: "-115", description: `${p.name} Over ${line} ${prop.market}`, confidence: 0.85 });
       }
     }
 
-    // Generate and test MLB bets (1 game to fit in 60s free tier)
-    for (const game of mlbGames.slice(0, 1)) {
-      // Moneyline
-      await testBet(results, {
-        sport: "MLB",
-        betType: "moneyline",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        odds: "+130",
-        description: `${game.away.name} ML vs ${game.home.name}`,
-        confidence: 0.9,
-      });
-
-      // Over/Under (run line is more common in MLB than spread)
-      await testBet(results, {
-        sport: "MLB",
-        betType: "over_under",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        line: 8.5,
-        odds: "-110",
-        description: `Over 8.5 — ${game.away.name} vs ${game.home.name}`,
-        confidence: 0.9,
-      });
-
-      // Spread (run line)
-      await testBet(results, {
-        sport: "MLB",
-        betType: "spread",
-        teams: [game.away.name, game.home.name],
-        players: [],
-        line: -1.5,
-        odds: "+140",
-        description: `${game.away.name} -1.5 vs ${game.home.name}`,
-        confidence: 0.9,
-      });
-
-      // Player prop — 1 real player from the game
-      const mlbPlayer = game.players[0];
-      if (mlbPlayer) {
+    // MLB — 1 game, 4 bet types
+    const mlbGame = mlbGames[0];
+    if (mlbGame) {
+      const t = [mlbGame.away.name, mlbGame.home.name];
+      bets.push(
+        { sport: "MLB", betType: "moneyline", teams: t, players: [], odds: "+130", description: `${t[0]} ML vs ${t[1]}`, confidence: 0.9 },
+        { sport: "MLB", betType: "over_under", teams: t, players: [], line: 8.5, odds: "-110", description: `Over 8.5 — ${t[0]} vs ${t[1]}`, confidence: 0.9 },
+        { sport: "MLB", betType: "spread", teams: t, players: [], line: -1.5, odds: "+140", description: `${t[0]} -1.5 vs ${t[1]}`, confidence: 0.9 },
+      );
+      const p = mlbGame.players[0];
+      if (p) {
         const prop = MLB_PROPS[Math.floor(Math.random() * MLB_PROPS.length)];
         const line = prop.lineFn();
-        await testBet(results, {
-          sport: "MLB",
-          betType: "player_prop",
-          teams: [game.away.name, game.home.name],
-          players: [mlbPlayer.name],
-          market: prop.market,
-          line,
-          odds: "-120",
-          description: `${mlbPlayer.name} Over ${line} ${prop.market}`,
-          confidence: 0.85,
-        });
+        bets.push({ sport: "MLB", betType: "player_prop", teams: t, players: [p.name], market: prop.market, line, odds: "-120", description: `${p.name} Over ${line} ${prop.market}`, confidence: 0.85 });
       }
     }
+
+    // Run all bets in parallel (all at once — they hit different endpoints)
+    console.log(`[QA] Running ${bets.length} bets in parallel`);
+    await Promise.all(bets.map((bet) => testBet(results, bet)));
 
     // Report to Discord
     await reportToDiscord(results, Date.now() - startTime);
