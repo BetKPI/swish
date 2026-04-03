@@ -289,13 +289,17 @@ function buildMoneylineCharts(
 
 function buildPlayerPropCharts(
   computed: ComputedAnalysis,
-  extraction: { players: string[]; line?: number; market?: string },
+  extraction: { players: string[]; line?: number; market?: string; teams?: string[] },
   rawData: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const players = (rawData as any)?._players;
-  if (!players) return charts;
+
+  // If no player data at all, build team-context charts that are relevant to the prop
+  if (!players || extraction.players.every((p) => !players[p])) {
+    return buildPlayerPropFallbackCharts(computed, extraction);
+  }
 
   for (const playerName of extraction.players) {
     const pData = players[playerName];
@@ -387,6 +391,99 @@ function buildPlayerPropCharts(
   }
 
   return charts;
+}
+
+// ── Player prop fallback (no player data available) ────────────────
+
+function buildPlayerPropFallbackCharts(
+  computed: ComputedAnalysis,
+  extraction: { players: string[]; line?: number; market?: string; teams?: string[] }
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const teams = Object.values(computed.teamMetrics);
+  const playerName = extraction.players[0] || "Player";
+  const line = extraction.line ?? 0;
+  const market = extraction.market || "Points";
+  const statLabel = formatStatLabel(mapMarketToStatKey(market));
+
+  // 1. Odds implied probability if available
+  if (computed.oddsAnalysis) {
+    charts.push({
+      type: "bar",
+      title: `${playerName} ${statLabel} — Odds Breakdown`,
+      relevance: `The odds imply ${computed.oddsAnalysis.impliedProbabilityFormatted} probability of hitting this prop`,
+      data: [
+        { metric: "Odds Imply", probability: Math.round(computed.oddsAnalysis.impliedProbability * 100) },
+      ],
+      xKey: "metric",
+      yKeys: ["probability"],
+    });
+  }
+
+  // 2. Opponent scoring allowed trend (relevant for most props)
+  if (teams.length > 0) {
+    // Find the opponent team (not the player's team)
+    const opponentTeam = teams.length > 1 ? teams[1] : teams[0];
+    if (opponentTeam.recentGames.length >= 3) {
+      const data = opponentTeam.recentGames.slice(-8).map((g, i) => ({
+        game: `G${i + 1}`,
+        allowed: g.opponentScore,
+        scored: g.teamScore,
+        opponent: shortenName(g.opponent),
+      }));
+      charts.push({
+        type: "line",
+        title: `${opponentTeam.name} — Points Allowed Trend`,
+        relevance: `How much the opponent gives up — context for ${playerName}'s ${statLabel} prop`,
+        data,
+        xKey: "game",
+        yKeys: ["allowed"],
+      });
+    }
+  }
+
+  // 3. Team comparison table (always useful context)
+  if (teams.length === 2) {
+    const data = [
+      { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
+      { stat: "Avg Pts For", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsFor}` },
+      { stat: "Avg Pts Against", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsAgainst}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsAgainst}` },
+      { stat: "Pace (Avg Total)", [shortenName(teams[0].name)]: `${teams[0].scoring.avgTotalPoints}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgTotalPoints}` },
+      { stat: "Last 5", [shortenName(teams[0].name)]: teams[0].recentForm.last5.join("-"), [shortenName(teams[1].name)]: teams[1].recentForm.last5.join("-") },
+    ];
+    charts.push({
+      type: "table",
+      title: "Team Context",
+      relevance: `Team matchup context for ${playerName}'s ${statLabel} prop`,
+      data,
+      columns: [
+        { key: "stat", label: "Stat" },
+        { key: shortenName(teams[0].name), label: teams[0].name },
+        { key: shortenName(teams[1].name), label: teams[1].name },
+      ],
+    });
+  }
+
+  // 4. H2H if available
+  if (computed.headToHead && computed.headToHead.games.length > 0 && extraction.teams) {
+    charts.push(buildH2HTable(computed, extraction.teams));
+  }
+
+  return charts;
+}
+
+function mapMarketToStatKey(market: string): string {
+  const m = market.toLowerCase();
+  if (m.includes("point") || m.includes("pts")) return "pts";
+  if (m.includes("rebound") || m.includes("reb")) return "reb";
+  if (m.includes("assist") || m.includes("ast")) return "ast";
+  if (m.includes("three") || m.includes("3p")) return "fg3m";
+  if (m.includes("steal")) return "stl";
+  if (m.includes("block")) return "blk";
+  if (m.includes("strikeout")) return "strikeOuts";
+  if (m.includes("hit")) return "hits";
+  if (m.includes("home run")) return "homeRuns";
+  return "pts";
 }
 
 // ── Shared helpers ─────────────────────────────────────────────────
