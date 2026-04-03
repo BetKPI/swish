@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Allow up to 5 minutes for QA run
-export const maxDuration = 300;
+// Vercel free tier: 60s max. Keep test count low.
+export const maxDuration = 60;
 
 const ESPN_BASE = "https://site.api.espn.com/apis/site/v2/sports";
 
@@ -58,8 +58,8 @@ export async function GET(request: NextRequest) {
 
     console.log(`[QA] Found ${nbaGames.length} NBA, ${mlbGames.length} MLB games`);
 
-    // Generate and test NBA bets (2 games to stay within timeout)
-    for (const game of nbaGames.slice(0, 2)) {
+    // Generate and test NBA bets (1 game to fit in 60s free tier)
+    for (const game of nbaGames.slice(0, 1)) {
       // Moneyline
       await testBet(results, {
         sport: "NBA",
@@ -95,26 +95,27 @@ export async function GET(request: NextRequest) {
         confidence: 0.9,
       });
 
-      // Player props — use real players from the game
-      for (const player of game.players.slice(0, 2)) {
+      // Player prop — 1 real player from the game
+      const nbaPlayer = game.players[0];
+      if (nbaPlayer) {
         const prop = NBA_PROPS[Math.floor(Math.random() * NBA_PROPS.length)];
-        const line = prop.lineFn(player.pts || 20);
+        const line = prop.lineFn(nbaPlayer.pts || 20);
         await testBet(results, {
           sport: "NBA",
           betType: "player_prop",
           teams: [game.away.name, game.home.name],
-          players: [player.name],
+          players: [nbaPlayer.name],
           market: prop.market,
           line,
           odds: "-115",
-          description: `${player.name} Over ${line} ${prop.market}`,
+          description: `${nbaPlayer.name} Over ${line} ${prop.market}`,
           confidence: 0.85,
         });
       }
     }
 
-    // Generate and test MLB bets (2 games to stay within timeout)
-    for (const game of mlbGames.slice(0, 2)) {
+    // Generate and test MLB bets (1 game to fit in 60s free tier)
+    for (const game of mlbGames.slice(0, 1)) {
       // Moneyline
       await testBet(results, {
         sport: "MLB",
@@ -150,19 +151,20 @@ export async function GET(request: NextRequest) {
         confidence: 0.9,
       });
 
-      // Player props — use real players
-      for (const player of game.players.slice(0, 2)) {
+      // Player prop — 1 real player from the game
+      const mlbPlayer = game.players[0];
+      if (mlbPlayer) {
         const prop = MLB_PROPS[Math.floor(Math.random() * MLB_PROPS.length)];
         const line = prop.lineFn();
         await testBet(results, {
           sport: "MLB",
           betType: "player_prop",
           teams: [game.away.name, game.home.name],
-          players: [player.name],
+          players: [mlbPlayer.name],
           market: prop.market,
           line,
           odds: "-120",
-          description: `${player.name} Over ${line} ${prop.market}`,
+          description: `${mlbPlayer.name} Over ${line} ${prop.market}`,
           confidence: 0.85,
         });
       }
