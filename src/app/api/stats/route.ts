@@ -20,6 +20,10 @@ async function fetchSportData(
   const isNBA = sport === "NBA" || sport === "BASKETBALL";
   const isMLB = sport === "MLB" || sport === "BASEBALL";
 
+  // BDL disabled for now (free tier doesn't include stats/game logs).
+  // Code lives in balldontlie.ts — re-enable when upgraded to paid plan.
+  // To re-enable: uncomment the block below and set BDL_API_KEY.
+  /*
   if (isNBA) {
     console.log("[Stats] Using Ball Don't Lie for NBA data");
     const bdlData = await fetchNBAData(
@@ -32,10 +36,8 @@ async function fetchSportData(
     if (!bdlData._unsupported) {
       const espnData = await fetchAllTeamData(extraction.sport, extraction.teams);
       for (const team of extraction.teams) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const espnTeam = (espnData as any)?.[team];
         if (espnTeam && bdlData[team] && typeof bdlData[team] === "object") {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const target = bdlData[team] as any;
           if (espnTeam.recentGames) target.recentGames = espnTeam.recentGames;
           if (espnTeam.record) target.record = espnTeam.record;
@@ -48,6 +50,7 @@ async function fetchSportData(
       return { data: bdlData, source: "balldontlie+espn" };
     }
   }
+  */
 
   if (isMLB) {
     console.log("[Stats] Using MLB Stats API for baseball data");
