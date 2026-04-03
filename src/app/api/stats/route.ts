@@ -218,6 +218,58 @@ function parseGeminiJSON(text: string): Record<string, unknown> {
   return JSON.parse(jsonText);
 }
 
+/**
+ * Core analysis for a single bet — used by both single bets and parlay legs.
+ * No HTTP round-trip, runs directly in the same function.
+ */
+async function analyzeSingleBet(
+  extraction: BetExtraction,
+  apiKey: string
+): Promise<Record<string, unknown>> {
+  const { data: teamData, source } = await fetchSportData(extraction);
+
+  if (teamData._unsupported) {
+    return { unsupported: true };
+  }
+
+  const computed = computeAnalysis(teamData, extraction);
+  const isDeterministic = DETERMINISTIC_BET_TYPES.includes(extraction.betType);
+  const charts = isDeterministic
+    ? buildCharts(extraction.betType, computed, extraction, teamData)
+    : [];
+
+  const prompt = isDeterministic && charts.length > 0
+    ? buildSummaryPrompt(extraction, computed, teamData)
+    : buildFullAIPrompt(extraction, computed, teamData);
+
+  const text = await callGemini(prompt, apiKey);
+  let aiResult: Record<string, unknown> = {};
+  if (text) {
+    try {
+      aiResult = parseGeminiJSON(text);
+    } catch (e) {
+      console.error("[Stats] JSON parse failed:", e);
+      aiResult = { summary: "Check the charts below.", stats: [] };
+    }
+  }
+
+  if (isDeterministic && charts.length > 0) {
+    return {
+      summary: aiResult.summary || "Check the charts below.",
+      stats: aiResult.stats || [],
+      charts,
+      _computed: { oddsAnalysis: computed.oddsAnalysis, source },
+    };
+  }
+
+  return {
+    summary: aiResult.summary || "",
+    stats: aiResult.stats || [],
+    charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
+    _computed: { oddsAnalysis: computed.oddsAnalysis, source },
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { extraction } = (await request.json()) as {
@@ -231,35 +283,29 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return NextResponse.json(
+        { error: "GEMINI_API_KEY not configured" },
+        { status: 500 }
+      );
+    }
+
     if (extraction.betType === "parlay") {
-      // Analyze each leg individually
       const legs = extraction.legs || [];
       if (legs.length === 0) {
         logToDiscord("empty_parlay", extraction, "No legs extracted from screenshot");
         return NextResponse.json({ parlay: true, legs: [] });
       }
 
-      // Call ourselves for each leg in parallel (max 6 legs to stay in timeout)
-      const baseUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL
-        ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
-        : process.env.VERCEL_URL
-          ? `https://${process.env.VERCEL_URL}`
-          : "https://swish-jet.vercel.app";
-
+      // Analyze legs directly — no HTTP round-trip
       const legResults = await Promise.all(
         legs.slice(0, 6).map(async (leg) => {
-          // Skip legs with no teams — can't analyze without them
           if (!leg.teams || leg.teams.length === 0) {
             return { leg, error: true, data: null };
           }
           try {
-            const res = await fetch(`${baseUrl}/api/stats`, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ extraction: leg }),
-            });
-            if (!res.ok) return { leg, error: true, data: null };
-            const data = await res.json();
+            const data = await analyzeSingleBet(leg, apiKey);
             return { leg, error: false, data };
           } catch {
             return { leg, error: true, data: null };
@@ -285,80 +331,9 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY not configured" },
-        { status: 500 }
-      );
-    }
-
-    // 1. Fetch sport-specific data
-    const { data: teamData, source } = await fetchSportData(extraction);
-    console.log(`[Stats] Data source: ${source}`);
-
-    if (teamData._unsupported) {
-      logToDiscord("unsupported", extraction, `Source: ${source}, Reason: ${teamData._reason || "no data"}`);
-      return NextResponse.json({ unsupported: true });
-    }
-
-    // 2. Compute metrics
-    const computed = computeAnalysis(teamData, extraction);
-
-    // 3. Build charts — deterministic for common bets, AI for exotic
-    const isDeterministic = DETERMINISTIC_BET_TYPES.includes(extraction.betType);
-    let charts = isDeterministic
-      ? buildCharts(extraction.betType, computed, extraction, teamData)
-      : [];
-
-    // 4. Build summary prompt (AI always writes the narrative)
-    const summaryPrompt = buildSummaryPrompt(extraction, computed, teamData);
-
-    if (isDeterministic && charts.length > 0) {
-      // Common bet: AI only writes summary + stats
-      const text = await callGemini(summaryPrompt, apiKey);
-      let aiResult: Record<string, unknown> = {};
-      if (text) {
-        try {
-          aiResult = parseGeminiJSON(text);
-        } catch (e) {
-          console.error("[Stats] Failed to parse Gemini summary JSON:", e, "\nRaw:", text?.slice(0, 300));
-          // Still return charts even if AI summary fails
-          aiResult = { summary: "Analysis available in the charts below.", stats: [] };
-        }
-      }
-      return NextResponse.json({
-        summary: aiResult.summary || "Analysis available in the charts below.",
-        stats: aiResult.stats || [],
-        charts,
-        _computed: {
-          oddsAnalysis: computed.oddsAnalysis,
-          source,
-        },
-      });
-    } else {
-      // Exotic bet: AI generates everything (smarter model)
-      const fullPrompt = buildFullAIPrompt(extraction, computed, teamData);
-      const text = await callGemini(fullPrompt, apiKey);
-      let aiResult: Record<string, unknown> = {};
-      if (text) {
-        try {
-          aiResult = parseGeminiJSON(text);
-        } catch (e) {
-          console.error("[Stats] Failed to parse Gemini full JSON:", e, "\nRaw:", text?.slice(0, 300));
-          aiResult = { summary: "We pulled the data but couldn't generate the full analysis. Try again.", stats: [], charts: [] };
-        }
-      }
-      return NextResponse.json({
-        summary: aiResult.summary || "",
-        stats: aiResult.stats || [],
-        charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
-        _computed: {
-          oddsAnalysis: computed.oddsAnalysis,
-          source,
-        },
-      });
-    }
+    // Single bet analysis
+    const result = await analyzeSingleBet(extraction, apiKey);
+    return NextResponse.json(result);
   } catch (error) {
     console.error("Stats error:", error);
     // Try to log to Discord — extraction may not be available if parsing failed
