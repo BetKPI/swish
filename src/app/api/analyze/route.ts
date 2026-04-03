@@ -102,7 +102,7 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({
             embeds: [{
               title: `Parlay Extracted — ${legs.length} legs`,
-              color: legs.every((l: { teams?: string[] }) => l.teams?.length > 0) ? 0x10b981 : 0xf59e0b,
+              color: legs.every((l: { teams?: string[] }) => (l.teams?.length || 0) > 0) ? 0x10b981 : 0xf59e0b,
               fields: [
                 { name: "Description", value: (extraction.description || "?").slice(0, 200), inline: false },
                 { name: "Legs", value: legSummary.slice(0, 1024) || "No legs", inline: false },
