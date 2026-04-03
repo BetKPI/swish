@@ -37,6 +37,7 @@ function parseJSON(text: string): Record<string, unknown> {
 type FetchAction =
   | { action: "mlb_player"; playerName: string }
   | { action: "mlb_pitcher_matchup"; team1: string; team2: string }
+  | { action: "mlb_pitcher_h2h"; pitcher1Name: string; pitcher2Name: string; team1: string; team2: string }
   | { action: "nba_player"; playerName: string }
   | { action: "nhl_player"; playerName: string }
   | { action: "team_schedule"; sport: string; teamName: string };
@@ -79,6 +80,24 @@ async function executeFetch(
           pitchers[label] = { team, probablePitchers: pp };
         }
         return pitchers;
+      }
+
+      case "mlb_pitcher_h2h": {
+        // Find both pitchers
+        const p1 = await mlb.searchPlayer(fetchReq.pitcher1Name);
+        const p2 = await mlb.searchPlayer(fetchReq.pitcher2Name);
+        if (!p1 || !p2) return null;
+
+        // Find both teams for cross-referencing
+        const t1 = await mlb.searchTeam(fetchReq.team1);
+        const t2 = await mlb.searchTeam(fetchReq.team2);
+        if (!t1 || !t2) return null;
+
+        const h2h = await mlb.getPitcherMatchupHistory(
+          p1.id, p1.fullName, t1.id,
+          p2.id, p2.fullName, t2.id
+        );
+        return h2h;
       }
 
       case "nba_player": {
@@ -161,10 +180,12 @@ FORMAT 2 — You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
-    "action": one of "mlb_player", "mlb_pitcher_matchup", "nba_player", "nhl_player", "team_schedule",
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "team_schedule",
     "playerName": "name" (for player actions),
-    "team1": "team" (for pitcher_matchup),
-    "team2": "team" (for pitcher_matchup),
+    "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
+    "pitcher2Name": "name" (for pitcher_h2h),
+    "team1": "team" (for pitcher_matchup or pitcher_h2h),
+    "team2": "team" (for pitcher_matchup or pitcher_h2h),
     "sport": "sport" (for team_schedule),
     "teamName": "team" (for team_schedule)
   },
@@ -180,7 +201,8 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 
 RULES:
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
-- For pitcher matchups between two MLB teams, use "mlb_pitcher_matchup".
+- For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
+- For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
 - For individual player lookups, use the sport-specific player action.
 - Data keys must be camelCase.
 - Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, etc.)`;

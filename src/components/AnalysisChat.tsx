@@ -19,9 +19,9 @@ interface ChatMessage {
 const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
   MLB: [
     "Show the starting pitchers' records",
-    "Compare the pitchers' recent game logs",
+    "How have these pitchers done against each other?",
     "Show home vs away splits",
-    "How do they perform against lefties?",
+    "Compare the pitchers' recent game logs",
   ],
   NBA: [
     "Show home vs away splits",

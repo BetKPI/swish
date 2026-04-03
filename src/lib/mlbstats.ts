@@ -238,6 +238,126 @@ export async function getTeamSchedule(
   }
 }
 
+// ── Pitcher head-to-head ───────────────────────────────────────────
+
+/**
+ * Get a pitcher's career game log to find starts against a specific team.
+ */
+export async function getPitcherVsTeam(
+  pitcherId: number,
+  opponentTeamId: number
+): Promise<Record<string, unknown>[]> {
+  try {
+    // Get career game log (all seasons) — filter by opponent
+    const res = await fetch(
+      `${BASE}/people/${pitcherId}/stats?stats=gameLog&group=pitching&season=2026,2025,2024,2023,2022,2021`
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    const games: Record<string, unknown>[] = [];
+    for (const statGroup of data.stats || []) {
+      for (const split of statGroup.splits || []) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const oppId = (split as any).opponent?.id;
+        if (oppId === opponentTeamId) {
+          games.push({
+            date: split.date,
+            season: split.season,
+            opponent: (split as Record<string, unknown>).opponent,
+            stat: split.stat,
+          });
+        }
+      }
+    }
+    return games;
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Cross-reference two pitchers' game logs to find games where they started against each other.
+ */
+export async function getPitcherMatchupHistory(
+  pitcher1Id: number,
+  pitcher1Name: string,
+  pitcher1TeamId: number,
+  pitcher2Id: number,
+  pitcher2Name: string,
+  pitcher2TeamId: number
+): Promise<Record<string, unknown>> {
+  // Get each pitcher's starts against the other's team
+  const [p1VsTeam2, p2VsTeam1] = await Promise.all([
+    getPitcherVsTeam(pitcher1Id, pitcher2TeamId),
+    getPitcherVsTeam(pitcher2Id, pitcher1TeamId),
+  ]);
+
+  // Find matching dates (both pitched on the same day = they faced each other)
+  const p1Dates = new Set(p1VsTeam2.map((g) => g.date as string));
+  const p2Dates = new Set(p2VsTeam1.map((g) => g.date as string));
+  const commonDates = [...p1Dates].filter((d) => p2Dates.has(d));
+
+  const matchups = commonDates.map((date) => {
+    const p1Game = p1VsTeam2.find((g) => g.date === date);
+    const p2Game = p2VsTeam1.find((g) => g.date === date);
+    return {
+      date,
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      pitcher1: { name: pitcher1Name, ...(p1Game?.stat as any || {}) },
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      pitcher2: { name: pitcher2Name, ...(p2Game?.stat as any || {}) },
+    };
+  });
+
+  // Also include each pitcher's overall stats vs the opposing team
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const summarize = (games: Record<string, unknown>[]) => {
+    if (games.length === 0) return null;
+    let totalIP = 0, totalER = 0, totalK = 0, totalBB = 0, totalH = 0, wins = 0, losses = 0;
+    for (const g of games) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const s = g.stat as any;
+      if (!s) continue;
+      totalIP += parseFloat(s.inningsPitched || "0");
+      totalER += s.earnedRuns || 0;
+      totalK += s.strikeOuts || 0;
+      totalBB += s.baseOnBalls || 0;
+      totalH += s.hits || 0;
+      if (s.wins) wins += s.wins;
+      if (s.losses) losses += s.losses;
+    }
+    const era = totalIP > 0 ? ((totalER / totalIP) * 9).toFixed(2) : "0.00";
+    return {
+      games: games.length,
+      wins,
+      losses,
+      era,
+      inningsPitched: totalIP.toFixed(1),
+      strikeOuts: totalK,
+      walks: totalBB,
+      hits: totalH,
+      earnedRuns: totalER,
+    };
+  };
+
+  return {
+    pitcher1: {
+      name: pitcher1Name,
+      id: pitcher1Id,
+      vsOpponent: summarize(p1VsTeam2),
+      gamesVsOpponent: p1VsTeam2.length,
+    },
+    pitcher2: {
+      name: pitcher2Name,
+      id: pitcher2Id,
+      vsOpponent: summarize(p2VsTeam1),
+      gamesVsOpponent: p2VsTeam1.length,
+    },
+    headToHeadGames: matchups,
+    totalMatchups: commonDates.length,
+  };
+}
+
 // ── Probable pitchers ──────────────────────────────────────────────
 
 export async function getProbablePitchers(
