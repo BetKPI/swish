@@ -3,6 +3,7 @@
 import type { BetExtraction, ChartConfig, StatDataPoint } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
+import FeedbackShare from "./FeedbackShare";
 
 interface AnalysisResultsProps {
   extraction: BetExtraction;
@@ -102,6 +103,9 @@ export default function AnalysisResults({
           computedData={computedData}
         />
       )}
+
+      {/* Feedback + Share */}
+      <FeedbackShare extraction={extraction} summary={summary} />
 
       {/* Reset Button */}
       <button
