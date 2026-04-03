@@ -5,6 +5,7 @@ import { fetchMLBData } from "@/lib/mlbstats";
 import { fetchNHLData } from "@/lib/nhlstats";
 import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
+import { getMarketContext } from "@/lib/markets";
 import type { BetExtraction } from "@/types";
 
 // Common bet types that get deterministic charts
@@ -321,18 +322,23 @@ function buildSummaryPrompt(
 ): string {
   const context = buildDataContext(extraction, computed, rawData);
 
+  // Inject domain-specific market knowledge if available
+  const marketContext = extraction.market
+    ? getMarketContext(extraction.market, extraction.sport)
+    : "";
+
   return `You are an elite sports analyst writing for sharp bettors. You have pre-computed metrics below. Write analysis that goes DEEPER than DraftKings — connect dots, surface non-obvious patterns.
 
-${context}
+${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: 2-3 sentences. Connect the dots between trends, matchup history, rest, and line value. If implied probability differs from historical rate, call it out. Don't just restate numbers — interpret them. End with brief disclaimer. Don't name data sources.
+1. **summary**: 2-3 sentences. ${marketContext ? "USE THE MARKET-SPECIFIC CONTEXT ABOVE to identify the factors that actually matter for this bet type. Don't give generic analysis — explain WHY the data suggests this prop will or won't hit based on the specific mechanics of this market." : "Connect the dots between trends, matchup history, rest, and line value."} If implied probability differs from historical rate, call it out. Don't just restate numbers — interpret them. End with brief disclaimer. Don't name data sources.
 
 2. **stats**: Array of 3-5 key stats. Each has:
-   - label: punchy name (e.g. "ATS Cover Rate" not "Record", "Hit Rate Over 26.5" not "Prop Stats")
+   - label: punchy name specific to this market (e.g. "K Rate vs This Lineup" not "Strikeouts", "First-Quarter Usage" not "Points")
    - value: the number/string
-   - context: one sentence on why this matters for THIS specific bet
+   - context: one sentence on why this matters for THIS specific bet type${marketContext ? " — reference the market-specific factors" : ""}
 
 Return ONLY valid JSON. No markdown wrapping.`;
 }
@@ -346,9 +352,13 @@ function buildFullAIPrompt(
 ): string {
   const context = buildDataContext(extraction, computed, rawData);
 
-  return `You are an elite sports analyst. Analyze this exotic/niche bet using the data below.
+  const marketContext = extraction.market
+    ? getMarketContext(extraction.market, extraction.sport)
+    : "";
 
-${context}
+  return `You are an elite sports analyst. Analyze this bet using the data below.
+
+${context}${marketContext}
 
 Return JSON with:
 

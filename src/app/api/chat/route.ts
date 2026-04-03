@@ -3,6 +3,7 @@ import * as mlb from "@/lib/mlbstats";
 import * as bdl from "@/lib/balldontlie";
 import * as nhl from "@/lib/nhlstats";
 import { fetchAllTeamData } from "@/lib/espn";
+import { getMarketContext } from "@/lib/markets";
 
 /**
  * Chat endpoint — two-step flow:
