@@ -342,17 +342,21 @@ export async function POST(request: NextRequest) {
       // Step 4: Combine charts + summaries
       const finalLegs = legData.map((ld, i) => {
         const aiLeg = legSummaries[i] || {};
+        const legCharts = ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [];
+        const legSummary = (aiLeg.summary as string) || null;
+        const legStats = (aiLeg.stats as unknown[]) || [];
+        const hasAnything = legCharts.length > 0 || legSummary || legStats.length > 0;
         return {
           description: ld.leg.description,
           sport: ld.leg.sport,
           betType: ld.leg.betType,
           teams: ld.leg.teams,
           odds: ld.leg.odds,
-          summary: (aiLeg.summary as string) || null,
-          stats: (aiLeg.stats as unknown[]) || [],
-          charts: ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [],
-          error: !ld.teamData,
-          unsupported: !ld.teamData,
+          summary: legSummary,
+          stats: legStats,
+          charts: legCharts,
+          error: !hasAnything,
+          unsupported: !ld.teamData && !hasAnything,
         };
       });
 
@@ -396,24 +400,18 @@ function buildSummaryPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You write like a sharp friend texting about a bet — confident, brief, no fluff. You have pre-computed data below. Your audience is 22-year-old sports bettors who already know the basics.
-
-CRITICAL: Be HONEST. If the data supports the bet, say so. If the data is mixed or against it, say that too. Don't hype every bet — a friend who says "this hits" on everything is useless. A friend who says "I'd stay away, his numbers drop on the road" is valuable. Call out red flags just as much as green flags.
+  return `You're a sports data analyst writing for 22-year-old bettors. Quick, objective, data-driven. Present what the numbers say — don't tell people to bet or pass. Just the relevant data story in plain English.
 
 ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: MAX 2 short sentences. Be direct — if the data looks good say it, if it looks bad say that. Examples:
-   - Good: "Brown's been dishing 6+ in 8 of his last 10 and the Bucks give up the most assists in the league. Like this a lot."
-   - Bad: "His road numbers drop to 3.2 per game and the Bucks are actually solid defending the assist. Pass."
-   - Mixed: "He's hit this in 6 of 10 but the Bucks held his position under 5 in both matchups this year. Coin flip."
-   No disclaimers. No source names. Just the honest take.
+1. **summary**: MAX 2 short sentences. Just the data story — "Brown's averaging 6.8 assists and has gone over 5.5 in 8 of his last 10. Bucks allow the 5th most assists in the league." No recommendations, no "this hits" or "pass". Just facts + context.
 
 2. **stats**: Array of 3-4 stats (NOT 5). Each has:
    - label: short and punchy (4 words max)
    - value: the number/string
-   - context: ONE short sentence, casual tone${marketContext ? " — reference the specific factors that matter for this market" : ""}
+   - context: ONE short sentence${marketContext ? " — reference the specific factors that matter for this market" : ""}
 
 Return ONLY valid JSON. No markdown.`;
 }
@@ -431,13 +429,13 @@ function buildFullAIPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You write like a sharp friend texting about a bet — confident, brief, no fluff. 22-year-old sports bettor audience.
+  return `You're a sports data analyst writing for 22-year-old bettors. Quick, objective, data-driven. Present what the numbers say — no recommendations.
 
 ${context}${marketContext}
 
 Return JSON with:
 
-1. **summary**: MAX 2 short sentences. Direct, opinionated, no hedge words. No disclaimers. No source names.
+1. **summary**: MAX 2 short sentences. Data story only — no "bet this" or "pass". Just facts + context.
 
 2. **stats**: Array of 3-5 stats, each with label, value, context.
 
@@ -460,9 +458,7 @@ Return ONLY valid JSON.`;
 function buildParlayBatchPrompt(
   legData: { leg: BetExtraction; teamData: Record<string, unknown> | null; computed: ReturnType<typeof computeAnalysis> | null; charts: unknown[] }[]
 ): string {
-  let context = `You write like a sharp friend texting about a bet — confident, brief, honest. Analyze each leg of this parlay separately.
-
-CRITICAL: Be HONEST per leg. If data supports it, say so. If not, say pass. Not every leg is good.
+  let context = `You're a sports data analyst. Give a quick, objective data summary for each parlay leg. No recommendations — just what the numbers say.
 
 `;
 
@@ -480,7 +476,7 @@ CRITICAL: Be HONEST per leg. If data supports it, say so. If not, say pass. Not 
   return `${context}
 
 Return JSON with ONE key "legs" — an array with ${legData.length} objects (one per leg, same order). Each object has:
-- summary: MAX 1-2 sentences, honest take on this leg
+- summary: MAX 1-2 sentences, data story only — no "bet" or "pass" recommendations
 - stats: array of 2-3 stats, each with label (4 words max), value, context (1 sentence)
 
 Example: {"legs":[{"summary":"...","stats":[...]},{"summary":"...","stats":[...]}]}
