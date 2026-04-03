@@ -1,41 +1,235 @@
 import { NextRequest, NextResponse } from "next/server";
+import * as mlb from "@/lib/mlbstats";
+import * as bdl from "@/lib/balldontlie";
+import * as nhl from "@/lib/nhlstats";
+import { fetchAllTeamData } from "@/lib/espn";
 
 /**
- * Chat endpoint — user asks for a specific analysis based on existing data.
- * Returns either a chart config or a message saying we don't have the data.
+ * Chat endpoint — two-step flow:
+ * 1. AI decides if it can answer from existing data or needs a data fetch
+ * 2. If fetch needed, we call the API, then AI generates the chart with real data
  */
+
+async function callGemini(prompt: string, apiKey: string): Promise<string | null> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: { temperature: 0.2, maxOutputTokens: 3000 },
+      }),
+    }
+  );
+  if (!response.ok) return null;
+  const data = await response.json();
+  return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+}
+
+function parseJSON(text: string): Record<string, unknown> {
+  let t = text.trim();
+  if (t.startsWith("```")) t = t.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  return JSON.parse(t);
+}
+
+// Available data-fetching actions the AI can request
+type FetchAction =
+  | { action: "mlb_player"; playerName: string }
+  | { action: "mlb_pitcher_matchup"; team1: string; team2: string }
+  | { action: "nba_player"; playerName: string }
+  | { action: "nhl_player"; playerName: string }
+  | { action: "team_schedule"; sport: string; teamName: string };
+
+async function executeFetch(
+  fetchReq: FetchAction,
+  sport: string
+): Promise<Record<string, unknown> | null> {
+  try {
+    switch (fetchReq.action) {
+      case "mlb_player": {
+        const player = await mlb.searchPlayer(fetchReq.playerName);
+        if (!player) return null;
+        const [stats, gameLog, splits] = await Promise.all([
+          mlb.getPlayerSeasonStats(player.id),
+          mlb.getPlayerGameLog(player.id),
+          mlb.getPlayerSplits(player.id),
+        ]);
+        return { player, seasonStats: stats, gameLog, splits };
+      }
+
+      case "mlb_pitcher_matchup": {
+        const team1 = await mlb.searchTeam(fetchReq.team1);
+        const team2 = await mlb.searchTeam(fetchReq.team2);
+        const pitchers: Record<string, unknown> = {};
+
+        for (const [label, team] of [["team1", team1], ["team2", team2]] as const) {
+          if (!team) { pitchers[label] = null; continue; }
+          const pp = await mlb.getProbablePitchers((team as { id: number }).id);
+          if (pp) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const ppAny = pp as any;
+            for (const key of ["homePitcher", "awayPitcher"] as const) {
+              if (ppAny[key]?.id) {
+                const data = await mlb.fetchPitcherData(ppAny[key].id);
+                if (data) ppAny[key] = { ...ppAny[key], ...data };
+              }
+            }
+          }
+          pitchers[label] = { team, probablePitchers: pp };
+        }
+        return pitchers;
+      }
+
+      case "nba_player": {
+        const player = await bdl.searchPlayer(fetchReq.playerName);
+        if (!player) return null;
+        const [avg, log] = await Promise.all([
+          bdl.getSeasonAverages(player.id),
+          bdl.getPlayerGameLog(player.id, 15),
+        ]);
+        return { player, seasonAverages: avg, gameLog: log };
+      }
+
+      case "nhl_player": {
+        const player = await nhl.searchPlayer(fetchReq.playerName);
+        if (!player) return null;
+        const [stats, log] = await Promise.all([
+          nhl.getPlayerStats(player.playerId),
+          nhl.getPlayerGameLog(player.playerId),
+        ]);
+        return { player, stats, gameLog: log };
+      }
+
+      case "team_schedule": {
+        const data = await fetchAllTeamData(sport, [fetchReq.teamName]);
+        return data[fetchReq.teamName] as Record<string, unknown> || null;
+      }
+
+      default:
+        return null;
+    }
+  } catch (e) {
+    console.error("[Chat] Fetch error:", e);
+    return null;
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const { message, extraction, computedData } = await request.json();
 
     if (!message || !extraction) {
-      return NextResponse.json(
-        { error: "Missing message or extraction" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Missing message or extraction" }, { status: 400 });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) {
-      return NextResponse.json(
-        { error: "GEMINI_API_KEY not configured" },
-        { status: 500 }
-      );
+      return NextResponse.json({ error: "GEMINI_API_KEY not configured" }, { status: 500 });
     }
 
-    const prompt = `You are a sports analytics assistant. The user has already analyzed a bet and is asking for additional analysis.
+    const sport = extraction.sport?.toUpperCase() || "";
 
-BET CONTEXT:
-${JSON.stringify(extraction, null, 2)}
+    // Step 1: Ask AI what it needs
+    const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}) and is asking a follow-up question.
 
-AVAILABLE DATA (this is ALL we have — do not reference data outside of this):
+EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
 
-USER REQUEST: "${message}"
+USER QUESTION: "${message}"
 
-You must respond with ONLY valid JSON in one of two formats:
+Decide: can you answer this from the existing data, or do you need to fetch more?
 
-FORMAT 1 — If you CAN produce the requested chart from the available data:
+Respond with ONLY valid JSON in one of these formats:
+
+FORMAT 1 — You CAN answer from existing data:
+{
+  "need_fetch": false,
+  "chart": {
+    "type": "line" | "bar" | "distribution" | "table",
+    "title": "Chart title",
+    "relevance": "Why this matters (1 sentence)",
+    "data": [array of data objects with consistent camelCase keys],
+    "xKey": "key for x axis",
+    "yKeys": ["keys for y axis"]
+  },
+  "message": "Brief explanation (1 sentence)"
+}
+For tables use "columns": [{"key":"k","label":"Label"}] instead of xKey/yKeys.
+
+FORMAT 2 — You NEED more data:
+{
+  "need_fetch": true,
+  "fetch": {
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "nba_player", "nhl_player", "team_schedule",
+    "playerName": "name" (for player actions),
+    "team1": "team" (for pitcher_matchup),
+    "team2": "team" (for pitcher_matchup),
+    "sport": "sport" (for team_schedule),
+    "teamName": "team" (for team_schedule)
+  },
+  "message": "Fetching that data now..."
+}
+
+FORMAT 3 — The data simply doesn't exist in any free sports API:
+{
+  "need_fetch": false,
+  "no_data": true,
+  "message": "Brief explanation of why we can't get this (1-2 sentences)"
+}
+
+RULES:
+- For FORMAT 1, ONLY use numbers from the existing data. Never invent.
+- For pitcher matchups between two MLB teams, use "mlb_pitcher_matchup".
+- For individual player lookups, use the sport-specific player action.
+- Data keys must be camelCase.
+- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, etc.)`;
+
+    const triageText = await callGemini(triagePrompt, apiKey);
+    if (!triageText) {
+      return NextResponse.json({ type: "no_data", message: "Couldn't process that — try rephrasing." });
+    }
+
+    const triage = parseJSON(triageText);
+
+    // Case 1: Can answer from existing data
+    if (!triage.need_fetch && !triage.no_data && triage.chart) {
+      return NextResponse.json({
+        type: "chart",
+        message: triage.message || "Here you go.",
+        chart: triage.chart,
+      });
+    }
+
+    // Case 3: Data doesn't exist
+    if (triage.no_data) {
+      return NextResponse.json({
+        type: "no_data",
+        message: triage.message || "We don't have the data for that.",
+      });
+    }
+
+    // Case 2: Need to fetch data
+    if (triage.need_fetch && triage.fetch) {
+      console.log(`[Chat] Fetching: ${JSON.stringify(triage.fetch)}`);
+      const fetchedData = await executeFetch(triage.fetch as FetchAction, sport);
+
+      if (!fetchedData) {
+        return NextResponse.json({
+          type: "no_data",
+          message: "We tried to pull that data but couldn't find it. The player or team might not be in our system.",
+        });
+      }
+
+      // Step 2: Generate chart from fetched data
+      const chartPrompt = `You are a sports analytics assistant. The user asked: "${message}"
+
+We just fetched this data for them:
+${JSON.stringify(fetchedData, null, 2)}
+
+Original bet context: ${extraction.sport} ${extraction.betType} — ${extraction.teams?.join(" vs ")}
+
+Create a chart from this data. Respond with ONLY valid JSON:
 {
   "type": "chart",
   "message": "Brief explanation of what the chart shows (1 sentence)",
@@ -48,63 +242,35 @@ FORMAT 1 — If you CAN produce the requested chart from the available data:
     "yKeys": ["keys for y axis"]
   }
 }
-For tables, use "columns": [{"key": "k", "label": "Label"}] instead of xKey/yKeys.
-
-FORMAT 2 — If you CANNOT produce the chart because the data isn't available:
-{
-  "type": "no_data",
-  "message": "Brief explanation of what data we'd need and why we don't have it (1-2 sentences)"
-}
+For tables use "columns": [{"key":"k","label":"Label"}] instead of xKey/yKeys.
 
 RULES:
-- ONLY use data from AVAILABLE DATA above. Never invent numbers.
-- If the user asks about something not in the data (e.g. weather, injuries, referee stats), use format 2.
-- Keep charts focused — one clear insight per chart.
-- Data keys must be camelCase strings.`;
+- ONLY use data from above. Do not invent numbers.
+- Make it relevant to the bet.
+- Data keys must be camelCase.`;
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: prompt }] }],
-          generationConfig: {
-            temperature: 0.3,
-            maxOutputTokens: 2048,
-          },
-        }),
+      const chartText = await callGemini(chartPrompt, apiKey);
+      if (!chartText) {
+        return NextResponse.json({
+          type: "no_data",
+          message: "Got the data but couldn't generate the chart — try rephrasing.",
+        });
       }
-    );
 
-    if (!response.ok) {
-      console.error("Chat Gemini error:", await response.text());
-      return NextResponse.json(
-        { error: "Failed to process request" },
-        { status: 500 }
-      );
+      const chartResult = parseJSON(chartText);
+      return NextResponse.json(chartResult);
     }
 
-    const data = await response.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-
-    if (!text) {
-      return NextResponse.json(
-        { type: "no_data", message: "Couldn't process that — try rephrasing." }
-      );
-    }
-
-    let jsonText = text.trim();
-    if (jsonText.startsWith("```")) {
-      jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    }
-
-    const result = JSON.parse(jsonText);
-    return NextResponse.json(result);
+    // Fallback
+    return NextResponse.json({
+      type: "no_data",
+      message: triage.message || "Not sure how to handle that — try a different question.",
+    });
   } catch (error) {
     console.error("Chat error:", error);
-    return NextResponse.json(
-      { type: "no_data", message: "Something went wrong — try again." }
-    );
+    return NextResponse.json({
+      type: "no_data",
+      message: "Something went wrong — try again.",
+    });
   }
 }

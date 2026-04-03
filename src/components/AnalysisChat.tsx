@@ -16,12 +16,32 @@ interface ChatMessage {
   noData?: boolean;
 }
 
-const SUGGESTIONS = [
-  "Show home vs away splits",
-  "Break down scoring by quarter",
-  "How do they perform on rest?",
-  "Show recent opponent strength",
-];
+const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
+  MLB: [
+    "Show the starting pitchers' records",
+    "Compare the pitchers' recent game logs",
+    "Show home vs away splits",
+    "How do they perform against lefties?",
+  ],
+  NBA: [
+    "Show home vs away splits",
+    "Pull up the player's last 10 games",
+    "How do they perform on rest?",
+    "Show recent opponent strength",
+  ],
+  NHL: [
+    "Show the goalie's recent save percentage",
+    "Compare power play efficiency",
+    "Show home vs away splits",
+    "Pull up the player's game log",
+  ],
+  DEFAULT: [
+    "Show home vs away splits",
+    "Show recent scoring trends",
+    "How do they perform on rest?",
+    "Show recent opponent strength",
+  ],
+};
 
 export default function AnalysisChat({
   extraction,
@@ -97,7 +117,7 @@ export default function AnalysisChat({
         {/* Suggestion chips — only show if no messages yet */}
         {messages.length === 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {SUGGESTIONS.map((s) => (
+            {(SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT).map((s) => (
               <button
                 key={s}
                 onClick={() => send(s)}
@@ -137,10 +157,11 @@ export default function AnalysisChat({
               </div>
             ))}
             {loading && (
-              <div className="flex gap-1.5 px-3 py-2">
+              <div className="flex items-center gap-2 px-3 py-2">
                 <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce" />
                 <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0.15s]" />
                 <span className="w-1.5 h-1.5 bg-accent rounded-full animate-bounce [animation-delay:0.3s]" />
+                <span className="text-xs text-muted ml-1">Looking into it...</span>
               </div>
             )}
           </div>

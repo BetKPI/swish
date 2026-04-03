@@ -238,6 +238,75 @@ export async function getTeamSchedule(
   }
 }
 
+// ── Probable pitchers ──────────────────────────────────────────────
+
+export async function getProbablePitchers(
+  teamId: number
+): Promise<Record<string, unknown> | null> {
+  try {
+    // Get today's and tomorrow's games with probable pitchers
+    const today = new Date().toISOString().slice(0, 10);
+    const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
+    const res = await fetch(
+      `${BASE}/schedule?teamId=${teamId}&startDate=${today}&endDate=${tomorrow}&sportId=1&hydrate=probablePitcher(note),team`
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    const dates = data.dates || [];
+    for (const d of dates) {
+      for (const game of d.games || []) {
+        const home = game.teams?.home;
+        const away = game.teams?.away;
+        const homePitcher = home?.probablePitcher;
+        const awayPitcher = away?.probablePitcher;
+        if (homePitcher || awayPitcher) {
+          return {
+            gameDate: d.date,
+            homeTeam: home?.team?.name,
+            awayTeam: away?.team?.name,
+            homePitcher: homePitcher ? {
+              id: homePitcher.id,
+              fullName: homePitcher.fullName,
+              era: homePitcher.era,
+              wins: homePitcher.wins,
+              losses: homePitcher.losses,
+              note: homePitcher.note,
+            } : null,
+            awayPitcher: awayPitcher ? {
+              id: awayPitcher.id,
+              fullName: awayPitcher.fullName,
+              era: awayPitcher.era,
+              wins: awayPitcher.wins,
+              losses: awayPitcher.losses,
+              note: awayPitcher.note,
+            } : null,
+          };
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Fetch full pitcher data (season stats + game log) for a given pitcher ID.
+ */
+export async function fetchPitcherData(
+  pitcherId: number
+): Promise<Record<string, unknown> | null> {
+  try {
+    const [seasonStats, gameLog] = await Promise.all([
+      getPlayerSeasonStats(pitcherId),
+      getPlayerGameLog(pitcherId),
+    ]);
+    return { seasonStats, gameLog };
+  } catch {
+    return null;
+  }
+}
+
 // ── Orchestrator ───────────────────────────────────────────────────
 
 export interface MLBPropAnalysis {
@@ -277,11 +346,36 @@ export async function fetchMLBData(
       getTeamSchedule(team.id),
     ]);
 
+    // Fetch probable pitchers for this team
+    const probablePitchers = await getProbablePitchers(team.id);
+
     results[name] = {
       team,
       stats: teamStats,
       recentGames: schedule,
+      probablePitchers,
     };
+
+    // If we got pitcher IDs, fetch their full stats
+    if (probablePitchers) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pp = probablePitchers as any;
+      const pitcherFetches: Promise<void>[] = [];
+
+      for (const key of ["homePitcher", "awayPitcher"] as const) {
+        const pitcher = pp[key];
+        if (pitcher?.id) {
+          pitcherFetches.push(
+            fetchPitcherData(pitcher.id).then((data) => {
+              if (data) {
+                pp[key] = { ...pitcher, ...data };
+              }
+            })
+          );
+        }
+      }
+      await Promise.all(pitcherFetches);
+    }
   }
 
   // Fetch player data
