@@ -309,8 +309,9 @@ function buildPlayerPropCharts(
     const statLabel = formatStatLabel(stat);
 
     // 1. Game log trend with prop line — THE key chart
-    if (propAnalysis?.gameValues?.length > 0) {
-      const data = propAnalysis.gameValues
+    const gameValues = propAnalysis?.gameValues;
+    if (gameValues && gameValues.length > 0) {
+      const data = gameValues
         .slice(-15)
         .reverse()
         .map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => ({
@@ -368,7 +369,7 @@ function buildPlayerPropCharts(
 
     // 4. Home/away split if we have game log data
     if (gameLog && Array.isArray(gameLog) && gameLog.length > 0) {
-      const homeAway = computeHomeAwaySplit(gameLog, stat);
+      const homeAway = computeHomeAwaySplit(gameLog, stat, line);
       if (homeAway) {
         charts.push({
           type: "bar",
@@ -479,20 +480,22 @@ function getSeasonAvgForStat(seasonAvg: Record<string, unknown> | null, stat: st
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function computeHomeAwaySplit(gameLog: any[], stat: string): { venue: string; average: number; propLine: number }[] | null {
-  // BDL game logs have game.home_team_id — check if player's team is home
-  // MLB game logs don't have this cleanly, so we try both patterns
-  // For now, return null if we can't determine home/away
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+function computeHomeAwaySplit(gameLog: any[], stat: string, line: number = 0): { venue: string; average: number; propLine: number }[] | null {
   const home: number[] = [];
   const away: number[] = [];
 
   for (const g of gameLog) {
-    // BDL pattern
+    // BDL pattern: game.home_team_id vs team.id
     if (g.game && g.team) {
       const isHome = g.game.home_team_id === g.team.id;
       const val = getStatFromGameLog(g, stat);
       if (isHome) home.push(val);
+      else away.push(val);
+    }
+    // NHL pattern: homeRoadFlag
+    else if (g.homeRoadFlag) {
+      const val = g[stat] || 0;
+      if (g.homeRoadFlag === "H") home.push(val);
       else away.push(val);
     }
   }
@@ -501,8 +504,8 @@ function computeHomeAwaySplit(gameLog: any[], stat: string): { venue: string; av
 
   const avg = (arr: number[]) => Math.round((arr.reduce((s, v) => s + v, 0) / arr.length) * 10) / 10;
   return [
-    { venue: "Home", average: avg(home), propLine: 0 },
-    { venue: "Away", average: avg(away), propLine: 0 },
+    { venue: "Home", average: avg(home), propLine: line },
+    { venue: "Away", average: avg(away), propLine: line },
   ];
 }
 

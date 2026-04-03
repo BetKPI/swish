@@ -248,9 +248,11 @@ export async function getPitcherVsTeam(
   opponentTeamId: number
 ): Promise<Record<string, unknown>[]> {
   try {
-    // Get career game log (all seasons) — filter by opponent
+    // Get career game log (recent seasons) — filter by opponent
+    const currentYear = new Date().getFullYear();
+    const seasons = Array.from({ length: 6 }, (_, i) => currentYear - i).join(",");
     const res = await fetch(
-      `${BASE}/people/${pitcherId}/stats?stats=gameLog&group=pitching&season=2026,2025,2024,2023,2022,2021`
+      `${BASE}/people/${pitcherId}/stats?stats=gameLog&group=pitching&season=${seasons}`
     );
     if (!res.ok) return [];
     const data = await res.json();
@@ -525,7 +527,7 @@ export async function fetchMLBData(
       };
 
       // Compute prop analysis
-      if (market && line != null && gameLog.length > 0) {
+      if (market && typeof line === "number" && gameLog.length > 0) {
         entry.propAnalysis = analyzeMLBProp(gameLog, player, market, line);
       }
 
@@ -572,19 +574,20 @@ function analyzeMLBProp(
       : 0;
 
   const mid = Math.floor(total / 2);
-  const firstHalf = values.slice(0, mid);
-  const secondHalf = values.slice(mid);
-  const firstAvg =
-    firstHalf.length > 0
-      ? firstHalf.reduce((s, v) => s + v.value, 0) / firstHalf.length
+  const olderHalf = values.slice(0, mid);
+  const recentHalf = values.slice(mid);
+  const olderAvg =
+    olderHalf.length > 0
+      ? olderHalf.reduce((s, v) => s + v.value, 0) / olderHalf.length
       : 0;
-  const secondAvg =
-    secondHalf.length > 0
-      ? secondHalf.reduce((s, v) => s + v.value, 0) / secondHalf.length
+  const recentAvg =
+    recentHalf.length > 0
+      ? recentHalf.reduce((s, v) => s + v.value, 0) / recentHalf.length
       : 0;
-  const diff = secondAvg - firstAvg;
+  const diff = recentAvg - olderAvg;
+  const threshold = average > 0 ? average * 0.1 : 0.5;
   const trend: "rising" | "falling" | "stable" =
-    diff > average * 0.1 ? "rising" : diff < -average * 0.1 ? "falling" : "stable";
+    diff > threshold ? "rising" : diff < -threshold ? "falling" : "stable";
 
   return { stat, line, hitCount, totalGames: total, hitRate: total > 0 ? hitCount / total : 0, average, last5Avg, trend, gameValues: values };
 }

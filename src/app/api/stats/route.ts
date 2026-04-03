@@ -34,15 +34,13 @@ async function fetchSportData(
       for (const team of extraction.teams) {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const espnTeam = (espnData as any)?.[team];
-        if (espnTeam && bdlData[team]) {
+        if (espnTeam && bdlData[team] && typeof bdlData[team] === "object") {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (bdlData[team] as any).recentGames = espnTeam.recentGames;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (bdlData[team] as any).record = espnTeam.record;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (bdlData[team] as any).stats = espnTeam.stats;
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          (bdlData[team] as any).espnTeam = espnTeam.team;
+          const target = bdlData[team] as any;
+          if (espnTeam.recentGames) target.recentGames = espnTeam.recentGames;
+          if (espnTeam.record) target.record = espnTeam.record;
+          if (espnTeam.stats) target.stats = espnTeam.stats;
+          if (espnTeam.team) target.espnTeam = espnTeam.team;
         } else if (espnTeam && !bdlData[team]) {
           bdlData[team] = espnTeam;
         }
@@ -67,7 +65,7 @@ async function fetchSportData(
         const espnTeam = (espnData as any)?.[team];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const mlbTeam = mlbData[team] as any;
-        if (espnTeam && mlbTeam) {
+        if (espnTeam && mlbTeam && typeof mlbTeam === "object") {
           if (!mlbTeam.recentGames?.length && espnTeam.recentGames) {
             mlbTeam.recentGames = espnTeam.recentGames;
           }
@@ -101,7 +99,7 @@ async function fetchSportData(
         const espnTeam = (espnData as any)?.[team];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const nhlTeam = nhlData[team] as any;
-        if (espnTeam && nhlTeam) {
+        if (espnTeam && nhlTeam && typeof nhlTeam === "object") {
           if (!nhlTeam.recentGames?.length && espnTeam.recentGames) {
             nhlTeam.recentGames = espnTeam.recentGames;
           }

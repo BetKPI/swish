@@ -530,8 +530,10 @@ function computeScoringTrend(
   games: GameResult[]
 ): "rising" | "falling" | "stable" {
   if (games.length < 4) return "stable";
-  const first = games.slice(0, Math.floor(games.length / 2));
-  const second = games.slice(Math.floor(games.length / 2));
+  const mid = Math.floor(games.length / 2);
+  const first = games.slice(0, mid);
+  const second = games.slice(mid);
+  if (first.length === 0 || second.length === 0) return "stable";
   const firstAvg =
     first.reduce((s, g) => s + g.totalPoints, 0) / first.length;
   const secondAvg =

@@ -65,16 +65,12 @@ export async function searchPlayer(
       `${BASE}/player/search?q=${encodeURIComponent(playerName)}&limit=5`
     );
     if (!res.ok) {
-      // Fallback: try the stats API
-      const res2 = await fetch(
-        `${STATS_BASE}/skater/summary?cayenneExp=season=20252026&isAggregate=false&isGame=false&limit=10&sort=points&start=0`
-      );
-      if (!res2.ok) return null;
+      console.log(`[NHL] Player search API returned ${res.status}, no fallback available`);
       return null;
     }
     const data = await res.json();
-    const players = data || [];
-    if (!Array.isArray(players) || players.length === 0) return null;
+    const players = Array.isArray(data) ? data : [];
+    if (players.length === 0) return null;
 
     const nameLower = playerName.toLowerCase();
     const exact = players.find(
@@ -302,7 +298,7 @@ export async function fetchNHLData(
       };
 
       // Compute prop analysis
-      if (market && line != null && gameLog.length > 0) {
+      if (market && typeof line === "number" && gameLog.length > 0) {
         entry.propAnalysis = analyzeNHLProp(gameLog, market, line);
       }
 
@@ -339,22 +335,23 @@ function analyzeNHLProp(
     total > 0
       ? Math.round((values.reduce((s, v) => s + v.value, 0) / total) * 10) / 10
       : 0;
-  const last5 = values.slice(0, 5);
+  const last5 = values.slice(-5);
   const last5Avg =
     last5.length > 0
       ? Math.round((last5.reduce((s, v) => s + v.value, 0) / last5.length) * 10) / 10
       : 0;
 
   const mid = Math.floor(total / 2);
-  const firstHalf = values.slice(mid);
-  const secondHalf = values.slice(0, mid);
-  const firstAvg =
-    firstHalf.length > 0 ? firstHalf.reduce((s, v) => s + v.value, 0) / firstHalf.length : 0;
-  const secondAvg =
-    secondHalf.length > 0 ? secondHalf.reduce((s, v) => s + v.value, 0) / secondHalf.length : 0;
-  const diff = secondAvg - firstAvg;
+  const olderHalf = values.slice(0, mid);
+  const recentHalf = values.slice(mid);
+  const olderAvg =
+    olderHalf.length > 0 ? olderHalf.reduce((s, v) => s + v.value, 0) / olderHalf.length : 0;
+  const recentAvg =
+    recentHalf.length > 0 ? recentHalf.reduce((s, v) => s + v.value, 0) / recentHalf.length : 0;
+  const diff = recentAvg - olderAvg;
+  const threshold = average > 0 ? average * 0.1 : 0.5;
   const trend: "rising" | "falling" | "stable" =
-    diff > average * 0.1 ? "rising" : diff < -average * 0.1 ? "falling" : "stable";
+    diff > threshold ? "rising" : diff < -threshold ? "falling" : "stable";
 
   return { stat, line, hitCount, totalGames: total, hitRate: total > 0 ? hitCount / total : 0, average, last5Avg, trend, gameValues: values };
 }
