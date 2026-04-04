@@ -1,21 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" fill="none">
-  <!-- Background -->
-  <rect width="1200" height="630" fill="#0a0a0a"/>
+  <rect width="1200" height="630" fill="#0d1b2a"/>
+  <rect x="2" y="2" width="1196" height="626" fill="none" stroke="#c0a050" stroke-width="1" opacity="0.3"/>
 
-  <!-- Subtle border -->
-  <rect x="1" y="1" width="1198" height="628" rx="0" stroke="#2a2a2a" stroke-width="2" fill="none"/>
-
-  <!-- Logo mark (stylized S) -->
-  <g transform="translate(480, 140) scale(0.55)">
-    <rect width="512" height="512" rx="96" fill="#10b981"/>
-    <path d="M310 140 C200 140, 150 180, 200 230 C250 280, 350 270, 320 320 C290 370, 160 380, 200 370"
-          stroke="white" stroke-width="46" stroke-linecap="round" fill="none"/>
-    <circle cx="200" cy="368" r="16" fill="white" opacity="0.5"/>
+  <!-- Sports icons row -->
+  <g transform="translate(600, 200)">
+    <!-- Basketball -->
+    <g transform="translate(-220, 0)">
+      <circle cx="0" cy="0" r="42" fill="#E87521" opacity="0.9"/>
+      <path d="M-42 0 Q0 -10 42 0" fill="none" stroke="#2a1508" stroke-width="1.8"/>
+      <path d="M-42 0 Q0 10 42 0" fill="none" stroke="#2a1508" stroke-width="1.8"/>
+      <line x1="0" y1="-42" x2="0" y2="42" stroke="#2a1508" stroke-width="1.8"/>
+    </g>
+    <!-- Hockey -->
+    <g transform="translate(-110, 0)">
+      <ellipse cx="0" cy="0" rx="36" ry="24" fill="#222"/>
+      <ellipse cx="0" cy="0" rx="36" ry="24" fill="none" stroke="#555" stroke-width="1.5"/>
+      <line x1="-40" y1="-36" x2="18" y2="27" stroke="#c4a46c" stroke-width="4" stroke-linecap="round"/>
+      <line x1="40" y1="-36" x2="-18" y2="27" stroke="#c4a46c" stroke-width="4" stroke-linecap="round"/>
+    </g>
+    <!-- Football -->
+    <g transform="translate(0, 0)">
+      <ellipse cx="0" cy="0" rx="44" ry="26" fill="#6B3A1F" transform="rotate(-30)"/>
+      <line x1="-10" y1="-8" x2="10" y2="-8" stroke="#fff" stroke-width="2" stroke-linecap="round" transform="rotate(-30)"/>
+      <line x1="-4" y1="-15" x2="-4" y2="-2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" transform="rotate(-30)"/>
+      <line x1="0" y1="-16" x2="0" y2="-1" stroke="#fff" stroke-width="1.2" stroke-linecap="round" transform="rotate(-30)"/>
+      <line x1="4" y1="-15" x2="4" y2="-2" stroke="#fff" stroke-width="1.2" stroke-linecap="round" transform="rotate(-30)"/>
+    </g>
+    <!-- Baseball -->
+    <g transform="translate(110, 0)">
+      <circle cx="0" cy="0" r="38" fill="#f5f0e8"/>
+      <path d="M-14 -36 Q-26 -18 -26 0 Q-26 18 -14 36" fill="none" stroke="#cc2222" stroke-width="2"/>
+      <path d="M14 -36 Q26 -18 26 0 Q26 18 14 36" fill="none" stroke="#cc2222" stroke-width="2"/>
+    </g>
+    <!-- Soccer -->
+    <g transform="translate(220, 0)">
+      <circle cx="0" cy="0" r="38" fill="#f8f8f8"/>
+      <polygon points="0,-14 13,-4 8,12 -8,12 -13,-4" fill="#222"/>
+    </g>
   </g>
 
   <!-- App name -->
-  <text x="600" y="480" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="900" fill="white" letter-spacing="-2">swish</text>
+  <text x="600" y="370" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="80" font-weight="800" fill="#f0f0f0" letter-spacing="6">SWISH</text>
 
   <!-- Tagline -->
-  <text x="600" y="530" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-size="28" fill="#777777">know before you bet</text>
+  <text x="600" y="420" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" fill="#888" letter-spacing="4">KNOW BEFORE YOU BET</text>
+
+  <!-- Subtitle -->
+  <text x="600" y="520" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" fill="#c0a050" letter-spacing="6" opacity="0.6">NBA  ·  NHL  ·  NFL  ·  MLB  ·  SOCCER</text>
 </svg>
