@@ -65,9 +65,10 @@ export function formatProbability(prob: number): string {
  * Build a complete odds analysis object for display.
  */
 export function analyzeOdds(
-  oddsStr: string,
+  oddsStr: string | null | undefined,
   actualWinRate?: number
 ): OddsAnalysis | null {
+  if (!oddsStr) return null;
   const impliedProb = parseOddsToImpliedProbability(oddsStr);
   if (impliedProb === null) return null;
 

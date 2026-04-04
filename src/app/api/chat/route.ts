@@ -250,10 +250,11 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 }
 
 RULES:
+- IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. If the bet is about "Player X points" and the user asks "what about his shots?" or "show me rebounds", they mean Player X — do NOT say you need more info. Use existing data or fetch for the SAME player.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
 - For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
 - For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
-- For individual player lookups, use the sport-specific player action.
+- For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context.
 - When the user says "last year", "last season", or references a past year, include "season" in the fetch request with the correct year number.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.
