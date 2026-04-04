@@ -316,6 +316,8 @@ function buildPlayerPropCharts(
     const espnStatMap: Record<string, string> = {
       pts: "PTS", reb: "REB", ast: "AST", stl: "STL", blk: "BLK",
       fg3m: "3PT", turnover: "TO", pra: "_pra",
+      // NHL
+      shots: "SOG", goals: "G", saves: "SV",
       // MLB
       hits: "H", homeRuns: "HR", rbi: "RBI", strikeOuts: "SO",
       stolenBases: "SB", totalBases: "TB",
@@ -483,21 +485,7 @@ function buildPlayerPropFallbackCharts(
   const market = extraction.market || "Points";
   const statLabel = formatStatLabel(mapMarketToStatKey(market));
 
-  // 1. Odds implied probability if available
-  if (computed.oddsAnalysis) {
-    charts.push({
-      type: "bar",
-      title: `${playerName} ${statLabel} — Odds Breakdown`,
-      relevance: `The odds imply ${computed.oddsAnalysis.impliedProbabilityFormatted} probability of hitting this prop`,
-      data: [
-        { metric: "Odds Imply", probability: Math.round(computed.oddsAnalysis.impliedProbability * 100) },
-      ],
-      xKey: "metric",
-      yKeys: ["probability"],
-    });
-  }
-
-  // 2. Opponent scoring allowed trend (relevant for most props)
+  // 1. Opponent scoring allowed trend (relevant for most props)
   if (teams.length > 0) {
     // Find the opponent team (not the player's team)
     const opponentTeam = teams.length > 1 ? teams[1] : teams[0];
@@ -519,7 +507,7 @@ function buildPlayerPropFallbackCharts(
     }
   }
 
-  // 3. Team comparison table (always useful context)
+  // 2. Team comparison table (always useful context)
   if (teams.length === 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
@@ -541,7 +529,7 @@ function buildPlayerPropFallbackCharts(
     });
   }
 
-  // 4. H2H if available
+  // 3. H2H if available
   if (computed.headToHead && computed.headToHead.games.length > 0 && extraction.teams) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }
@@ -551,15 +539,28 @@ function buildPlayerPropFallbackCharts(
 
 function mapMarketToStatKey(market: string): string {
   const m = market.toLowerCase();
+  // NHL
+  if (m.includes("shot")) return "shots";
+  if (m.includes("save")) return "saves";
+  if (m.includes("goal") && !m.includes("against")) return "goals";
+  if (m.includes("goals against")) return "goalsAgainst";
+  if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
+  // NBA
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";
   if (m.includes("three") || m.includes("3p")) return "fg3m";
   if (m.includes("steal")) return "stl";
-  if (m.includes("block")) return "blk";
-  if (m.includes("strikeout")) return "strikeOuts";
+  if (m.includes("block") || m.includes("blk")) return "blk";
+  if (m.includes("turnover")) return "turnover";
+  if (m.includes("pts+reb+ast") || m.includes("pra")) return "pra";
+  // MLB
+  if (m.includes("strikeout") || m.includes("k's")) return "strikeOuts";
+  if (m.includes("home run") || m.includes("hr")) return "homeRuns";
+  if (m.includes("rbi") || m.includes("runs batted")) return "rbi";
+  if (m.includes("stolen base") || m.includes("sb")) return "stolenBases";
+  if (m.includes("total bases") || m.includes("tb")) return "totalBases";
   if (m.includes("hit")) return "hits";
-  if (m.includes("home run")) return "homeRuns";
   return "pts";
 }
 
@@ -622,6 +623,13 @@ function shortenName(name: string): string {
 
 function formatStatLabel(stat: string): string {
   const map: Record<string, string> = {
+    // NHL
+    shots: "Shots",
+    goals: "Goals",
+    saves: "Saves",
+    goalsAgainst: "Goals Against",
+    powerPlayGoals: "PP Goals",
+    // NBA
     pts: "Points",
     reb: "Rebounds",
     ast: "Assists",
@@ -633,6 +641,7 @@ function formatStatLabel(stat: string): string {
     "pts+reb": "Pts+Reb",
     "pts+ast": "Pts+Ast",
     "reb+ast": "Reb+Ast",
+    // MLB
     hits: "Hits",
     homeRuns: "Home Runs",
     rbi: "RBIs",
