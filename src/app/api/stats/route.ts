@@ -213,6 +213,43 @@ async function logToDiscord(
   } catch { /* silent */ }
 }
 
+async function logParlayToDiscord(
+  extraction: BetExtraction,
+  legs: { description: string; sport: string; error: boolean; unsupported: boolean; summary: string | null }[]
+) {
+  const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+  if (!webhookUrl) return;
+
+  const analyzed = legs.filter((l) => !l.error && !l.unsupported);
+  const failed = legs.filter((l) => l.error || l.unsupported);
+
+  try {
+    await fetch(webhookUrl, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        embeds: [{
+          title: `\u{1F3B0} ${legs.length}-Leg Parlay Analyzed`,
+          color: failed.length === 0 ? 0x10b981 : failed.length === legs.length ? 0xef4444 : 0xf59e0b,
+          fields: [
+            { name: "Bet", value: extraction.description || `${legs.length}-leg parlay`, inline: false },
+            { name: "Analyzed", value: `${analyzed.length}/${legs.length} legs`, inline: true },
+            ...(extraction.odds ? [{ name: "Odds", value: extraction.odds, inline: true }] : []),
+            ...legs.map((l, i) => ({
+              name: `Leg ${i + 1}: ${l.sport}`,
+              value: l.error || l.unsupported
+                ? `\u274C ${l.description || "Unknown"}`
+                : `\u2705 ${l.description || "Unknown"}`,
+              inline: false,
+            })),
+          ],
+          timestamp: new Date().toISOString(),
+        }],
+      }),
+    });
+  } catch { /* silent */ }
+}
+
 function parseGeminiJSON(text: string): Record<string, unknown> {
   let jsonText = text.trim();
   if (jsonText.startsWith("```")) {
@@ -362,6 +399,9 @@ export async function POST(request: NextRequest) {
           unsupported: !ld.teamData && !hasAnything,
         };
       });
+
+      // Log successful parlay to Discord
+      logParlayToDiscord(extraction, finalLegs);
 
       return NextResponse.json({
         parlay: true,

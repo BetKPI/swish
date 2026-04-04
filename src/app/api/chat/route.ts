@@ -44,6 +44,7 @@ type FetchAction =
   | { action: "mlb_pitcher_h2h"; pitcher1Name: string; pitcher2Name: string; team1: string; team2: string }
   | { action: "nba_player"; playerName: string; season?: number }
   | { action: "nhl_player"; playerName: string; season?: string }
+  | { action: "nhl_team_goalie"; teamName: string }
   | { action: "team_schedule"; sport: string; teamName: string };
 
 async function executeFetch(
@@ -123,6 +124,22 @@ async function executeFetch(
           nhl.getPlayerGameLog(player.playerId, fetchReq.season),
         ]);
         return { player, stats, gameLog: log, season: fetchReq.season || "current" };
+      }
+
+      case "nhl_team_goalie": {
+        const abbrev = nhl.findTeamAbbrev(fetchReq.teamName);
+        if (!abbrev) return null;
+        const goalieData = await nhl.getTeamStartingGoalie(abbrev);
+        if (!goalieData) return null;
+        return {
+          goalie: {
+            name: `${goalieData.player.firstName?.default || ""} ${goalieData.player.lastName?.default || ""}`.trim(),
+            team: abbrev,
+            position: "G",
+          },
+          stats: goalieData.stats,
+          gameLog: goalieData.gameLog,
+        };
       }
 
       case "team_schedule": {
@@ -233,7 +250,7 @@ FORMAT 2 — You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
-    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "team_schedule",
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule",
     "playerName": "name" (for player actions),
     "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
     "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
@@ -241,7 +258,7 @@ FORMAT 2 — You NEED more data:
     "team1": "team" (for pitcher_matchup or pitcher_h2h),
     "team2": "team" (for pitcher_matchup or pitcher_h2h),
     "sport": "sport" (for team_schedule),
-    "teamName": "team" (for team_schedule)
+    "teamName": "team" (for team_schedule or nhl_team_goalie)
   },
   "message": "Fetching that data now..."
 }
@@ -260,6 +277,7 @@ RULES:
 - For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
 - For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
 - For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context (see "Players in this bet" above).
+- For NHL goalie stats (save percentage, saves, goals against), use "nhl_team_goalie" with the team name. This fetches the starting goalie's stats and game log automatically — you do NOT need to know the goalie's name.
 - When the user says "last year", "last season", or references a past year, include "season" in the fetch request with the correct year number.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.

@@ -224,6 +224,44 @@ export async function getTeamStandings(): Promise<Record<string, unknown>[]> {
   return (data?.standings as Record<string, unknown>[]) || [];
 }
 
+// ── Team goalie lookup ────────────────────────────────────────────
+
+export async function getTeamStartingGoalie(
+  teamAbbrev: string
+): Promise<{ player: NHLPlayer; stats: Record<string, unknown> | null; gameLog: NHLGameLog[] } | null> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const roster: any = await cachedFetch(
+      `${BASE}/roster/${teamAbbrev}/current`,
+      TTL.MEDIUM
+    );
+    if (!roster) return null;
+
+    // Goalies are in the "goalies" array
+    const goalies: NHLPlayer[] = roster.goalies || [];
+    if (goalies.length === 0) return null;
+
+    // Pick the first goalie (typically the starter)
+    const goalie = goalies[0];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerId = goalie.playerId || (goalie as any).id;
+    if (!playerId) return null;
+
+    const [stats, gameLog] = await Promise.all([
+      getPlayerStats(playerId as number),
+      getPlayerGameLog(playerId as number),
+    ]);
+
+    return {
+      player: goalie,
+      stats,
+      gameLog,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // ── Orchestrator ───────────────────────────────────────────────────
 
 export async function fetchNHLData(
