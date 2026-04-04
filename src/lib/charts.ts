@@ -240,7 +240,26 @@ function buildMoneylineCharts(
     });
   }
 
-  // 3. H2H if available
+  // 3. Scoring trend — scored vs allowed
+  for (const team of teams) {
+    if (team.recentGames.length < 3) continue;
+    const data = team.recentGames.slice(-10).map((g, i) => ({
+      game: `G${i + 1}`,
+      scored: g.teamScore,
+      allowed: g.opponentScore,
+      opponent: shortenName(g.opponent),
+    }));
+    charts.push({
+      type: "line",
+      title: `${team.name} — Scoring Trend`,
+      relevance: "Points scored vs allowed — shows offensive and defensive form",
+      data,
+      xKey: "game",
+      yKeys: ["scored", "allowed"],
+    });
+  }
+
+  // 4. H2H if available
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }

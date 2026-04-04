@@ -197,7 +197,11 @@ export async function POST(request: NextRequest) {
 
     // Step 1: Ask AI what it needs
     const currentYear = new Date().getFullYear();
-    const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}) and is asking a follow-up question.
+    const players = extraction.players?.length ? extraction.players.join(", ") : "none";
+    const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}).
+${extraction.players?.length ? `Players in this bet: ${players}` : ""}
+${extraction.market ? `Market: ${extraction.market}` : ""}
+${extraction.line != null ? `Line: ${extraction.line}` : ""}
 
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 
@@ -250,15 +254,16 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 }
 
 RULES:
-- IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. If the bet is about "Player X points" and the user asks "what about his shots?" or "show me rebounds", they mean Player X — do NOT say you need more info. Use existing data or fetch for the SAME player.
+- IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
+- If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
 - For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
 - For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
-- For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context.
+- For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context (see "Players in this bet" above).
 - When the user says "last year", "last season", or references a past year, include "season" in the fetch request with the correct year number.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.
-- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, etc.)`;
+- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.`;
 
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {

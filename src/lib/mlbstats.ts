@@ -53,6 +53,7 @@ export interface MLBGameLog {
   date: string;
   opponent: string;
   stat: Record<string, unknown>;
+  isHome?: boolean;
 }
 
 // ── API calls ──────────────────────────────────────────────────────
@@ -131,6 +132,7 @@ export async function getPlayerGameLog(
           date: split.date,
           opponent: split.opponent?.name || split.team?.name || "Unknown",
           stat: split.stat || {},
+          isHome: split.isHome,
         });
       }
     }
@@ -552,6 +554,7 @@ function analyzeMLBProp(
     value: getMLBStatValue(g.stat, stat),
     hit: getMLBStatValue(g.stat, stat) > line,
     opponent: g.opponent,
+    home: g.isHome ?? false,
   }));
 
   const hitCount = values.filter((v) => v.hit).length;

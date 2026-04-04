@@ -324,6 +324,7 @@ function analyzeNHLProp(
     value: getNHLStatValue(g, stat),
     hit: getNHLStatValue(g, stat) > line,
     opponent: g.opponentAbbrev?.default || "?",
+    home: g.homeRoadFlag === "H",
   }));
 
   const hitCount = values.filter((v) => v.hit).length;
