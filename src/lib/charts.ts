@@ -193,44 +193,7 @@ function buildMoneylineCharts(
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
 
-  // 1. Implied probability vs actual win rate
-  if (computed.oddsAnalysis) {
-    const primary = teams[0];
-    if (primary) {
-      const data = [
-        {
-          metric: "Odds Imply",
-          probability: Math.round(computed.oddsAnalysis.impliedProbability * 100),
-        },
-        {
-          metric: "Actual Win %",
-          probability: Math.round(primary.record.pct * 100),
-        },
-      ];
-      if (primary.homeRecord) {
-        data.push({
-          metric: "Home Win %",
-          probability: Math.round(primary.homeRecord.pct * 100),
-        });
-      }
-      if (primary.awayRecord) {
-        data.push({
-          metric: "Away Win %",
-          probability: Math.round(primary.awayRecord.pct * 100),
-        });
-      }
-      charts.push({
-        type: "bar",
-        title: `${primary.name} — Odds vs Reality`,
-        relevance: `Compares what the odds imply (${computed.oddsAnalysis.impliedProbabilityFormatted}) to actual performance`,
-        data,
-        xKey: "metric",
-        yKeys: ["probability"],
-      });
-    }
-  }
-
-  // 2. Point differential trend
+  // 1. Point differential trend
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     let runningDiff = 0;
@@ -253,7 +216,7 @@ function buildMoneylineCharts(
     });
   }
 
-  // 3. Team comparison table
+  // 2. Team comparison table
   if (teams.length === 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
@@ -277,7 +240,7 @@ function buildMoneylineCharts(
     });
   }
 
-  // 4. H2H if available
+  // 3. H2H if available
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }

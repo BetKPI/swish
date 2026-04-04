@@ -90,9 +90,8 @@ export function computeAnalysis(
     }
   }
 
-  // Odds analysis
-  const winRate = getRelevantWinRate(teamMetrics, extraction);
-  const oddsAnalysis = analyzeOdds(extraction.odds, winRate ?? undefined);
+  // Odds — just convert to implied probability, no edge calculation
+  const oddsAnalysis = analyzeOdds(extraction.odds);
 
   // Bet-type-specific insights
   const betTypeInsights = computeBetTypeInsights(
@@ -544,33 +543,4 @@ function computeScoringTrend(
   if (diff > 5) return "rising";
   if (diff < -5) return "falling";
   return "stable";
-}
-
-// ── Win rate for odds comparison ───────────────────────────────────
-
-function getRelevantWinRate(
-  teamMetrics: Record<string, TeamMetrics>,
-  extraction: { betType: string; teams: string[]; line?: number }
-): number | null {
-  const teams = Object.values(teamMetrics);
-  if (teams.length === 0) return null;
-
-  // For moneyline, use the first team's win percentage
-  // (the team the bet is on is typically listed first)
-  const primaryTeam = teams[0];
-
-  switch (extraction.betType) {
-    case "moneyline":
-      return primaryTeam.record.pct;
-    case "spread":
-      return primaryTeam.ats?.coverRate ?? null;
-    case "over_under":
-      return primaryTeam.overUnder?.overRate ?? null;
-    case "player_prop":
-      // Don't use team win rate for player props — it's meaningless.
-      // Prop hit rate is computed separately in propAnalysis and shown in charts.
-      return null;
-    default:
-      return null;
-  }
 }

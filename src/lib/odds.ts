@@ -46,15 +46,6 @@ export function parseOddsToImpliedProbability(oddsStr: string): number | null {
 }
 
 /**
- * Calculate the edge: difference between implied probability from odds
- * and the actual historical win rate.
- * Positive = value bet (historical rate > implied), Negative = overpriced.
- */
-export function calculateEdge(impliedProb: number, actualRate: number): number {
-  return actualRate - impliedProb;
-}
-
-/**
  * Format probability as a percentage string.
  */
 export function formatProbability(prob: number): string {
@@ -62,40 +53,24 @@ export function formatProbability(prob: number): string {
 }
 
 /**
- * Build a complete odds analysis object for display.
+ * Convert odds string to implied probability. That's it — no edge, no predictions.
  */
 export function analyzeOdds(
-  oddsStr: string | null | undefined,
-  actualWinRate?: number
+  oddsStr: string | null | undefined
 ): OddsAnalysis | null {
   if (!oddsStr) return null;
   const impliedProb = parseOddsToImpliedProbability(oddsStr);
   if (impliedProb === null) return null;
 
-  const result: OddsAnalysis = {
+  return {
     odds: oddsStr,
     impliedProbability: impliedProb,
     impliedProbabilityFormatted: formatProbability(impliedProb),
   };
-
-  if (actualWinRate !== undefined) {
-    result.actualWinRate = actualWinRate;
-    result.actualWinRateFormatted = formatProbability(actualWinRate);
-    result.edge = calculateEdge(impliedProb, actualWinRate);
-    result.edgeFormatted = `${result.edge > 0 ? "+" : ""}${(result.edge * 100).toFixed(1)}%`;
-    result.hasValue = result.edge > 0;
-  }
-
-  return result;
 }
 
 export interface OddsAnalysis {
   odds: string;
   impliedProbability: number;
   impliedProbabilityFormatted: string;
-  actualWinRate?: number;
-  actualWinRateFormatted?: string;
-  edge?: number;
-  edgeFormatted?: string;
-  hasValue?: boolean;
 }

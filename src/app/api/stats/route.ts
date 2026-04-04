@@ -501,10 +501,7 @@ function buildDataContext(
   if (extraction.players.length > 0) ctx += ` Players: ${extraction.players.join(", ")}`;
 
   if (oddsAnalysis) {
-    ctx += `\n\nODDS: Implied ${oddsAnalysis.impliedProbabilityFormatted}`;
-    if (oddsAnalysis.actualWinRate !== undefined) {
-      ctx += `, Historical ${oddsAnalysis.actualWinRateFormatted}, Edge ${oddsAnalysis.edgeFormatted}`;
-    }
+    ctx += `\n\nODDS: Implied probability ${oddsAnalysis.impliedProbabilityFormatted}`;
   }
 
   for (const [name, m] of Object.entries(teamMetrics)) {
