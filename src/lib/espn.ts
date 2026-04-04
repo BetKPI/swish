@@ -1,3 +1,5 @@
+import { cachedFetch, TTL } from "./fetch";
+
 const SPORT_MAP: Record<string, { sport: string; league: string }> = {
   NBA: { sport: "basketball", league: "nba" },
   NFL: { sport: "football", league: "nfl" },
@@ -58,12 +60,12 @@ export async function searchPlayer(
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
   try {
     // Fast: ESPN site search API
-    const searchRes = await fetch(
-      `https://site.web.api.espn.com/apis/common/v3/search?query=${encodeURIComponent(playerName)}&limit=5&type=player&sport=${s}&league=${league}`
+    const searchData = await cachedFetch<Record<string, unknown>>(
+      `https://site.web.api.espn.com/apis/common/v3/search?query=${encodeURIComponent(playerName)}&limit=5&type=player&sport=${s}&league=${league}`,
+      TTL.MEDIUM
     );
-    if (searchRes.ok) {
-      const searchData = await searchRes.json();
-      const results = searchData.items || searchData.results || [];
+    if (searchData) {
+      const results = (searchData.items || searchData.results || []) as Record<string, unknown>[];
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const match = results.find((r: any) => r.type === "player");
       if (match) {
@@ -72,12 +74,12 @@ export async function searchPlayer(
     }
 
     // Fallback: athletes endpoint
-    const res = await fetch(
-      `${BASE}/${s}/${league}/athletes?limit=100&search=${encodeURIComponent(playerName)}`
+    const data = await cachedFetch<Record<string, unknown>>(
+      `${BASE}/${s}/${league}/athletes?limit=100&search=${encodeURIComponent(playerName)}`,
+      TTL.MEDIUM
     );
-    if (res.ok) {
-      const data = await res.json();
-      const athletes = data.athletes || data.items || [];
+    if (data) {
+      const athletes = (data.athletes || data.items || []) as Record<string, unknown>[];
       if (athletes.length > 0) return athletes[0];
     }
 
@@ -97,11 +99,12 @@ export async function getPlayerGameLog(
 ): Promise<ESPNPlayerGameLog[]> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
   try {
-    const res = await fetch(
-      `${WEB_BASE}/${s}/${league}/athletes/${playerId}/gamelog`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${WEB_BASE}/${s}/${league}/athletes/${playerId}/gamelog`,
+      TTL.MEDIUM
     );
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!data) return [];
 
     const labels: string[] = data.labels || [];
     const eventDetails = data.events || {};
@@ -141,15 +144,7 @@ export async function getPlayerStats(
   playerId: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(
-      `${BASE}/${s}/${league}/athletes/${playerId}/statistics`
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/${s}/${league}/athletes/${playerId}/statistics`, TTL.MEDIUM);
 }
 
 export async function fetchPlayerData(
@@ -190,11 +185,12 @@ export async function searchTeam(
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
   try {
-    const res = await fetch(
-      `${BASE}/${s}/${league}/teams?limit=100`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/${s}/${league}/teams?limit=100`,
+      TTL.LONG
     );
-    if (!res.ok) return null;
-    const data = await res.json();
+    if (!data) return null;
     const teams = data.sports?.[0]?.leagues?.[0]?.teams || [];
     const match = teams.find(
       (t: { team: { displayName: string; shortDisplayName: string; abbreviation: string; name: string } }) => {
@@ -221,15 +217,7 @@ export async function getTeamStats(
   teamId: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(
-      `${BASE}/${s}/${league}/teams/${teamId}/statistics`
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}/statistics`, TTL.LONG);
 }
 
 export async function getTeamRecord(
@@ -237,26 +225,14 @@ export async function getTeamRecord(
   teamId: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(`${BASE}/${s}/${league}/teams/${teamId}`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}`, TTL.LONG);
 }
 
 export async function getScoreboard(
   sport: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(`${BASE}/${s}/${league}/scoreboard`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/${s}/${league}/scoreboard`, TTL.SHORT);
 }
 
 export async function getTeamSchedule(
@@ -264,15 +240,7 @@ export async function getTeamSchedule(
   teamId: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  try {
-    const res = await fetch(
-      `${BASE}/${s}/${league}/teams/${teamId}/schedule`
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}/schedule`, TTL.SHORT);
 }
 
 export async function fetchAllTeamData(

@@ -6,6 +6,7 @@ import { fetchNHLData } from "@/lib/nhlstats";
 import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
 import { getMarketContext } from "@/lib/markets";
+import { fetchWithRetry } from "@/lib/fetch";
 import type { BetExtraction } from "@/types";
 
 export const maxDuration = 60;
@@ -139,7 +140,7 @@ async function callGemini(
   apiKey: string,
   model: string = "gemini-2.5-flash"
 ): Promise<string | null> {
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
     {
       method: "POST",
@@ -151,7 +152,9 @@ async function callGemini(
           maxOutputTokens: 4096,
         },
       }),
-    }
+    },
+    2, // 2 retries for Gemini (most critical dependency)
+    3000
   );
 
   if (!response.ok) {

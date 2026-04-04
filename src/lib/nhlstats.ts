@@ -5,6 +5,8 @@
  * Provides: player search, season stats, game logs, team standings, schedules.
  */
 
+import { cachedFetch, TTL } from "./fetch";
+
 const BASE = "https://api-web.nhle.com/v1";
 const STATS_BASE = "https://api.nhle.com/stats/rest/en";
 
@@ -61,14 +63,14 @@ export async function searchPlayer(
   playerName: string
 ): Promise<NHLPlayer | null> {
   try {
-    const res = await fetch(
-      `${BASE}/player/search?q=${encodeURIComponent(playerName)}&limit=5`
+    const data = await cachedFetch<NHLPlayer[] | Record<string, unknown>>(
+      `${BASE}/player/search?q=${encodeURIComponent(playerName)}&limit=5`,
+      TTL.MEDIUM
     );
-    if (!res.ok) {
-      console.log(`[NHL] Player search API returned ${res.status}, no fallback available`);
+    if (!data) {
+      console.log(`[NHL] Player search API failed, no fallback available`);
       return null;
     }
-    const data = await res.json();
     const players = Array.isArray(data) ? data : [];
     if (players.length === 0) return null;
 
@@ -93,11 +95,12 @@ export async function getPlayerGameLog(
 ): Promise<NHLGameLog[]> {
   const yr = season || getCurrentNHLSeason();
   try {
-    const res = await fetch(
-      `${BASE}/player/${playerId}/game-log/${yr}/2` // 2 = regular season
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/player/${playerId}/game-log/${yr}/2`, // 2 = regular season
+      TTL.MEDIUM
     );
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!data) return [];
     const games: NHLGameLog[] = data.gameLog || [];
     return games.slice(0, 15); // Most recent 15
   } catch {
@@ -111,9 +114,12 @@ export async function getPlayerStats(
   playerId: number
 ): Promise<Record<string, unknown> | null> {
   try {
-    const res = await fetch(`${BASE}/player/${playerId}/landing`);
-    if (!res.ok) return null;
-    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/player/${playerId}/landing`,
+      TTL.MEDIUM
+    );
+    if (!data) return null;
     return {
       featuredStats: data.featuredStats,
       careerTotals: data.careerTotals,
@@ -181,22 +187,19 @@ export function findTeamAbbrev(teamName: string): string | null {
 export async function getTeamStats(
   teamAbbrev: string
 ): Promise<Record<string, unknown> | null> {
-  try {
-    const res = await fetch(`${BASE}/club-stats/${teamAbbrev}/now`);
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/club-stats/${teamAbbrev}/now`, TTL.LONG);
 }
 
 export async function getTeamSchedule(
   teamAbbrev: string
 ): Promise<Record<string, unknown>[]> {
   try {
-    const res = await fetch(`${BASE}/club-schedule-season/${teamAbbrev}/now`);
-    if (!res.ok) return [];
-    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/club-schedule-season/${teamAbbrev}/now`,
+      TTL.SHORT
+    );
+    if (!data) return [];
     const games = data.games || [];
     // Get completed games, last 15
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -217,14 +220,8 @@ export async function getTeamSchedule(
 }
 
 export async function getTeamStandings(): Promise<Record<string, unknown>[]> {
-  try {
-    const res = await fetch(`${BASE}/standings/now`);
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.standings || [];
-  } catch {
-    return [];
-  }
+  const data = await cachedFetch<Record<string, unknown>>(`${BASE}/standings/now`, TTL.SHORT);
+  return (data?.standings as Record<string, unknown>[]) || [];
 }
 
 // ── Orchestrator ───────────────────────────────────────────────────

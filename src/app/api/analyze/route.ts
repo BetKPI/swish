@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { fetchWithRetry } from "@/lib/fetch";
 
 const EXTRACTION_PROMPT = `You are an expert sports betting analyst. Analyze this screenshot of a sports bet and extract structured information.
 
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetch(
+    const response = await fetchWithRetry(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
       {
         method: "POST",
@@ -59,7 +60,9 @@ export async function POST(request: NextRequest) {
             maxOutputTokens: 4096,
           },
         }),
-      }
+      },
+      2, // 2 retries for Gemini extraction (critical path)
+      3000
     );
 
     if (!response.ok) {

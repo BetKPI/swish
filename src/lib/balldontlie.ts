@@ -5,6 +5,8 @@
  * Provides: player search, season averages, game logs, team stats.
  */
 
+import { fetchWithRetry } from "./fetch";
+
 const BASE = "https://api.balldontlie.io/v1";
 
 // BDL requires an API key (free tier at balldontlie.io).
@@ -88,7 +90,7 @@ export async function searchPlayer(
     const lastName = parts.length > 1 ? parts.slice(-1)[0] : parts[0];
     const firstName = parts.length > 1 ? parts.slice(0, -1).join(" ") : "";
 
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${BASE}/players?search=${encodeURIComponent(lastName)}&per_page=15`,
       { headers: headers() }
     );
@@ -105,7 +107,7 @@ export async function searchPlayer(
 
     // If no results with last name, try first_name + last_name params
     if (players.length === 0 && firstName) {
-      const res2 = await fetch(
+      const res2 = await fetchWithRetry(
         `${BASE}/players?first_name=${encodeURIComponent(firstName)}&last_name=${encodeURIComponent(lastName)}&per_page=5`,
         { headers: headers() }
       );
@@ -145,7 +147,7 @@ export async function getSeasonAverages(
   if (!isAvailable()) return null;
   const yr = season || getCurrentSeason();
   try {
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${BASE}/season_averages?season=${yr}&player_ids[]=${playerId}`,
       { headers: headers() }
     );
@@ -169,7 +171,7 @@ export async function getPlayerGameLog(
   if (!isAvailable()) return [];
   const season = getCurrentSeason();
   try {
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${BASE}/stats?player_ids[]=${playerId}&seasons[]=${season}&per_page=${last}&sort=-game.date`,
       { headers: headers() }
     );
@@ -187,7 +189,7 @@ export async function getTeamStats(
 ): Promise<Record<string, unknown> | null> {
   const yr = season || getCurrentSeason();
   try {
-    const res = await fetch(
+    const res = await fetchWithRetry(
       `${BASE}/teams/${teamId}`,
       { headers: headers() }
     );
@@ -203,7 +205,7 @@ export async function searchTeam(
 ): Promise<{ id: number; full_name: string; abbreviation: string } | null> {
   if (!isAvailable()) return null;
   try {
-    const res = await fetch(`${BASE}/teams?per_page=30`, { headers: headers() });
+    const res = await fetchWithRetry(`${BASE}/teams?per_page=30`, { headers: headers() });
     if (res.status === 401 || res.status === 403) {
       markAuthFailed();
       return null;

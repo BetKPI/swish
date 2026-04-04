@@ -4,6 +4,7 @@ import * as bdl from "@/lib/balldontlie";
 import * as nhl from "@/lib/nhlstats";
 import { fetchAllTeamData } from "@/lib/espn";
 import { getMarketContext } from "@/lib/markets";
+import { fetchWithRetry } from "@/lib/fetch";
 
 /**
  * Chat endpoint — two-step flow:
@@ -12,7 +13,7 @@ import { getMarketContext } from "@/lib/markets";
  */
 
 async function callGemini(prompt: string, apiKey: string): Promise<string | null> {
-  const response = await fetch(
+  const response = await fetchWithRetry(
     `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
     {
       method: "POST",
@@ -21,7 +22,9 @@ async function callGemini(prompt: string, apiKey: string): Promise<string | null
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: { temperature: 0.2, maxOutputTokens: 3000 },
       }),
-    }
+    },
+    2,
+    3000
   );
   if (!response.ok) return null;
   const data = await response.json();
@@ -36,11 +39,11 @@ function parseJSON(text: string): Record<string, unknown> {
 
 // Available data-fetching actions the AI can request
 type FetchAction =
-  | { action: "mlb_player"; playerName: string }
+  | { action: "mlb_player"; playerName: string; season?: number }
   | { action: "mlb_pitcher_matchup"; team1: string; team2: string }
   | { action: "mlb_pitcher_h2h"; pitcher1Name: string; pitcher2Name: string; team1: string; team2: string }
-  | { action: "nba_player"; playerName: string }
-  | { action: "nhl_player"; playerName: string }
+  | { action: "nba_player"; playerName: string; season?: number }
+  | { action: "nhl_player"; playerName: string; season?: string }
   | { action: "team_schedule"; sport: string; teamName: string };
 
 async function executeFetch(
@@ -52,12 +55,13 @@ async function executeFetch(
       case "mlb_player": {
         const player = await mlb.searchPlayer(fetchReq.playerName);
         if (!player) return null;
+        const season = fetchReq.season;
         const [stats, gameLog, splits] = await Promise.all([
-          mlb.getPlayerSeasonStats(player.id),
-          mlb.getPlayerGameLog(player.id),
-          mlb.getPlayerSplits(player.id),
+          mlb.getPlayerSeasonStats(player.id, season),
+          mlb.getPlayerGameLog(player.id, season),
+          mlb.getPlayerSplits(player.id, season),
         ]);
-        return { player, seasonStats: stats, gameLog, splits };
+        return { player, seasonStats: stats, gameLog, splits, season: season || new Date().getFullYear() };
       }
 
       case "mlb_pitcher_matchup": {
@@ -105,10 +109,10 @@ async function executeFetch(
         const player = await bdl.searchPlayer(fetchReq.playerName);
         if (!player) return null;
         const [avg, log] = await Promise.all([
-          bdl.getSeasonAverages(player.id),
+          bdl.getSeasonAverages(player.id, fetchReq.season),
           bdl.getPlayerGameLog(player.id, 15),
         ]);
-        return { player, seasonAverages: avg, gameLog: log };
+        return { player, seasonAverages: avg, gameLog: log, season: fetchReq.season || new Date().getFullYear() };
       }
 
       case "nhl_player": {
@@ -116,9 +120,9 @@ async function executeFetch(
         if (!player) return null;
         const [stats, log] = await Promise.all([
           nhl.getPlayerStats(player.playerId),
-          nhl.getPlayerGameLog(player.playerId),
+          nhl.getPlayerGameLog(player.playerId, fetchReq.season),
         ]);
-        return { player, stats, gameLog: log };
+        return { player, stats, gameLog: log, season: fetchReq.season || "current" };
       }
 
       case "team_schedule": {
@@ -192,7 +196,10 @@ export async function POST(request: NextRequest) {
     const sport = extraction.sport?.toUpperCase() || "";
 
     // Step 1: Ask AI what it needs
+    const currentYear = new Date().getFullYear();
     const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}) and is asking a follow-up question.
+
+TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
@@ -224,6 +231,7 @@ FORMAT 2 — You NEED more data:
   "fetch": {
     "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "team_schedule",
     "playerName": "name" (for player actions),
+    "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
     "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
     "pitcher2Name": "name" (for pitcher_h2h),
     "team1": "team" (for pitcher_matchup or pitcher_h2h),
@@ -246,6 +254,8 @@ RULES:
 - For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
 - For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
 - For individual player lookups, use the sport-specific player action.
+- When the user says "last year", "last season", or references a past year, include "season" in the fetch request with the correct year number.
+- We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.
 - Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, etc.)`;
 

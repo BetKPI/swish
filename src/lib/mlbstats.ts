@@ -6,6 +6,8 @@
  * team standings, recent scores.
  */
 
+import { cachedFetch, TTL } from "./fetch";
+
 const BASE = "https://statsapi.mlb.com/api/v1";
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -59,20 +61,21 @@ export async function searchPlayer(
   playerName: string
 ): Promise<MLBPlayer | null> {
   try {
-    const res = await fetch(
-      `${BASE}/people/search?names=${encodeURIComponent(playerName)}&hydrate=currentTeam`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/people/search?names=${encodeURIComponent(playerName)}&hydrate=currentTeam`,
+      TTL.MEDIUM
     );
-    if (!res.ok) {
-      // Fallback: search via sports endpoint
-      const res2 = await fetch(
-        `${BASE}/sports/1/players?search=${encodeURIComponent(playerName)}&hydrate=currentTeam`
-      );
-      if (!res2.ok) return null;
-      const data2 = await res2.json();
-      return data2.people?.[0] || null;
+    if (data) {
+      const people = (data.people as MLBPlayer[] | undefined);
+      if (people?.[0]) return people[0];
     }
-    const data = await res.json();
-    return data.people?.[0] || null;
+    // Fallback: search via sports endpoint
+    const data2 = await cachedFetch<Record<string, unknown>>(
+      `${BASE}/sports/1/players?search=${encodeURIComponent(playerName)}&hydrate=currentTeam`,
+      TTL.MEDIUM
+    );
+    return (data2?.people as MLBPlayer[] | undefined)?.[0] || null;
   } catch {
     return null;
   }
@@ -84,11 +87,12 @@ export async function getPlayerSeasonStats(
 ): Promise<MLBPlayerStats | null> {
   const yr = season || new Date().getFullYear();
   try {
-    const res = await fetch(
-      `${BASE}/people/${playerId}/stats?stats=season&season=${yr}&group=hitting,pitching`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/people/${playerId}/stats?stats=season&season=${yr}&group=hitting,pitching`,
+      TTL.MEDIUM
     );
-    if (!res.ok) return null;
-    const data = await res.json();
+    if (!data) return null;
     // Merge hitting and pitching stats
     const allSplits = data.stats || [];
     let merged: Record<string, unknown> = {};
@@ -111,11 +115,12 @@ export async function getPlayerGameLog(
 ): Promise<MLBGameLog[]> {
   const yr = season || new Date().getFullYear();
   try {
-    const res = await fetch(
-      `${BASE}/people/${playerId}/stats?stats=gameLog&season=${yr}&group=hitting,pitching`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/people/${playerId}/stats?stats=gameLog&season=${yr}&group=hitting,pitching`,
+      TTL.MEDIUM
     );
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!data) return [];
     const allStats = data.stats || [];
     const games: MLBGameLog[] = [];
 
@@ -150,24 +155,19 @@ export async function getPlayerSplits(
   season?: number
 ): Promise<Record<string, unknown> | null> {
   const yr = season || new Date().getFullYear();
-  try {
-    const res = await fetch(
-      `${BASE}/people/${playerId}/stats?stats=vsTeamTotal,homeAndAway&season=${yr}&group=hitting,pitching`
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/people/${playerId}/stats?stats=vsTeamTotal,homeAndAway&season=${yr}&group=hitting,pitching`, TTL.MEDIUM);
 }
 
 export async function searchTeam(
   teamName: string
 ): Promise<{ id: number; name: string; abbreviation: string } | null> {
   try {
-    const res = await fetch(`${BASE}/teams?sportId=1&season=${new Date().getFullYear()}`);
-    if (!res.ok) return null;
-    const data = await res.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/teams?sportId=1&season=${new Date().getFullYear()}`,
+      TTL.LONG
+    );
+    if (!data) return null;
     const teams = data.teams || [];
     const nameLower = teamName.toLowerCase();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -192,15 +192,7 @@ export async function getTeamStats(
   season?: number
 ): Promise<Record<string, unknown> | null> {
   const yr = season || new Date().getFullYear();
-  try {
-    const res = await fetch(
-      `${BASE}/teams/${teamId}/stats?stats=season&group=hitting,pitching,fielding&season=${yr}`
-    );
-    if (!res.ok) return null;
-    return res.json();
-  } catch {
-    return null;
-  }
+  return cachedFetch(`${BASE}/teams/${teamId}/stats?stats=season&group=hitting,pitching,fielding&season=${yr}`, TTL.LONG);
 }
 
 export async function getTeamSchedule(
@@ -212,11 +204,12 @@ export async function getTeamSchedule(
     const startDate = new Date(Date.now() - 60 * 24 * 60 * 60 * 1000)
       .toISOString()
       .slice(0, 10);
-    const res = await fetch(
-      `${BASE}/schedule?teamId=${teamId}&startDate=${startDate}&endDate=${today}&sportId=1&hydrate=team,linescore`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/schedule?teamId=${teamId}&startDate=${startDate}&endDate=${today}&sportId=1&hydrate=team,linescore`,
+      TTL.SHORT
     );
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!data) return [];
     const games: Record<string, unknown>[] = [];
     for (const date of data.dates || []) {
       for (const game of date.games || []) {
@@ -251,11 +244,12 @@ export async function getPitcherVsTeam(
     // Get career game log (recent seasons) — filter by opponent
     const currentYear = new Date().getFullYear();
     const seasons = Array.from({ length: 6 }, (_, i) => currentYear - i).join(",");
-    const res = await fetch(
-      `${BASE}/people/${pitcherId}/stats?stats=gameLog&group=pitching&season=${seasons}`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/people/${pitcherId}/stats?stats=gameLog&group=pitching&season=${seasons}`,
+      TTL.MEDIUM
     );
-    if (!res.ok) return [];
-    const data = await res.json();
+    if (!data) return [];
     const games: Record<string, unknown>[] = [];
     for (const statGroup of data.stats || []) {
       for (const split of statGroup.splits || []) {
@@ -369,11 +363,12 @@ export async function getProbablePitchers(
     // Get today's and tomorrow's games with probable pitchers
     const today = new Date().toISOString().slice(0, 10);
     const tomorrow = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10);
-    const res = await fetch(
-      `${BASE}/schedule?teamId=${teamId}&startDate=${today}&endDate=${tomorrow}&sportId=1&hydrate=probablePitcher(note),team`
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/schedule?teamId=${teamId}&startDate=${today}&endDate=${tomorrow}&sportId=1&hydrate=probablePitcher(note),team`,
+      TTL.SHORT
     );
-    if (!res.ok) return null;
-    const data = await res.json();
+    if (!data) return null;
     const dates = data.dates || [];
     for (const d of dates) {
       for (const game of d.games || []) {
