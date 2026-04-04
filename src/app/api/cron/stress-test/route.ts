@@ -19,52 +19,75 @@ interface TestResult {
 
 const BASE_URL = "https://swish-jet.vercel.app";
 
-// Real bets people would place today on FanDuel/DraftKings
+// Real bets across every sport/type combo — FanDuel/DraftKings style
 const TEST_BETS = [
-  // ── NBA Player Props ──────────────────────────────────────────
-  { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Chicago Bulls"], players: ["Jalen Brunson"], market: "Points", line: 26.5, odds: "-115", description: "Jalen Brunson Over 26.5 Points", confidence: 0.9 },
-  { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Chicago Bulls"], players: ["Karl-Anthony Towns"], market: "Rebounds", line: 11.5, odds: "-110", description: "Karl-Anthony Towns Over 11.5 Rebounds", confidence: 0.9 },
-  { sport: "NBA", betType: "player_prop", teams: ["Philadelphia 76ers", "Minnesota Timberwolves"], players: ["Anthony Edwards"], market: "Points", line: 28.5, odds: "-120", description: "Anthony Edwards Over 28.5 Points", confidence: 0.9 },
-  { sport: "NBA", betType: "player_prop", teams: ["Philadelphia 76ers", "Minnesota Timberwolves"], players: ["Tyrese Maxey"], market: "Assists", line: 6.5, odds: "+100", description: "Tyrese Maxey Over 6.5 Assists", confidence: 0.9 },
-  { sport: "NBA", betType: "player_prop", teams: ["Houston Rockets", "Utah Jazz"], players: ["Alperen Sengun"], market: "Pts+Reb+Ast", line: 35.5, odds: "-110", description: "Alperen Sengun Over 35.5 PRA", confidence: 0.85 },
-  { sport: "NBA", betType: "player_prop", teams: ["Dallas Mavericks", "Orlando Magic"], players: ["Paolo Banchero"], market: "Points", line: 22.5, odds: "-105", description: "Paolo Banchero Over 22.5 Points", confidence: 0.9 },
-  { sport: "NBA", betType: "player_prop", teams: ["Boston Celtics", "Milwaukee Bucks"], players: ["Jaylen Brown"], market: "Three Pointers Made", line: 2.5, odds: "+110", description: "Jaylen Brown Over 2.5 Threes", confidence: 0.85 },
+  // ── NBA Player Props (7 markets) ──────────────────────────────
+  { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Chicago Bulls"], players: ["Jalen Brunson"], market: "Points", line: 26.5, odds: "-115", description: "Brunson Over 26.5 Points", confidence: 0.9 },
+  { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Chicago Bulls"], players: ["Karl-Anthony Towns"], market: "Rebounds", line: 11.5, odds: "-110", description: "KAT Over 11.5 Rebounds", confidence: 0.9 },
+  { sport: "NBA", betType: "player_prop", teams: ["Philadelphia 76ers", "Minnesota Timberwolves"], players: ["Tyrese Maxey"], market: "Assists", line: 6.5, odds: "+100", description: "Maxey Over 6.5 Assists", confidence: 0.9 },
+  { sport: "NBA", betType: "player_prop", teams: ["Houston Rockets", "Utah Jazz"], players: ["Alperen Sengun"], market: "Pts+Reb+Ast", line: 35.5, odds: "-110", description: "Sengun Over 35.5 PRA", confidence: 0.85 },
+  { sport: "NBA", betType: "player_prop", teams: ["Boston Celtics", "Milwaukee Bucks"], players: ["Jaylen Brown"], market: "Three Pointers Made", line: 2.5, odds: "+110", description: "Brown Over 2.5 Threes", confidence: 0.85 },
+  { sport: "NBA", betType: "player_prop", teams: ["Dallas Mavericks", "Orlando Magic"], players: ["Paolo Banchero"], market: "Steals", line: 1.5, odds: "+180", description: "Banchero Over 1.5 Steals", confidence: 0.8 },
+  { sport: "NBA", betType: "player_prop", teams: ["Los Angeles Lakers", "Denver Nuggets"], players: ["Nikola Jokic"], market: "Blocks", line: 0.5, odds: "-130", description: "Jokic Over 0.5 Blocks", confidence: 0.85 },
 
   // ── NBA Team Bets ─────────────────────────────────────────────
   { sport: "NBA", betType: "moneyline", teams: ["Boston Celtics", "Milwaukee Bucks"], players: [], odds: "-150", description: "Celtics ML vs Bucks", confidence: 0.9 },
   { sport: "NBA", betType: "spread", teams: ["New York Knicks", "Chicago Bulls"], players: [], line: -8.5, odds: "-110", description: "Knicks -8.5 vs Bulls", confidence: 0.9 },
   { sport: "NBA", betType: "over_under", teams: ["Minnesota Timberwolves", "Philadelphia 76ers"], players: [], line: 215.5, odds: "-110", description: "Over 215.5 Wolves vs 76ers", confidence: 0.9 },
 
-  // ── MLB Player Props ──────────────────────────────────────────
-  { sport: "MLB", betType: "player_prop", teams: ["New York Yankees", "Miami Marlins"], players: ["Aaron Judge"], market: "Home Runs", line: 0.5, odds: "+210", description: "Aaron Judge to Hit a HR", confidence: 0.85 },
-  { sport: "MLB", betType: "player_prop", teams: ["New York Yankees", "Miami Marlins"], players: ["Giancarlo Stanton"], market: "Total Bases", line: 1.5, odds: "-120", description: "Stanton Over 1.5 Total Bases", confidence: 0.85 },
-  { sport: "MLB", betType: "player_prop", teams: ["Los Angeles Dodgers", "Washington Nationals"], players: ["Mookie Betts"], market: "Hits", line: 0.5, odds: "-180", description: "Mookie Betts Over 0.5 Hits", confidence: 0.9 },
-  { sport: "MLB", betType: "player_prop", teams: ["Boston Red Sox", "San Diego Padres"], players: ["Wilyer Abreu"], market: "RBIs", line: 0.5, odds: "+120", description: "Wilyer Abreu Over 0.5 RBIs", confidence: 0.85 },
-  { sport: "MLB", betType: "player_prop", teams: ["Cleveland Guardians", "Chicago Cubs"], players: ["Jose Ramirez"], market: "Hits", line: 1.5, odds: "+130", description: "Jose Ramirez Over 1.5 Hits", confidence: 0.85 },
+  // ── MLB Player Props (6 markets) ──────────────────────────────
+  { sport: "MLB", betType: "player_prop", teams: ["New York Yankees", "Miami Marlins"], players: ["Aaron Judge"], market: "Home Runs", line: 0.5, odds: "+210", description: "Judge to Hit a HR", confidence: 0.85 },
+  { sport: "MLB", betType: "player_prop", teams: ["New York Yankees", "Miami Marlins"], players: ["Giancarlo Stanton"], market: "Total Bases", line: 1.5, odds: "-120", description: "Stanton Over 1.5 TB", confidence: 0.85 },
+  { sport: "MLB", betType: "player_prop", teams: ["Los Angeles Dodgers", "Washington Nationals"], players: ["Mookie Betts"], market: "Hits", line: 0.5, odds: "-180", description: "Betts Over 0.5 Hits", confidence: 0.9 },
+  { sport: "MLB", betType: "player_prop", teams: ["Boston Red Sox", "San Diego Padres"], players: ["Wilyer Abreu"], market: "RBIs", line: 0.5, odds: "+120", description: "Abreu Over 0.5 RBIs", confidence: 0.85 },
+  { sport: "MLB", betType: "player_prop", teams: ["Boston Red Sox", "San Diego Padres"], players: ["Roman Anthony"], market: "Stolen Bases", line: 0.5, odds: "+200", description: "Anthony Over 0.5 SB", confidence: 0.8 },
+  { sport: "MLB", betType: "player_prop", teams: ["Houston Astros", "Athletics"], players: ["Framber Valdez"], market: "Strikeouts", line: 5.5, odds: "-115", description: "Valdez Over 5.5 K's", confidence: 0.85 },
 
   // ── MLB Team Bets ─────────────────────────────────────────────
   { sport: "MLB", betType: "moneyline", teams: ["Los Angeles Dodgers", "Washington Nationals"], players: [], odds: "-180", description: "Dodgers ML vs Nationals", confidence: 0.9 },
   { sport: "MLB", betType: "over_under", teams: ["New York Yankees", "Miami Marlins"], players: [], line: 8.5, odds: "-110", description: "Over 8.5 Yankees vs Marlins", confidence: 0.9 },
   { sport: "MLB", betType: "spread", teams: ["Houston Astros", "Athletics"], players: [], line: -1.5, odds: "+130", description: "Astros -1.5 vs Athletics", confidence: 0.9 },
 
-  // ── Edge cases: name variants ─────────────────────────────────
-  { sport: "Basketball", betType: "moneyline", teams: ["Knicks", "Bulls"], players: [], odds: "-200", description: "Knicks ML (short name test)", confidence: 0.9 },
-  { sport: "MLB", betType: "moneyline", teams: ["Yankees", "Marlins"], players: [], odds: "-160", description: "Yankees ML (short name test)", confidence: 0.9 },
+  // ── NHL Player Props (5 markets) ──────────────────────────────
+  { sport: "NHL", betType: "player_prop", teams: ["New York Rangers", "Carolina Hurricanes"], players: ["Alexis Lafreniere"], market: "Shots on Goal", line: 3.5, odds: "-120", description: "Lafreniere Over 3.5 SOG", confidence: 0.85 },
+  { sport: "NHL", betType: "player_prop", teams: ["Edmonton Oilers", "Vancouver Canucks"], players: ["Connor McDavid"], market: "Points", line: 1.5, odds: "+110", description: "McDavid Over 1.5 Points", confidence: 0.85 },
+  { sport: "NHL", betType: "player_prop", teams: ["Edmonton Oilers", "Vancouver Canucks"], players: ["Leon Draisaitl"], market: "Goals", line: 0.5, odds: "+120", description: "Draisaitl Over 0.5 Goals", confidence: 0.85 },
+  { sport: "NHL", betType: "player_prop", teams: ["Toronto Maple Leafs", "Tampa Bay Lightning"], players: ["Auston Matthews"], market: "Shots on Goal", line: 4.5, odds: "-105", description: "Matthews Over 4.5 SOG", confidence: 0.85 },
+  { sport: "NHL", betType: "player_prop", teams: ["Florida Panthers", "Boston Bruins"], players: ["Sergei Bobrovsky"], market: "Saves", line: 27.5, odds: "-115", description: "Bobrovsky Over 27.5 Saves", confidence: 0.85 },
 
-  // ── Edge case: parlay ─────────────────────────────────────────
+  // ── NHL Team Bets ─────────────────────────────────────────────
+  { sport: "NHL", betType: "moneyline", teams: ["Edmonton Oilers", "Vancouver Canucks"], players: [], odds: "-140", description: "Oilers ML vs Canucks", confidence: 0.9 },
+  { sport: "NHL", betType: "spread", teams: ["Toronto Maple Leafs", "Tampa Bay Lightning"], players: [], line: -1.5, odds: "+160", description: "Leafs -1.5 vs Lightning", confidence: 0.85 },
+  { sport: "NHL", betType: "over_under", teams: ["Florida Panthers", "Boston Bruins"], players: [], line: 5.5, odds: "-110", description: "Over 5.5 Panthers vs Bruins", confidence: 0.9 },
+
+  // ── NFL Team Bets ─────────────────────────────────────────────
+  { sport: "NFL", betType: "moneyline", teams: ["Kansas City Chiefs", "Buffalo Bills"], players: [], odds: "-130", description: "Chiefs ML vs Bills", confidence: 0.9 },
+  { sport: "NFL", betType: "spread", teams: ["San Francisco 49ers", "Dallas Cowboys"], players: [], line: -3.5, odds: "-110", description: "49ers -3.5 vs Cowboys", confidence: 0.9 },
+  { sport: "NFL", betType: "over_under", teams: ["Philadelphia Eagles", "Detroit Lions"], players: [], line: 48.5, odds: "-110", description: "Over 48.5 Eagles vs Lions", confidence: 0.9 },
+
+  // ── Soccer ────────────────────────────────────────────────────
+  { sport: "EPL", betType: "moneyline", teams: ["Arsenal", "Manchester City"], players: [], odds: "+180", description: "Arsenal ML vs Man City (EPL)", confidence: 0.85 },
+  { sport: "MLS", betType: "moneyline", teams: ["Inter Miami", "LA Galaxy"], players: [], odds: "-120", description: "Inter Miami ML vs Galaxy (MLS)", confidence: 0.85 },
+
+  // ── College ───────────────────────────────────────────────────
+  { sport: "NCAAB", betType: "spread", teams: ["Duke Blue Devils", "North Carolina Tar Heels"], players: [], line: -4.5, odds: "-110", description: "Duke -4.5 vs UNC (CBB)", confidence: 0.85 },
+  { sport: "NCAAF", betType: "over_under", teams: ["Alabama Crimson Tide", "Georgia Bulldogs"], players: [], line: 52.5, odds: "-110", description: "Over 52.5 Bama vs UGA (CFB)", confidence: 0.85 },
+
+  // ── Edge cases ────────────────────────────────────────────────
+  { sport: "Basketball", betType: "moneyline", teams: ["Knicks", "Bulls"], players: [], odds: "-200", description: "Knicks ML (short name)", confidence: 0.9 },
+  { sport: "Hockey", betType: "moneyline", teams: ["Oilers", "Canucks"], players: [], odds: "-140", description: "Oilers ML (sport alias)", confidence: 0.85 },
+  { sport: "MLB", betType: "moneyline", teams: ["Yankees", "Marlins"], players: [], odds: "-160", description: "Yankees ML (short name)", confidence: 0.9 },
   { sport: "NBA", betType: "parlay", teams: ["Celtics", "Knicks"], players: [], odds: "+450", description: "Parlay: Celtics + Knicks ML", confidence: 0.8 },
-
-  // ── Chat follow-up questions people would ask ─────────────────
-  // (These test the chat endpoint, not stats)
 ];
 
 // Questions people would ask in the chat
 const CHAT_QUESTIONS = [
   { q: "Show home vs away splits", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"] },
   { q: "How do the starting pitchers match up?", sport: "MLB", teams: ["Los Angeles Dodgers", "Washington Nationals"] },
-  { q: "What's the injury report?", sport: "NBA", teams: ["Boston Celtics", "Milwaukee Bucks"] },
+  { q: "What about his shots?", sport: "NHL", teams: ["New York Rangers", "Carolina Hurricanes"] },
   { q: "Show me Jalen Brunson's last 10 games", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"] },
-  { q: "Compare scoring trends", sport: "NBA", teams: ["Minnesota Timberwolves", "Philadelphia 76ers"] },
+  { q: "Compare scoring trends", sport: "NHL", teams: ["Edmonton Oilers", "Vancouver Canucks"] },
+  { q: "What about his stats last year?", sport: "MLB", teams: ["Boston Red Sox", "San Diego Padres"] },
 ];
 
 export async function GET(request: NextRequest) {
@@ -217,6 +240,14 @@ async function reportToDiscord(
   if (empty.length > 0) {
     const list = empty.slice(0, 5).map((e) => `\u26A0\uFE0F **${e.bet}**`).join("\n");
     embeds.push({ title: "Empty Results", color: 0xf59e0b, fields: [{ name: "\u200b", value: list.slice(0, 1024), inline: false }], timestamp: new Date().toISOString() });
+  }
+
+  // Chart counts per bet — shows what's actually rendering
+  const chartDetail = passed.slice(0, 20).map((r) =>
+    `${r.charts === 0 ? "\u26A0\uFE0F" : "\u2705"} **${r.bet}** — ${r.charts} charts, ${r.stats} stats (${((r.ms || 0) / 1000).toFixed(1)}s)`
+  ).join("\n");
+  if (chartDetail) {
+    embeds.push({ title: "Chart Counts", color: 0x6366f1, fields: [{ name: "\u200b", value: chartDetail.slice(0, 1024), inline: false }], timestamp: new Date().toISOString() });
   }
 
   // Chat results
