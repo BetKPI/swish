@@ -566,7 +566,11 @@ function getRelevantWinRate(
       return primaryTeam.ats?.coverRate ?? null;
     case "over_under":
       return primaryTeam.overUnder?.overRate ?? null;
+    case "player_prop":
+      // Don't use team win rate for player props — it's meaningless.
+      // Prop hit rate is computed separately in propAnalysis and shown in charts.
+      return null;
     default:
-      return primaryTeam.record.pct;
+      return null;
   }
 }
