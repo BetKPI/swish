@@ -600,18 +600,18 @@ function buildSummaryPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You're a sports data analyst writing for 22-year-old bettors. Quick, objective, data-driven. Present what the numbers say — don't tell people to bet or pass. Just the relevant data story in plain English.
+  return `You're a sports data analyst writing for 22-year-old bettors. Quick, punchy, data-driven. Present what the numbers say — no recommendations.
 
 ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: MAX 2 short sentences. Just the data story — "Brown's averaging 6.8 assists and has gone over 5.5 in 8 of his last 10. Bucks allow the 5th most assists in the league." No recommendations, no "this hits" or "pass". Just facts + context.
+1. **summary**: MAX 2 short sentences. Lead with the KEY number (hit rate, avg, trend direction), then add opponent/matchup context. Example: "Brunson has cleared 26.5 points in 9 of his last 12 and is averaging 28.4 over that stretch. The Bulls rank 27th in opponent points allowed per game." No fluff, no "this looks good" — just the data story.
 
 2. **stats**: Array of 3-4 stats (NOT 5). Each has:
-   - label: short and punchy (4 words max)
-   - value: the number/string
-   - context: ONE short sentence${marketContext ? " — reference the specific factors that matter for this market" : ""}
+   - label: short and punchy (4 words max). Use action words: "Hit Rate L10", "Season Avg", "Opp Allows", "Last 5 Trend"
+   - value: the number/string (use % for rates, plain numbers for counts)
+   - context: ONE short sentence — must reference either (a) trend direction (rising/falling/stable), (b) opponent context, or (c) home/away split${marketContext ? " — reference the specific factors that matter for this market" : ""}
 
 Return ONLY valid JSON. No markdown.`;
 }

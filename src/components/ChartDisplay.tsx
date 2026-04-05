@@ -15,7 +15,14 @@ import {
 } from "recharts";
 import type { ChartConfig } from "@/types";
 
-const COLORS = ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"];
+const COLORS = ["#10b981", "#6366f1", "#3b82f6", "#ef4444", "#8b5cf6"];
+
+// Special keys get specific styling
+const KEY_STYLES: Record<string, { color: string; dash?: string; width?: number; opacity?: number }> = {
+  rollingAvg: { color: "#6366f1", width: 2.5 },
+  rollingMargin: { color: "#6366f1", width: 2.5 },
+  rollingTotal: { color: "#f59e0b", width: 2, dash: "4 2" },
+};
 
 export default function ChartDisplay({ config }: { config: ChartConfig }) {
   const { type, title, relevance, data, xKey, yKeys, columns } = config;
@@ -95,16 +102,21 @@ function RechartsLine({
             label={{ value: `Line: ${refLineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
           />
         )}
-        {regularKeys.map((key, i) => (
-          <Line
-            key={key}
-            type="monotone"
-            dataKey={key}
-            stroke={COLORS[i % COLORS.length]}
-            strokeWidth={2}
-            dot={{ r: 3 }}
-          />
-        ))}
+        {regularKeys.map((key, i) => {
+          const style = KEY_STYLES[key];
+          return (
+            <Line
+              key={key}
+              type="monotone"
+              dataKey={key}
+              stroke={style?.color || COLORS[i % COLORS.length]}
+              strokeWidth={style?.width || 2}
+              strokeDasharray={style?.dash}
+              dot={style?.dash ? false : { r: 3 }}
+              connectNulls
+            />
+          );
+        })}
       </LineChart>
     </ResponsiveContainer>
   );

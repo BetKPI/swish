@@ -44,22 +44,28 @@ function buildSpreadCharts(
   const teams = Object.values(computed.teamMetrics);
   const line = extraction.line ?? 0;
 
-  // 1. Margin of victory trend with spread line
+  // 1. Margin of victory trend with spread line + rolling avg
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const data = team.recentGames.slice(-10).map((g, i) => ({
-      game: `G${i + 1}`,
-      margin: g.margin,
-      spreadLine: -line, // negative because spread is from opponent perspective
-      opponent: shortenName(g.opponent),
-    }));
+    const recent = team.recentGames.slice(-10);
+    const data = recent.map((g, i) => {
+      const window = recent.slice(Math.max(0, i - 2), i + 1);
+      const rollingMargin = Math.round((window.reduce((s, w) => s + w.margin, 0) / window.length) * 10) / 10;
+      return {
+        game: shortenName(g.opponent),
+        margin: g.margin,
+        rollingMargin: i >= 2 ? rollingMargin : undefined,
+        spreadLine: -line,
+        result: g.won ? "W" : "L",
+      };
+    });
     charts.push({
       type: "line",
       title: `${team.name} — Margin of Victory vs Spread`,
-      relevance: `Shows whether ${team.name} is winning/losing by enough to cover ${line > 0 ? "+" : ""}${line}`,
+      relevance: `Game margins with 3-game rolling avg — covers ${line > 0 ? "+" : ""}${line} when above the line`,
       data,
       xKey: "game",
-      yKeys: ["margin", "spreadLine"],
+      yKeys: ["margin", "rollingMargin", "spreadLine"],
     });
   }
 
@@ -143,22 +149,27 @@ function buildOverUnderCharts(
     }
   }
 
-  // 2. Each team's offensive output trend
+  // 2. Each team's offensive output trend with rolling avg
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const data = team.recentGames.slice(-10).map((g, i) => ({
-      game: `G${i + 1}`,
-      scored: g.teamScore,
-      allowed: g.opponentScore,
-      total: g.totalPoints,
-    }));
+    const recent = team.recentGames.slice(-10);
+    const data = recent.map((g, i) => {
+      const window = recent.slice(Math.max(0, i - 2), i + 1);
+      const rollingTotal = Math.round((window.reduce((s, w) => s + w.totalPoints, 0) / window.length) * 10) / 10;
+      return {
+        game: shortenName(g.opponent),
+        scored: g.teamScore,
+        allowed: g.opponentScore,
+        rollingTotal: i >= 2 ? rollingTotal : undefined,
+      };
+    });
     charts.push({
       type: "line",
       title: `${team.name} — Scoring & Defense Trend`,
-      relevance: `Offensive and defensive output drives whether games go over or under`,
+      relevance: `Points scored vs allowed with rolling game total — shows offensive/defensive trajectory`,
       data,
       xKey: "game",
-      yKeys: ["scored", "allowed"],
+      yKeys: ["scored", "allowed", "rollingTotal"],
     });
   }
 
@@ -426,53 +437,115 @@ function buildPlayerPropCharts(
       };
     }
 
-    // 1. Game log trend with prop line — THE key chart
+    // 1. Game log trend with rolling average — THE key chart
     const gameValues = propAnalysis?.gameValues;
     if (gameValues && gameValues.length > 0) {
-      const data = gameValues
-        .slice(-15)
-        .map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => ({
+      const recent = gameValues.slice(-15);
+      const data = recent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => {
+        // 5-game rolling average
+        const window = recent.slice(Math.max(0, i - 4), i + 1);
+        const rollingAvg = Math.round((window.reduce((s: number, w: { value: number }) => s + w.value, 0) / window.length) * 10) / 10;
+        return {
           game: g.opponent ? shortenName(g.opponent) : `G${i + 1}`,
           [statLabel]: g.value,
+          rollingAvg: i >= 2 ? rollingAvg : undefined, // only show after 3 games
           propLine: line,
-        }));
+        };
+      });
       charts.push({
         type: "line",
-        title: `${playerName} — ${statLabel} This Season`,
-        relevance: `Game-by-game ${statLabel} with the ${line} prop line — ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over`,
+        title: `${playerName} — ${statLabel} Game Log`,
+        relevance: `Game-by-game with 5-game rolling avg — ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over the ${line} line (${Math.round((propAnalysis?.hitRate || 0) * 100)}%)`,
         data,
         xKey: "game",
-        yKeys: [statLabel, "propLine"],
+        yKeys: [statLabel, "rollingAvg", "propLine"],
       });
     }
 
-    // 2. Hit rate summary bar
-    if (propAnalysis && propAnalysis.totalGames > 0) {
+    // 2. Hit rate breakdown by window — last 5, 10, and full season
+    if (propAnalysis && propAnalysis.totalGames > 0 && gameValues) {
+      const last5 = gameValues.slice(-5);
+      const last10 = gameValues.slice(-10);
+      const l5Hit = last5.filter((g: { hit: boolean }) => g.hit).length;
+      const l10Hit = last10.filter((g: { hit: boolean }) => g.hit).length;
+
+      // Current streak
+      let streak = 0;
+      const streakType = gameValues[gameValues.length - 1]?.hit ? "over" : "under";
+      for (let i = gameValues.length - 1; i >= 0; i--) {
+        if ((streakType === "over" && gameValues[i].hit) || (streakType === "under" && !gameValues[i].hit)) streak++;
+        else break;
+      }
+
       const data = [
-        { label: "Over", count: propAnalysis.hitCount },
-        { label: "Under", count: propAnalysis.totalGames - propAnalysis.hitCount },
+        { window: "Last 5", hitRate: Math.round((l5Hit / Math.min(5, last5.length)) * 100), games: `${l5Hit}/${Math.min(5, last5.length)}` },
+        { window: "Last 10", hitRate: Math.round((l10Hit / Math.min(10, last10.length)) * 100), games: `${l10Hit}/${Math.min(10, last10.length)}` },
+        { window: "Season", hitRate: Math.round(propAnalysis.hitRate * 100), games: `${propAnalysis.hitCount}/${propAnalysis.totalGames}` },
       ];
+      const streakNote = streak >= 2 ? ` | ${streakType === "over" ? "Over" : "Under"} in last ${streak} straight` : "";
       charts.push({
         type: "bar",
         title: `Hit Rate: ${statLabel} Over ${line}`,
-        relevance: `${propAnalysis.hitCount}/${propAnalysis.totalGames} games (${Math.round(propAnalysis.hitRate * 100)}%) — season hit rate`,
+        relevance: `Hit rate by recency — trending ${l5Hit / Math.min(5, last5.length) > propAnalysis.hitRate ? "up" : l5Hit / Math.min(5, last5.length) < propAnalysis.hitRate ? "down" : "steady"}${streakNote}`,
         data,
-        xKey: "label",
-        yKeys: ["count"],
+        xKey: "window",
+        yKeys: ["hitRate"],
       });
     }
 
-    // 3. Season average vs line vs last 5 comparison
+    // 3. Value distribution — how often does he hit each range
+    if (gameValues && gameValues.length >= 5) {
+      const values = gameValues.map((g: { value: number }) => g.value);
+      const min = Math.min(...values);
+      const max = Math.max(...values);
+      const range = max - min;
+
+      // Create meaningful buckets based on the stat
+      const bucketSize = range <= 5 ? 1 : range <= 15 ? 2 : range <= 30 ? 5 : 10;
+      const bucketStart = Math.floor(min / bucketSize) * bucketSize;
+      const buckets: { range: string; count: number; overLine: boolean }[] = [];
+
+      for (let b = bucketStart; b <= max; b += bucketSize) {
+        const bEnd = b + bucketSize - (bucketSize === 1 ? 0 : 1);
+        const label = bucketSize === 1 ? `${b}` : `${b}-${bEnd}`;
+        const count = values.filter((v: number) => v >= b && v < b + bucketSize).length;
+        if (count > 0) {
+          buckets.push({ range: label, count, overLine: b >= line });
+        }
+      }
+
+      if (buckets.length >= 3) {
+        // Compute standard deviation for consistency
+        const avg = values.reduce((s: number, v: number) => s + v, 0) / values.length;
+        const variance = values.reduce((s: number, v: number) => s + (v - avg) ** 2, 0) / values.length;
+        const stdDev = Math.round(Math.sqrt(variance) * 10) / 10;
+        const consistency = stdDev < avg * 0.2 ? "very consistent" : stdDev < avg * 0.35 ? "moderately consistent" : "high variance";
+
+        charts.push({
+          type: "bar",
+          title: `${playerName} — ${statLabel} Distribution`,
+          relevance: `${consistency} (std dev ${stdDev}) — shows how often he lands in each range`,
+          data: buckets,
+          xKey: "range",
+          yKeys: ["count"],
+        });
+      }
+    }
+
+    // 4. Season average vs line vs recent form
     if (propAnalysis && propAnalysis.average > 0) {
+      const last3 = gameValues ? gameValues.slice(-3) : [];
+      const last3Avg = last3.length > 0 ? Math.round((last3.reduce((s: number, v: { value: number }) => s + v.value, 0) / last3.length) * 10) / 10 : 0;
       const data = [
         { metric: "Season Avg", value: propAnalysis.average },
         { metric: "Last 5 Avg", value: propAnalysis.last5Avg },
+        { metric: "Last 3 Avg", value: last3Avg },
         { metric: "Prop Line", value: line },
       ];
       charts.push({
         type: "bar",
-        title: `${playerName} — Average vs Line`,
-        relevance: `Season average (${propAnalysis.average}) and recent form (${propAnalysis.last5Avg}) compared to the ${line} line`,
+        title: `${playerName} — Averages vs Line`,
+        relevance: `Season (${propAnalysis.average}), last 5 (${propAnalysis.last5Avg}), last 3 (${last3Avg}) vs the ${line} line`,
         data,
         xKey: "metric",
         yKeys: ["value"],

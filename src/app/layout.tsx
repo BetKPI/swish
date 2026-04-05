@@ -64,6 +64,15 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1">{children}</main>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js').catch(() => {});
+              }
+            `,
+          }}
+        />
         <footer className="border-t border-border/50 px-4 py-4 text-center text-xs text-muted">
           For entertainment only. Not financial advice. Please gamble responsibly.
         </footer>

@@ -36,27 +36,59 @@ export default function BetHistory() {
   const hits = graded.filter((h) => h.grade?.result === "hit").length;
   const misses = graded.filter((h) => h.grade?.result === "miss").length;
 
+  // Sport breakdown
+  const sportCounts: Record<string, number> = {};
+  history.forEach((h) => {
+    const s = h.extraction.sport || "Other";
+    sportCounts[s] = (sportCounts[s] || 0) + 1;
+  });
+  const topSports = Object.entries(sportCounts).sort((a, b) => b[1] - a[1]).slice(0, 4);
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h3 className="text-lg font-bold">Recent Bets</h3>
-        <div className="flex items-center gap-3">
-          {graded.length > 0 && (
-            <span className="text-xs text-muted">
-              {hits}/{graded.length} hit ({graded.length > 0 ? Math.round((hits / graded.length) * 100) : 0}%)
-            </span>
-          )}
-          <button
-            onClick={() => {
-              clearHistory();
-              setHistory([]);
-            }}
-            className="text-xs text-muted hover:text-foreground transition-colors"
-          >
-            Clear
-          </button>
-        </div>
+        <h3 className="text-lg font-bold">Your Bets</h3>
+        <button
+          onClick={() => {
+            clearHistory();
+            setHistory([]);
+          }}
+          className="text-xs text-muted hover:text-foreground transition-colors"
+        >
+          Clear
+        </button>
       </div>
+
+      {/* Dashboard stats */}
+      {history.length >= 3 && (
+        <div className="grid grid-cols-3 gap-2">
+          <div className="bg-surface rounded-lg p-2.5 text-center border border-border/50">
+            <p className="text-lg font-bold">{history.length}</p>
+            <p className="text-[10px] text-muted">Bets Analyzed</p>
+          </div>
+          <div className="bg-surface rounded-lg p-2.5 text-center border border-border/50">
+            <p className={`text-lg font-bold ${graded.length > 0 && hits / graded.length >= 0.5 ? "text-emerald-400" : graded.length > 0 ? "text-red-400" : ""}`}>
+              {graded.length > 0 ? `${Math.round((hits / graded.length) * 100)}%` : "--"}
+            </p>
+            <p className="text-[10px] text-muted">Hit Rate</p>
+          </div>
+          <div className="bg-surface rounded-lg p-2.5 text-center border border-border/50">
+            <p className="text-lg font-bold text-emerald-400">{hits}</p>
+            <p className="text-[10px] text-muted">{hits === 1 ? "Hit" : "Hits"} / {misses} {misses === 1 ? "Miss" : "Misses"}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Sport breakdown */}
+      {topSports.length > 1 && (
+        <div className="flex gap-1.5 flex-wrap">
+          {topSports.map(([sport, count]) => (
+            <span key={sport} className="text-[10px] bg-surface-light text-muted px-2 py-0.5 rounded-full">
+              {SPORT_EMOJI[sport] || "\u{1F3C6}"} {sport} ({count})
+            </span>
+          ))}
+        </div>
+      )}
 
       <div className="space-y-2">
         {shown.map((entry) => (
