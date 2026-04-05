@@ -150,12 +150,12 @@ export default function AnalysisResults({
       {/* Feedback + Share */}
       <FeedbackShare extraction={extraction} summary={summary} gameStatus={gameStatus} />
 
-      {/* Reset Button */}
+      {/* Start Over */}
       <button
         onClick={onReset}
-        className="w-full py-3 px-6 bg-surface-light hover:bg-border text-foreground font-semibold rounded-xl transition-colors"
+        className="w-full py-3 px-6 bg-accent hover:bg-emerald-400 text-black font-bold rounded-xl transition-colors cursor-pointer"
       >
-        Run Another One
+        Analyze Another Bet
       </button>
     </div>
   );
