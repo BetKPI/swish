@@ -86,13 +86,13 @@ const TEST_BETS = [
 
 // Questions people would ask in the chat
 const CHAT_QUESTIONS = [
-  { q: "Show home vs away splits", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"] },
-  { q: "How do the starting pitchers match up?", sport: "MLB", teams: ["Los Angeles Dodgers", "Washington Nationals"] },
-  { q: "What about his shots?", sport: "NHL", teams: ["New York Rangers", "Carolina Hurricanes"] },
-  { q: "Show me Jalen Brunson's last 10 games", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"] },
-  { q: "Compare scoring trends", sport: "NHL", teams: ["Edmonton Oilers", "Vancouver Canucks"] },
-  { q: "What about his stats last year?", sport: "MLB", teams: ["Boston Red Sox", "San Diego Padres"] },
-  { q: "How does Scheffler do on Amen Corner?", sport: "Golf", teams: ["The Masters"] },
+  { q: "Show home vs away splits", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"], players: [], betType: "moneyline" },
+  { q: "How do the starting pitchers match up?", sport: "MLB", teams: ["Los Angeles Dodgers", "Washington Nationals"], players: [], betType: "moneyline" },
+  { q: "What about his shots?", sport: "NHL", teams: ["New York Rangers", "Carolina Hurricanes"], players: ["Alexis Lafreniere"], betType: "player_prop", market: "Shots on Goal" },
+  { q: "Show me Jalen Brunson's last 10 games", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"], players: ["Jalen Brunson"], betType: "player_prop", market: "Points" },
+  { q: "Compare scoring trends", sport: "NHL", teams: ["Edmonton Oilers", "Vancouver Canucks"], players: [], betType: "moneyline" },
+  { q: "What about his stats last year?", sport: "MLB", teams: ["Boston Red Sox", "San Diego Padres"], players: ["Roman Anthony"], betType: "player_prop", market: "Stolen Bases" },
+  { q: "How does Scheffler do on Amen Corner?", sport: "Golf", teams: ["The Masters"], players: ["Scottie Scheffler"], betType: "player_prop", market: "Tournament Winner" },
 ];
 
 export async function GET(request: NextRequest) {
@@ -172,7 +172,7 @@ async function testBet(results: TestResult[], extraction: Record<string, unknown
 
 async function testChat(
   results: { question: string; type: string; message: string }[],
-  cq: { q: string; sport: string; teams: string[] }
+  cq: { q: string; sport: string; teams: string[]; players?: string[]; betType?: string; market?: string }
 ) {
   try {
     const res = await fetch(`${BASE_URL}/api/chat`, {
@@ -182,9 +182,10 @@ async function testChat(
         message: cq.q,
         extraction: {
           sport: cq.sport,
-          betType: "moneyline",
+          betType: cq.betType || "moneyline",
           teams: cq.teams,
-          players: [],
+          players: cq.players || [],
+          market: cq.market,
           odds: "-110",
           description: `${cq.teams.join(" vs ")}`,
           confidence: 0.9,
