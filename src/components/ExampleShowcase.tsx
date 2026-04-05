@@ -61,22 +61,15 @@ const flaggPts = [
 const examples = [
   {
     betLabel: "Brunson O 26.5 Pts -115",
-    insight: "Averaging 28.3 over his last 8 and cleared 26.5 in 5 of them. Rolling avg trending up.",
-    badge: "NBA PROP",
+    insight: "28.3 avg over his last 8. Cleared 26.5 in 5 of them with the rolling average trending up.",
+    badge: "PLAYER PROP",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
         <BarChart data={brunsonPts} barSize={16}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis domain={[10, 40]} hide />
-          <Tooltip
-            contentStyle={{
-              background: "#111",
-              border: "1px solid #222",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
+          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
           <ReferenceLine y={26.5} stroke="#f59e0b" strokeDasharray="5 3" />
           <Bar dataKey="pts" fill="#10b981" radius={[4, 4, 0, 0]} name="Points" />
         </BarChart>
@@ -90,7 +83,7 @@ const examples = [
   },
   {
     betLabel: "Scheffler Top 5 Masters +300",
-    insight: "Finished top 5 in 3 of his last 4 majors. Averaging 68.5 strokes per round at Augusta since 2022.",
+    insight: "Top 5 in 3 of his last 4 majors. 68.0 avg strokes per round at Augusta across 2022-2025.",
     badge: "GOLF",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
@@ -98,16 +91,9 @@ const examples = [
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="round" tick={{ fill: "#555", fontSize: 9 }} axisLine={false} tickLine={false} />
           <YAxis domain={[62, 75]} hide />
-          <Tooltip
-            contentStyle={{
-              background: "#111",
-              border: "1px solid #222",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
-          <ReferenceLine y={72} stroke="#10b981" strokeDasharray="5 3" />
-          <Bar dataKey="score" fill="#10b981" radius={[4, 4, 0, 0]} name="Score" />
+          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
+          <ReferenceLine y={72} stroke="#6366f1" strokeDasharray="5 3" />
+          <Bar dataKey="score" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Score" />
         </BarChart>
       </ResponsiveContainer>
     ),
@@ -119,7 +105,7 @@ const examples = [
   },
   {
     betLabel: "Lakers -3.5 vs Celtics",
-    insight: "Covered 6 of last 10 but 0-3 ATS as road dogs this year. Proceed with caution.",
+    insight: "Covered in 6 of last 10 overall, but 0-3 ATS as road underdogs this season.",
     badge: "SPREAD",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
@@ -127,28 +113,21 @@ const examples = [
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis hide />
-          <Tooltip
-            contentStyle={{
-              background: "#111",
-              border: "1px solid #222",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
-          <ReferenceLine y={-3.5} stroke="#f59e0b" strokeDasharray="5 3" />
+          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
+          <ReferenceLine y={-3.5} stroke="#ef4444" strokeDasharray="5 3" />
           <Bar dataKey="margin" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Margin" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "ATS", value: "6-4" },
+      { label: "ATS record", value: "6-4" },
       { label: "H2H", value: "2-1" },
       { label: "Avg margin", value: "+3.8" },
     ],
   },
   {
-    betLabel: "Cooper Flagg O 24.5 Pts -110",
-    insight: "The rookie is averaging 24.9 over his last 8 with a 51-point explosion mixed in. High variance but trending up.",
+    betLabel: "Flagg O 24.5 Pts -110",
+    insight: "The rookie averages 24.9 with a 51-point eruption mixed in. High variance player \u2014 ceiling is massive, floor is low.",
     badge: "PLAYER PROP",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
@@ -156,15 +135,8 @@ const examples = [
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
           <YAxis domain={[0, 55]} hide />
-          <Tooltip
-            contentStyle={{
-              background: "#111",
-              border: "1px solid #222",
-              borderRadius: 8,
-              fontSize: 12,
-            }}
-          />
-          <ReferenceLine y={24.5} stroke="#a855f7" strokeDasharray="5 3" />
+          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
+          <ReferenceLine y={24.5} stroke="#f59e0b" strokeDasharray="5 3" />
           <Bar dataKey="pts" fill="#a855f7" radius={[4, 4, 0, 0]} name="Points" />
         </BarChart>
       </ResponsiveContainer>
