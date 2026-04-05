@@ -24,6 +24,14 @@ const SPORT_MAP: Record<string, { sport: string; league: string }> = {
   "SERIE A": { sport: "soccer", league: "ita.1" },
   BUNDESLIGA: { sport: "soccer", league: "ger.1" },
   "LIGUE 1": { sport: "soccer", league: "fra.1" },
+  // Golf
+  GOLF: { sport: "golf", league: "pga" },
+  PGA: { sport: "golf", league: "pga" },
+  "PGA TOUR": { sport: "golf", league: "pga" },
+  "THE MASTERS": { sport: "golf", league: "pga" },
+  MASTERS: { sport: "golf", league: "pga" },
+  LIV: { sport: "golf", league: "liv" },
+  LPGA: { sport: "golf", league: "lpga" },
 };
 
 function getLeagueInfo(sport: string): { sport: string; league: string } | null {
@@ -290,7 +298,9 @@ export async function fetchAllTeamData(
     results._players = playerData;
   }
 
-  if (!anyFound) {
+  // For golf and player-focused sports, players alone count as "found"
+  const isGolf = sport.toUpperCase() === "GOLF" || sport.toUpperCase() === "PGA";
+  if (!anyFound && !isGolf) {
     console.log(`[ESPN] No teams found for any of: ${JSON.stringify(teamNames)}`);
     return { _unsupported: true, _sport: sport };
   }

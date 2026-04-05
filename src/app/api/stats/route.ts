@@ -7,7 +7,7 @@ import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
-import type { BetExtraction } from "@/types";
+import type { BetExtraction, ChartConfig } from "@/types";
 
 export const maxDuration = 60;
 
@@ -119,6 +119,25 @@ async function fetchSportData(
       }
       return { data: nhlData, source: "nhlstats+espn" };
     }
+  }
+
+  // Golf: use ESPN with player-focused data
+  const isGolf = sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS";
+  if (isGolf) {
+    console.log(`[Stats] Using ESPN for golf data`);
+    // For golf, players are the primary entities — fetch player data
+    const espnData = await fetchAllTeamData(
+      "Golf",
+      [], // no teams in golf
+      extraction.players.length > 0 ? extraction.players : undefined
+    );
+    // Golf doesn't have traditional team matchups — supplement with scoreboard
+    if (espnData._unsupported) {
+      // Still try — ESPN golf endpoint exists
+      const fallback = await fetchAllTeamData("PGA", [], extraction.players);
+      if (!fallback._unsupported) return { data: fallback, source: "espn-golf" };
+    }
+    return { data: espnData, source: "espn-golf" };
   }
 
   // Default: ESPN for NFL, college, soccer, etc.
@@ -266,17 +285,49 @@ async function analyzeSingleBet(
   extraction: BetExtraction,
   apiKey: string
 ): Promise<Record<string, unknown>> {
-  const { data: teamData, source } = await fetchSportData(extraction);
+  let teamData: Record<string, unknown>;
+  let source: string;
+
+  try {
+    const result = await fetchSportData(extraction);
+    teamData = result.data;
+    source = result.source;
+  } catch (e) {
+    console.error("[Stats] fetchSportData failed:", e);
+    logToDiscord("error", extraction, `Data fetch failed: ${(e as Error).message}`);
+    // Return empty result instead of crashing
+    return {
+      summary: "We couldn't pull the data for this bet right now. Try again in a moment.",
+      stats: [],
+      charts: [],
+      _computed: { source: "error" },
+    };
+  }
 
   if (teamData._unsupported) {
     return { unsupported: true };
   }
 
-  const computed = computeAnalysis(teamData, extraction);
+  let computed;
+  try {
+    computed = computeAnalysis(teamData, extraction);
+  } catch (e) {
+    console.error("[Stats] computeAnalysis failed:", e);
+    logToDiscord("error", extraction, `Analysis compute failed: ${(e as Error).message}`);
+    // Fall through to AI-only analysis
+    computed = computeAnalysis({}, extraction);
+  }
+
   const isDeterministic = DETERMINISTIC_BET_TYPES.includes(extraction.betType);
-  const charts = isDeterministic
-    ? buildCharts(extraction.betType, computed, extraction, teamData)
-    : [];
+  let charts: ChartConfig[] = [];
+  try {
+    charts = isDeterministic
+      ? buildCharts(extraction.betType, computed, extraction, teamData)
+      : [];
+  } catch (e) {
+    console.error("[Stats] buildCharts failed:", e);
+    // Continue without charts
+  }
 
   const prompt = isDeterministic && charts.length > 0
     ? buildSummaryPrompt(extraction, computed, teamData)
@@ -391,12 +442,16 @@ export async function POST(request: NextRequest) {
           sport: ld.leg.sport,
           betType: ld.leg.betType,
           teams: ld.leg.teams,
+          players: ld.leg.players || [],
+          market: ld.leg.market,
+          line: ld.leg.line,
           odds: ld.leg.odds,
           summary: legSummary,
           stats: legStats,
           charts: legCharts,
           error: !hasAnything,
           unsupported: !ld.teamData && !hasAnything,
+          computedData: ld.teamData || undefined,
         };
       });
 

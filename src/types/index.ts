@@ -46,12 +46,16 @@ export interface ParlayLegResult {
   sport: string;
   betType: string;
   teams: string[];
+  players?: string[];
+  market?: string;
+  line?: number;
   odds: string;
   summary: string | null;
   stats: StatDataPoint[];
   charts: ChartConfig[];
   error: boolean;
   unsupported: boolean;
+  computedData?: Record<string, unknown>;
 }
 
 export type AppState = 'upload' | 'analyzing' | 'results' | 'error' | 'unsupported' | 'parlay';

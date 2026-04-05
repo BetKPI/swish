@@ -271,7 +271,7 @@ function buildMoneylineCharts(
 
 function buildPlayerPropCharts(
   computed: ComputedAnalysis,
-  extraction: { players: string[]; line?: number; market?: string; teams?: string[] },
+  extraction: { players: string[]; line?: number; market?: string; teams?: string[]; description?: string },
   rawData: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
@@ -288,7 +288,7 @@ function buildPlayerPropCharts(
     if (!pData) continue;
 
     const line = extraction.line ?? 0;
-    const market = extraction.market || "Points";
+    const market = extraction.market || inferMarketFromDescription(extraction) || "Points";
 
     // Determine stat key from market
     const statKey = mapMarketToStatKey(market);
@@ -309,6 +309,52 @@ function buildPlayerPropCharts(
     let propAnalysis = pData.propAnalysis;
     const gameLog = pData.gameLog;
 
+    // If no prop analysis but we have NHL-format game logs (stats on object directly), compute it
+    if (!propAnalysis && Array.isArray(gameLog) && gameLog.length > 0 && gameLog[0]?.gameDate && !gameLog[0]?.stats) {
+      const nhlStatMap: Record<string, string> = {
+        shots: "shots", goals: "goals", assists: "assists", points: "points",
+        saves: "saves", goalsAgainst: "goalsAgainst", powerPlayGoals: "powerPlayGoals",
+        plusMinus: "plusMinus",
+      };
+      const nhlKey = nhlStatMap[statKey] || statKey;
+      const values = gameLog.map((g: { gameDate: string; opponentAbbrev?: string | { default: string }; opponentCommonName?: { default: string }; homeRoadFlag?: string; [k: string]: unknown }) => {
+        let val: number;
+        if (statKey === "points" || nhlKey === "points") {
+          val = (Number(g.goals) || 0) + (Number(g.assists) || 0);
+        } else {
+          val = Number(g[nhlKey]) || 0;
+        }
+        const opp = typeof g.opponentAbbrev === "string"
+          ? g.opponentAbbrev
+          : (g.opponentAbbrev as { default: string })?.default || g.opponentCommonName?.default || "?";
+        return {
+          date: g.gameDate,
+          value: val,
+          hit: val > line,
+          opponent: opp,
+          home: g.homeRoadFlag === "H",
+        };
+      });
+
+      const hitCount = values.filter((v) => v.hit).length;
+      const total = values.length;
+      const average = total > 0 ? Math.round((values.reduce((s, v) => s + v.value, 0) / total) * 10) / 10 : 0;
+      const last5 = values.slice(-5);
+      const last5Avg = last5.length > 0 ? Math.round((last5.reduce((s, v) => s + v.value, 0) / last5.length) * 10) / 10 : 0;
+
+      propAnalysis = {
+        stat: statKey,
+        line,
+        hitCount,
+        totalGames: total,
+        hitRate: total > 0 ? hitCount / total : 0,
+        average,
+        last5Avg,
+        trend: "stable" as const,
+        gameValues: values,
+      };
+    }
+
     // If no prop analysis but we have ESPN game logs, compute it
     if (!propAnalysis && Array.isArray(gameLog) && gameLog.length > 0 && gameLog[0]?.stats) {
       const espnLabel = espnStatMap[statKey] || statLabel;
@@ -324,6 +370,41 @@ function buildPlayerPropCharts(
           val = Number(g.stats[espnLabel]) || 0;
         }
         return { date: g.date, value: val, hit: val > line, opponent: g.opponent, home: g.home };
+      });
+
+      const hitCount = values.filter((v) => v.hit).length;
+      const total = values.length;
+      const average = total > 0 ? Math.round((values.reduce((s, v) => s + v.value, 0) / total) * 10) / 10 : 0;
+      const last5 = values.slice(-5);
+      const last5Avg = last5.length > 0 ? Math.round((last5.reduce((s, v) => s + v.value, 0) / last5.length) * 10) / 10 : 0;
+
+      propAnalysis = {
+        stat: statKey,
+        line,
+        hitCount,
+        totalGames: total,
+        hitRate: total > 0 ? hitCount / total : 0,
+        average,
+        last5Avg,
+        trend: "stable" as const,
+        gameValues: values,
+      };
+    }
+
+    // If no prop analysis but we have MLB-format game logs (stat object, not stats), compute it
+    if (!propAnalysis && Array.isArray(gameLog) && gameLog.length > 0 && gameLog[0]?.stat && !gameLog[0]?.stats) {
+      const mlbStatKeyMap: Record<string, string> = {
+        hits: "hits", homeRuns: "homeRuns", rbi: "rbi", runs: "runs",
+        stolenBases: "stolenBases", totalBases: "totalBases", strikeOuts: "strikeOuts",
+        baseOnBalls: "baseOnBalls", strikeOuts_pitching: "strikeOuts",
+        earnedRuns: "earnedRuns", inningsPitched: "inningsPitched",
+      };
+      const mlbKey = mlbStatKeyMap[statKey] || statKey;
+      const values = gameLog.map((g: { date: string; opponent: string; stat: Record<string, unknown>; isHome?: boolean }) => {
+        const val = mlbKey === "inningsPitched"
+          ? parseFloat(String(g.stat[mlbKey] || "0"))
+          : Number(g.stat[mlbKey]) || 0;
+        return { date: g.date, value: val, hit: val > line, opponent: g.opponent, home: g.isHome ?? false };
       });
 
       const hitCount = values.filter((v) => v.hit).length;
@@ -517,6 +598,49 @@ function buildPlayerPropFallbackCharts(
   }
 
   return charts;
+}
+
+/**
+ * Infer market from bet description when market field is missing.
+ * Handles common patterns like "3+ shots on goal", "over 5.5 assists", etc.
+ */
+function inferMarketFromDescription(extraction: { market?: string; description?: string }): string | null {
+  const desc = (extraction.description || "").toLowerCase();
+  if (!desc) return null;
+
+  // NHL
+  if (desc.includes("shot") && (desc.includes("goal") || desc.includes("sog"))) return "Shots on Goal";
+  if (desc.includes("shot")) return "Shots";
+  if (desc.includes("save")) return "Saves";
+  if (desc.includes("power play") || desc.includes("pp goal")) return "Power Play Goals";
+  if (desc.includes("goals against")) return "Goals Against";
+
+  // NBA
+  if (desc.includes("pts+reb+ast") || desc.includes("pra") || (desc.includes("points") && desc.includes("rebounds") && desc.includes("assists"))) return "Pts+Reb+Ast";
+  if (desc.includes("three") || desc.includes("3-pointer") || desc.includes("3pt") || desc.includes("made three")) return "3-Pointers";
+  if (desc.includes("rebound")) return "Rebounds";
+  if (desc.includes("assist")) return "Assists";
+  if (desc.includes("steal")) return "Steals";
+  if (desc.includes("block") && !desc.includes("blocked shot")) return "Blocks";
+  if (desc.includes("turnover")) return "Turnovers";
+  if (desc.includes("point")) return "Points";
+
+  // MLB
+  if (desc.includes("strikeout") || desc.includes("k's")) return "Strikeouts";
+  if (desc.includes("home run") || desc.includes("homer")) return "Home Runs";
+  if (desc.includes("rbi") || desc.includes("runs batted")) return "RBIs";
+  if (desc.includes("stolen base")) return "Stolen Bases";
+  if (desc.includes("total bases")) return "Total Bases";
+  if (desc.includes("hit") && !desc.includes("hit rate")) return "Hits";
+
+  // Golf
+  if (desc.includes("birdie")) return "Birdies";
+  if (desc.includes("bogey")) return "Bogeys";
+
+  // Generic goals (NHL/Soccer)
+  if (desc.includes("goal") && !desc.includes("against")) return "Goals";
+
+  return null;
 }
 
 function mapMarketToStatKey(market: string): string {

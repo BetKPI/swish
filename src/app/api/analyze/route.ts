@@ -4,7 +4,7 @@ import { fetchWithRetry } from "@/lib/fetch";
 const EXTRACTION_PROMPT = `You are an expert sports betting analyst. Analyze this screenshot of a sports bet and extract structured information.
 
 Return a JSON object with these fields:
-- sport: The sport (e.g., "NBA", "NFL", "MLB", "NHL", "Soccer", "Tennis", "MMA")
+- sport: The sport (e.g., "NBA", "NFL", "MLB", "NHL", "Soccer", "Golf", "Tennis", "MMA")
 - betType: One of "moneyline", "spread", "over_under", "player_prop", "game_prop", "parlay"
 - teams: Array of team names involved
 - players: Array of player names (if relevant, otherwise empty array)
@@ -14,7 +14,12 @@ Return a JSON object with these fields:
 - description: A human-readable one-sentence summary of the bet
 - confidence: Your confidence in the extraction from 0 to 1 (1 = very confident)
 
-For parlays, set betType to "parlay" and include a "legs" array where each leg has the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). CRITICAL: each leg MUST include the "teams" array with the team names involved in that leg — even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
+For parlays, set betType to "parlay" and include a "legs" array where each leg has the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). CRITICAL for each parlay leg:
+- "teams" array MUST include the team names involved — even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
+- "market" MUST be specific and accurate — for player props, state the exact stat: "Shots on Goal", "Points", "Assists", "Rebounds", "Strikeouts", "Hits", "Total Bases", "Goals", "Saves", etc. Do NOT default to "Points" for non-points props. For shots bets, use "Shots on Goal". For goals, use "Goals". This is critical for showing the correct charts.
+- "players" array MUST include any player names in the leg.
+
+For golf bets, set sport to "Golf". For tournament winner/matchup bets, use the golfer names as "players" and tournament name as team (e.g., teams: ["The Masters"]). For golf, market might be "Tournament Winner", "Top 5", "Top 10", "Top 20", "Make/Miss Cut", "Head-to-Head", "Round Score", etc.
 
 Respond ONLY with valid JSON, no markdown or explanation.`;
 

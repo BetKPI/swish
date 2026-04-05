@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { BetExtraction, ParlayLegResult } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import FeedbackShare from "./FeedbackShare";
+import AnalysisChat from "./AnalysisChat";
 
 interface ParlayResultsProps {
   extraction: BetExtraction;
@@ -145,6 +146,25 @@ export default function ParlayResults({
           {activeLeg.charts.map((chart, i) => (
             <ChartDisplay key={i} config={chart} />
           ))}
+
+          {/* Chat — available for analyzed legs */}
+          {!activeLeg.error && !activeLeg.unsupported && (
+            <AnalysisChat
+              key={`chat-${activeTab}`}
+              extraction={{
+                sport: activeLeg.sport,
+                betType: activeLeg.betType as BetExtraction["betType"],
+                teams: activeLeg.teams,
+                players: activeLeg.players || [],
+                market: activeLeg.market,
+                line: activeLeg.line,
+                odds: activeLeg.odds,
+                description: activeLeg.description,
+                confidence: 1,
+              }}
+              computedData={activeLeg.computedData || {}}
+            />
+          )}
         </div>
       )}
 

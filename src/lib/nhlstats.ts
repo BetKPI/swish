@@ -26,7 +26,8 @@ export interface NHLPlayer {
 export interface NHLGameLog {
   gameId: number;
   gameDate: string;
-  opponentAbbrev: { default: string };
+  opponentAbbrev: string | { default: string };
+  opponentCommonName?: { default: string };
   homeRoadFlag: "H" | "R";
   // Skater stats
   goals?: number;
@@ -63,25 +64,47 @@ export async function searchPlayer(
   playerName: string
 ): Promise<NHLPlayer | null> {
   try {
-    const data = await cachedFetch<NHLPlayer[] | Record<string, unknown>>(
+    // Primary: search.d3.nhle.com (the current working search endpoint)
+    const data = await cachedFetch<Record<string, unknown>[]>(
+      `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=5&q=${encodeURIComponent(playerName)}`,
+      TTL.MEDIUM
+    );
+    if (data && Array.isArray(data) && data.length > 0) {
+      const nameLower = playerName.toLowerCase();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const exact = data.find((p: any) => (p.name || "").toLowerCase() === nameLower);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const match = exact || data[0] as any;
+      if (match?.playerId) {
+        return {
+          playerId: match.playerId,
+          fullName: match.name || playerName,
+          firstName: { default: match.name?.split(" ")[0] || "" },
+          lastName: { default: match.name?.split(" ").slice(1).join(" ") || "" },
+          position: match.positionCode || "?",
+          teamAbbrev: { default: match.teamAbbrev || match.lastTeamAbbrev || "" },
+        };
+      }
+    }
+
+    // Fallback: old endpoint (may still work in some regions)
+    const fallback = await cachedFetch<NHLPlayer[] | Record<string, unknown>>(
       `${BASE}/player/search?q=${encodeURIComponent(playerName)}&limit=5`,
       TTL.MEDIUM
     );
-    if (!data) {
-      console.log(`[NHL] Player search API failed, no fallback available`);
-      return null;
+    if (fallback && Array.isArray(fallback) && fallback.length > 0) {
+      const nameLower = playerName.toLowerCase();
+      const exactMatch = fallback.find(
+        (p: NHLPlayer) => {
+          const full = `${p.firstName?.default || ""} ${p.lastName?.default || ""}`.toLowerCase();
+          return full === nameLower;
+        }
+      );
+      return exactMatch || fallback[0];
     }
-    const players = Array.isArray(data) ? data : [];
-    if (players.length === 0) return null;
 
-    const nameLower = playerName.toLowerCase();
-    const exact = players.find(
-      (p: NHLPlayer) => {
-        const full = `${p.firstName?.default || ""} ${p.lastName?.default || ""}`.toLowerCase();
-        return full === nameLower;
-      }
-    );
-    return exact || players[0];
+    console.log(`[NHL] Player search failed for: "${playerName}"`);
+    return null;
   } catch {
     return null;
   }
@@ -361,7 +384,7 @@ function analyzeNHLProp(
     date: g.gameDate,
     value: getNHLStatValue(g, stat),
     hit: getNHLStatValue(g, stat) > line,
-    opponent: g.opponentAbbrev?.default || "?",
+    opponent: typeof g.opponentAbbrev === "string" ? g.opponentAbbrev : g.opponentAbbrev?.default || "?",
     home: g.homeRoadFlag === "H",
   }));
 

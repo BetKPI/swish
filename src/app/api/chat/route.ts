@@ -45,7 +45,8 @@ type FetchAction =
   | { action: "nba_player"; playerName: string; season?: number }
   | { action: "nhl_player"; playerName: string; season?: string }
   | { action: "nhl_team_goalie"; teamName: string }
-  | { action: "team_schedule"; sport: string; teamName: string };
+  | { action: "team_schedule"; sport: string; teamName: string }
+  | { action: "golf_player"; playerName: string };
 
 async function executeFetch(
   fetchReq: FetchAction,
@@ -145,6 +146,12 @@ async function executeFetch(
       case "team_schedule": {
         const data = await fetchAllTeamData(sport, [fetchReq.teamName]);
         return data[fetchReq.teamName] as Record<string, unknown> || null;
+      }
+
+      case "golf_player": {
+        const data = await fetchAllTeamData("Golf", [], [fetchReq.playerName]);
+        const players = data._players as Record<string, unknown> | undefined;
+        return players?.[fetchReq.playerName] as Record<string, unknown> || null;
       }
 
       default:
@@ -250,7 +257,7 @@ FORMAT 2 — You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
-    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule",
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player",
     "playerName": "name" (for player actions),
     "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
     "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
@@ -272,13 +279,15 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 
 RULES:
 - IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
+- PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
 - If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
 - For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
 - For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
 - For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context (see "Players in this bet" above).
 - For NHL goalie stats (save percentage, saves, goals against), use "nhl_team_goalie" with the team name. This fetches the starting goalie's stats and game log automatically — you do NOT need to know the goalie's name.
-- When the user says "last year", "last season", or references a past year, include "season" in the fetch request with the correct year number.
+- For golf player stats, use "golf_player" with the golfer's name.
+- SEASON/YEAR INFERENCE: When the user says "last year", "last season", "2025", "tho" (implying a different year), or any year number, include "season" in the fetch request. Map: "last year"/"last season" → ${currentYear - 1}, "2025" → 2025, "2024" → 2024, etc. For NHL, season format is "20242025". If the user replies with just a year (e.g., "2025 tho"), they want data from THAT year — re-fetch with the correct season parameter.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.
 - Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.`;

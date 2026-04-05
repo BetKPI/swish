@@ -35,6 +35,12 @@ const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
     "Show home vs away splits",
     "Pull up the player's game log",
   ],
+  GOLF: [
+    "Show recent tournament finishes",
+    "How have they done at this course?",
+    "Show round-by-round scoring trend",
+    "Compare recent form between these golfers",
+  ],
   DEFAULT: [
     "Show home vs away splits",
     "Show recent scoring trends",
