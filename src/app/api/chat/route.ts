@@ -5,6 +5,7 @@ import * as nhl from "@/lib/nhlstats";
 import { fetchAllTeamData } from "@/lib/espn";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
+import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring } from "@/lib/masters";
 
 /**
  * Chat endpoint — two-step flow:
@@ -46,7 +47,8 @@ type FetchAction =
   | { action: "nhl_player"; playerName: string; season?: string }
   | { action: "nhl_team_goalie"; teamName: string }
   | { action: "team_schedule"; sport: string; teamName: string }
-  | { action: "golf_player"; playerName: string };
+  | { action: "golf_player"; playerName: string }
+  | { action: "masters_hole"; playerName: string; hole?: number };
 
 async function executeFetch(
   fetchReq: FetchAction,
@@ -154,6 +156,20 @@ async function executeFetch(
         return players?.[fetchReq.playerName] as Record<string, unknown> || null;
       }
 
+      case "masters_hole": {
+        const history = await fetchMastersHistory(fetchReq.playerName);
+        if (!history) return null;
+        if (fetchReq.hole) {
+          return { player: fetchReq.playerName, hole: analyzeHoleHistory(history, fetchReq.hole), amenCorner: analyzeAmenCorner(history) };
+        }
+        return {
+          player: fetchReq.playerName,
+          amenCorner: analyzeAmenCorner(history),
+          sundays: analyzeSundayScoring(history),
+          allHoles: Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1)),
+        };
+      }
+
       default:
         return null;
     }
@@ -257,7 +273,7 @@ FORMAT 2 — You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
-    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player",
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player", "masters_hole",
     "playerName": "name" (for player actions),
     "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
     "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
@@ -287,6 +303,7 @@ RULES:
 - For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context (see "Players in this bet" above).
 - For NHL goalie stats (save percentage, saves, goals against), use "nhl_team_goalie" with the team name. This fetches the starting goalie's stats and game log automatically — you do NOT need to know the goalie's name.
 - For golf player stats, use "golf_player" with the golfer's name.
+- For Masters/Augusta hole-by-hole history, use "masters_hole" with playerName and optionally "hole" (1-18). This returns historical scoring data at Augusta National for that player across 2019-2025. Use this for questions about specific holes, Amen Corner (11-12-13), Sunday scoring, or course history. If no hole specified, returns all 18 holes + Amen Corner + Sunday analysis.
 - SEASON/YEAR INFERENCE: When the user says "last year", "last season", "2025", "tho" (implying a different year), or any year number, include "season" in the fetch request. Map: "last year"/"last season" → ${currentYear - 1}, "2025" → 2025, "2024" → 2024, etc. For NHL, season format is "20242025". If the user replies with just a year (e.g., "2025 tho"), they want data from THAT year — re-fetch with the correct season parameter.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
 - Data keys must be camelCase.

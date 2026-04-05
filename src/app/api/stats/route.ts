@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
+import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring, getAugustaPars } from "@/lib/masters";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
 import { fetchNHLData } from "@/lib/nhlstats";
@@ -127,7 +128,38 @@ async function fetchSportData(
   if (isGolf) {
     console.log(`[Stats] Using ESPN golf leaderboard`);
     const golfData = await fetchGolfLeaderboard(extraction.players);
-    return { data: golfData, source: "espn-golf" };
+
+    // For Masters bets, enrich with hole-by-hole history
+    const desc = (extraction.description || "").toLowerCase();
+    const isMasters = sport === "THE MASTERS" || sport === "MASTERS" ||
+      desc.includes("master") || desc.includes("augusta");
+
+    if (isMasters && extraction.players.length > 0) {
+      console.log(`[Stats] Fetching Masters hole-by-hole history`);
+      const mastersData: Record<string, unknown> = {};
+      for (const player of extraction.players.slice(0, 3)) { // cap at 3 players
+        const history = await fetchMastersHistory(player);
+        if (history) {
+          const amenCorner = analyzeAmenCorner(history);
+          const sundays = analyzeSundayScoring(history);
+          // Analyze all 18 holes
+          const holeAnalysis = Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1));
+
+          mastersData[player] = {
+            history,
+            amenCorner,
+            sundays,
+            holeByHole: holeAnalysis,
+            augustaPars: getAugustaPars(),
+          };
+        }
+      }
+      if (Object.keys(mastersData).length > 0) {
+        (golfData as Record<string, unknown>)._masters = mastersData;
+      }
+    }
+
+    return { data: golfData, source: isMasters ? "espn-golf+masters" : "espn-golf" };
   }
 
   // Default: ESPN for NFL, college, soccer, etc.
