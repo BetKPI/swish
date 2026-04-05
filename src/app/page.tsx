@@ -24,6 +24,7 @@ export default function Home() {
   const [stats, setStats] = useState<StatDataPoint[]>([]);
   const [summary, setSummary] = useState<string>("");
   const [computedData, setComputedData] = useState<Record<string, unknown> | null>(null);
+  const [visuals, setVisuals] = useState<Record<string, unknown> | null>(null);
   const [parlayLegs, setParlayLegs] = useState<ParlayLegResult[]>([]);
   const [gameStatus, setGameStatus] = useState<GameStatusData | null>(null);
   const [error, setError] = useState<string>("");
@@ -142,6 +143,7 @@ export default function Home() {
       setStats(statsData.stats || []);
       setSummary(statsData.summary || "");
       setComputedData(statsData._computed || null);
+      setVisuals(statsData.visuals || null);
       setGameStatus(statsData.gameStatus || null);
       setState("results");
       // Save to history
@@ -165,6 +167,7 @@ export default function Home() {
     setStats([]);
     setSummary("");
     setComputedData(null);
+    setVisuals(null);
     setParlayLegs([]);
     setGameStatus(null);
     setError("");
@@ -396,6 +399,7 @@ export default function Home() {
             summary={summary}
             computedData={computedData ?? undefined}
             gameStatus={gameStatus ?? undefined}
+            visuals={visuals ?? undefined}
             onReset={reset}
           />
         </div>

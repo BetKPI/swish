@@ -385,6 +385,9 @@ async function analyzeSingleBet(
     console.error("[Stats] Game status check failed:", e);
   }
 
+  // Extract visual metadata (logos, headshots, colors) from team data
+  const visuals = extractVisuals(teamData, extraction);
+
   if (isDeterministic && charts.length > 0) {
     return {
       summary: aiResult.summary || "Check the charts below.",
@@ -392,6 +395,7 @@ async function analyzeSingleBet(
       charts,
       _computed: { oddsAnalysis: computed.oddsAnalysis, source },
       gameStatus,
+      visuals,
     };
   }
 
@@ -401,7 +405,49 @@ async function analyzeSingleBet(
     charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
     _computed: { oddsAnalysis: computed.oddsAnalysis, source },
     gameStatus,
+    visuals,
   };
+}
+
+/**
+ * Extract visual metadata (logos, headshots, team colors) from raw team data.
+ * These are ESPN CDN URLs — no extra API calls needed.
+ */
+function extractVisuals(
+  teamData: Record<string, unknown>,
+  extraction: BetExtraction
+): Record<string, unknown> {
+  const teams: Record<string, { logo?: string; color?: string }> = {};
+  const players: Record<string, { headshot?: string }> = {};
+
+  // Team logos and colors
+  for (const name of extraction.teams) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = teamData[name] as any;
+    if (data?.team) {
+      const t = data.team;
+      teams[name] = {
+        logo: t.logos?.[0]?.href || t.logo,
+        color: t.color ? `#${t.color}` : undefined,
+      };
+    }
+  }
+
+  // Player headshots
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerData = (teamData as any)?._players;
+  if (playerData) {
+    for (const [pName, pData] of Object.entries(playerData)) {
+      if (!pData) continue;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const p = pData as any;
+      const headshot = p.player?.headshot?.href || p.player?.headshot ||
+        (p.player?.id ? `https://a.espncdn.com/i/headshots/nba/players/full/${p.player.id}.png` : undefined);
+      if (headshot) players[pName] = { headshot };
+    }
+  }
+
+  return { teams, players };
 }
 
 export async function POST(request: NextRequest) {

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { BetExtraction, GameStatusData } from "@/types";
+import ShareMenu from "./ShareMenu";
 
 interface FeedbackShareProps {
   extraction: BetExtraction;
@@ -18,8 +19,6 @@ export default function FeedbackShare({
   const [showComment, setShowComment] = useState(false);
   const [comment, setComment] = useState("");
   const [rating, setRating] = useState<"up" | "down" | null>(null);
-  const [shareMsg, setShareMsg] = useState("");
-
   const sendFeedback = async (r: "up" | "down", text?: string) => {
     setRating(r);
     setFeedbackSent(true);
@@ -61,51 +60,6 @@ export default function FeedbackShare({
     setShowComment(false);
   };
 
-  const handleShare = async () => {
-    const gradeText = gameStatus?.grade?.result && gameStatus.grade.result !== "pending"
-      ? `\n${gameStatus.grade.result === "hit" ? "\u2705 HIT" : gameStatus.grade.result === "miss" ? "\u274C MISS" : "\u{1F7E1} PUSH"} — ${gameStatus.grade.detail}`
-      : "";
-    const liveText = gameStatus?.state === "in"
-      ? `\n\u{1F534} LIVE: ${gameStatus.awayTeam} ${gameStatus.awayScore} - ${gameStatus.homeScore} ${gameStatus.homeTeam}`
-      : "";
-    const text = [
-      `${extraction.sport} ${extraction.betType.replace("_", "/")}`,
-      extraction.description,
-      extraction.odds ? `Odds: ${extraction.odds}` : "",
-      liveText || gradeText || "",
-      "",
-      summary ? summary.slice(0, 200) + (summary.length > 200 ? "..." : "") : "",
-      "",
-      "Analyzed with Swish \u2014 swish-jet.vercel.app",
-    ]
-      .filter(Boolean)
-      .join("\n");
-
-    // Try native share first (mobile)
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: "Swish Bet Analysis",
-          text,
-          url: "https://swish-jet.vercel.app",
-        });
-        return;
-      } catch {
-        // User cancelled or share failed, fall through to clipboard
-      }
-    }
-
-    // Fallback: copy to clipboard
-    try {
-      await navigator.clipboard.writeText(text);
-      setShareMsg("Copied!");
-      setTimeout(() => setShareMsg(""), 2000);
-    } catch {
-      setShareMsg("Couldn't copy");
-      setTimeout(() => setShareMsg(""), 2000);
-    }
-  };
-
   return (
     <div className="flex flex-col gap-3">
       {/* Share + Feedback row */}
@@ -138,13 +92,7 @@ export default function FeedbackShare({
         </div>
 
         {/* Share */}
-        <button
-          onClick={handleShare}
-          className="flex items-center gap-1.5 px-3 py-1.5 bg-surface-light hover:bg-border rounded-lg transition-colors text-sm text-muted hover:text-foreground cursor-pointer"
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-          {shareMsg || "Share"}
-        </button>
+        <ShareMenu extraction={extraction} summary={summary} gameStatus={gameStatus} />
       </div>
 
       {/* Comment box for negative feedback */}
