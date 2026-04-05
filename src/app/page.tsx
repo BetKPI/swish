@@ -179,17 +179,31 @@ export default function Home() {
       {state === "upload" && (
         <>
           {/* Hero section */}
-          <div className="text-center px-4 pt-8 sm:pt-20 pb-10 sm:pb-16">
+          <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
-              <h2 className="text-3xl sm:text-6xl font-black tracking-tight leading-[1.1]">
-                Every bet has a story.
+              <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
+                Screenshot your bet.
                 <br />
-                <span className="text-accent">Check the stats first.</span>
+                <span className="text-accent">Get the real numbers.</span>
               </h2>
-              <p className="text-muted text-base sm:text-xl max-w-xl mx-auto">
-                Screenshot any sports bet. We&apos;ll pull the stats that
-                actually matter — props, spreads, totals across NFL, NBA, MLB, NHL, Golf, and more.
-              </p>
+
+              {/* 3-step explainer */}
+              <div className="flex items-center justify-center gap-2 sm:gap-4 text-sm text-muted max-w-md mx-auto">
+                <div className="flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">1</span>
+                  <span>Screenshot</span>
+                </div>
+                <span className="text-border">&#8594;</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">2</span>
+                  <span>Upload</span>
+                </div>
+                <span className="text-border">&#8594;</span>
+                <div className="flex items-center gap-1.5">
+                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
+                  <span>See the data</span>
+                </div>
+              </div>
 
               {/* Masters Week Banner */}
               <div className="max-w-lg mx-auto bg-emerald-900/30 border border-emerald-500/30 rounded-xl px-4 py-3">
@@ -197,7 +211,7 @@ export default function Home() {
                   <span className="text-lg">&#9971;</span>
                   <div className="text-left">
                     <p className="text-sm font-semibold text-emerald-400">The Masters — April 7-13</p>
-                    <p className="text-xs text-emerald-400/70">Hole-by-hole history at Augusta. Upload any Masters bet for course-specific analysis.</p>
+                    <p className="text-xs text-emerald-400/70">Hole-by-hole history at Augusta. Upload any Masters bet.</p>
                   </div>
                 </div>
               </div>
@@ -235,20 +249,23 @@ export default function Home() {
                         alt="Bet screenshot"
                         className="max-h-56 mx-auto rounded-lg"
                       />
-                      <p className="text-muted text-sm">Tap to swap it out</p>
+                      <p className="text-muted text-sm">Tap to change</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
-                      <div className="mx-auto w-12 h-12 rounded-full bg-surface-light flex items-center justify-center">
-                        <svg className="w-6 h-6 text-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <div className="mx-auto w-14 h-14 rounded-full bg-accent/10 border-2 border-dashed border-accent/40 flex items-center justify-center">
+                        <svg className="w-7 h-7 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                         </svg>
                       </div>
-                      <p className="text-lg sm:text-xl font-semibold">
-                        Upload a screenshot of your bet
+                      <p className="text-lg sm:text-xl font-bold">
+                        Upload your bet screenshot
                       </p>
                       <p className="text-muted text-sm">
-                        Tap here or drag and drop — FanDuel, DraftKings, Bet365, any app
+                        From FanDuel, DraftKings, Bet365 — any sportsbook app
+                      </p>
+                      <p className="text-accent text-xs font-medium">
+                        Works with spreads, props, O/U, parlays, moneylines
                       </p>
                     </div>
                   )}

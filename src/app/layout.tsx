@@ -73,8 +73,8 @@ export default function RootLayout({
             `,
           }}
         />
-        <footer className="border-t border-border/50 px-4 py-4 text-center text-xs text-muted">
-          For entertainment only. Not financial advice. Please gamble responsibly.
+        <footer className="border-t border-border/50 px-4 py-4 text-center text-xs text-muted whitespace-nowrap">
+          For entertainment only. Not financial advice. Gamble responsibly.
         </footer>
       </body>
     </html>

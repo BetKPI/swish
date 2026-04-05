@@ -21,15 +21,15 @@ const embiidTipoffs = [
   { month: "Mar", winPct: 72 },
 ];
 
-const henryTDs = [
-  { game: "G1", tds: 2 },
-  { game: "G2", tds: 0 },
-  { game: "G3", tds: 1 },
-  { game: "G4", tds: 3 },
-  { game: "G5", tds: 1 },
-  { game: "G6", tds: 2 },
-  { game: "G7", tds: 0 },
-  { game: "G8", tds: 1 },
+const schefflerRounds = [
+  { round: "R1 '24", score: 66 },
+  { round: "R2 '24", score: 72 },
+  { round: "R3 '24", score: 71 },
+  { round: "R4 '24", score: 68 },
+  { round: "R1 '25", score: 69 },
+  { round: "R2 '25", score: 67 },
+  { round: "R3 '25", score: 66 },
+  { round: "R4 '25", score: 65 },
 ];
 
 const lakersSpread = [
@@ -86,15 +86,15 @@ const examples = [
     ],
   },
   {
-    betLabel: "Derrick Henry ATTD -115",
-    insight: "Scored in 6 of his last 8. Gets 80% of goal-line carries. This is the safest leg on your card.",
-    badge: "NFL PROP",
+    betLabel: "Scheffler Top 5 Masters +300",
+    insight: "Finished top 5 in 3 of his last 4 majors. Averaging 68.5 strokes per round at Augusta since 2022.",
+    badge: "GOLF",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={henryTDs} barSize={20}>
+        <BarChart data={schefflerRounds} barSize={16}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
-          <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[0, 4]} hide />
+          <XAxis dataKey="round" tick={{ fill: "#555", fontSize: 9 }} axisLine={false} tickLine={false} />
+          <YAxis domain={[62, 75]} hide />
           <Tooltip
             contentStyle={{
               background: "#111",
@@ -103,15 +103,15 @@ const examples = [
               fontSize: 12,
             }}
           />
-          <ReferenceLine y={0.5} stroke="#10b981" strokeDasharray="5 3" />
-          <Bar dataKey="tds" fill="#10b981" radius={[4, 4, 0, 0]} name="TDs" />
+          <ReferenceLine y={72} stroke="#10b981" strokeDasharray="5 3" />
+          <Bar dataKey="score" fill="#10b981" radius={[4, 4, 0, 0]} name="Score" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "TD rate", value: "75%" },
-      { label: "GL carries", value: "80%" },
-      { label: "Avg TDs", value: "1.3" },
+      { label: "Avg round", value: "68.0" },
+      { label: "Under par", value: "88%" },
+      { label: "Top 5 rate", value: "75%" },
     ],
   },
   {
