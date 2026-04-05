@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchAllTeamData } from "@/lib/espn";
+import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
 import { fetchNHLData } from "@/lib/nhlstats";
@@ -122,23 +122,12 @@ async function fetchSportData(
     }
   }
 
-  // Golf: use ESPN with player-focused data
+  // Golf: use leaderboard + player-focused data
   const isGolf = sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS";
   if (isGolf) {
-    console.log(`[Stats] Using ESPN for golf data`);
-    // For golf, players are the primary entities — fetch player data
-    const espnData = await fetchAllTeamData(
-      "Golf",
-      [], // no teams in golf
-      extraction.players.length > 0 ? extraction.players : undefined
-    );
-    // Golf doesn't have traditional team matchups — supplement with scoreboard
-    if (espnData._unsupported) {
-      // Still try — ESPN golf endpoint exists
-      const fallback = await fetchAllTeamData("PGA", [], extraction.players);
-      if (!fallback._unsupported) return { data: fallback, source: "espn-golf" };
-    }
-    return { data: espnData, source: "espn-golf" };
+    console.log(`[Stats] Using ESPN golf leaderboard`);
+    const golfData = await fetchGolfLeaderboard(extraction.players);
+    return { data: golfData, source: "espn-golf" };
   }
 
   // Default: ESPN for NFL, college, soccer, etc.

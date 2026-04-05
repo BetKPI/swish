@@ -29,7 +29,15 @@ export default function AnalysisResults({
     <div className="space-y-6">
       {/* Live Score / Final Result */}
       {gameStatus && (gameStatus.state === "in" || gameStatus.state === "post") && (
-        <GameStatusBanner status={gameStatus} />
+        <GameStatusBanner
+          status={gameStatus}
+          sport={extraction.sport}
+          teams={extraction.teams}
+          betType={extraction.betType}
+          players={extraction.players}
+          market={extraction.market}
+          line={extraction.line}
+        />
       )}
 
       {/* Bet Summary Header */}

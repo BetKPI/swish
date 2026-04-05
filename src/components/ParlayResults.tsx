@@ -157,7 +157,15 @@ export default function ParlayResults({
 
           {/* Live Score / Final Result */}
           {activeLeg.gameStatus && (activeLeg.gameStatus.state === "in" || activeLeg.gameStatus.state === "post") && (
-            <GameStatusBanner status={activeLeg.gameStatus} />
+            <GameStatusBanner
+              status={activeLeg.gameStatus}
+              sport={activeLeg.sport}
+              teams={activeLeg.teams}
+              betType={activeLeg.betType}
+              players={activeLeg.players}
+              market={activeLeg.market}
+              line={activeLeg.line}
+            />
           )}
 
           {/* Error / Unsupported state */}

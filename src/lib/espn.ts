@@ -308,6 +308,75 @@ export async function fetchAllTeamData(
   return results;
 }
 
+// ── Golf leaderboard ──────────────────────────────────────────────
+
+export async function fetchGolfLeaderboard(
+  playerNames: string[]
+): Promise<Record<string, unknown>> {
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data: any = await cachedFetch(
+      `${BASE}/golf/pga/scoreboard`,
+      TTL.SHORT
+    );
+    if (!data?.events?.[0]) return { _noTournament: true };
+
+    const event = data.events[0];
+    const comp = event.competitions?.[0];
+    const competitors = comp?.competitors || [];
+    const tournament = event.name || "PGA Tour Event";
+    const status = comp?.status?.type?.state || "pre"; // pre, in, post
+
+    // Build leaderboard
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const leaderboard = competitors.slice(0, 30).map((c: any, i: number) => ({
+      position: i + 1,
+      name: c.athlete?.displayName || "Unknown",
+      score: c.score || "E",
+      rounds: (c.linescores || []).map((l: { period: number; value: number; displayValue: string }) => ({
+        round: l.period,
+        strokes: l.value,
+        toPar: l.displayValue,
+      })),
+    }));
+
+    // Find specific players
+    const playerData: Record<string, unknown> = {};
+    for (const name of playerNames) {
+      const nameLower = name.toLowerCase();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const match = competitors.find((c: any) => {
+        const cName = (c.athlete?.displayName || "").toLowerCase();
+        return cName.includes(nameLower) || nameLower.includes(cName);
+      });
+      if (match) {
+        playerData[name] = {
+          name: match.athlete?.displayName,
+          score: match.score,
+          position: leaderboard.findIndex((l: { name: string }) => l.name === match.athlete?.displayName) + 1,
+          rounds: (match.linescores || []).map((l: { period: number; value: number; displayValue: string }) => ({
+            round: l.period,
+            strokes: l.value,
+            toPar: l.displayValue,
+          })),
+        };
+      } else {
+        playerData[name] = null;
+      }
+    }
+
+    return {
+      tournament,
+      status,
+      leaderboard: leaderboard.slice(0, 15),
+      _players: playerData,
+    };
+  } catch (e) {
+    console.error("[ESPN Golf] Error:", e);
+    return { _noTournament: true };
+  }
+}
+
 function extractRecentGames(
   schedule: Record<string, unknown> | null
 ): Record<string, unknown>[] {

@@ -12,6 +12,8 @@ import type {
 import AnalysisResults from "@/components/AnalysisResults";
 import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
+import BetHistory from "@/components/BetHistory";
+import { saveToHistory } from "@/lib/history";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("upload");
@@ -109,6 +111,21 @@ export default function Home() {
         setExtraction(analyzeData.extraction);
         setParlayLegs(statsData.legs || []);
         setState("parlay");
+        // Save parlay to history
+        const parlayLegsData = statsData.legs || [];
+        const parlayGraded = parlayLegsData.filter((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result && l.gameStatus.grade.result !== "pending");
+        const allHit = parlayGraded.length === parlayLegsData.length && parlayGraded.every((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "hit");
+        const anyMiss = parlayGraded.some((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "miss");
+        saveToHistory({
+          extraction: analyzeData.extraction,
+          summary: parlayLegsData.map((l: { summary?: string }) => l.summary).filter(Boolean).join(" ").slice(0, 200),
+          isParlay: true,
+          legCount: parlayLegsData.length,
+          grade: parlayGraded.length > 0 ? {
+            result: anyMiss ? "miss" : allHit ? "hit" : "pending",
+            detail: anyMiss ? "Parlay busted" : allHit ? "All legs hit!" : `${parlayGraded.length}/${parlayLegsData.length} graded`,
+          } : undefined,
+        });
         return;
       }
 
@@ -127,6 +144,12 @@ export default function Home() {
       setComputedData(statsData._computed || null);
       setGameStatus(statsData.gameStatus || null);
       setState("results");
+      // Save to history
+      saveToHistory({
+        extraction: analyzeData.extraction,
+        summary: (statsData.summary || "").slice(0, 200),
+        grade: statsData.gameStatus?.grade || undefined,
+      });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setState("error");
@@ -227,6 +250,11 @@ export default function Home() {
                 )}
               </div>
             </div>
+          </div>
+
+          {/* Bet History */}
+          <div className="max-w-lg mx-auto px-4 py-8">
+            <BetHistory />
           </div>
 
           {/* Divider */}

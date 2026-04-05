@@ -1,12 +1,53 @@
 "use client";
 
-import type { GameStatus } from "@/lib/gameStatus";
+import { useState, useEffect, useRef } from "react";
+import type { GameStatusData } from "@/types";
 
 interface GameStatusBannerProps {
-  status: GameStatus;
+  status: GameStatusData;
+  // Pass extraction info for auto-refresh polling
+  sport?: string;
+  teams?: string[];
+  betType?: string;
+  players?: string[];
+  market?: string;
+  line?: number;
 }
 
-export default function GameStatusBanner({ status }: GameStatusBannerProps) {
+export default function GameStatusBanner({
+  status: initialStatus,
+  sport,
+  teams,
+  betType,
+  players,
+  market,
+  line,
+}: GameStatusBannerProps) {
+  const [status, setStatus] = useState(initialStatus);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Auto-refresh every 30s for live games (ESPN only, no Gemini cost)
+  useEffect(() => {
+    if (status.state !== "in" || !sport || !teams?.length) return;
+
+    const refresh = async () => {
+      try {
+        const res = await fetch("/api/game-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ sport, teams, betType, players, market, line }),
+        });
+        const data = await res.json();
+        if (data.gameStatus) setStatus(data.gameStatus);
+      } catch { /* silent */ }
+    };
+
+    intervalRef.current = setInterval(refresh, 30_000);
+    return () => {
+      if (intervalRef.current) clearInterval(intervalRef.current);
+    };
+  }, [status.state, sport, teams, betType, players, market, line]);
+
   const isLive = status.state === "in";
   const isFinal = status.state === "post";
   const grade = status.grade;
