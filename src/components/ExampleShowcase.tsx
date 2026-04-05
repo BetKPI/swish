@@ -12,13 +12,15 @@ import {
   ReferenceLine,
 } from "recharts";
 
-const embiidTipoffs = [
-  { month: "Oct", winPct: 58 },
-  { month: "Nov", winPct: 65 },
-  { month: "Dec", winPct: 71 },
-  { month: "Jan", winPct: 63 },
-  { month: "Feb", winPct: 68 },
-  { month: "Mar", winPct: 72 },
+const brunsonPts = [
+  { game: "ORL", pts: 23 },
+  { game: "MIA", pts: 16 },
+  { game: "BOS", pts: 31 },
+  { game: "PHI", pts: 29 },
+  { game: "CHI", pts: 36 },
+  { game: "CLE", pts: 37 },
+  { game: "MIL", pts: 31 },
+  { game: "IND", pts: 23 },
 ];
 
 const schefflerRounds = [
@@ -45,28 +47,28 @@ const lakersSpread = [
   { game: "G10", margin: 9 },
 ];
 
-const haliburtonAssists = [
-  { game: "G1", ast: 12 },
-  { game: "G2", ast: 8 },
-  { game: "G3", ast: 11 },
-  { game: "G4", ast: 7 },
-  { game: "G5", ast: 14 },
-  { game: "G6", ast: 9 },
-  { game: "G7", ast: 13 },
-  { game: "G8", ast: 10 },
+const flaggPts = [
+  { game: "ORL", pts: 51 },
+  { game: "MIL", pts: 19 },
+  { game: "MIN", pts: 12 },
+  { game: "POR", pts: 24 },
+  { game: "DEN", pts: 26 },
+  { game: "GS", pts: 32 },
+  { game: "LAC", pts: 18 },
+  { game: "ATL", pts: 17 },
 ];
 
 const examples = [
   {
-    betLabel: "Embiid First Basket +450",
-    insight: "Wins 66% of tips and takes the first shot 82% of the time. That +450 is juicy.",
+    betLabel: "Brunson O 26.5 Pts -115",
+    insight: "Averaging 28.3 over his last 8 and cleared 26.5 in 5 of them. Rolling avg trending up.",
     badge: "NBA PROP",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={embiidTipoffs} barSize={16}>
+        <BarChart data={brunsonPts} barSize={16}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
-          <XAxis dataKey="month" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[40, 80]} hide />
+          <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis domain={[10, 40]} hide />
           <Tooltip
             contentStyle={{
               background: "#111",
@@ -75,14 +77,15 @@ const examples = [
               fontSize: 12,
             }}
           />
-          <Bar dataKey="winPct" fill="#10b981" radius={[4, 4, 0, 0]} name="Tip win %" />
+          <ReferenceLine y={26.5} stroke="#f59e0b" strokeDasharray="5 3" />
+          <Bar dataKey="pts" fill="#10b981" radius={[4, 4, 0, 0]} name="Points" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "Tip win %", value: "66%" },
-      { label: "1st shot %", value: "82%" },
-      { label: "1st basket", value: "12%" },
+      { label: "Last 8 avg", value: "28.3" },
+      { label: "Over rate", value: "63%" },
+      { label: "vs line", value: "+1.8" },
     ],
   },
   {
@@ -144,15 +147,15 @@ const examples = [
     ],
   },
   {
-    betLabel: "Haliburton O 9.5 Assists -120",
-    insight: "Cleared 9.5 in 6 of his last 8. Averaging 10.5 dimes this month. This line hasn't caught up.",
+    betLabel: "Cooper Flagg O 24.5 Pts -110",
+    insight: "The rookie is averaging 24.9 over his last 8 with a 51-point explosion mixed in. High variance but trending up.",
     badge: "PLAYER PROP",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={haliburtonAssists} barSize={20}>
+        <BarChart data={flaggPts} barSize={20}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[0, 16]} hide />
+          <YAxis domain={[0, 55]} hide />
           <Tooltip
             contentStyle={{
               background: "#111",
@@ -161,15 +164,15 @@ const examples = [
               fontSize: 12,
             }}
           />
-          <ReferenceLine y={9.5} stroke="#a855f7" strokeDasharray="5 3" />
-          <Bar dataKey="ast" fill="#a855f7" radius={[4, 4, 0, 0]} name="Assists" />
+          <ReferenceLine y={24.5} stroke="#a855f7" strokeDasharray="5 3" />
+          <Bar dataKey="pts" fill="#a855f7" radius={[4, 4, 0, 0]} name="Points" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "Last 8 avg", value: "10.5" },
-      { label: "Over rate", value: "75%" },
-      { label: "vs line", value: "+1.0" },
+      { label: "Last 8 avg", value: "24.9" },
+      { label: "Over rate", value: "38%" },
+      { label: "Std dev", value: "12.1" },
     ],
   },
 ];

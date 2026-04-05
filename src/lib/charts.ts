@@ -48,6 +48,7 @@ function buildSpreadCharts(
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     const recent = team.recentGames.slice(-10);
+    const coversInWindow = recent.filter((g) => g.margin + line > 0).length;
     const data = recent.map((g, i) => {
       const window = recent.slice(Math.max(0, i - 2), i + 1);
       const rollingMargin = Math.round((window.reduce((s, w) => s + w.margin, 0) / window.length) * 10) / 10;
@@ -56,52 +57,87 @@ function buildSpreadCharts(
         margin: g.margin,
         rollingMargin: i >= 2 ? rollingMargin : undefined,
         spreadLine: -line,
-        result: g.won ? "W" : "L",
       };
     });
+    const avgMargin = Math.round((recent.reduce((s, g) => s + g.margin, 0) / recent.length) * 10) / 10;
+    const trending = recent.slice(-3).reduce((s, g) => s + g.margin, 0) / 3 > avgMargin ? "trending up" : "trending down";
     charts.push({
       type: "line",
       title: `${team.name} — Margin of Victory vs Spread`,
-      relevance: `Game margins with 3-game rolling avg — covers ${line > 0 ? "+" : ""}${line} when above the line`,
+      relevance: `Covered ${line > 0 ? "+" : ""}${line} in ${coversInWindow} of last ${recent.length} (avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}, ${trending})`,
       data,
       xKey: "game",
       yKeys: ["margin", "rollingMargin", "spreadLine"],
     });
   }
 
-  // 2. Margin distribution — how often they win by buckets
+  // 2. Close games record — games decided by 6 or fewer
+  if (teams.length === 2) {
+    const closeGamesData = teams.map((t) => {
+      const close = t.recentGames.filter((g) => Math.abs(g.margin) <= 6);
+      const closeWins = close.filter((g) => g.won).length;
+      return {
+        team: shortenName(t.name),
+        closeWins,
+        closeLosses: close.length - closeWins,
+        closeGames: close.length,
+        avgCloseMargin: close.length > 0 ? Math.round((close.reduce((s, g) => s + g.margin, 0) / close.length) * 10) / 10 : 0,
+      };
+    });
+    if (closeGamesData.some((d) => d.closeGames >= 2)) {
+      charts.push({
+        type: "bar",
+        title: "Close Games Record (decided by 6 or fewer)",
+        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${shortenName(d.team)} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
+        data: closeGamesData,
+        xKey: "team",
+        yKeys: ["closeWins", "closeLosses"],
+      });
+    }
+  }
+
+  // 3. Margin distribution — how often they win by buckets
   const primary = teams[0];
   if (primary && primary.recentGames.length >= 5) {
     const buckets = marginDistribution(primary.recentGames);
+    const mostCommon = buckets.reduce((a, b) => (b.count > a.count ? b : a), buckets[0]);
     charts.push({
       type: "bar",
       title: `${primary.name} — Win/Loss Margin Distribution`,
-      relevance: `Shows clustering of margins — key for a ${line > 0 ? "+" : ""}${line} spread`,
+      relevance: `Most common outcome: ${mostCommon.range} (${mostCommon.count} games) — ${line !== 0 ? `the ${line > 0 ? "+" : ""}${line} spread needs margins above that` : ""}`,
       data: buckets,
       xKey: "range",
       yKeys: ["count"],
     });
   }
 
-  // 3. Home/Away ATS comparison
+  // 4. Rest + venue comparison table
   if (teams.length === 2) {
-    const atsData = teams.map((t) => ({
-      team: shortenName(t.name),
-      coverRate: Math.round((t.ats?.coverRate ?? 0) * 100),
-      homeWinPct: Math.round((t.homeRecord?.pct ?? 0) * 100),
-      awayWinPct: Math.round((t.awayRecord?.pct ?? 0) * 100),
-    }));
+    const t0 = teams[0], t1 = teams[1];
+    const data = [
+      { stat: "Record", [shortenName(t0.name)]: `${t0.record.wins}-${t0.record.losses}`, [shortenName(t1.name)]: `${t1.record.wins}-${t1.record.losses}` },
+      { stat: "ATS Cover Rate", [shortenName(t0.name)]: `${Math.round((t0.ats?.coverRate ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.ats?.coverRate ?? 0) * 100)}%` },
+      { stat: "Home Win %", [shortenName(t0.name)]: `${Math.round((t0.homeRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.homeRecord?.pct ?? 0) * 100)}%` },
+      { stat: "Away Win %", [shortenName(t0.name)]: `${Math.round((t0.awayRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.awayRecord?.pct ?? 0) * 100)}%` },
+      { stat: "Avg Margin", [shortenName(t0.name)]: `${(t0.scoring.avgPointsFor - t0.scoring.avgPointsAgainst) > 0 ? "+" : ""}${(t0.scoring.avgPointsFor - t0.scoring.avgPointsAgainst).toFixed(1)}`, [shortenName(t1.name)]: `${(t1.scoring.avgPointsFor - t1.scoring.avgPointsAgainst) > 0 ? "+" : ""}${(t1.scoring.avgPointsFor - t1.scoring.avgPointsAgainst).toFixed(1)}` },
+      { stat: "Rest Days", [shortenName(t0.name)]: t0.restDays !== undefined ? `${t0.restDays}d` : "?", [shortenName(t1.name)]: t1.restDays !== undefined ? `${t1.restDays}d` : "?" },
+      { stat: "Streak", [shortenName(t0.name)]: `${t0.streak.type}${t0.streak.count}`, [shortenName(t1.name)]: `${t1.streak.type}${t1.streak.count}` },
+    ];
+    const restAdv = (t0.restDays ?? 0) > (t1.restDays ?? 0) ? t0.name : (t1.restDays ?? 0) > (t0.restDays ?? 0) ? t1.name : null;
     charts.push({
-      type: "bar",
-      title: "ATS Cover Rate & Home/Away Win %",
-      relevance: "Compares each team's ability to cover spreads and their venue splits",
-      data: atsData,
-      xKey: "team",
-      yKeys: ["coverRate", "homeWinPct", "awayWinPct"],
+      type: "table",
+      title: "Matchup Comparison",
+      relevance: restAdv ? `${restAdv} has the rest advantage here` : "Side-by-side matchup fundamentals",
+      data,
+      columns: [
+        { key: "stat", label: "Stat" },
+        { key: shortenName(t0.name), label: t0.name },
+        { key: shortenName(t1.name), label: t1.name },
+      ],
     });
   }
 
-  // 4. H2H table
+  // 5. H2H table
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }
@@ -134,10 +170,13 @@ function buildOverUnderCharts(
           ouLine: line,
         });
       }
+      // Count how many would go over
+      const t0Overs = teams[0].recentGames.slice(-maxLen).filter((g) => g.totalPoints > line).length;
+      const t1Overs = teams[1].recentGames.slice(-maxLen).filter((g) => g.totalPoints > line).length;
       charts.push({
         type: "line",
         title: "Game Totals vs O/U Line",
-        relevance: `Each team's recent game totals compared to the ${line} line`,
+        relevance: `${shortenName(teams[0].name)} games went over ${line} in ${t0Overs}/${maxLen}, ${shortenName(teams[1].name)} in ${t1Overs}/${maxLen}`,
         data,
         xKey: "game",
         yKeys: [
@@ -149,7 +188,33 @@ function buildOverUnderCharts(
     }
   }
 
-  // 2. Each team's offensive output trend with rolling avg
+  // 2. Pace & scoring context table
+  if (teams.length === 2) {
+    const t0 = teams[0], t1 = teams[1];
+    const combinedAvg = Math.round((t0.scoring.avgPointsFor + t1.scoring.avgPointsFor) * 10) / 10;
+    const combinedL5 = Math.round((t0.scoring.last5AvgFor + t1.scoring.last5AvgFor) * 10) / 10;
+    const data = [
+      { stat: "Avg Points For", [shortenName(t0.name)]: `${t0.scoring.avgPointsFor}`, [shortenName(t1.name)]: `${t1.scoring.avgPointsFor}` },
+      { stat: "Avg Points Against", [shortenName(t0.name)]: `${t0.scoring.avgPointsAgainst}`, [shortenName(t1.name)]: `${t1.scoring.avgPointsAgainst}` },
+      { stat: "Avg Game Total", [shortenName(t0.name)]: `${t0.scoring.avgTotalPoints}`, [shortenName(t1.name)]: `${t1.scoring.avgTotalPoints}` },
+      { stat: "Last 5 Avg Total", [shortenName(t0.name)]: `${t0.scoring.last5AvgTotal}`, [shortenName(t1.name)]: `${t1.scoring.last5AvgTotal}` },
+      { stat: "Over Rate", [shortenName(t0.name)]: `${Math.round((t0.overUnder?.overRate ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.overUnder?.overRate ?? 0) * 100)}%` },
+    ];
+    const projection = Math.round(((combinedAvg + combinedL5) / 2) * 10) / 10;
+    charts.push({
+      type: "table",
+      title: "Pace & Scoring Comparison",
+      relevance: `Combined scoring projects ~${projection} — ${projection > line ? `${(projection - line).toFixed(1)} over` : `${(line - projection).toFixed(1)} under`} the ${line} line`,
+      data,
+      columns: [
+        { key: "stat", label: "" },
+        { key: shortenName(t0.name), label: t0.name },
+        { key: shortenName(t1.name), label: t1.name },
+      ],
+    });
+  }
+
+  // 3. Each team's offensive output trend with rolling avg
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     const recent = team.recentGames.slice(-10);
@@ -163,32 +228,14 @@ function buildOverUnderCharts(
         rollingTotal: i >= 2 ? rollingTotal : undefined,
       };
     });
+    const scoringTrend = recent.slice(-3).reduce((s, g) => s + g.totalPoints, 0) / 3 > team.scoring.avgTotalPoints ? "games getting higher-scoring" : "games getting lower-scoring";
     charts.push({
       type: "line",
       title: `${team.name} — Scoring & Defense Trend`,
-      relevance: `Points scored vs allowed with rolling game total — shows offensive/defensive trajectory`,
+      relevance: `Avg total ${team.scoring.avgTotalPoints}, ${scoringTrend} recently`,
       data,
       xKey: "game",
       yKeys: ["scored", "allowed", "rollingTotal"],
-    });
-  }
-
-  // 3. Over/Under hit rate bar
-  if (line > 0) {
-    const ouData = teams.map((t) => ({
-      team: shortenName(t.name),
-      overRate: Math.round((t.overUnder?.overRate ?? 0) * 100),
-      overs: t.overUnder?.overs ?? 0,
-      unders: t.overUnder?.unders ?? 0,
-      avgTotal: t.overUnder?.avgTotal ?? 0,
-    }));
-    charts.push({
-      type: "bar",
-      title: `Over Rate at ${line}`,
-      relevance: `How often each team's games go over ${line}`,
-      data: ouData,
-      xKey: "team",
-      yKeys: ["overRate"],
     });
   }
 
@@ -452,10 +499,14 @@ function buildPlayerPropCharts(
           propLine: line,
         };
       });
+      // Compute trend from rolling avg
+      const last3Avg = recent.slice(-3).reduce((s: number, g: { value: number }) => s + g.value, 0) / Math.min(3, recent.length);
+      const seasonAvg = propAnalysis?.average || 0;
+      const trendWord = last3Avg > seasonAvg * 1.1 ? "hot streak" : last3Avg < seasonAvg * 0.9 ? "cold stretch" : "steady";
       charts.push({
         type: "line",
         title: `${playerName} — ${statLabel} Game Log`,
-        relevance: `Game-by-game with 5-game rolling avg — ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over the ${line} line (${Math.round((propAnalysis?.hitRate || 0) * 100)}%)`,
+        relevance: `${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%) — avg ${seasonAvg}, on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
         data,
         xKey: "game",
         yKeys: [statLabel, "rollingAvg", "propLine"],
@@ -552,19 +603,23 @@ function buildPlayerPropCharts(
       });
     }
 
-    // 4. Home/away split from game log
+    // 5. Home/away split from game log
     if (gameValues && gameValues.length > 3) {
       const homeGames = gameValues.filter((g: { home?: boolean }) => g.home);
       const awayGames = gameValues.filter((g: { home?: boolean }) => !g.home);
       if (homeGames.length >= 2 && awayGames.length >= 2) {
         const avg = (arr: { value: number }[]) => Math.round((arr.reduce((s: number, v: { value: number }) => s + v.value, 0) / arr.length) * 10) / 10;
+        const homeAvg = avg(homeGames);
+        const awayAvg = avg(awayGames);
+        const diff = Math.abs(homeAvg - awayAvg);
+        const venueNote = diff > line * 0.15 ? (homeAvg > awayAvg ? "notably better at home" : "notably better on the road") : "similar home and away";
         charts.push({
           type: "bar",
           title: `${playerName} — ${statLabel} Home vs Away`,
-          relevance: `Home avg: ${avg(homeGames)}, Away avg: ${avg(awayGames)}`,
+          relevance: `Home: ${homeAvg}, Away: ${awayAvg} — ${venueNote}`,
           data: [
-            { venue: "Home", average: avg(homeGames), propLine: line },
-            { venue: "Away", average: avg(awayGames), propLine: line },
+            { venue: "Home", average: homeAvg, propLine: line },
+            { venue: "Away", average: awayAvg, propLine: line },
           ],
           xKey: "venue",
           yKeys: ["average", "propLine"],
@@ -597,6 +652,32 @@ function buildPlayerPropCharts(
           data,
           xKey: "game",
           yKeys: [statLabel, "propLine"],
+        });
+      }
+    }
+
+    // 7. Opponent defensive context — how much does the other team allow?
+    if (extraction.teams && extraction.teams.length >= 2 && Object.keys(computed.teamMetrics).length >= 2) {
+      const teamNames = Object.keys(computed.teamMetrics);
+      // Find the opponent team (not the player's team)
+      const opponentMetrics = computed.teamMetrics[teamNames[1]] || computed.teamMetrics[teamNames[0]];
+      if (opponentMetrics) {
+        const oppAllows = opponentMetrics.scoring.avgPointsAgainst;
+        const oppL5Allows = opponentMetrics.scoring.last5AvgAgainst;
+        const data = [
+          { metric: `${shortenName(opponentMetrics.name)} Season Avg Allowed`, value: oppAllows },
+          { metric: `${shortenName(opponentMetrics.name)} Last 5 Avg Allowed`, value: oppL5Allows },
+          { metric: `${playerName} Season Avg`, value: propAnalysis?.average || 0 },
+          { metric: "Prop Line", value: line },
+        ];
+        const defTrend = oppL5Allows > oppAllows ? "allowing more recently — defense slipping" : "allowing less recently — defense tightening";
+        charts.push({
+          type: "bar",
+          title: `Matchup Context — Opponent Defense`,
+          relevance: `${opponentMetrics.name} allows ${oppAllows} pts/game, ${defTrend}`,
+          data,
+          xKey: "metric",
+          yKeys: ["value"],
         });
       }
     }
