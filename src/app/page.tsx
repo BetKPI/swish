@@ -13,7 +13,7 @@ import AnalysisResults from "@/components/AnalysisResults";
 import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
 import BetHistory from "@/components/BetHistory";
-import { saveToHistory } from "@/lib/history";
+import { saveToHistory, isFull, type HistoryEntry } from "@/lib/history";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("upload");
@@ -112,16 +112,19 @@ export default function Home() {
         setExtraction(analyzeData.extraction);
         setParlayLegs(statsData.legs || []);
         setState("parlay");
-        // Save parlay to history
+        // Save parlay to history (full data for re-viewing)
         const parlayLegsData = statsData.legs || [];
         const parlayGraded = parlayLegsData.filter((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result && l.gameStatus.grade.result !== "pending");
         const allHit = parlayGraded.length === parlayLegsData.length && parlayGraded.every((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "hit");
         const anyMiss = parlayGraded.some((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "miss");
         saveToHistory({
           extraction: analyzeData.extraction,
-          summary: parlayLegsData.map((l: { summary?: string }) => l.summary).filter(Boolean).join(" ").slice(0, 200),
+          summary: parlayLegsData.map((l: { summary?: string }) => l.summary).filter(Boolean).join(" "),
+          stats: [],
+          charts: [],
           isParlay: true,
           legCount: parlayLegsData.length,
+          parlayLegs: parlayLegsData,
           grade: parlayGraded.length > 0 ? {
             result: anyMiss ? "miss" : allHit ? "hit" : "pending",
             detail: anyMiss ? "Parlay busted" : allHit ? "All legs hit!" : `${parlayGraded.length}/${parlayLegsData.length} graded`,
@@ -146,10 +149,15 @@ export default function Home() {
       setVisuals(statsData.visuals || null);
       setGameStatus(statsData.gameStatus || null);
       setState("results");
-      // Save to history
+      // Save full analysis to history for re-viewing
       saveToHistory({
         extraction: analyzeData.extraction,
-        summary: (statsData.summary || "").slice(0, 200),
+        summary: statsData.summary || "",
+        stats: statsData.stats || [],
+        charts: statsData.charts || [],
+        gameStatus: statsData.gameStatus || undefined,
+        visuals: statsData.visuals || undefined,
+        computedData: statsData._computed || undefined,
         grade: statsData.gameStatus?.grade || undefined,
       });
     } catch (err) {
@@ -157,6 +165,22 @@ export default function Home() {
       setState("error");
     }
   }, [imageBase64]);
+
+  const loadFromHistory = useCallback((entry: HistoryEntry) => {
+    setExtraction(entry.extraction);
+    if (entry.isParlay && entry.parlayLegs) {
+      setParlayLegs(entry.parlayLegs);
+      setState("parlay");
+    } else {
+      setCharts(entry.charts || []);
+      setStats(entry.stats || []);
+      setSummary(entry.summary || "");
+      setComputedData(entry.computedData || null);
+      setVisuals(entry.visuals || null);
+      setGameStatus(entry.gameStatus || null);
+      setState("results");
+    }
+  }, []);
 
   const reset = useCallback(() => {
     setState("upload");
@@ -285,7 +309,7 @@ export default function Home() {
 
           {/* Bet History */}
           <div className="max-w-lg mx-auto px-4 py-8">
-            <BetHistory />
+            <BetHistory onLoad={loadFromHistory} />
           </div>
 
           {/* Divider */}
