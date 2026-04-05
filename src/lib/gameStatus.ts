@@ -67,6 +67,9 @@ export async function checkGameStatus(
   const mapping = SPORT_MAP[key];
   if (!mapping) return null;
 
+  // Golf doesn't have head-to-head games — skip game status
+  if (mapping.sport === "golf") return null;
+
   try {
     // Fetch today's scoreboard
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

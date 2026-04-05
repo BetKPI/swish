@@ -136,26 +136,30 @@ async function fetchSportData(
 
     if (isMasters && extraction.players.length > 0) {
       console.log(`[Stats] Fetching Masters hole-by-hole history`);
-      const mastersData: Record<string, unknown> = {};
-      for (const player of extraction.players.slice(0, 3)) { // cap at 3 players
-        const history = await fetchMastersHistory(player);
-        if (history) {
-          const amenCorner = analyzeAmenCorner(history);
-          const sundays = analyzeSundayScoring(history);
-          // Analyze all 18 holes
-          const holeAnalysis = Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1));
-
-          mastersData[player] = {
-            history,
-            amenCorner,
-            sundays,
-            holeByHole: holeAnalysis,
-            augustaPars: getAugustaPars(),
-          };
+      try {
+        // Timeout after 15s to not block the whole response
+        const mastersPromise = async () => {
+          const mastersData: Record<string, unknown> = {};
+          for (const player of extraction.players.slice(0, 2)) { // cap at 2 players
+            const history = await fetchMastersHistory(player);
+            if (history) {
+              const amenCorner = analyzeAmenCorner(history);
+              const sundays = analyzeSundayScoring(history);
+              const holeAnalysis = Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1));
+              mastersData[player] = { history, amenCorner, sundays, holeByHole: holeAnalysis, augustaPars: getAugustaPars() };
+            }
+          }
+          return mastersData;
+        };
+        const timeoutPromise = new Promise<Record<string, unknown>>((resolve) =>
+          setTimeout(() => { console.log("[Stats] Masters data timed out"); resolve({}); }, 15000)
+        );
+        const mastersData = await Promise.race([mastersPromise(), timeoutPromise]);
+        if (Object.keys(mastersData).length > 0) {
+          (golfData as Record<string, unknown>)._masters = mastersData;
         }
-      }
-      if (Object.keys(mastersData).length > 0) {
-        (golfData as Record<string, unknown>)._masters = mastersData;
+      } catch (e) {
+        console.error("[Stats] Masters history failed:", e);
       }
     }
 

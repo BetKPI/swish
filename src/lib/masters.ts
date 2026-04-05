@@ -103,10 +103,28 @@ export async function fetchMastersHistory(
 // ── Find player ID from Masters competitor list ───────────────────
 
 async function findPlayerInMasters(playerName: string): Promise<string | null> {
-  const nameLower = playerName.toLowerCase();
+  // Fast path: ESPN search API gives us the player ID directly
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const searchData: any = await cachedFetch(
+      `https://site.web.api.espn.com/apis/common/v3/search?query=${encodeURIComponent(playerName)}&limit=5&type=player&sport=golf&league=pga`,
+      TTL.LONG
+    );
+    const items = searchData?.items || searchData?.results || [];
+    const nameLower = playerName.toLowerCase();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const match = items.find((item: any) => {
+      const name = (item.displayName || item.name || "").toLowerCase();
+      return name === nameLower || name.includes(nameLower) || nameLower.includes(name);
+    });
+    if (match?.id) return String(match.id);
+  } catch {
+    // Fall through to slow path
+  }
 
-  // Check most recent Masters first, then work backwards
-  for (const year of [2025, 2024, 2023, 2022]) {
+  // Slow fallback: search through competitor lists (only if search API fails)
+  const nameLower = playerName.toLowerCase();
+  for (const year of [2025, 2024]) {
     const eventId = MASTERS_EVENTS[year];
     if (!eventId) continue;
 
@@ -121,29 +139,23 @@ async function findPlayerInMasters(playerName: string): Promise<string | null> {
       for (const item of data.items) {
         const ref = item.$ref || item["$ref"];
         if (!ref) continue;
+        const idMatch = ref.match(/competitors\/(\d+)/);
+        if (!idMatch) continue;
+        const id = idMatch[1];
 
-        // Extract ID from URL
-        const match = ref.match(/competitors\/(\d+)/);
-        if (!match) continue;
-        const id = match[1];
-
-        // Fetch athlete name
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const comp: any = await cachedFetch(ref, TTL.LONG);
-        if (!comp?.athlete?.$ref && !comp?.athlete?.["$ref"]) continue;
+        const athleteRef = comp?.athlete?.$ref || comp?.athlete?.["$ref"];
+        if (!athleteRef) continue;
 
-        const athleteRef = comp.athlete.$ref || comp.athlete["$ref"];
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const athlete: any = await cachedFetch(athleteRef, TTL.LONG);
         const name = (athlete?.displayName || "").toLowerCase();
-
         if (name === nameLower || name.includes(nameLower) || nameLower.includes(name)) {
           return id;
         }
       }
-    } catch {
-      continue;
-    }
+    } catch { continue; }
   }
 
   return null;

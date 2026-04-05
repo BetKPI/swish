@@ -73,6 +73,10 @@ const TEST_BETS = [
   { sport: "NCAAB", betType: "spread", teams: ["Duke Blue Devils", "North Carolina Tar Heels"], players: [], line: -4.5, odds: "-110", description: "Duke -4.5 vs UNC (CBB)", confidence: 0.85 },
   { sport: "NCAAF", betType: "over_under", teams: ["Alabama Crimson Tide", "Georgia Bulldogs"], players: [], line: 52.5, odds: "-110", description: "Over 52.5 Bama vs UGA (CFB)", confidence: 0.85 },
 
+  // ── Golf ───────────────────────────────────────────────────────
+  { sport: "Golf", betType: "moneyline", teams: ["The Masters"], players: ["Scottie Scheffler"], market: "Tournament Winner", odds: "+450", description: "Scheffler to win The Masters", confidence: 0.85 },
+  { sport: "Golf", betType: "player_prop", teams: ["The Masters"], players: ["Rory McIlroy"], market: "Top 5", line: 5, odds: "+300", description: "McIlroy Top 5 at The Masters", confidence: 0.85 },
+
   // ── Edge cases ────────────────────────────────────────────────
   { sport: "Basketball", betType: "moneyline", teams: ["Knicks", "Bulls"], players: [], odds: "-200", description: "Knicks ML (short name)", confidence: 0.9 },
   { sport: "Hockey", betType: "moneyline", teams: ["Oilers", "Canucks"], players: [], odds: "-140", description: "Oilers ML (sport alias)", confidence: 0.85 },
@@ -88,6 +92,7 @@ const CHAT_QUESTIONS = [
   { q: "Show me Jalen Brunson's last 10 games", sport: "NBA", teams: ["New York Knicks", "Chicago Bulls"] },
   { q: "Compare scoring trends", sport: "NHL", teams: ["Edmonton Oilers", "Vancouver Canucks"] },
   { q: "What about his stats last year?", sport: "MLB", teams: ["Boston Red Sox", "San Diego Padres"] },
+  { q: "How does Scheffler do on Amen Corner?", sport: "Golf", teams: ["The Masters"] },
 ];
 
 export async function GET(request: NextRequest) {

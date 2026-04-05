@@ -121,7 +121,7 @@ export default function AnalysisResults({
       )}
 
       {/* Feedback + Share */}
-      <FeedbackShare extraction={extraction} summary={summary} />
+      <FeedbackShare extraction={extraction} summary={summary} gameStatus={gameStatus} />
 
       {/* Reset Button */}
       <button

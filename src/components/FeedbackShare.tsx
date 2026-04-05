@@ -1,16 +1,18 @@
 "use client";
 
 import { useState } from "react";
-import type { BetExtraction } from "@/types";
+import type { BetExtraction, GameStatusData } from "@/types";
 
 interface FeedbackShareProps {
   extraction: BetExtraction;
   summary: string;
+  gameStatus?: GameStatusData;
 }
 
 export default function FeedbackShare({
   extraction,
   summary,
+  gameStatus,
 }: FeedbackShareProps) {
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [showComment, setShowComment] = useState(false);
@@ -60,14 +62,21 @@ export default function FeedbackShare({
   };
 
   const handleShare = async () => {
+    const gradeText = gameStatus?.grade?.result && gameStatus.grade.result !== "pending"
+      ? `\n${gameStatus.grade.result === "hit" ? "\u2705 HIT" : gameStatus.grade.result === "miss" ? "\u274C MISS" : "\u{1F7E1} PUSH"} — ${gameStatus.grade.detail}`
+      : "";
+    const liveText = gameStatus?.state === "in"
+      ? `\n\u{1F534} LIVE: ${gameStatus.awayTeam} ${gameStatus.awayScore} - ${gameStatus.homeScore} ${gameStatus.homeTeam}`
+      : "";
     const text = [
       `${extraction.sport} ${extraction.betType.replace("_", "/")}`,
       extraction.description,
       extraction.odds ? `Odds: ${extraction.odds}` : "",
+      liveText || gradeText || "",
       "",
       summary ? summary.slice(0, 200) + (summary.length > 200 ? "..." : "") : "",
       "",
-      "Analyzed with Swish — swish-jet.vercel.app",
+      "Analyzed with Swish \u2014 swish-jet.vercel.app",
     ]
       .filter(Boolean)
       .join("\n");
