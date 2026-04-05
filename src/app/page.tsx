@@ -162,7 +162,7 @@ export default function Home() {
               </h2>
               <p className="text-muted text-base sm:text-xl max-w-xl mx-auto">
                 Screenshot any sports bet. We&apos;ll pull the stats that
-                actually matter — props, spreads, totals across NFL, NBA, MLB, NHL, and more.
+                actually matter — props, spreads, totals across NFL, NBA, MLB, NHL, Golf, and more.
               </p>
 
               {/* Upload CTA */}
@@ -301,7 +301,7 @@ export default function Home() {
             <div className="text-4xl">😬</div>
             <h3 className="text-xl font-bold">We don&apos;t have that yet</h3>
             <p className="text-muted text-sm leading-relaxed">
-              We read your bet ({extraction.sport} — {extraction.betType.replace("_", "/")}) but don&apos;t have the data to break it down right now. Try a different bet — we work best with NFL, NBA, MLB, NHL, and college sports.
+              We read your bet ({extraction.sport} — {extraction.betType.replace("_", "/")}) but don&apos;t have the data to break it down right now. Try a different bet — we work best with NFL, NBA, MLB, NHL, Golf, and college sports.
             </p>
           </div>
           <button
