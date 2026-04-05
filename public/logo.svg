@@ -1,39 +1,19 @@
 <svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
 <rect width="512" height="512" rx="96" fill="#0d1b2a"/>
 
-<!-- Net/mesh shape — stylized goal/basket net -->
-<g transform="translate(256, 220)">
-  <!-- Rim/ring at top -->
-  <ellipse cx="0" cy="-40" rx="90" ry="18" fill="none" stroke="#E87521" stroke-width="10"/>
+<g transform="translate(256, 256)">
+  <!-- Bold S — two clean arcs, balanced and symmetric -->
+  <path d="M58 -130
+           C-20 -145, -100 -120, -100 -70
+           C-100 -20, -20 0, 10 12
+           C40 24, 100 44, 100 84
+           C100 134, 20 158, -58 142"
+        fill="none" stroke="#E87521" stroke-width="50" stroke-linecap="round"/>
 
-  <!-- Net strings — left side -->
-  <path d="M-85 -30 Q-70 20, -55 70 Q-45 100, -35 130" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.7"/>
-  <path d="M-55 -35 Q-40 15, -25 65 Q-15 95, -5 125" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.6"/>
-
-  <!-- Net strings — center -->
-  <path d="M-20 -38 Q-10 20, 0 70 Q5 100, 8 130" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.7"/>
-  <path d="M20 -38 Q15 20, 10 70 Q5 100, 2 125" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.6"/>
-
-  <!-- Net strings — right side -->
-  <path d="M55 -35 Q40 15, 25 65 Q15 95, 5 125" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.6"/>
-  <path d="M85 -30 Q70 20, 55 70 Q45 100, 35 130" fill="none" stroke="#ffffff" stroke-width="3.5" opacity="0.7"/>
-
-  <!-- Cross strings — horizontal net weave -->
-  <path d="M-65 10 Q-30 25, 0 20 Q30 15, 65 10" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.4"/>
-  <path d="M-50 50 Q-20 65, 5 60 Q30 55, 50 50" fill="none" stroke="#ffffff" stroke-width="2.5" opacity="0.35"/>
-  <path d="M-38 90 Q-10 100, 8 97 Q25 93, 38 88" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.25"/>
-
-  <!-- Swoosh — motion trail under the S -->
-  <path d="M-30 140 Q5 155, 50 140 Q70 133, 85 120" fill="none" stroke="#E87521" stroke-width="6" stroke-linecap="round" opacity="0.8"/>
-  <path d="M-15 155 Q15 163, 50 155 Q65 150, 75 142" fill="none" stroke="#c0a050" stroke-width="3.5" stroke-linecap="round" opacity="0.4"/>
+  <!-- Gold motion swoosh -->
+  <path d="M-30 155 Q25 172, 80 152"
+        fill="none" stroke="#d4a853" stroke-width="5" stroke-linecap="round" opacity="0.65"/>
+  <path d="M-15 168 Q28 178, 68 165"
+        fill="none" stroke="#d4a853" stroke-width="3" stroke-linecap="round" opacity="0.35"/>
 </g>
-
-<!-- Bold S overlaid on the net -->
-<g transform="translate(256, 210)">
-  <path d="M60 -95 C-5 -105, -80 -72, -65 -25 C-50 22, 50 22, 65 22 C80 22, 80 68, 5 90"
-        fill="none" stroke="#E87521" stroke-width="38" stroke-linecap="round"/>
-</g>
-
-<!-- SWISH text -->
-<text x="256" y="460" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="40" font-weight="700" letter-spacing="10" fill="#f0f0f0">SWISH</text>
 </svg>
