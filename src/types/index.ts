@@ -56,6 +56,27 @@ export interface ParlayLegResult {
   error: boolean;
   unsupported: boolean;
   computedData?: Record<string, unknown>;
+  gameStatus?: GameStatusData;
+}
+
+export interface GameStatusData {
+  state: "pre" | "in" | "post" | "unknown";
+  gameId?: string;
+  clock?: string;
+  period?: string;
+  detail?: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore?: number;
+  awayScore?: number;
+  playerStatLine?: Record<string, string | number>;
+  playerName?: string;
+  grade?: {
+    result: "hit" | "miss" | "push" | "pending";
+    actual?: number | string;
+    line?: number;
+    detail: string;
+  };
 }
 
 export type AppState = 'upload' | 'analyzing' | 'results' | 'error' | 'unsupported' | 'parlay';

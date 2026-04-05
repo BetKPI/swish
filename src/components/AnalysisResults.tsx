@@ -1,9 +1,10 @@
 "use client";
 
-import type { BetExtraction, ChartConfig, StatDataPoint } from "@/types";
+import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
+import GameStatusBanner from "./GameStatusBanner";
 
 interface AnalysisResultsProps {
   extraction: BetExtraction;
@@ -11,6 +12,7 @@ interface AnalysisResultsProps {
   stats: StatDataPoint[];
   summary: string;
   computedData?: Record<string, unknown>;
+  gameStatus?: GameStatusData;
   onReset: () => void;
 }
 
@@ -20,10 +22,16 @@ export default function AnalysisResults({
   stats,
   summary,
   computedData,
+  gameStatus,
   onReset,
 }: AnalysisResultsProps) {
   return (
     <div className="space-y-6">
+      {/* Live Score / Final Result */}
+      {gameStatus && (gameStatus.state === "in" || gameStatus.state === "post") && (
+        <GameStatusBanner status={gameStatus} />
+      )}
+
       {/* Bet Summary Header */}
       <div className="bg-surface rounded-xl p-4 border border-border">
         <div className="flex items-start gap-3">

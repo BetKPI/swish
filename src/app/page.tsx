@@ -7,6 +7,7 @@ import type {
   ChartConfig,
   StatDataPoint,
   ParlayLegResult,
+  GameStatusData,
 } from "@/types";
 import AnalysisResults from "@/components/AnalysisResults";
 import ParlayResults from "@/components/ParlayResults";
@@ -22,6 +23,7 @@ export default function Home() {
   const [summary, setSummary] = useState<string>("");
   const [computedData, setComputedData] = useState<Record<string, unknown> | null>(null);
   const [parlayLegs, setParlayLegs] = useState<ParlayLegResult[]>([]);
+  const [gameStatus, setGameStatus] = useState<GameStatusData | null>(null);
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -123,6 +125,7 @@ export default function Home() {
       setStats(statsData.stats || []);
       setSummary(statsData.summary || "");
       setComputedData(statsData._computed || null);
+      setGameStatus(statsData.gameStatus || null);
       setState("results");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -140,6 +143,7 @@ export default function Home() {
     setSummary("");
     setComputedData(null);
     setParlayLegs([]);
+    setGameStatus(null);
     setError("");
     setStatusMsg("");
   }, []);
@@ -352,6 +356,7 @@ export default function Home() {
             stats={stats}
             summary={summary}
             computedData={computedData ?? undefined}
+            gameStatus={gameStatus ?? undefined}
             onReset={reset}
           />
         </div>

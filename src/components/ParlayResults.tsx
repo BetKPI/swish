@@ -5,6 +5,7 @@ import type { BetExtraction, ParlayLegResult } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import FeedbackShare from "./FeedbackShare";
 import AnalysisChat from "./AnalysisChat";
+import GameStatusBanner from "./GameStatusBanner";
 
 interface ParlayResultsProps {
   extraction: BetExtraction;
@@ -33,6 +34,13 @@ export default function ParlayResults({
     ? analyzedLegs.map((l) => l.summary).filter(Boolean).join(" ")
     : "";
 
+  // Parlay grading summary
+  const gradedLegs = legs.filter((l) => l.gameStatus?.grade && l.gameStatus.grade.result !== "pending");
+  const hitLegs = gradedLegs.filter((l) => l.gameStatus?.grade?.result === "hit");
+  const missedLegs = gradedLegs.filter((l) => l.gameStatus?.grade?.result === "miss");
+  const liveLegs = legs.filter((l) => l.gameStatus?.state === "in");
+  const hasGrades = gradedLegs.length > 0 || liveLegs.length > 0;
+
   return (
     <div className="space-y-6">
       {/* Parlay Header */}
@@ -60,6 +68,43 @@ export default function ParlayResults({
         </div>
       </div>
 
+      {/* Parlay Grade Summary */}
+      {hasGrades && (
+        <div className={`rounded-xl p-3 border text-center ${
+          missedLegs.length > 0
+            ? "bg-red-500/10 border-red-500/30"
+            : liveLegs.length > 0
+            ? "bg-yellow-500/10 border-yellow-500/30"
+            : hitLegs.length === gradedLegs.length && gradedLegs.length === legs.length
+            ? "bg-emerald-500/10 border-emerald-500/30"
+            : "bg-surface border-border"
+        }`}>
+          <div className="flex items-center justify-center gap-3 text-sm">
+            {hitLegs.length > 0 && (
+              <span className="text-emerald-400 font-semibold">{hitLegs.length} hit</span>
+            )}
+            {missedLegs.length > 0 && (
+              <span className="text-red-400 font-semibold">{missedLegs.length} missed</span>
+            )}
+            {liveLegs.length > 0 && (
+              <span className="flex items-center gap-1 text-yellow-400 font-semibold">
+                <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse" />
+                {liveLegs.length} live
+              </span>
+            )}
+            {legs.length - gradedLegs.length - liveLegs.length > 0 && (
+              <span className="text-muted">{legs.length - gradedLegs.length - liveLegs.length} upcoming</span>
+            )}
+          </div>
+          {missedLegs.length > 0 && (
+            <p className="text-xs text-red-400 mt-1">Parlay busted — {missedLegs[0].gameStatus?.grade?.detail}</p>
+          )}
+          {missedLegs.length === 0 && hitLegs.length === legs.length && (
+            <p className="text-xs text-emerald-400 mt-1">All legs hit!</p>
+          )}
+        </div>
+      )}
+
       {/* Leg Tabs */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-1 px-1">
         {legs.map((leg, i) => (
@@ -71,6 +116,12 @@ export default function ParlayResults({
                 ? "bg-accent text-black"
                 : leg.error || leg.unsupported
                 ? "bg-surface-light text-muted/50"
+                : leg.gameStatus?.grade?.result === "hit"
+                ? "bg-emerald-500/15 text-emerald-400 hover:bg-emerald-500/25"
+                : leg.gameStatus?.grade?.result === "miss"
+                ? "bg-red-500/15 text-red-400 hover:bg-red-500/25"
+                : leg.gameStatus?.state === "in"
+                ? "bg-yellow-500/15 text-yellow-400 hover:bg-yellow-500/25"
                 : "bg-surface-light text-muted hover:text-foreground hover:bg-border"
             }`}
           >
@@ -103,6 +154,11 @@ export default function ParlayResults({
               )}
             </div>
           </div>
+
+          {/* Live Score / Final Result */}
+          {activeLeg.gameStatus && (activeLeg.gameStatus.state === "in" || activeLeg.gameStatus.state === "post") && (
+            <GameStatusBanner status={activeLeg.gameStatus} />
+          )}
 
           {/* Error / Unsupported state */}
           {(activeLeg.error || activeLeg.unsupported) && (

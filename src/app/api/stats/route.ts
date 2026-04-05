@@ -8,6 +8,7 @@ import { buildCharts } from "@/lib/charts";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
 import type { BetExtraction, ChartConfig } from "@/types";
+import { checkGameStatus } from "@/lib/gameStatus";
 
 export const maxDuration = 60;
 
@@ -344,12 +345,28 @@ async function analyzeSingleBet(
     }
   }
 
+  // Check game status (live scores, bet grading) — non-blocking
+  let gameStatus = null;
+  try {
+    gameStatus = await checkGameStatus(
+      extraction.sport,
+      extraction.teams,
+      extraction.betType,
+      extraction.players,
+      extraction.market,
+      extraction.line
+    );
+  } catch (e) {
+    console.error("[Stats] Game status check failed:", e);
+  }
+
   if (isDeterministic && charts.length > 0) {
     return {
       summary: aiResult.summary || "Check the charts below.",
       stats: aiResult.stats || [],
       charts,
       _computed: { oddsAnalysis: computed.oddsAnalysis, source },
+      gameStatus,
     };
   }
 
@@ -358,6 +375,7 @@ async function analyzeSingleBet(
     stats: aiResult.stats || [],
     charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
     _computed: { oddsAnalysis: computed.oddsAnalysis, source },
+    gameStatus,
   };
 }
 
@@ -430,7 +448,19 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Step 4: Combine charts + summaries
+      // Step 4: Check game statuses for all legs in parallel
+      const legGameStatuses = await Promise.all(
+        fixedLegs.map(async (leg) => {
+          try {
+            return await checkGameStatus(
+              leg.sport, leg.teams, leg.betType,
+              leg.players || [], leg.market, leg.line
+            );
+          } catch { return null; }
+        })
+      );
+
+      // Step 5: Combine charts + summaries + game status
       const finalLegs = legData.map((ld, i) => {
         const aiLeg = legSummaries[i] || {};
         const legCharts = ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [];
@@ -452,6 +482,7 @@ export async function POST(request: NextRequest) {
           error: !hasAnything,
           unsupported: !ld.teamData && !hasAnything,
           computedData: ld.teamData || undefined,
+          gameStatus: legGameStatuses[i] || undefined,
         };
       });
 
