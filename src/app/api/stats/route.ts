@@ -11,6 +11,7 @@ import { fetchWithRetry } from "@/lib/fetch";
 import { computeSwishScore } from "@/lib/swishScore";
 import type { BetExtraction, ChartConfig } from "@/types";
 import { checkGameStatus } from "@/lib/gameStatus";
+import { getFirstBasketData } from "@/lib/nba-firstbasket";
 
 export const maxDuration = 60;
 
@@ -334,6 +335,22 @@ async function analyzeSingleBet(
 
   if (teamData._unsupported) {
     return { unsupported: true };
+  }
+
+  // Enrich with first basket data for first scorer markets (NBA)
+  const market = (extraction.market || extraction.description || "").toLowerCase();
+  const isFirstScorer = market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer");
+  const isNBA = (extraction.sport || "").toUpperCase() === "NBA" || (extraction.sport || "").toUpperCase() === "BASKETBALL";
+  if (isFirstScorer && isNBA && extraction.players.length > 0) {
+    try {
+      const fbData = await getFirstBasketData(extraction.players[0], extraction.teams);
+      if (fbData) {
+        (teamData as Record<string, unknown>)._firstBasket = fbData;
+        console.log(`[Stats] First basket data: ${fbData.player?.firstBasketCount || 0} first baskets for ${extraction.players[0]}`);
+      }
+    } catch (e) {
+      console.error("[Stats] First basket data failed (non-blocking):", e);
+    }
   }
 
   let computed;

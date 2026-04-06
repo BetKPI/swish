@@ -28,6 +28,15 @@ export function buildCharts(
     return buildGolfCharts(extraction, rawData);
   }
 
+  // First basket / first scorer gets specialized charts
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fbData = (rawData as any)?._firstBasket;
+  const market = (extraction.market || extraction.description || "").toLowerCase();
+  const isFirstScorer = market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer");
+  if (isFirstScorer && fbData) {
+    return buildFirstBasketCharts(extraction, fbData);
+  }
+
   switch (betType) {
     case "spread":
       return buildSpreadCharts(computed, extraction);
@@ -195,6 +204,116 @@ function buildGolfCharts(
         });
       }
     }
+  }
+
+  return charts;
+}
+
+// ── First Basket / First Scorer charts ─────────────────────────────
+
+function buildFirstBasketCharts(
+  extraction: { players: string[]; teams: string[]; market?: string; description?: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fbData: any
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const playerName = extraction.players[0] || "";
+  const player = fbData.player;
+  const topScorers = fbData.topFirstScorers || [];
+
+  // 1. Top first basket scorers leaderboard
+  if (topScorers.length > 0) {
+    // Include the target player even if not in top 10
+    let data = topScorers.map((p: { name: string; rate: number; count: number }) => ({
+      player: p.name,
+      firstBasketRate: `${p.rate}%`,
+      timesFirst: p.count,
+      isTarget: p.name.toLowerCase().includes(playerName.toLowerCase()) || playerName.toLowerCase().includes(p.name.toLowerCase()),
+    }));
+
+    // If target player has data but isn't in the leaderboard, add them
+    if (player && player.firstBasketCount > 0 && !data.some((d: { isTarget: boolean }) => d.isTarget)) {
+      data.push({
+        player: player.playerName,
+        firstBasketRate: `${player.firstBasketRate}%`,
+        timesFirst: player.firstBasketCount,
+        isTarget: true,
+      });
+    }
+
+    charts.push({
+      type: "table",
+      title: "First Basket Scorers — Recent Games",
+      relevance: `Who actually scores first. ${playerName}'s rate vs the league's best first-basket guys.`,
+      data,
+      columns: [
+        { key: "player", label: "Player" },
+        { key: "firstBasketRate", label: "1st Basket %" },
+        { key: "timesFirst", label: "Times First" },
+      ],
+    });
+  }
+
+  // 2. Player's first basket game log (if we have data)
+  if (player && player.recentGames && player.recentGames.length > 0) {
+    const data = player.recentGames.map((g: { opponent: string; scoredFirst: boolean; shotFirst: boolean; shotType?: string }) => ({
+      game: `vs ${g.opponent}`,
+      scoredFirst: g.scoredFirst ? "YES" : "No",
+      shotFirst: g.shotFirst ? "YES" : "No",
+      shotType: g.shotType || "-",
+    }));
+
+    charts.push({
+      type: "table",
+      title: `${playerName} — First Basket History`,
+      relevance: `${player.firstBasketCount} first baskets in recent games (${player.firstBasketRate}% rate). Also shows if they took the first shot for their team.`,
+      data,
+      columns: [
+        { key: "game", label: "Game" },
+        { key: "scoredFirst", label: "Scored 1st" },
+        { key: "shotFirst", label: "Shot 1st" },
+        { key: "shotType", label: "Shot Type" },
+      ],
+    });
+  }
+
+  // 3. First shot attempt rates (who takes the first shot on each team)
+  if (topScorers.length > 0) {
+    // Show as a bar chart — first basket rate for top candidates
+    const barData = topScorers.slice(0, 8).map((p: { name: string; rate: number; count: number }) => ({
+      player: p.name.split(". ")[1] || p.name.split(" ").pop() || p.name,
+      rate: p.rate,
+      isTarget: p.name.toLowerCase().includes(playerName.toLowerCase()),
+    }));
+
+    charts.push({
+      type: "bar",
+      title: "First Basket Rate — Top Players",
+      relevance: `How often each player scores the game's first basket. Higher = more likely first scorer.`,
+      data: barData,
+      xKey: "player",
+      yKeys: ["rate"],
+    });
+  }
+
+  // 4. If no first basket specific data, fall back to explaining what matters
+  if (charts.length === 0) {
+    charts.push({
+      type: "table",
+      title: "First Basket — Key Factors",
+      relevance: "What actually matters for first basket bets — not PPG.",
+      data: [
+        { factor: "Tip-Off", why: "Team that wins the tip gets first possession" },
+        { factor: "First Play", why: "Some teams run set plays for specific players to open" },
+        { factor: "Shot Type", why: "Drivers to the basket hit first more than jump shooters" },
+        { factor: "Starter?", why: "Bench players almost never score the first basket" },
+        { factor: "Usage Rate Q1", why: "High early usage = more first-shot opportunities" },
+      ],
+      columns: [
+        { key: "factor", label: "Factor" },
+        { key: "why", label: "Why It Matters" },
+      ],
+    });
   }
 
   return charts;
