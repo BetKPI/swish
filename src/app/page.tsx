@@ -217,11 +217,13 @@ export default function Home() {
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                Due diligence for <span className="text-accent">every bet.</span>
+                Know before you bet.
               </h2>
 
-              <p className="text-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-                Upload any bet screenshot. Get the charts, stats, and trends that actually matter — scored out of 10.
+              <p className="text-muted text-base sm:text-lg max-w-md mx-auto leading-relaxed">
+                Upload a screenshot of your bet slip.
+                <br className="hidden sm:block" />
+                Get the stats, charts, and a score out of 10.
               </p>
 
               {/* 3-step explainer */}
@@ -348,7 +350,7 @@ export default function Home() {
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
               <p className="text-2xl sm:text-3xl font-bold leading-tight">
-                You wouldn&apos;t buy a stock without checking the chart.
+                Your gut plus data wins more.
               </p>
               <p className="text-muted text-base mt-2">Free. No sign-up. 20 seconds.</p>
               <button
