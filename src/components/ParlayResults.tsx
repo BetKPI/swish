@@ -213,7 +213,7 @@ export default function ParlayResults({
 
           {/* Charts */}
           {activeLeg.charts.map((chart, i) => (
-            <ChartDisplay key={i} config={chart} />
+            <ChartDisplay key={i} config={chart} extraction={{ sport: activeLeg.sport, betType: activeLeg.betType, market: activeLeg.market, description: activeLeg.description }} />
           ))}
 
           {/* Chat — available for analyzed legs */}

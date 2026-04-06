@@ -221,7 +221,7 @@ export default function AnalysisResults({
 
       {/* Charts */}
       {charts.map((chart, i) => (
-        <ChartDisplay key={i} config={chart} />
+        <ChartDisplay key={i} config={chart} extraction={extraction} />
       ))}
 
       {/* Share Analysis — captures the entire analysis as one watermarked image */}
