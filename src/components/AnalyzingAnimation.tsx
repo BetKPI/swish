@@ -90,7 +90,7 @@ export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: Analy
               <span className={`text-xs transition-colors ${
                 isActive ? "text-accent font-medium" : "text-muted/50"
               }`}>{step}</span>
-              {i < 3 && <span className="text-muted/30 text-xs">\u2014</span>}
+              {i < 3 && <span className="text-muted/30 text-xs">{"\u2014"}</span>}
             </div>
           );
         })}
