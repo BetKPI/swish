@@ -82,6 +82,18 @@ const TEST_BETS = [
   { sport: "Hockey", betType: "moneyline", teams: ["Oilers", "Canucks"], players: [], odds: "-140", description: "Oilers ML (sport alias)", confidence: 0.85 },
   { sport: "MLB", betType: "moneyline", teams: ["Yankees", "Marlins"], players: [], odds: "-160", description: "Yankees ML (short name)", confidence: 0.9 },
   { sport: "NBA", betType: "parlay", teams: ["Celtics", "Knicks"], players: [], odds: "+450", description: "Parlay: Celtics + Knicks ML", confidence: 0.8 },
+
+  // ── Exotic market parlays (regression tests) ──────────────────
+  { sport: "NBA", betType: "parlay", teams: ["New York Knicks", "Atlanta Hawks"], players: ["Jalen Brunson"], odds: "+1200", description: "Parlay: Brunson 1st basket + Knicks spread", confidence: 0.9,
+    legs: [
+      { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Atlanta Hawks"], players: ["Jalen Brunson"], market: "First Basket Scorer", line: null, odds: "+500", description: "Brunson first basket", confidence: 0.9 },
+      { sport: "NBA", betType: "spread", teams: ["New York Knicks", "Atlanta Hawks"], players: [], line: -5.5, odds: "-110", description: "Knicks -5.5", confidence: 0.9 },
+    ],
+  },
+  // ── Exotic single bets ────────────────────────────────────────
+  { sport: "NBA", betType: "player_prop", teams: ["San Antonio Spurs", "Indiana Pacers"], players: ["Stephon Castle"], market: "First Basket Scorer", line: null, odds: "+800", description: "Castle First Basket", confidence: 0.9 },
+  { sport: "NBA", betType: "player_prop", teams: ["Denver Nuggets", "Phoenix Suns"], players: ["Nikola Jokic"], market: "Double-Double", line: null, odds: "-200", description: "Jokic Double-Double", confidence: 0.9 },
+  { sport: "NBA", betType: "player_prop", teams: ["Denver Nuggets", "Phoenix Suns"], players: ["Nikola Jokic"], market: "Pts+Reb+Ast", line: 45.5, odds: "-110", description: "Jokic O 45.5 PRA", confidence: 0.9 },
 ];
 
 // Questions people would ask in the chat
@@ -145,9 +157,39 @@ async function testBet(results: TestResult[], extraction: Record<string, unknown
 
     const data = await res.json();
 
-    // Parlay should return parlay: true
+    // Parlay — check each leg has charts
     if (data.parlay) {
-      results.push({ bet: label, status: "pass", charts: 0, stats: 0, ms });
+      const legs = data.legs || [];
+      const legCharts = legs.map((l: { charts?: unknown[]; error?: boolean }) => l.charts?.length || 0);
+      const emptyLegs = legCharts.filter((c: number) => c === 0).length;
+      const totalCharts = legCharts.reduce((s: number, c: number) => s + c, 0);
+
+      // Check exotic market legs got specialized charts
+      const inputLegs = (extraction.legs as Record<string, unknown>[]) || [];
+      let chartMismatch = "";
+      for (let li = 0; li < inputLegs.length; li++) {
+        const mkt = ((inputLegs[li]?.market as string) || "").toLowerCase();
+        const legResult = legs[li];
+        if (!legResult) continue;
+        const titles = ((legResult.charts || []) as { title?: string }[]).map((c) => (c.title || "").toLowerCase()).join(" ");
+        if (mkt.includes("first basket") && !titles.includes("first basket") && !titles.includes("tip-off")) {
+          chartMismatch += `Leg ${li + 1}: first basket market but no first basket charts. `;
+        }
+        if (mkt.includes("double-double") && !titles.includes("double")) {
+          chartMismatch += `Leg ${li + 1}: DD market but no DD charts. `;
+        }
+        if ((mkt.includes("pra") || mkt.includes("pts+reb+ast")) && !titles.includes("pra") && !titles.includes("pts+reb+ast") && !titles.includes("breakdown")) {
+          chartMismatch += `Leg ${li + 1}: PRA market but no combo charts. `;
+        }
+      }
+
+      if (chartMismatch) {
+        results.push({ bet: label, status: "fail", error: chartMismatch.trim(), charts: totalCharts, stats: 0, ms });
+      } else if (emptyLegs > 0) {
+        results.push({ bet: label, status: "empty", error: `${emptyLegs}/${legs.length} legs have 0 charts`, charts: totalCharts, ms });
+      } else {
+        results.push({ bet: label, status: "pass", charts: totalCharts, stats: 0, ms });
+      }
       return;
     }
 
