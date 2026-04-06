@@ -37,6 +37,34 @@ export function buildCharts(
     return buildFirstBasketCharts(extraction, fbData);
   }
 
+  // NRFI / first inning
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nrfiData = (rawData as any)?._nrfi;
+  const isNRFI = market.includes("nrfi") || market.includes("yrfi") || market.includes("no run first inning") || market.includes("first inning");
+  if (isNRFI && nrfiData) {
+    return buildNRFICharts(extraction, nrfiData);
+  }
+
+  // NHL first goal
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const fgData = (rawData as any)?._firstGoal;
+  const isFirstGoal = market.includes("first goal") || market.includes("1st goal");
+  if (isFirstGoal && fgData) {
+    return buildFirstGoalCharts(extraction, fgData);
+  }
+
+  // Double-double
+  const isDoubleDouble = market.includes("double-double") || market.includes("double double") || market === "dd";
+  if (isDoubleDouble && betType === "player_prop") {
+    return buildDoubleDoubleCharts(extraction, rawData);
+  }
+
+  // Combo props (PRA, pts+reb, etc.)
+  const isCombo = market.includes("pra") || market.includes("pts+reb") || market.includes("pts+ast") || market.includes("reb+ast") || market.includes("points+rebounds") || market.includes("points+assists");
+  if (isCombo && betType === "player_prop") {
+    return buildComboCharts(extraction, rawData);
+  }
+
   switch (betType) {
     case "spread":
       return buildSpreadCharts(computed, extraction);
@@ -315,6 +343,319 @@ function buildFirstBasketCharts(
       ],
     });
   }
+
+  return charts;
+}
+
+// ── NRFI / First Inning charts ────────────────────────────────────
+
+function buildNRFICharts(
+  extraction: { players: string[]; market?: string; description?: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  nrfiData: any
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const pitcher = nrfiData.pitcher;
+  const recentGames = nrfiData.recentGames || [];
+
+  if (pitcher) {
+    // 1. NRFI/YRFI game-by-game results
+    if (recentGames.length > 0) {
+      const data = recentGames.map((g: { date: string; opponent: string; firstInningRuns: number; result: string }) => ({
+        game: `vs ${g.opponent}`,
+        runs: g.firstInningRuns,
+        result: g.result,
+        overLine: g.firstInningRuns > 0,
+      }));
+      charts.push({
+        type: "hitrate",
+        title: `${pitcher.name} — First Inning Results`,
+        relevance: `${pitcher.cleanFirstInnings}/${pitcher.gamesStarted} clean first innings (${pitcher.firstInningCleanRate}% NRFI rate)`,
+        data,
+        xKey: "game",
+        yKeys: ["runs"],
+      });
+    }
+
+    // 2. Summary table
+    charts.push({
+      type: "table",
+      title: `${pitcher.name} — First Inning Profile`,
+      relevance: `How often this pitcher keeps the first inning scoreless`,
+      data: [
+        { stat: "NRFI Rate", value: `${pitcher.firstInningCleanRate}%` },
+        { stat: "Games Started", value: String(pitcher.gamesStarted) },
+        { stat: "Clean 1st Innings", value: String(pitcher.cleanFirstInnings) },
+        { stat: "Avg 1st Inning Runs", value: pitcher.runsInFirstInning?.length > 0
+          ? (pitcher.runsInFirstInning.reduce((a: number, b: number) => a + b, 0) / pitcher.runsInFirstInning.length).toFixed(2)
+          : "N/A" },
+      ],
+      columns: [
+        { key: "stat", label: "Stat" },
+        { key: "value", label: "Value" },
+      ],
+    });
+  }
+
+  return charts;
+}
+
+// ── NHL First Goal charts ─────────────────────────────────────────
+
+function buildFirstGoalCharts(
+  extraction: { players: string[]; teams: string[] },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  fgData: any
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const playerName = extraction.players[0] || "";
+  const player = fgData.player;
+  const topScorers = fgData.topFirstScorers || [];
+
+  // 1. Top first goal scorers leaderboard
+  if (topScorers.length > 0) {
+    const data = topScorers.map((p: { name: string; rate: number; count: number }) => ({
+      player: p.name,
+      firstGoalRate: `${p.rate}%`,
+      timesFirst: p.count,
+    }));
+    if (player && player.firstGoalCount > 0 && !data.some((d: { player: string }) => d.player.toLowerCase().includes(playerName.toLowerCase()))) {
+      data.push({ player: player.name, firstGoalRate: `${player.firstGoalRate}%`, timesFirst: player.firstGoalCount });
+    }
+    charts.push({
+      type: "table",
+      title: "First Goal Scorers — Recent Games",
+      relevance: `Who actually scores first in NHL games. ${playerName}'s rate vs the league leaders.`,
+      data,
+      columns: [
+        { key: "player", label: "Player" },
+        { key: "firstGoalRate", label: "1st Goal %" },
+        { key: "timesFirst", label: "Times First" },
+      ],
+    });
+  }
+
+  // 2. Player goal scoring profile
+  if (player) {
+    charts.push({
+      type: "table",
+      title: `${playerName} — Goal Scoring Profile`,
+      relevance: `Goals per game, shooting %, and first goal rate`,
+      data: [
+        { stat: "First Goal Rate", value: `${player.firstGoalRate}%` },
+        { stat: "Goals/Game", value: String(player.goalsPerGame) },
+        { stat: "Shooting %", value: `${player.shootingPct}%` },
+        { stat: "First Goals", value: String(player.firstGoalCount) },
+      ],
+      columns: [
+        { key: "stat", label: "Stat" },
+        { key: "value", label: "Value" },
+      ],
+    });
+
+    // 3. Recent games bar chart
+    if (player.recentGames?.length > 0) {
+      const data = player.recentGames.map((g: { opponent: string; scoredFirst: boolean; goals: number }) => ({
+        game: `vs ${g.opponent}`,
+        goals: g.goals || 0,
+        scoredFirst: g.scoredFirst ? "YES" : "No",
+      }));
+      charts.push({
+        type: "bar",
+        title: `${playerName} — Goals Per Game`,
+        relevance: `Recent goal output — more goals = more chances to score first`,
+        data,
+        xKey: "game",
+        yKeys: ["goals"],
+      });
+    }
+  }
+
+  return charts;
+}
+
+// ── Double-Double charts ──────────────────────────────────────────
+
+function buildDoubleDoubleCharts(
+  extraction: { players: string[]; line?: number; market?: string },
+  rawData: Record<string, unknown>
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const players = (rawData as any)?._players;
+  const playerName = extraction.players[0] || "";
+  const pData = players?.[playerName];
+  if (!pData) return [];
+
+  // Try to get game log values for PTS, REB, AST
+  const gameLog = pData.gameLog || pData.gameLogs || [];
+  if (!Array.isArray(gameLog) || gameLog.length === 0) return [];
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const games = gameLog.slice(-15).map((g: any) => {
+    const pts = Number(g.PTS || g.points || g.pts || 0);
+    const reb = Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0);
+    const ast = Number(g.AST || g.assists || g.ast || 0);
+    const blk = Number(g.BLK || g.blocks || g.blk || 0);
+    const stl = Number(g.STL || g.steals || g.stl || 0);
+    const cats = [pts >= 10, reb >= 10, ast >= 10, blk >= 10, stl >= 10].filter(Boolean).length;
+    return {
+      game: g.opponent ? `vs ${shortenName(String(g.opponent))}` : `G${gameLog.indexOf(g) + 1}`,
+      pts, reb, ast,
+      isDD: cats >= 2,
+      categories: cats,
+    };
+  });
+
+  const ddCount = games.filter((g: { isDD: boolean }) => g.isDD).length;
+  const ddRate = Math.round((ddCount / games.length) * 100);
+
+  // 1. DD hit rate chart
+  charts.push({
+    type: "hitrate",
+    title: `${playerName} — Double-Double Rate (Last ${games.length})`,
+    relevance: `${ddCount}/${games.length} double-doubles (${ddRate}%)`,
+    data: games.map((g: { game: string; isDD: boolean; categories: number }) => ({
+      game: g.game,
+      value: g.categories,
+      overLine: g.isDD,
+      line: 2,
+    })),
+    xKey: "game",
+    yKeys: ["value"],
+  });
+
+  // 2. Game log table with all stats
+  charts.push({
+    type: "table",
+    title: `${playerName} — Recent Multi-Stat Game Log`,
+    relevance: `PTS/REB/AST per game — need 10+ in two categories for a double-double`,
+    data: games.map((g: { game: string; pts: number; reb: number; ast: number; isDD: boolean }) => ({
+      game: g.game,
+      pts: g.pts,
+      reb: g.reb,
+      ast: g.ast,
+      dd: g.isDD ? "DD" : "-",
+    })),
+    columns: [
+      { key: "game", label: "Game" },
+      { key: "pts", label: "PTS" },
+      { key: "reb", label: "REB" },
+      { key: "ast", label: "AST" },
+      { key: "dd", label: "DD?" },
+    ],
+  });
+
+  return charts;
+}
+
+// ── Combo Prop charts (PRA, Pts+Reb, etc.) ────────────────────────
+
+function buildComboCharts(
+  extraction: { players: string[]; line?: number; market?: string },
+  rawData: Record<string, unknown>
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const players = (rawData as any)?._players;
+  const playerName = extraction.players[0] || "";
+  const pData = players?.[playerName];
+  if (!pData) return [];
+
+  const gameLog = pData.gameLog || pData.gameLogs || [];
+  if (!Array.isArray(gameLog) || gameLog.length === 0) return [];
+
+  const market = (extraction.market || "").toLowerCase();
+  const line = extraction.line || 0;
+
+  // Determine which stats to combine
+  let statKeys: { key: string; label: string; extract: (g: Record<string, unknown>) => number }[] = [];
+  if (market.includes("pra") || market.includes("points+rebounds+assists")) {
+    statKeys = [
+      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
+      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
+      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+    ];
+  } else if (market.includes("pts+reb") || market.includes("points+rebounds")) {
+    statKeys = [
+      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
+      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
+    ];
+  } else if (market.includes("pts+ast") || market.includes("points+assists")) {
+    statKeys = [
+      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
+      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+    ];
+  } else if (market.includes("reb+ast") || market.includes("rebounds+assists")) {
+    statKeys = [
+      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
+      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+    ];
+  } else {
+    // Default to PRA
+    statKeys = [
+      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
+      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
+      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+    ];
+  }
+
+  const comboLabel = statKeys.map((s) => s.label).join("+");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const games = gameLog.slice(-15).map((g: any, i: number) => {
+    const values: Record<string, number> = {};
+    let total = 0;
+    for (const sk of statKeys) {
+      const v = sk.extract(g);
+      values[sk.key] = v;
+      total += v;
+    }
+    return {
+      game: g.opponent ? `vs ${shortenName(String(g.opponent))}` : `G${i + 1}`,
+      ...values,
+      total,
+      overLine: line > 0 ? total > line : false,
+    };
+  });
+
+  const hitCount = line > 0 ? games.filter((g: { overLine: boolean }) => g.overLine).length : 0;
+  const hitRate = line > 0 ? Math.round((hitCount / games.length) * 100) : 0;
+
+  // 1. Hit rate bar chart
+  if (line > 0) {
+    charts.push({
+      type: "hitrate",
+      title: `${playerName} — ${comboLabel} vs ${line} Line`,
+      relevance: `${hitCount}/${games.length} over the line (${hitRate}%)`,
+      data: games.map((g: { game: string; total: number; overLine: boolean }) => ({
+        game: g.game,
+        value: g.total,
+        overLine: g.overLine,
+        line,
+      })),
+      xKey: "game",
+      yKeys: ["value"],
+    });
+  }
+
+  // 2. Component breakdown table
+  charts.push({
+    type: "table",
+    title: `${playerName} — ${comboLabel} Breakdown`,
+    relevance: `Each stat component per game${line > 0 ? ` — need ${line}+ combined` : ""}`,
+    data: games.map((g: Record<string, unknown>) => {
+      const row: Record<string, unknown> = { game: g.game };
+      for (const sk of statKeys) row[sk.key] = g[sk.key];
+      row.total = g.total;
+      return row;
+    }),
+    columns: [
+      { key: "game", label: "Game" },
+      ...statKeys.map((s) => ({ key: s.key, label: s.label })),
+      { key: "total", label: "Total" },
+    ],
+  });
 
   return charts;
 }

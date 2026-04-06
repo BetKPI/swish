@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -64,6 +65,7 @@ export default function RootLayout({
           </div>
         </header>
         <main className="flex-1">{children}</main>
+        <SpeedInsights />
         <script
           dangerouslySetInnerHTML={{
             __html: `

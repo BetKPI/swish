@@ -12,6 +12,8 @@ import { computeSwishScore } from "@/lib/swishScore";
 import type { BetExtraction, ChartConfig } from "@/types";
 import { checkGameStatus } from "@/lib/gameStatus";
 import { getFirstBasketData } from "@/lib/nba-firstbasket";
+import { getFirstInningData } from "@/lib/mlb-nrfi";
+import { getFirstGoalData } from "@/lib/nhl-firstgoal";
 
 export const maxDuration = 60;
 
@@ -350,6 +352,36 @@ async function analyzeSingleBet(
       }
     } catch (e) {
       console.error("[Stats] First basket data failed (non-blocking):", e);
+    }
+  }
+
+  // Enrich with NRFI data for first inning markets (MLB)
+  const isNRFI = market.includes("nrfi") || market.includes("yrfi") || market.includes("no run first inning") || market.includes("first inning");
+  const isMLB = (extraction.sport || "").toUpperCase() === "MLB" || (extraction.sport || "").toUpperCase() === "BASEBALL";
+  if (isNRFI && isMLB && extraction.players.length > 0) {
+    try {
+      const nrfiData = await getFirstInningData(extraction.players[0]);
+      if (nrfiData) {
+        (teamData as Record<string, unknown>)._nrfi = nrfiData;
+        console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings for ${extraction.players[0]}`);
+      }
+    } catch (e) {
+      console.error("[Stats] NRFI data failed (non-blocking):", e);
+    }
+  }
+
+  // Enrich with first goal data for first scorer markets (NHL)
+  const isFirstGoal = market.includes("first goal") || market.includes("1st goal") || market.includes("first scorer");
+  const isNHL = (extraction.sport || "").toUpperCase() === "NHL" || (extraction.sport || "").toUpperCase() === "HOCKEY";
+  if (isFirstGoal && isNHL && extraction.players.length > 0) {
+    try {
+      const fgData = await getFirstGoalData(extraction.players[0], extraction.teams);
+      if (fgData) {
+        (teamData as Record<string, unknown>)._firstGoal = fgData;
+        console.log(`[Stats] First goal data: ${fgData.player?.firstGoalCount || 0} first goals for ${extraction.players[0]}`);
+      }
+    } catch (e) {
+      console.error("[Stats] First goal data failed (non-blocking):", e);
     }
   }
 
