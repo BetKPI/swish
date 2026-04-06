@@ -1,10 +1,12 @@
 "use client";
 
+import { useRef, useState, useCallback } from "react";
 import {
   LineChart,
   Line,
   BarChart,
   Bar,
+  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,6 +16,7 @@ import {
   ReferenceLine,
 } from "recharts";
 import type { ChartConfig } from "@/types";
+import { captureWithWatermark, copyImageToClipboard, downloadBlob } from "@/lib/captureWithWatermark";
 
 const COLORS = ["#10b981", "#6366f1", "#3b82f6", "#ef4444", "#8b5cf6"];
 
@@ -26,9 +29,45 @@ const KEY_STYLES: Record<string, { color: string; dash?: string; width?: number;
 
 export default function ChartDisplay({ config }: { config: ChartConfig }) {
   const { type, title, relevance, data, xKey, yKeys, columns } = config;
+  const chartRef = useRef<HTMLDivElement>(null);
+  const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
+
+  const handleShare = useCallback(async () => {
+    if (!chartRef.current) return;
+    setShareState("capturing");
+    try {
+      const blob = await captureWithWatermark(chartRef.current, "swish-chart.png");
+      if (!blob) { setShareState("idle"); return; }
+      const didCopy = await copyImageToClipboard(blob, "swish-chart.png");
+      setShareState(didCopy ? "copied" : "downloaded");
+    } catch {
+      setShareState("idle");
+      return;
+    }
+    setTimeout(() => setShareState("idle"), 2000);
+  }, []);
 
   return (
-    <div className="bg-surface rounded-xl p-4 space-y-3">
+    <div ref={chartRef} className="bg-surface rounded-xl p-4 space-y-3 relative group">
+      {/* Share button — top-right, visible on hover or mobile */}
+      <button
+        onClick={handleShare}
+        disabled={shareState === "capturing"}
+        className="absolute top-2 right-2 z-10 p-1.5 rounded-lg bg-surface-light/80 hover:bg-border text-muted hover:text-foreground opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all cursor-pointer disabled:opacity-50"
+        aria-label="Share chart"
+        title={shareState === "copied" ? "Copied!" : shareState === "downloaded" ? "Downloaded!" : "Share chart"}
+      >
+        {shareState === "copied" ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        ) : shareState === "downloaded" ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+        ) : shareState === "capturing" ? (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        ) : (
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+        )}
+      </button>
+
       <div>
         <h3 className="font-semibold text-sm">{title}</h3>
         <p className="text-muted text-xs">{relevance}</p>
@@ -38,6 +77,8 @@ export default function ChartDisplay({ config }: { config: ChartConfig }) {
         <TableChart data={data} columns={columns} />
       ) : type === "line" ? (
         <RechartsLine data={data} xKey={xKey} yKeys={yKeys} />
+      ) : type === "hitrate" ? (
+        <RechartsHitRate data={data} xKey={xKey} />
       ) : (
         <RechartsBar
           data={data}
@@ -118,6 +159,63 @@ function RechartsLine({
           );
         })}
       </LineChart>
+    </ResponsiveContainer>
+  );
+}
+
+function RechartsHitRate({
+  data,
+  xKey,
+}: {
+  data: Record<string, unknown>[];
+  xKey?: string;
+}) {
+  const x = xKey || "game";
+  const lineValue = typeof data[0]?.line === "number" ? (data[0].line as number) : null;
+
+  return (
+    <ResponsiveContainer width="100%" height={220}>
+      <BarChart data={data}>
+        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+        <XAxis
+          dataKey={x}
+          tick={{ fill: "#888", fontSize: 10 }}
+          stroke="#333"
+          angle={-30}
+          textAnchor="end"
+          height={50}
+        />
+        <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
+        <Tooltip
+          contentStyle={{
+            background: "#1a1a1a",
+            border: "1px solid #333",
+            borderRadius: 8,
+            fontSize: 12,
+          }}
+          formatter={(val, _name, props) => {
+            const over = (props as unknown as { payload: Record<string, unknown> }).payload?.overLine;
+            return [String(val), over ? "OVER" : "UNDER"];
+          }}
+        />
+        {lineValue != null && (
+          <ReferenceLine
+            y={lineValue}
+            stroke="#f59e0b"
+            strokeDasharray="6 4"
+            strokeWidth={2}
+            label={{ value: `Line: ${lineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
+          />
+        )}
+        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+          {data.map((entry, index) => (
+            <Cell
+              key={index}
+              fill={entry.overLine ? "#22c55e" : "#ef4444"}
+            />
+          ))}
+        </Bar>
+      </BarChart>
     </ResponsiveContainer>
   );
 }

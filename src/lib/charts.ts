@@ -283,7 +283,39 @@ function buildSpreadCharts(
     charts.push(buildH2HTable(computed, extraction.teams));
   }
 
-  // 5. Close games record — games decided by 6 or fewer (0.25 effect — weakly useful)
+  // 5. Home vs Away Splits table
+  for (const team of teams) {
+    const homeGames = team.recentGames.filter((g) => g.home);
+    const awayGames = team.recentGames.filter((g) => !g.home);
+    if (homeGames.length >= 2 && awayGames.length >= 2) {
+      const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+        arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+      const homeWins = homeGames.filter((g) => g.won).length;
+      const awayWins = awayGames.filter((g) => g.won).length;
+      const homeCovers = homeGames.filter((g) => g.margin + line > 0).length;
+      const awayCovers = awayGames.filter((g) => g.margin + line > 0).length;
+      const data = [
+        { stat: "Record", Home: `${homeWins}-${homeGames.length - homeWins}`, Away: `${awayWins}-${awayGames.length - awayWins}` },
+        { stat: "Win %", Home: `${Math.round((homeWins / homeGames.length) * 100)}%`, Away: `${Math.round((awayWins / awayGames.length) * 100)}%` },
+        { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
+        { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
+        { stat: "ATS Cover Rate", Home: `${Math.round((homeCovers / homeGames.length) * 100)}%`, Away: `${Math.round((awayCovers / awayGames.length) * 100)}%` },
+      ];
+      charts.push({
+        type: "table",
+        title: `${team.name} — Home vs Away Splits`,
+        relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeCovers / homeGames.length) * 100)}% ATS), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayCovers / awayGames.length) * 100)}% ATS)`,
+        data,
+        columns: [
+          { key: "stat", label: "" },
+          { key: "Home", label: "Home" },
+          { key: "Away", label: "Away" },
+        ],
+      });
+    }
+  }
+
+  // 6. Close games record — games decided by 6 or fewer (0.25 effect — weakly useful)
   if (teams.length === 2) {
     const closeGamesData = teams.map((t) => {
       const close = t.recentGames.filter((g) => Math.abs(g.margin) <= 6);
@@ -445,7 +477,36 @@ function buildMoneylineCharts(
   // Scoring Trend removed — raw scoring numbers are noise for ML
   // (0.02 effect size). Point differential (above) is what matters.
 
-  // 3. H2H if available
+  // 3. Home vs Away Splits table
+  for (const team of teams) {
+    const homeGames = team.recentGames.filter((g) => g.home);
+    const awayGames = team.recentGames.filter((g) => !g.home);
+    if (homeGames.length >= 2 && awayGames.length >= 2) {
+      const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+        arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+      const homeWins = homeGames.filter((g) => g.won).length;
+      const awayWins = awayGames.filter((g) => g.won).length;
+      const data = [
+        { stat: "Record", Home: `${homeWins}-${homeGames.length - homeWins}`, Away: `${awayWins}-${awayGames.length - awayWins}` },
+        { stat: "Win %", Home: `${Math.round((homeWins / homeGames.length) * 100)}%`, Away: `${Math.round((awayWins / awayGames.length) * 100)}%` },
+        { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
+        { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
+      ];
+      charts.push({
+        type: "table",
+        title: `${team.name} — Home vs Away Splits`,
+        relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeWins / homeGames.length) * 100)}% W), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayWins / awayGames.length) * 100)}% W)`,
+        data,
+        columns: [
+          { key: "stat", label: "" },
+          { key: "Home", label: "Home" },
+          { key: "Away", label: "Away" },
+        ],
+      });
+    }
+  }
+
+  // 4. H2H if available
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }
@@ -612,8 +673,31 @@ function buildPlayerPropCharts(
       };
     }
 
-    // 1. Game log trend with rolling average — THE key chart
+    // 1. Hit Rate visual — Props.Cash-style per-game bar chart (green/red)
     const gameValues = propAnalysis?.gameValues;
+    if (gameValues && gameValues.length > 0 && line > 0) {
+      const hitRateRecent = gameValues.slice(-15);
+      const hitRateN = hitRateRecent.length;
+      const hitRateOverCount = hitRateRecent.filter((g: { hit: boolean }) => g.hit).length;
+      const hitRatePct = Math.round((hitRateOverCount / hitRateN) * 100);
+      const hitRateData = hitRateRecent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => ({
+        game: g.opponent ? shortenName(g.opponent) : `G${i + 1}`,
+        value: g.value,
+        overLine: g.hit,
+        hitRate: hitRatePct,
+        line,
+      }));
+      charts.push({
+        type: "hitrate" as ChartConfig["type"],
+        title: `${playerName} — Last ${hitRateN} Games vs ${line} ${statLabel} Line`,
+        relevance: `${hitRateOverCount}/${hitRateN} over the line (${hitRatePct}%)`,
+        data: hitRateData,
+        xKey: "game",
+        yKeys: ["value"],
+      });
+    }
+
+    // 2. Game log trend with rolling average — THE key chart
     if (gameValues && gameValues.length > 0) {
       const recent = gameValues.slice(-15);
       const data = recent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => {
@@ -641,7 +725,7 @@ function buildPlayerPropCharts(
       });
     }
 
-    // 2. Hit rate breakdown by window — last 5, 10, and full season
+    // 3. Hit rate breakdown by window — last 5, 10, and full season
     if (propAnalysis && propAnalysis.totalGames > 0 && gameValues) {
       const last5 = gameValues.slice(-5);
       const last10 = gameValues.slice(-10);
@@ -672,7 +756,7 @@ function buildPlayerPropCharts(
       });
     }
 
-    // 3. Value distribution — how often does he hit each range
+    // 4. Value distribution — how often does he hit each range
     if (gameValues && gameValues.length >= 5) {
       const values = gameValues.map((g: { value: number }) => g.value);
       const min = Math.min(...values);

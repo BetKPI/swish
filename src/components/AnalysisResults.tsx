@@ -1,10 +1,12 @@
 "use client";
 
+import { useState, useCallback } from "react";
 import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
+import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
   score: number;
@@ -56,6 +58,24 @@ export default function AnalysisResults({
   keyInsight,
   onReset,
 }: AnalysisResultsProps) {
+  const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
+
+  const handleShareAnalysis = useCallback(async () => {
+    const el = document.getElementById("analysis-content");
+    if (!el) return;
+    setShareState("capturing");
+    try {
+      const blob = await captureWithWatermark(el, "swish-analysis.png");
+      if (!blob) { setShareState("idle"); return; }
+      const didCopy = await copyImageToClipboard(blob, "swish-analysis.png");
+      setShareState(didCopy ? "copied" : "downloaded");
+    } catch {
+      setShareState("idle");
+      return;
+    }
+    setTimeout(() => setShareState("idle"), 2500);
+  }, []);
+
   // Extract visual metadata
   const teamVisuals = (visuals?.teams || {}) as Record<string, { logo?: string; color?: string }>;
   const playerVisuals = (visuals?.players || {}) as Record<string, { headshot?: string }>;
@@ -203,6 +223,35 @@ export default function AnalysisResults({
       {charts.map((chart, i) => (
         <ChartDisplay key={i} config={chart} />
       ))}
+
+      {/* Share Analysis — captures the entire analysis as one watermarked image */}
+      <button
+        onClick={handleShareAnalysis}
+        disabled={shareState === "capturing"}
+        className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-surface hover:bg-surface-light border border-border rounded-xl transition-colors text-sm text-muted hover:text-foreground cursor-pointer disabled:opacity-50"
+      >
+        {shareState === "capturing" ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Capturing...
+          </>
+        ) : shareState === "copied" ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+            Copied to clipboard!
+          </>
+        ) : shareState === "downloaded" ? (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+            Downloaded!
+          </>
+        ) : (
+          <>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+            Share Analysis
+          </>
+        )}
+      </button>
 
       {/* Interactive Chat */}
       {computedData && (

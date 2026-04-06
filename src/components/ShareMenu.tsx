@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { BetExtraction, GameStatusData } from "@/types";
+import { captureWithWatermark, downloadBlob } from "@/lib/captureWithWatermark";
 
 interface ShareMenuProps {
   extraction: BetExtraction;
@@ -45,14 +46,7 @@ export default function ShareMenu({
     try {
       const el = document.getElementById(captureId);
       if (!el) return null;
-      const html2canvas = (await import("html2canvas-pro")).default;
-      const canvas = await html2canvas(el, {
-        backgroundColor: "#0a0a0a",
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-      return new Promise((resolve) => canvas.toBlob((b) => resolve(b), "image/png"));
+      return await captureWithWatermark(el, "swish-analysis.png");
     } catch (e) {
       console.error("Screenshot failed:", e);
       return null;
@@ -112,12 +106,7 @@ export default function ShareMenu({
   const downloadScreenshot = async () => {
     const blob = await captureScreenshot();
     if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "swish-analysis.png";
-    a.click();
-    URL.revokeObjectURL(url);
+    downloadBlob(blob, "swish-analysis.png");
     setOpen(false);
   };
 

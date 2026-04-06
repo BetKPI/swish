@@ -301,10 +301,10 @@ export default function Home() {
                         Drop your bet screenshot
                       </p>
                       <p className="text-muted text-sm">
-                        Any sportsbook — FanDuel, DraftKings, Bet365, whatever
+                        Any app — DraftKings, FanDuel, PrizePicks, Underdog, Bet365
                       </p>
                       <p className="text-accent text-xs font-medium">
-                        Spreads, props, O/U, parlays, moneylines — all scored
+                        Props, parlays, O/U, spreads, picks — all scored
                       </p>
                     </div>
                   )}

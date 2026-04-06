@@ -27,7 +27,7 @@ export interface StatDataPoint {
 }
 
 export interface ChartConfig {
-  type: 'line' | 'bar' | 'distribution' | 'table';
+  type: 'line' | 'bar' | 'distribution' | 'table' | 'hitrate';
   title: string;
   relevance: string;
   data: Record<string, unknown>[];
