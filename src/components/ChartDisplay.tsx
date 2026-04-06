@@ -332,7 +332,7 @@ function TableChart({
             {cols.map((col) => (
               <th
                 key={col.key}
-                className="text-left py-2 px-2 text-muted font-medium text-xs"
+                className="text-left py-2 px-2 text-muted font-medium text-xs whitespace-nowrap"
               >
                 {col.label}
               </th>
@@ -343,7 +343,7 @@ function TableChart({
           {data.map((row, i) => (
             <tr key={i} className="border-b border-border/50">
               {cols.map((col) => (
-                <td key={col.key} className="py-2 px-2 text-xs">
+                <td key={col.key} className="py-2 px-2 text-xs whitespace-nowrap">
                   {String(row[col.key] ?? "")}
                 </td>
               ))}
