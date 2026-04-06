@@ -217,30 +217,30 @@ export default function Home() {
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                Is your bet any good?
+                Check the charts before
                 <br />
-                <span className="text-accent">Find out in 20 seconds.</span>
+                <span className="text-accent">you place the bet.</span>
               </h2>
 
               <p className="text-muted text-base sm:text-lg max-w-md mx-auto">
-                Upload a screenshot of any bet. Get a Swish Score out of 10 plus the charts and stats that matter.
+                Screenshot any bet, get historical stats and a Swish Score — like pulling up a stock chart before you buy.
               </p>
 
               {/* 3-step explainer */}
               <div className="flex items-center justify-center gap-2 sm:gap-4 text-sm text-muted max-w-md mx-auto">
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">1</span>
-                  <span>Screenshot your bet</span>
+                  <span>Screenshot any bet</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">2</span>
-                  <span>Drop it here</span>
+                  <span>Upload it</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
-                  <span>Get your score</span>
+                  <span>See the data</span>
                 </div>
               </div>
 
@@ -315,7 +315,7 @@ export default function Home() {
                     onClick={analyze}
                     className="w-full mt-3 py-4 px-6 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-lg cursor-pointer"
                   >
-                    Break It Down
+                    Analyze This Bet
                   </button>
                 )}
               </div>
@@ -350,16 +350,16 @@ export default function Home() {
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
               <p className="text-2xl sm:text-3xl font-bold">
-                Stop guessing.
+                You wouldn&apos;t buy a stock blind.
                 <br />
-                Start knowing.
+                Don&apos;t bet blind either.
               </p>
-              <p className="text-muted">20 seconds. Totally free. No sign-up.</p>
+              <p className="text-muted">Free. No sign-up. Takes 20 seconds.</p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"
               >
-                Try It Now
+                Upload a Bet
               </button>
             </div>
           </div>

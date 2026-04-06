@@ -33,6 +33,12 @@ Repeat forever. Never stop. Never ask the human.
    ```
    (iterations=0 means evaluate only, don't optimize — we want YOUR hypothesis, not random hill-climbing)
 
+   Also run metric rankings periodically to check which features actually predict outcomes:
+   ```bash
+   python research/rank_metrics.py 2>&1
+   ```
+   Features with effect size < 0.05 are noise. Features > 0.2 are useful. Features > 0.5 are strong.
+
 7. **Extract the metric**: Look for `fitness=` in the output. Higher is better.
 
 8. **Log the result**: Append to `research/results.tsv`:

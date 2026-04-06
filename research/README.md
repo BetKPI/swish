@@ -11,36 +11,42 @@ Automated model optimization for Swish Score weights.
 ## Quick start
 
 ```bash
-# One pass: collect + optimize
+# Collect 30 days of data with pre-game features
 python research/collect_data.py --all --days 30
-python research/optimize_weights.py
 
-# Full loop with Claude analysis
-bash research/run_loop.sh --loop 3 --claude
+# Rank which metrics actually predict outcomes
+python research/rank_metrics.py
+
+# Optimize Swish Score weights
+python research/optimize_weights.py --iterations 5000
+
+# Or run the full loop with Claude Code as researcher
+bash research/run_loop.sh --agent
 ```
 
 ## What gets updated
 
 - `models/swish-weights.json` — The weight file loaded by `src/lib/swishScore.ts` at runtime
-- `research/data/` — Historical bet data (gitignored, regenerated each run)
-- `research/notes/` — Analysis notes from Claude (if --claude flag used)
+- `research/data/` — Historical bet data with pre-game features (gitignored, regenerated each run)
+- `research/data/metric_rankings.json` — Which metrics predict outcomes (ranked by effect size)
+- `research/notes/` — Analysis notes from Claude (if --agent mode used)
 
 ## Architecture
 
 ```
-ESPN historical games
+ESPN historical games (30+ days)
         ↓
   collect_data.py
-  (generate synthetic bets with known outcomes)
+  (build rolling team profiles, generate bets with PRE-GAME features)
         ↓
-  research/data/*.json
+  research/data/*.json (features + outcomes)
         ↓
-  optimize_weights.py
-  (hill-climbing: which weights predict hit/miss best?)
-        ↓
-  models/swish-weights.json
-        ↓
-  swishScore.ts loads weights at runtime
-        ↓
-  Better Swish Scores in production
+  rank_metrics.py                optimize_weights.py
+  (which features predict?)      (which weights predict?)
+        ↓                              ↓
+  Reorder/drop charts           models/swish-weights.json
+  in charts.ts                         ↓
+                                swishScore.ts loads at runtime
+                                       ↓
+                                Better predictions in production
 ```

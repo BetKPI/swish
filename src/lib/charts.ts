@@ -71,47 +71,7 @@ function buildSpreadCharts(
     });
   }
 
-  // 2. Close games record — games decided by 6 or fewer
-  if (teams.length === 2) {
-    const closeGamesData = teams.map((t) => {
-      const close = t.recentGames.filter((g) => Math.abs(g.margin) <= 6);
-      const closeWins = close.filter((g) => g.won).length;
-      return {
-        team: shortenName(t.name),
-        closeWins,
-        closeLosses: close.length - closeWins,
-        closeGames: close.length,
-        avgCloseMargin: close.length > 0 ? Math.round((close.reduce((s, g) => s + g.margin, 0) / close.length) * 10) / 10 : 0,
-      };
-    });
-    if (closeGamesData.some((d) => d.closeGames >= 2)) {
-      charts.push({
-        type: "bar",
-        title: "Close Games Record (decided by 6 or fewer)",
-        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${shortenName(d.team)} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
-        data: closeGamesData,
-        xKey: "team",
-        yKeys: ["closeWins", "closeLosses"],
-      });
-    }
-  }
-
-  // 3. Margin distribution — how often they win by buckets
-  const primary = teams[0];
-  if (primary && primary.recentGames.length >= 5) {
-    const buckets = marginDistribution(primary.recentGames);
-    const mostCommon = buckets.reduce((a, b) => (b.count > a.count ? b : a), buckets[0]);
-    charts.push({
-      type: "bar",
-      title: `${primary.name} — Win/Loss Margin Distribution`,
-      relevance: `Most common outcome: ${mostCommon.range} (${mostCommon.count} games) — ${line !== 0 ? `the ${line > 0 ? "+" : ""}${line} spread needs margins above that` : ""}`,
-      data: buckets,
-      xKey: "range",
-      yKeys: ["count"],
-    });
-  }
-
-  // 4. Rest + venue comparison table
+  // 2. Matchup comparison table (0.69 effect — win%, opponent strength)
   if (teams.length === 2) {
     const t0 = teams[0], t1 = teams[1];
     const data = [
@@ -137,9 +97,49 @@ function buildSpreadCharts(
     });
   }
 
-  // 5. H2H table
+  // 3. Margin distribution — how often they win by buckets (0.79 effect)
+  const primary = teams[0];
+  if (primary && primary.recentGames.length >= 5) {
+    const buckets = marginDistribution(primary.recentGames);
+    const mostCommon = buckets.reduce((a, b) => (b.count > a.count ? b : a), buckets[0]);
+    charts.push({
+      type: "bar",
+      title: `${primary.name} — Win/Loss Margin Distribution`,
+      relevance: `Most common outcome: ${mostCommon.range} (${mostCommon.count} games) — ${line !== 0 ? `the ${line > 0 ? "+" : ""}${line} spread needs margins above that` : ""}`,
+      data: buckets,
+      xKey: "range",
+      yKeys: ["count"],
+    });
+  }
+
+  // 4. H2H table
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
+  }
+
+  // 5. Close games record — games decided by 6 or fewer (0.25 effect — weakly useful)
+  if (teams.length === 2) {
+    const closeGamesData = teams.map((t) => {
+      const close = t.recentGames.filter((g) => Math.abs(g.margin) <= 6);
+      const closeWins = close.filter((g) => g.won).length;
+      return {
+        team: shortenName(t.name),
+        closeWins,
+        closeLosses: close.length - closeWins,
+        closeGames: close.length,
+        avgCloseMargin: close.length > 0 ? Math.round((close.reduce((s, g) => s + g.margin, 0) / close.length) * 10) / 10 : 0,
+      };
+    });
+    if (closeGamesData.some((d) => d.closeGames >= 2)) {
+      charts.push({
+        type: "bar",
+        title: "Close Games Record (decided by 6 or fewer)",
+        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${shortenName(d.team)} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
+        data: closeGamesData,
+        xKey: "team",
+        yKeys: ["closeWins", "closeLosses"],
+      });
+    }
   }
 
   return charts;
@@ -214,30 +214,8 @@ function buildOverUnderCharts(
     });
   }
 
-  // 3. Each team's offensive output trend with rolling avg
-  for (const team of teams) {
-    if (team.recentGames.length < 3) continue;
-    const recent = team.recentGames.slice(-10);
-    const data = recent.map((g, i) => {
-      const window = recent.slice(Math.max(0, i - 2), i + 1);
-      const rollingTotal = Math.round((window.reduce((s, w) => s + w.totalPoints, 0) / window.length) * 10) / 10;
-      return {
-        game: shortenName(g.opponent),
-        scored: g.teamScore,
-        allowed: g.opponentScore,
-        rollingTotal: i >= 2 ? rollingTotal : undefined,
-      };
-    });
-    const scoringTrend = recent.slice(-3).reduce((s, g) => s + g.totalPoints, 0) / 3 > team.scoring.avgTotalPoints ? "games getting higher-scoring" : "games getting lower-scoring";
-    charts.push({
-      type: "line",
-      title: `${team.name} — Scoring & Defense Trend`,
-      relevance: `Avg total ${team.scoring.avgTotalPoints}, ${scoringTrend} recently`,
-      data,
-      xKey: "game",
-      yKeys: ["scored", "allowed", "rollingTotal"],
-    });
-  }
+  // Scoring & Defense Trend removed — backtesting shows scoring trend
+  // has near-zero predictive power for O/U (0.02–0.07 effect size).
 
   return charts;
 }
@@ -251,30 +229,7 @@ function buildMoneylineCharts(
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
 
-  // 1. Point differential trend
-  for (const team of teams) {
-    if (team.recentGames.length < 3) continue;
-    let runningDiff = 0;
-    const data = team.recentGames.slice(-10).map((g, i) => {
-      runningDiff += g.margin;
-      return {
-        game: `G${i + 1}`,
-        margin: g.margin,
-        cumulativeDiff: runningDiff,
-        opponent: shortenName(g.opponent),
-      };
-    });
-    charts.push({
-      type: "bar",
-      title: `${team.name} — Game-by-Game Margin`,
-      relevance: "Shows if the team is winning comfortably or squeaking by",
-      data,
-      xKey: "game",
-      yKeys: ["margin"],
-    });
-  }
-
-  // 2. Team comparison table
+  // 1. Team comparison table (0.54 effect — win%, margin, differential)
   if (teams.length === 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
@@ -298,26 +253,33 @@ function buildMoneylineCharts(
     });
   }
 
-  // 3. Scoring trend — scored vs allowed
+  // 2. Point differential trend — best ML predictor
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const data = team.recentGames.slice(-10).map((g, i) => ({
-      game: `G${i + 1}`,
-      scored: g.teamScore,
-      allowed: g.opponentScore,
-      opponent: shortenName(g.opponent),
-    }));
+    let runningDiff = 0;
+    const data = team.recentGames.slice(-10).map((g, i) => {
+      runningDiff += g.margin;
+      return {
+        game: `G${i + 1}`,
+        margin: g.margin,
+        cumulativeDiff: runningDiff,
+        opponent: shortenName(g.opponent),
+      };
+    });
     charts.push({
-      type: "line",
-      title: `${team.name} — Scoring Trend`,
-      relevance: "Points scored vs allowed — shows offensive and defensive form",
+      type: "bar",
+      title: `${team.name} — Game-by-Game Margin`,
+      relevance: "Shows if the team is winning comfortably or squeaking by",
       data,
       xKey: "game",
-      yKeys: ["scored", "allowed"],
+      yKeys: ["margin"],
     });
   }
 
-  // 4. H2H if available
+  // Scoring Trend removed — raw scoring numbers are noise for ML
+  // (0.02 effect size). Point differential (above) is what matters.
+
+  // 3. H2H if available
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }

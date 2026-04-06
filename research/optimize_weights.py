@@ -1,16 +1,14 @@
 """
 Optimize Swish Score weights via backtesting against historical outcomes.
 
-Loads bet data from research/data/, simulates Swish Scores with different
-weight combinations, and finds weights that best predict hit/miss outcomes.
-
-The idea: a good Swish Score should give high scores to bets that hit
-and low scores to bets that miss. We optimize for this correlation.
+Uses pre-game features from collect_data.py (team records, ATS rates,
+scoring trends, etc.) to simulate what the Swish Score WOULD HAVE BEEN
+before each game, then checks if high scores predicted hits.
 
 Usage:
-    python research/optimize_weights.py
+    python research/optimize_weights.py                   # optimize
+    python research/optimize_weights.py --iterations 0    # evaluate only
     python research/optimize_weights.py --sport NBA
-    python research/optimize_weights.py --iterations 5000
 
 Output: models/swish-weights.json (updated)
 """
@@ -27,7 +25,6 @@ WEIGHTS_PATH = MODELS_DIR / "swish-weights.json"
 
 
 def load_bets(sport: str | None = None) -> list[dict]:
-    """Load bet data from JSON files."""
     bets = []
     pattern = f"{sport.lower()}_bets.json" if sport else "*_bets.json"
     for f in DATA_DIR.glob(pattern):
@@ -37,112 +34,124 @@ def load_bets(sport: str | None = None) -> list[dict]:
 
 
 def load_current_weights() -> dict:
-    """Load current model weights."""
     with open(WEIGHTS_PATH) as f:
         return json.load(f)
 
 
+def clamp(v: float, lo: float = 0, hi: float = 100) -> float:
+    return max(lo, min(hi, v))
+
+
 def simulate_score(bet: dict, weights: dict) -> float:
     """
-    Simulate a simplified Swish Score for a bet using given weights.
-
-    This is a simplified version of the TypeScript scoring — we compute
-    sub-scores from the game data and combine with weights.
-
+    Simulate Swish Score using PRE-GAME features — mirrors swishScore.ts logic.
     Returns 0-100 raw score.
     """
     bet_type = bet.get("betType", "")
+    f = bet.get("features", {})
+
+    if not f:
+        return 50
 
     if bet_type == "spread":
         w = weights.get("spread", {})
-        margin = bet.get("margin", 0)
-        line = bet.get("line", 0)
 
-        # ATS: did this team historically cover?
-        cover_pct = 0.5 + (margin + line) / 40  # rough proxy
-        ats_score = max(0, min(100, cover_pct * 100))
+        # ATS cover rate (mirrors swishScore.ts atsScore)
+        ats_rate = f.get("atsCoverRate", 0.5)
+        ats_score = clamp(ats_rate * 100)
 
-        # Close games: margin within line+3
-        close = 1 if abs(margin) <= abs(line) + 3 else 0
-        close_score = 60 if close else 40
+        # Close games (mirrors closeScore)
+        close_rate = f.get("closeWinRate", 0.5)
+        close_score = clamp(close_rate * 100)
 
-        # Margin trend: proxy from margin itself
-        margin_score = max(0, min(100, 50 + margin * 2))
+        # Margin trend (mirrors marginTrendScore — last5 vs season)
+        avg_margin = f.get("avgMargin", 0)
+        last5_margin = f.get("last5AvgMargin", 0)
+        margin_trend = clamp(50 + (last5_margin - avg_margin) * 3)
 
-        # Home/away: home teams win ~55%
-        home_score = 55 if bet.get("team") == bet.get("homeTeam") else 45
+        # Home/away record
+        home_away_pct = f.get("homePct", 0.5) if f.get("isHome") else f.get("awayPct", 0.5)
+        home_away_score = clamp(home_away_pct * 100)
 
-        # Rest: neutral
-        rest_score = 50
+        # Rest advantage
+        rest = f.get("restDays")
+        if rest is not None:
+            rest_score = 65 if 2 <= rest <= 4 else 45 if rest == 1 else 35 if rest == 0 else 55
+        else:
+            rest_score = 50
 
         return (
             ats_score * w.get("atsCoverRate", 0.35) +
             close_score * w.get("closeGames", 0.2) +
-            margin_score * w.get("marginTrend", 0.2) +
-            home_score * w.get("homeAwayRecord", 0.15) +
+            margin_trend * w.get("marginTrend", 0.2) +
+            home_away_score * w.get("homeAwayRecord", 0.15) +
             rest_score * w.get("restAdvantage", 0.1)
         )
 
     elif bet_type == "over_under":
         w = weights.get("over_under", {})
-        total = bet.get("total", 0)
-        line = bet.get("line", 0)
 
-        # Over rate proxy
-        over_rate = 0.5 + (total - line) / 40
-        over_score = max(0, min(100, over_rate * 100))
+        # Over rate
+        over_rate = f.get("overRate", 0.5)
+        over_score = clamp(over_rate * 100)
 
-        # Pace projection
-        diff = total - line
-        pace_score = max(0, min(100, 50 + (diff / max(line, 1)) * 200))
+        # Pace projection vs line
+        proj_vs_line = f.get("projVsLine", 0)
+        line = bet.get("line", 1)
+        pace_score = clamp(50 + (proj_vs_line / max(line, 1)) * 200)
 
-        # Trend: neutral proxy
-        trend_score = 50
+        # Scoring trend (combined)
+        home_trend = f.get("homeScoringTrend", 0)
+        away_trend = f.get("awayScoringTrend", 0)
+        trend_score = clamp(50 + (home_trend + away_trend) * 3)
 
-        # Avg vs line
-        avg_score = max(0, min(100, 50 + (diff / max(line, 1)) * 200))
+        # Avg total vs line
+        projection = f.get("projection", 0)
+        avg_vs_line = clamp(50 + ((projection - line) / max(line, 1)) * 200)
 
         return (
             over_score * w.get("overRate", 0.35) +
             pace_score * w.get("paceProjection", 0.25) +
             trend_score * w.get("scoringTrend", 0.2) +
-            avg_score * w.get("avgVsLine", 0.2)
+            avg_vs_line * w.get("avgVsLine", 0.2)
         )
 
     elif bet_type == "moneyline":
         w = weights.get("moneyline", {})
-        home_win = bet.get("homeWin", False)
-        is_home = bet.get("team") == bet.get("homeTeam")
-        won = (is_home and home_win) or (not is_home and not home_win)
 
-        win_score = 65 if won else 35
-        form_score = 55 if won else 45
-        diff = bet.get("margin", 0) * (1 if is_home else -1)
-        diff_score = max(0, min(100, 50 + diff * 2))
-        home_score = 55 if is_home else 45
-        streak_score = 55 if won else 45
+        # Win pct
+        win_pct = f.get("winPct", 0.5)
+        win_score = clamp(win_pct * 100)
+
+        # Recent form (last 5 wins out of 5)
+        last5 = f.get("last5Wins", 2.5)
+        form_score = clamp((last5 / 5) * 100)
+
+        # Point differential
+        avg_margin = f.get("avgMargin", 0)
+        diff_score = clamp(50 + avg_margin * 2)
+
+        # Home/away
+        home_away_pct = f.get("homePct", 0.5) if f.get("isHome") else f.get("awayPct", 0.5)
+        home_away_score = clamp(home_away_pct * 100)
+
+        # Streak
+        streak = f.get("streak", 0)
+        streak_score = clamp(50 + streak * 10)
 
         return (
             win_score * w.get("winPct", 0.3) +
             form_score * w.get("recentForm", 0.25) +
             diff_score * w.get("pointDiff", 0.2) +
-            home_score * w.get("homeAwayPct", 0.15) +
+            home_away_score * w.get("homeAwayPct", 0.15) +
             streak_score * w.get("streak", 0.1)
         )
 
-    return 50  # fallback
+    return 50
 
 
 def evaluate_weights(bets: list[dict], weights: dict) -> dict:
-    """
-    Evaluate a weight config against historical bets.
-
-    Good weights should:
-    1. Give higher scores to hits than misses (separation)
-    2. Have high accuracy at a threshold (e.g. score > 55 predicts hit)
-
-    Returns metrics dict.
-    """
+    """Evaluate weights: do high scores predict hits?"""
     hit_scores = []
     miss_scores = []
 
@@ -158,14 +167,13 @@ def evaluate_weights(bets: list[dict], weights: dict) -> dict:
 
     avg_hit = sum(hit_scores) / len(hit_scores)
     avg_miss = sum(miss_scores) / len(miss_scores)
-    separation = avg_hit - avg_miss  # higher = better
+    separation = avg_hit - avg_miss
 
     # Accuracy at threshold 50
     correct = sum(1 for s in hit_scores if s >= 50) + sum(1 for s in miss_scores if s < 50)
     total = len(hit_scores) + len(miss_scores)
     accuracy = correct / total
 
-    # Combined fitness
     fitness = separation * 0.6 + accuracy * 100 * 0.4
 
     return {
@@ -179,21 +187,17 @@ def evaluate_weights(bets: list[dict], weights: dict) -> dict:
 
 
 def mutate_weights(weights: dict, bet_type: str) -> dict:
-    """Randomly mutate weights for a bet type, keeping them summing to ~1."""
     new_weights = dict(weights)
     w = dict(weights.get(bet_type, {}))
-
     if not w:
         return new_weights
 
     keys = list(w.keys())
-    # Pick 2 random keys and shift weight between them
     k1, k2 = random.sample(keys, 2)
     shift = random.uniform(-0.08, 0.08)
-    w[k1] = max(0.05, min(0.6, w[k1] + shift))
-    w[k2] = max(0.05, min(0.6, w[k2] - shift))
+    w[k1] = max(0.03, min(0.80, w[k1] + shift))
+    w[k2] = max(0.03, min(0.80, w[k2] - shift))
 
-    # Normalize to sum to 1
     total = sum(w.values())
     w = {k: round(v / total, 4) for k, v in w.items()}
 
@@ -202,7 +206,6 @@ def mutate_weights(weights: dict, bet_type: str) -> dict:
 
 
 def optimize(bets: list[dict], bet_type: str, iterations: int = 2000) -> dict:
-    """Hill-climbing optimizer for one bet type."""
     current = load_current_weights()
     type_bets = [b for b in bets if b.get("betType") == bet_type]
 
@@ -213,17 +216,16 @@ def optimize(bets: list[dict], bet_type: str, iterations: int = 2000) -> dict:
     best_metrics = evaluate_weights(type_bets, current)
     best_weights = current
     print(f"  {bet_type}: starting fitness={best_metrics['fitness']}, "
-          f"accuracy={best_metrics['accuracy']}, separation={best_metrics['separation']}")
+          f"accuracy={best_metrics['accuracy']}, separation={best_metrics['separation']}, n={best_metrics['n']}")
 
-    for i in range(iterations):
+    for _ in range(iterations):
         candidate = mutate_weights(best_weights, bet_type)
         metrics = evaluate_weights(type_bets, candidate)
-
         if metrics["fitness"] > best_metrics["fitness"]:
             best_weights = candidate
             best_metrics = metrics
 
-    print(f"  {bet_type}: final fitness={best_metrics['fitness']}, "
+    print(f"  {bet_type}: FINAL   fitness={best_metrics['fitness']}, "
           f"accuracy={best_metrics['accuracy']}, separation={best_metrics['separation']}")
     print(f"  {bet_type} weights: {best_weights[bet_type]}")
 
@@ -234,7 +236,7 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description="Optimize Swish Score weights")
     parser.add_argument("--sport", type=str, help="Filter bets by sport")
-    parser.add_argument("--iterations", type=int, default=2000, help="Optimization iterations per bet type")
+    parser.add_argument("--iterations", type=int, default=2000, help="Optimization iterations (0 = evaluate only)")
     args = parser.parse_args()
 
     bets = load_bets(args.sport)
@@ -244,7 +246,7 @@ def main():
 
     print(f"Loaded {len(bets)} bet scenarios")
 
-    # Evaluate-only mode (iterations=0) — used by autoresearch agent
+    # Evaluate-only mode
     if args.iterations == 0:
         current = load_current_weights()
         for bet_type in ["spread", "over_under", "moneyline"]:
@@ -253,7 +255,6 @@ def main():
                 metrics = evaluate_weights(type_bets, current)
                 print(f"  {bet_type}: fitness={metrics['fitness']}, "
                       f"accuracy={metrics['accuracy']}, separation={metrics['separation']}, n={metrics['n']}")
-        # Overall fitness
         all_metrics = evaluate_weights(bets, current)
         print(f"  OVERALL: fitness={all_metrics['fitness']}, "
               f"accuracy={all_metrics['accuracy']}, separation={all_metrics['separation']}, n={all_metrics['n']}")
@@ -265,12 +266,11 @@ def main():
         result = optimize(bets, bet_type, args.iterations)
         final_weights[bet_type] = result[bet_type]
 
-    # Update metadata
     final_weights["_meta"] = {
         "version": final_weights.get("_meta", {}).get("version", 1) + 1,
         "updated": datetime.now().strftime("%Y-%m-%d"),
         "source": f"autoresearch — optimized over {len(bets)} scenarios, {args.iterations} iterations",
-        "notes": "Weights optimized by research/optimize_weights.py hill-climbing against historical outcomes",
+        "notes": "Weights trained on pre-game features predicting actual outcomes (30d historical)",
     }
 
     with open(WEIGHTS_PATH, "w") as f:
