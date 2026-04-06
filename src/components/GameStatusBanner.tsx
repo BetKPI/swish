@@ -109,21 +109,21 @@ export default function GameStatusBanner({
       </div>
 
       {/* Scoreboard */}
-      <div className="flex items-center justify-center gap-4 mb-2">
-        <div className="text-right flex-1">
-          <p className="font-semibold text-sm truncate">{status.awayTeam}</p>
+      <div className="flex items-center justify-center gap-2 sm:gap-4 mb-2">
+        <div className="text-right flex-1 min-w-0 overflow-hidden">
+          <p className="font-semibold text-xs sm:text-sm truncate">{status.awayTeam}</p>
         </div>
-        <div className="flex items-center gap-3 px-4 py-2 bg-background/50 rounded-lg min-w-[100px] justify-center">
-          <span className={`text-2xl font-bold tabular-nums ${isLive ? "text-foreground" : "text-muted"}`}>
+        <div className="flex items-center gap-2 sm:gap-3 px-3 sm:px-4 py-2 bg-background/50 rounded-lg shrink-0 justify-center">
+          <span className={`text-xl sm:text-2xl font-bold tabular-nums ${isLive ? "text-foreground" : "text-muted"}`}>
             {status.awayScore ?? 0}
           </span>
-          <span className="text-muted text-sm">-</span>
-          <span className={`text-2xl font-bold tabular-nums ${isLive ? "text-foreground" : "text-muted"}`}>
+          <span className="text-muted text-xs sm:text-sm">-</span>
+          <span className={`text-xl sm:text-2xl font-bold tabular-nums ${isLive ? "text-foreground" : "text-muted"}`}>
             {status.homeScore ?? 0}
           </span>
         </div>
-        <div className="text-left flex-1">
-          <p className="font-semibold text-sm truncate">{status.homeTeam}</p>
+        <div className="text-left flex-1 min-w-0 overflow-hidden">
+          <p className="font-semibold text-xs sm:text-sm truncate">{status.homeTeam}</p>
         </div>
       </div>
 

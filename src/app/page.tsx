@@ -13,6 +13,7 @@ import AnalysisResults from "@/components/AnalysisResults";
 import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
 import BetHistory from "@/components/BetHistory";
+import AnalyzingAnimation from "@/components/AnalyzingAnimation";
 import { saveToHistory, isFull, type HistoryEntry } from "@/lib/history";
 
 export default function Home() {
@@ -362,27 +363,11 @@ export default function Home() {
       )}
 
       {state === "analyzing" && (
-        <div className="max-w-4xl mx-auto px-4 space-y-6 pt-12">
-          <p className="text-center text-lg font-medium animate-pulse">{statusMsg}</p>
-          {/* Skeleton: Score circle */}
-          <div className="flex justify-center">
-            <div className="w-28 h-28 rounded-full bg-surface-light animate-pulse" />
-          </div>
-          {/* Skeleton: Key insight */}
-          <div className="h-10 bg-surface-light rounded-xl animate-pulse" />
-          {/* Skeleton: Bet header */}
-          <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
-          {/* Skeleton: Summary */}
-          <div className="h-16 bg-surface-light rounded-xl animate-pulse" />
-          {/* Skeleton: Stat cards */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
-            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
-            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
-          </div>
-          {/* Skeleton: Chart area */}
-          <div className="h-48 bg-surface-light rounded-xl animate-pulse" />
-        </div>
+        <AnalyzingAnimation
+          sport={extraction?.sport}
+          statusMsg={statusMsg}
+          isParlay={extraction?.betType === "parlay"}
+        />
       )}
 
       {state === "error" && (
