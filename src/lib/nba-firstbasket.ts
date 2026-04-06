@@ -134,11 +134,14 @@ export async function getFirstBasketData(
   if (playerTipCenter && opponentTipCenter) {
     const pRate = playerTipCenter.winRate;
     const oRate = opponentTipCenter.winRate;
-    const edge = pRate > oRate ? playerTipCenter.name : opponentTipCenter.name;
+    const diff = Math.abs(pRate - oRate);
+    const headToHead = diff < 3
+      ? `Dead even — both at ${pRate}% (${playerTipCenter.wins}-${playerTipCenter.losses} vs ${opponentTipCenter.wins}-${opponentTipCenter.losses}). No tip-off advantage either way.`
+      : `${pRate > oRate ? playerTipCenter.name : opponentTipCenter.name} has the edge (${Math.max(pRate, oRate)}% vs ${Math.min(pRate, oRate)}%)`;
     tipMatchup = {
       player: playerTipCenter,
       opponent: opponentTipCenter,
-      headToHead: `${edge} has the edge (${pRate > oRate ? pRate : oRate}% vs ${pRate > oRate ? oRate : pRate}%)`,
+      headToHead,
     };
   }
 
