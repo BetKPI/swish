@@ -8,6 +8,7 @@ import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
+import { computeSwishScore } from "@/lib/swishScore";
 import type { BetExtraction, ChartConfig } from "@/types";
 import { checkGameStatus } from "@/lib/gameStatus";
 
@@ -183,7 +184,8 @@ async function fetchSportData(
 async function callGemini(
   prompt: string,
   apiKey: string,
-  model: string = "gemini-2.5-flash"
+  model: string = "gemini-2.5-flash",
+  maxOutputTokens: number = 4096
 ): Promise<string | null> {
   const response = await fetchWithRetry(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
@@ -194,7 +196,7 @@ async function callGemini(
         contents: [{ parts: [{ text: prompt }] }],
         generationConfig: {
           temperature: 0.3,
-          maxOutputTokens: 4096,
+          maxOutputTokens,
         },
       }),
     },
@@ -355,11 +357,32 @@ async function analyzeSingleBet(
     // Continue without charts
   }
 
-  const prompt = isDeterministic && charts.length > 0
+  const isSummaryOnly = isDeterministic && charts.length > 0;
+  const prompt = isSummaryOnly
     ? buildSummaryPrompt(extraction, computed, teamData)
     : buildFullAIPrompt(extraction, computed, teamData);
 
-  const text = await callGemini(prompt, apiKey);
+  // Run Gemini + game status check in parallel
+  const [text, gameStatus] = await Promise.all([
+    callGemini(
+      prompt,
+      apiKey,
+      isSummaryOnly ? "gemini-2.0-flash-lite" : "gemini-2.5-flash",
+      isSummaryOnly ? 2048 : 4096
+    ),
+    checkGameStatus(
+      extraction.sport,
+      extraction.teams,
+      extraction.betType,
+      extraction.players,
+      extraction.market,
+      extraction.line
+    ).catch((e) => {
+      console.error("[Stats] Game status check failed:", e);
+      return null;
+    }),
+  ]);
+
   let aiResult: Record<string, unknown> = {};
   if (text) {
     try {
@@ -370,25 +393,16 @@ async function analyzeSingleBet(
     }
   }
 
-  // Check game status (live scores, bet grading) — non-blocking
-  let gameStatus = null;
-  try {
-    gameStatus = await checkGameStatus(
-      extraction.sport,
-      extraction.teams,
-      extraction.betType,
-      extraction.players,
-      extraction.market,
-      extraction.line
-    );
-  } catch (e) {
-    console.error("[Stats] Game status check failed:", e);
-  }
+  // Compute Swish Score
+  const swishScore = computeSwishScore(extraction.betType, computed, extraction, teamData);
+
+  // Compute Key Insight
+  const keyInsight = computeKeyInsight(extraction, computed, teamData);
 
   // Extract visual metadata (logos, headshots, colors) from team data
   const visuals = extractVisuals(teamData, extraction);
 
-  if (isDeterministic && charts.length > 0) {
+  if (isSummaryOnly) {
     return {
       summary: aiResult.summary || "Check the charts below.",
       stats: aiResult.stats || [],
@@ -396,6 +410,8 @@ async function analyzeSingleBet(
       _computed: { oddsAnalysis: computed.oddsAnalysis, source },
       gameStatus,
       visuals,
+      swishScore,
+      keyInsight,
     };
   }
 
@@ -406,7 +422,76 @@ async function analyzeSingleBet(
     _computed: { oddsAnalysis: computed.oddsAnalysis, source },
     gameStatus,
     visuals,
+    swishScore,
+    keyInsight,
   };
+}
+
+/**
+ * Compute a one-sentence key insight based on bet type and computed data.
+ */
+function computeKeyInsight(
+  extraction: BetExtraction,
+  computed: ReturnType<typeof computeAnalysis>,
+  rawData: Record<string, unknown>
+): string {
+  const { teamMetrics, betTypeInsights } = computed;
+  const teams = Object.values(teamMetrics);
+
+  switch (extraction.betType) {
+    case "player_prop": {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const playerData = (rawData as any)?._players;
+      const playerName = extraction.players[0] || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pData = playerData?.[playerName] as any;
+      const pa = pData?.propAnalysis;
+      if (pa) {
+        return `${pa.hitCount}/${pa.totalGames} over the line, ${pa.trend} (avg ${pa.average} vs ${pa.line} line)`;
+      }
+      return "Limited player prop data available";
+    }
+    case "spread": {
+      const team = teams[0];
+      if (team?.ats) {
+        const total = team.ats.covers + team.ats.fails;
+        const avgMargin = team.recentGames.length > 0
+          ? Math.round((team.recentGames.reduce((s, g) => s + g.margin, 0) / team.recentGames.length) * 10) / 10
+          : 0;
+        return `Covered ${extraction.line} in ${team.ats.covers}/${total}, avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}`;
+      }
+      return "Limited spread data available";
+    }
+    case "over_under": {
+      const line = extraction.line ?? 0;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const combined = betTypeInsights._combined as any;
+      if (combined?.projectedTotal && line > 0) {
+        const proj = combined.projectedTotal;
+        const diff = Math.round(Math.abs(proj - line) * 10) / 10;
+        const direction = proj >= line ? "over" : "under";
+        return `Games project ~${proj} — ${diff} ${direction} the ${line} line`;
+      }
+      if (teams.length >= 2 && line > 0) {
+        const proj = Math.round((teams[0].scoring.avgPointsFor + teams[1].scoring.avgPointsFor) * 10) / 10;
+        const diff = Math.round(Math.abs(proj - line) * 10) / 10;
+        const direction = proj >= line ? "over" : "under";
+        return `Games project ~${proj} — ${diff} ${direction} the ${line} line`;
+      }
+      return "Limited over/under data available";
+    }
+    case "moneyline": {
+      const team = teams[0];
+      if (team) {
+        const winPct = Math.round(team.record.pct * 100);
+        const streak = `${team.streak.type}${team.streak.count}`;
+        return `${team.name} ${winPct}% win rate, on a ${streak} streak`;
+      }
+      return "Limited moneyline data available";
+    }
+    default:
+      return "";
+  }
 }
 
 /**
@@ -531,13 +616,20 @@ export async function POST(request: NextRequest) {
         })
       );
 
-      // Step 5: Combine charts + summaries + game status
+      // Step 5: Combine charts + summaries + game status + swish scores
       const finalLegs = legData.map((ld, i) => {
         const aiLeg = legSummaries[i] || {};
         const legCharts = ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [];
         const legSummary = (aiLeg.summary as string) || null;
         const legStats = (aiLeg.stats as unknown[]) || [];
         const hasAnything = legCharts.length > 0 || legSummary || legStats.length > 0;
+
+        // Per-leg Swish Score
+        let legSwishScore = undefined;
+        if (ld.computed && ld.teamData) {
+          legSwishScore = computeSwishScore(ld.leg.betType, ld.computed, ld.leg, ld.teamData);
+        }
+
         return {
           description: ld.leg.description,
           sport: ld.leg.sport,
@@ -554,8 +646,20 @@ export async function POST(request: NextRequest) {
           unsupported: !ld.teamData && !hasAnything,
           computedData: ld.teamData || undefined,
           gameStatus: legGameStatuses[i] || undefined,
+          swishScore: legSwishScore,
         };
       });
+
+      // Compute average Swish Score across all legs
+      const legScores = finalLegs
+        .map((l) => l.swishScore?.score)
+        .filter((s): s is number => s != null);
+      const avgScore = legScores.length > 0
+        ? Math.round(legScores.reduce((s, v) => s + v, 0) / legScores.length)
+        : undefined;
+      const parlaySwishScore = avgScore != null
+        ? { score: avgScore, label: avgScore <= 30 ? "Weak" : avgScore <= 45 ? "Shaky" : avgScore <= 55 ? "Toss-Up" : avgScore <= 70 ? "Solid" : avgScore <= 85 ? "Strong" : "Lock-Level Data", detail: `${avgScore} — Average across ${legScores.length} legs` }
+        : undefined;
 
       // Log successful parlay to Discord
       logParlayToDiscord(extraction, finalLegs);
@@ -564,6 +668,7 @@ export async function POST(request: NextRequest) {
         parlay: true,
         legCount: legs.length,
         legs: finalLegs,
+        swishScore: parlaySwishScore,
       });
     }
 

@@ -19,6 +19,8 @@ export interface HistoryEntry {
     result: "hit" | "miss" | "push" | "pending";
     detail: string;
   };
+  swishScore?: { score: number; label: string; detail: string };
+  keyInsight?: string;
   isParlay?: boolean;
   legCount?: number;
   parlayLegs?: ParlayLegResult[];

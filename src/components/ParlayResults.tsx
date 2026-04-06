@@ -127,6 +127,11 @@ export default function ParlayResults({
           >
             <span className="mr-1.5">{sportEmoji(leg.sport)}</span>
             Leg {i + 1}
+            {(leg as ParlayLegResult & { swishScore?: { score: number } }).swishScore && (
+              <span className="ml-1.5 text-xs opacity-75">
+                {(leg as ParlayLegResult & { swishScore?: { score: number } }).swishScore!.score}
+              </span>
+            )}
           </button>
         ))}
       </div>

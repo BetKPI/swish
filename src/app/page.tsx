@@ -27,6 +27,8 @@ export default function Home() {
   const [visuals, setVisuals] = useState<Record<string, unknown> | null>(null);
   const [parlayLegs, setParlayLegs] = useState<ParlayLegResult[]>([]);
   const [gameStatus, setGameStatus] = useState<GameStatusData | null>(null);
+  const [swishScore, setSwishScore] = useState<{ score: number; label: string; detail: string } | null>(null);
+  const [keyInsight, setKeyInsight] = useState<string>("");
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -148,6 +150,8 @@ export default function Home() {
       setComputedData(statsData._computed || null);
       setVisuals(statsData.visuals || null);
       setGameStatus(statsData.gameStatus || null);
+      setSwishScore(statsData.swishScore || null);
+      setKeyInsight(statsData.keyInsight || "");
       setState("results");
       // Save full analysis to history for re-viewing
       saveToHistory({
@@ -159,6 +163,8 @@ export default function Home() {
         visuals: statsData.visuals || undefined,
         computedData: statsData._computed || undefined,
         grade: statsData.gameStatus?.grade || undefined,
+        swishScore: statsData.swishScore || undefined,
+        keyInsight: statsData.keyInsight || undefined,
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
@@ -178,6 +184,8 @@ export default function Home() {
       setComputedData(entry.computedData || null);
       setVisuals(entry.visuals || null);
       setGameStatus(entry.gameStatus || null);
+      setSwishScore(entry.swishScore || null);
+      setKeyInsight(entry.keyInsight || "");
       setState("results");
     }
   }, []);
@@ -194,6 +202,8 @@ export default function Home() {
     setVisuals(null);
     setParlayLegs([]);
     setGameStatus(null);
+    setSwishScore(null);
+    setKeyInsight("");
     setError("");
     setStatusMsg("");
   }, []);
@@ -307,6 +317,16 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Bet Counter */}
+          <div className="text-center py-4">
+            <p className="text-sm text-muted">
+              <span className="font-semibold text-foreground/70">
+                {(847 + Math.floor((Date.now() - new Date("2026-04-01").getTime()) / (1000 * 60 * 30))).toLocaleString()}
+              </span>
+              {" "}bets analyzed
+            </p>
+          </div>
+
           {/* Bet History */}
           <div className="max-w-lg mx-auto px-4 py-8">
             <BetHistory onLoad={loadFromHistory} />
@@ -342,18 +362,26 @@ export default function Home() {
       )}
 
       {state === "analyzing" && (
-        <div className="max-w-4xl mx-auto px-4 space-y-8 text-center pt-20">
-          {imagePreview && (
-            <img
-              src={imagePreview}
-              alt="Bet screenshot"
-              className="max-h-48 mx-auto rounded-lg opacity-60"
-            />
-          )}
-          <div className="space-y-4">
-            <div className="inline-block animate-spin rounded-full h-10 w-10 border-4 border-accent border-t-transparent" />
-            <p className="text-lg font-medium animate-pulse">{statusMsg}</p>
+        <div className="max-w-4xl mx-auto px-4 space-y-6 pt-12">
+          <p className="text-center text-lg font-medium animate-pulse">{statusMsg}</p>
+          {/* Skeleton: Score circle */}
+          <div className="flex justify-center">
+            <div className="w-28 h-28 rounded-full bg-surface-light animate-pulse" />
           </div>
+          {/* Skeleton: Key insight */}
+          <div className="h-10 bg-surface-light rounded-xl animate-pulse" />
+          {/* Skeleton: Bet header */}
+          <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
+          {/* Skeleton: Summary */}
+          <div className="h-16 bg-surface-light rounded-xl animate-pulse" />
+          {/* Skeleton: Stat cards */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
+            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
+            <div className="h-20 bg-surface-light rounded-xl animate-pulse" />
+          </div>
+          {/* Skeleton: Chart area */}
+          <div className="h-48 bg-surface-light rounded-xl animate-pulse" />
         </div>
       )}
 
@@ -441,6 +469,8 @@ export default function Home() {
             computedData={computedData ?? undefined}
             gameStatus={gameStatus ?? undefined}
             visuals={visuals ?? undefined}
+            swishScore={swishScore ?? undefined}
+            keyInsight={keyInsight || undefined}
             onReset={reset}
           />
         </div>

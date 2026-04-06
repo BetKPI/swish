@@ -6,6 +6,12 @@ import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
 
+interface SwishScore {
+  score: number;
+  label: string;
+  detail: string;
+}
+
 interface AnalysisResultsProps {
   extraction: BetExtraction;
   charts: ChartConfig[];
@@ -14,7 +20,27 @@ interface AnalysisResultsProps {
   computedData?: Record<string, unknown>;
   gameStatus?: GameStatusData;
   visuals?: Record<string, unknown>;
+  swishScore?: SwishScore;
+  keyInsight?: string;
   onReset: () => void;
+}
+
+function scoreColor(score: number): string {
+  if (score <= 30) return "text-red-500";
+  if (score <= 45) return "text-orange-400";
+  if (score <= 55) return "text-yellow-400";
+  if (score <= 70) return "text-emerald-400";
+  if (score <= 85) return "text-green-400";
+  return "text-green-300";
+}
+
+function scoreRingColor(score: number): string {
+  if (score <= 30) return "stroke-red-500";
+  if (score <= 45) return "stroke-orange-400";
+  if (score <= 55) return "stroke-yellow-400";
+  if (score <= 70) return "stroke-emerald-400";
+  if (score <= 85) return "stroke-green-400";
+  return "stroke-green-300";
 }
 
 export default function AnalysisResults({
@@ -25,6 +51,8 @@ export default function AnalysisResults({
   computedData,
   gameStatus,
   visuals,
+  swishScore,
+  keyInsight,
   onReset,
 }: AnalysisResultsProps) {
   // Extract visual metadata
@@ -53,6 +81,41 @@ export default function AnalysisResults({
           market={extraction.market}
           line={extraction.line}
         />
+      )}
+
+      {/* Swish Score */}
+      {swishScore && (
+        <div className="flex flex-col items-center text-center py-4">
+          <div className="relative w-28 h-28">
+            <svg className="w-28 h-28 -rotate-90" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" className="stroke-surface-light" />
+              <circle
+                cx="60" cy="60" r="52" fill="none" strokeWidth="8"
+                className={scoreRingColor(swishScore.score)}
+                strokeLinecap="round"
+                strokeDasharray={`${(swishScore.score / 100) * 327} 327`}
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className={`text-3xl font-black ${scoreColor(swishScore.score)}`}>
+                {swishScore.score}
+              </span>
+            </div>
+          </div>
+          <p className={`text-sm font-bold mt-2 ${scoreColor(swishScore.score)}`}>
+            {swishScore.label}
+          </p>
+          <p className="text-xs text-muted mt-1 max-w-sm">
+            {swishScore.detail}
+          </p>
+        </div>
+      )}
+
+      {/* Key Insight Callout */}
+      {keyInsight && (
+        <div className="bg-accent/10 border-l-4 border-accent rounded-r-xl px-4 py-3">
+          <p className="text-sm font-bold text-foreground">{keyInsight}</p>
+        </div>
       )}
 
       {/* Bet Summary Header */}
