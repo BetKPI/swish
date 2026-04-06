@@ -511,6 +511,19 @@ export function getMarketIntelligence(
  * Returns domain-specific knowledge about what matters for this bet.
  */
 export function getMarketContext(market: string, sport: string): string {
+  // Try new taxonomy first (richer data)
+  try {
+    const { matchMarket } = require("./market-taxonomy");
+    const def = matchMarket("player_prop", sport, market);
+    if (def) {
+      const relevant = def.relevantData.slice(0, 6).map((r: string) => `  - ${r}`).join("\n");
+      const irrelevant = def.irrelevantData.slice(0, 4).map((r: string) => `  - ${r}`).join("\n");
+      const charts = def.idealCharts.map((c: { title: string; description: string }) => `  - ${c.title}: ${c.description}`).join("\n");
+      return `\n\nMARKET-SPECIFIC CONTEXT (${def.subcategory}):\n\nRELEVANT data for this market:\n${relevant}\n\nDO NOT SHOW (irrelevant for this market):\n${irrelevant}\n\nIdeal charts:\n${charts}\n\nAnalysis notes: ${def.analysisNotes}`;
+    }
+  } catch { /* taxonomy not available, fall back */ }
+
+  // Fall back to existing market intelligence
   const intel = getMarketIntelligence(market, sport);
   if (!intel) return "";
   return `\n\nMARKET-SPECIFIC ANALYSIS CONTEXT (${intel.name}):\n${intel.analysisContext}`;
