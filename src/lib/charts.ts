@@ -6,6 +6,7 @@
 import type { ChartConfig } from "@/types";
 import type { ComputedAnalysis, TeamMetrics, GameResult } from "./analytics";
 import { filterAndSortCharts } from "./chart-relevance";
+import { detectExoticMarket, isGolfSport } from "./market-detect";
 
 // ── Main router ────────────────────────────────────────────────────
 
@@ -24,43 +25,36 @@ export function buildCharts(
   rawData: Record<string, unknown>
 ): ChartConfig[] {
   const sport = (extraction.sport || "").toUpperCase();
-  const market = (extraction.market || extraction.description || "").toLowerCase();
+  const marketStr = extraction.market || "";
+  const descStr = extraction.description || "";
 
-  // Route to the right chart builder
+  // Route to the right chart builder using centralized market detection
   let charts: ChartConfig[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = rawData as any;
 
   // Golf — completely different data structure
-  if (sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS") {
+  if (isGolfSport(sport)) {
     charts = buildGolfCharts(extraction, rawData);
   }
-  // First basket / first scorer (NBA)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  else if ((market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer")) && (rawData as any)?._firstBasket) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    charts = buildFirstBasketCharts(extraction, (rawData as any)._firstBasket);
-  }
-  // NRFI / first inning (MLB)
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  else if ((market.includes("nrfi") || market.includes("yrfi") || market.includes("first inning")) && (rawData as any)?._nrfi) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    charts = buildNRFICharts(extraction, (rawData as any)._nrfi);
-  }
-  // NHL first goal
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  else if ((market.includes("first goal") || market.includes("1st goal")) && (rawData as any)?._firstGoal) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    charts = buildFirstGoalCharts(extraction, (rawData as any)._firstGoal);
-  }
-  // Double-double
-  else if ((market.includes("double-double") || market.includes("double double") || market === "dd") && betType === "player_prop") {
-    charts = buildDoubleDoubleCharts(extraction, rawData);
-  }
-  // Combo props (PRA, pts+reb, etc.)
-  else if ((market.includes("pra") || market.includes("pts+reb+ast") || market.includes("pts+reb") || market.includes("pts+ast") || market.includes("reb+ast") || market.includes("points+rebounds") || market.includes("points+assists")) && betType === "player_prop") {
-    charts = buildComboCharts(extraction, rawData);
-  }
-  // Standard bet types
+  // Exotic markets — detected by keyword presence, not exact substring
   else {
+    const exotic = detectExoticMarket(marketStr, descStr, sport);
+    if (exotic === "first_basket" && raw?._firstBasket) {
+      charts = buildFirstBasketCharts(extraction, raw._firstBasket);
+    } else if (exotic === "nrfi" && raw?._nrfi) {
+      charts = buildNRFICharts(extraction, raw._nrfi);
+    } else if (exotic === "first_goal" && raw?._firstGoal) {
+      charts = buildFirstGoalCharts(extraction, raw._firstGoal);
+    } else if (exotic === "double_double" && betType === "player_prop") {
+      charts = buildDoubleDoubleCharts(extraction, rawData);
+    } else if (exotic === "combo_prop" && betType === "player_prop") {
+      charts = buildComboCharts(extraction, rawData);
+    }
+  }
+
+  // Standard bet types (only if no exotic match)
+  if (charts.length === 0 && !isGolfSport(sport)) {
     switch (betType) {
       case "spread":
         charts = buildSpreadCharts(computed, extraction);

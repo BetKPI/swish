@@ -14,6 +14,7 @@ import { checkGameStatus } from "@/lib/gameStatus";
 import { getFirstBasketData } from "@/lib/nba-firstbasket";
 import { getFirstInningData } from "@/lib/mlb-nrfi";
 import { getFirstGoalData } from "@/lib/nhl-firstgoal";
+import { detectExoticMarket, isNBASport, isMLBSport, isNHLSport } from "@/lib/market-detect";
 
 export const maxDuration = 60;
 
@@ -339,49 +340,37 @@ async function analyzeSingleBet(
     return { unsupported: true };
   }
 
-  // Enrich with first basket data for first scorer markets (NBA)
-  const market = (extraction.market || extraction.description || "").toLowerCase();
-  const isFirstScorer = market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer");
-  const isNBA = (extraction.sport || "").toUpperCase() === "NBA" || (extraction.sport || "").toUpperCase() === "BASKETBALL";
-  if (isFirstScorer && isNBA && extraction.players.length > 0) {
+  // Enrich with exotic market data using centralized detection
+  const exotic = detectExoticMarket(extraction.market || "", extraction.description || "", extraction.sport || "");
+  if (exotic === "first_basket" && isNBASport(extraction.sport || "") && extraction.players.length > 0) {
     try {
       const fbData = await getFirstBasketData(extraction.players[0], extraction.teams);
       if (fbData) {
         (teamData as Record<string, unknown>)._firstBasket = fbData;
-        console.log(`[Stats] First basket data: ${fbData.gamesProcessed} games, teams: ${fbData.playerTeam?.tricode || "?"} vs ${fbData.opponentTeam?.tricode || "?"}`);
+        console.log(`[Stats] First basket data: ${fbData.gamesProcessed} games`);
       }
     } catch (e) {
-      console.error("[Stats] First basket data failed (non-blocking):", e);
+      console.error("[Stats] First basket enrichment failed:", e);
     }
-  }
-
-  // Enrich with NRFI data for first inning markets (MLB)
-  const isNRFI = market.includes("nrfi") || market.includes("yrfi") || market.includes("no run first inning") || market.includes("first inning");
-  const isMLB = (extraction.sport || "").toUpperCase() === "MLB" || (extraction.sport || "").toUpperCase() === "BASEBALL";
-  if (isNRFI && isMLB && extraction.players.length > 0) {
+  } else if (exotic === "nrfi" && isMLBSport(extraction.sport || "") && extraction.players.length > 0) {
     try {
       const nrfiData = await getFirstInningData(extraction.players[0]);
       if (nrfiData) {
         (teamData as Record<string, unknown>)._nrfi = nrfiData;
-        console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings for ${extraction.players[0]}`);
+        console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings`);
       }
     } catch (e) {
-      console.error("[Stats] NRFI data failed (non-blocking):", e);
+      console.error("[Stats] NRFI enrichment failed:", e);
     }
-  }
-
-  // Enrich with first goal data for first scorer markets (NHL)
-  const isFirstGoal = market.includes("first goal") || market.includes("1st goal") || market.includes("first scorer");
-  const isNHL = (extraction.sport || "").toUpperCase() === "NHL" || (extraction.sport || "").toUpperCase() === "HOCKEY";
-  if (isFirstGoal && isNHL && extraction.players.length > 0) {
+  } else if (exotic === "first_goal" && isNHLSport(extraction.sport || "") && extraction.players.length > 0) {
     try {
       const fgData = await getFirstGoalData(extraction.players[0], extraction.teams);
       if (fgData) {
         (teamData as Record<string, unknown>)._firstGoal = fgData;
-        console.log(`[Stats] First goal data: ${fgData.player?.firstGoalCount || 0} first goals for ${extraction.players[0]}`);
+        console.log(`[Stats] First goal data loaded`);
       }
     } catch (e) {
-      console.error("[Stats] First goal data failed (non-blocking):", e);
+      console.error("[Stats] First goal enrichment failed:", e);
     }
   }
 
@@ -656,31 +645,19 @@ export async function POST(request: NextRequest) {
             const { data: teamData } = await fetchSportData(leg);
             if (teamData._unsupported) return { leg, teamData: null, computed: null, charts: [] };
 
-            // Enrich with exotic market data (same as single bet path)
-            const legMarket = (leg.market || leg.description || "").toLowerCase();
-            const legSport = (leg.sport || "").toUpperCase();
-
-            // First basket (NBA)
-            const legIsFirstScorer = legMarket.includes("first basket") || legMarket.includes("first fg") || legMarket.includes("1st basket") || legMarket.includes("first scorer");
-            if (legIsFirstScorer && (legSport === "NBA" || legSport === "BASKETBALL") && leg.players.length > 0) {
+            // Enrich with exotic market data (centralized detection)
+            const legExotic = detectExoticMarket(leg.market || "", leg.description || "", leg.sport || "");
+            if (legExotic === "first_basket" && isNBASport(leg.sport || "") && leg.players.length > 0) {
               try {
                 const fbData = await getFirstBasketData(leg.players[0], leg.teams);
                 if (fbData) (teamData as Record<string, unknown>)._firstBasket = fbData;
               } catch { /* non-blocking */ }
-            }
-
-            // NRFI (MLB)
-            const legIsNRFI = legMarket.includes("nrfi") || legMarket.includes("yrfi") || legMarket.includes("first inning");
-            if (legIsNRFI && (legSport === "MLB" || legSport === "BASEBALL") && leg.players.length > 0) {
+            } else if (legExotic === "nrfi" && isMLBSport(leg.sport || "") && leg.players.length > 0) {
               try {
                 const nrfiData = await getFirstInningData(leg.players[0]);
                 if (nrfiData) (teamData as Record<string, unknown>)._nrfi = nrfiData;
               } catch { /* non-blocking */ }
-            }
-
-            // NHL first goal
-            const legIsFirstGoal = legMarket.includes("first goal") || legMarket.includes("1st goal");
-            if (legIsFirstGoal && (legSport === "NHL" || legSport === "HOCKEY") && leg.players.length > 0) {
+            } else if (legExotic === "first_goal" && isNHLSport(leg.sport || "") && leg.players.length > 0) {
               try {
                 const fgData = await getFirstGoalData(leg.players[0], leg.teams);
                 if (fgData) (teamData as Record<string, unknown>)._firstGoal = fgData;
