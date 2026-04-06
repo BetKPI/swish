@@ -1,0 +1,7 @@
+{
+  "_meta": {
+    "description": "Chart relevance scores per sport+market+chartPattern. Updated by user ratings. Higher = more relevant. Charts below 0.2 get filtered out.",
+    "lastUpdated": "2026-04-06",
+    "totalRatings": 0
+  }
+}

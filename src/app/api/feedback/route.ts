@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { recordRating } from "@/lib/chart-relevance";
 
 export async function POST(request: NextRequest) {
   try {
@@ -53,6 +54,13 @@ export async function POST(request: NextRequest) {
         value: comment,
         inline: false,
       });
+    }
+
+    // Update chart relevance scores from ratings
+    if (isChartRating && bet?.sport && rating) {
+      try {
+        recordRating(bet.sport, bet.market || bet.betType || "", chart, rating);
+      } catch { /* non-blocking */ }
     }
 
     await fetch(webhookUrl, {

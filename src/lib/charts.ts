@@ -5,6 +5,7 @@
 
 import type { ChartConfig } from "@/types";
 import type { ComputedAnalysis, TeamMetrics, GameResult } from "./analytics";
+import { filterAndSortCharts } from "./chart-relevance";
 
 // ── Main router ────────────────────────────────────────────────────
 
@@ -22,61 +23,63 @@ export function buildCharts(
   },
   rawData: Record<string, unknown>
 ): ChartConfig[] {
-  // Golf gets its own chart builder — data structure is completely different
   const sport = (extraction.sport || "").toUpperCase();
-  if (sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS") {
-    return buildGolfCharts(extraction, rawData);
-  }
-
-  // First basket / first scorer gets specialized charts
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fbData = (rawData as any)?._firstBasket;
   const market = (extraction.market || extraction.description || "").toLowerCase();
-  const isFirstScorer = market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer");
-  if (isFirstScorer && fbData) {
-    return buildFirstBasketCharts(extraction, fbData);
-  }
 
-  // NRFI / first inning
+  // Route to the right chart builder
+  let charts: ChartConfig[] = [];
+
+  // Golf — completely different data structure
+  if (sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS") {
+    charts = buildGolfCharts(extraction, rawData);
+  }
+  // First basket / first scorer (NBA)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const nrfiData = (rawData as any)?._nrfi;
-  const isNRFI = market.includes("nrfi") || market.includes("yrfi") || market.includes("no run first inning") || market.includes("first inning");
-  if (isNRFI && nrfiData) {
-    return buildNRFICharts(extraction, nrfiData);
+  else if ((market.includes("first basket") || market.includes("first fg") || market.includes("1st basket") || market.includes("first scorer")) && (rawData as any)?._firstBasket) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    charts = buildFirstBasketCharts(extraction, (rawData as any)._firstBasket);
   }
-
+  // NRFI / first inning (MLB)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  else if ((market.includes("nrfi") || market.includes("yrfi") || market.includes("first inning")) && (rawData as any)?._nrfi) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    charts = buildNRFICharts(extraction, (rawData as any)._nrfi);
+  }
   // NHL first goal
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const fgData = (rawData as any)?._firstGoal;
-  const isFirstGoal = market.includes("first goal") || market.includes("1st goal");
-  if (isFirstGoal && fgData) {
-    return buildFirstGoalCharts(extraction, fgData);
+  else if ((market.includes("first goal") || market.includes("1st goal")) && (rawData as any)?._firstGoal) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    charts = buildFirstGoalCharts(extraction, (rawData as any)._firstGoal);
   }
-
   // Double-double
-  const isDoubleDouble = market.includes("double-double") || market.includes("double double") || market === "dd";
-  if (isDoubleDouble && betType === "player_prop") {
-    return buildDoubleDoubleCharts(extraction, rawData);
+  else if ((market.includes("double-double") || market.includes("double double") || market === "dd") && betType === "player_prop") {
+    charts = buildDoubleDoubleCharts(extraction, rawData);
   }
-
   // Combo props (PRA, pts+reb, etc.)
-  const isCombo = market.includes("pra") || market.includes("pts+reb") || market.includes("pts+ast") || market.includes("reb+ast") || market.includes("points+rebounds") || market.includes("points+assists");
-  if (isCombo && betType === "player_prop") {
-    return buildComboCharts(extraction, rawData);
+  else if ((market.includes("pra") || market.includes("pts+reb+ast") || market.includes("pts+reb") || market.includes("pts+ast") || market.includes("reb+ast") || market.includes("points+rebounds") || market.includes("points+assists")) && betType === "player_prop") {
+    charts = buildComboCharts(extraction, rawData);
+  }
+  // Standard bet types
+  else {
+    switch (betType) {
+      case "spread":
+        charts = buildSpreadCharts(computed, extraction);
+        break;
+      case "over_under":
+        charts = buildOverUnderCharts(computed, extraction);
+        break;
+      case "moneyline":
+        charts = buildMoneylineCharts(computed, extraction);
+        break;
+      case "player_prop":
+        charts = buildPlayerPropCharts(computed, extraction, rawData);
+        break;
+    }
   }
 
-  switch (betType) {
-    case "spread":
-      return buildSpreadCharts(computed, extraction);
-    case "over_under":
-      return buildOverUnderCharts(computed, extraction);
-    case "moneyline":
-      return buildMoneylineCharts(computed, extraction);
-    case "player_prop":
-      return buildPlayerPropCharts(computed, extraction, rawData);
-    default:
-      return []; // exotic bets handled by AI fallback
-  }
+  // Filter and reorder all charts through the relevance system
+  // This learns from user ratings — irrelevant charts get hidden over time
+  return filterAndSortCharts(charts, sport, extraction.market || betType);
 }
 
 // ── Golf charts ───────────────────────────────────────────────────
