@@ -655,6 +655,38 @@ export async function POST(request: NextRequest) {
           try {
             const { data: teamData } = await fetchSportData(leg);
             if (teamData._unsupported) return { leg, teamData: null, computed: null, charts: [] };
+
+            // Enrich with exotic market data (same as single bet path)
+            const legMarket = (leg.market || leg.description || "").toLowerCase();
+            const legSport = (leg.sport || "").toUpperCase();
+
+            // First basket (NBA)
+            const legIsFirstScorer = legMarket.includes("first basket") || legMarket.includes("first fg") || legMarket.includes("1st basket") || legMarket.includes("first scorer");
+            if (legIsFirstScorer && (legSport === "NBA" || legSport === "BASKETBALL") && leg.players.length > 0) {
+              try {
+                const fbData = await getFirstBasketData(leg.players[0], leg.teams);
+                if (fbData) (teamData as Record<string, unknown>)._firstBasket = fbData;
+              } catch { /* non-blocking */ }
+            }
+
+            // NRFI (MLB)
+            const legIsNRFI = legMarket.includes("nrfi") || legMarket.includes("yrfi") || legMarket.includes("first inning");
+            if (legIsNRFI && (legSport === "MLB" || legSport === "BASEBALL") && leg.players.length > 0) {
+              try {
+                const nrfiData = await getFirstInningData(leg.players[0]);
+                if (nrfiData) (teamData as Record<string, unknown>)._nrfi = nrfiData;
+              } catch { /* non-blocking */ }
+            }
+
+            // NHL first goal
+            const legIsFirstGoal = legMarket.includes("first goal") || legMarket.includes("1st goal");
+            if (legIsFirstGoal && (legSport === "NHL" || legSport === "HOCKEY") && leg.players.length > 0) {
+              try {
+                const fgData = await getFirstGoalData(leg.players[0], leg.teams);
+                if (fgData) (teamData as Record<string, unknown>)._firstGoal = fgData;
+              } catch { /* non-blocking */ }
+            }
+
             const computed = computeAnalysis(teamData, leg);
             const isDeterministic = DETERMINISTIC_BET_TYPES.includes(leg.betType);
             const charts = isDeterministic
