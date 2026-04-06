@@ -705,10 +705,11 @@ function buildSpreadCharts(
     const t0 = teams[0], t1 = teams[1];
     const data = [
       { stat: "Record", [shortenName(t0.name)]: `${t0.record.wins}-${t0.record.losses}`, [shortenName(t1.name)]: `${t1.record.wins}-${t1.record.losses}` },
-      // For alt spreads (cover rate > 90%), show blowout risk instead
+      // For alt spreads (cover rate > 90%), show blowout context instead of useless 100%
       ...(((t0.ats?.coverRate ?? 0) > 0.9 && (t1.ats?.coverRate ?? 0) > 0.9) ? [
-        { stat: "ATS Record", [shortenName(t0.name)]: `${t0.ats?.covers ?? 0}-${t0.ats?.fails ?? 0}`, [shortenName(t1.name)]: `${t1.ats?.covers ?? 0}-${t1.ats?.fails ?? 0}` },
-        { stat: "Games Lost 20+", [shortenName(t0.name)]: `${t0.recentGames.filter(g => g.margin <= -20).length}/${t0.recentGames.length}`, [shortenName(t1.name)]: `${t1.recentGames.filter(g => g.margin <= -20).length}/${t1.recentGames.length}` },
+        { stat: "Worst Loss", [shortenName(t0.name)]: `${Math.min(...t0.recentGames.map(g => g.margin))}`, [shortenName(t1.name)]: `${Math.min(...t1.recentGames.map(g => g.margin))}` },
+        { stat: "Avg Loss Margin", [shortenName(t0.name)]: (() => { const losses = t0.recentGames.filter(g => g.margin < 0); return losses.length > 0 ? `${Math.round(losses.reduce((s, g) => s + g.margin, 0) / losses.length)}` : "N/A"; })(), [shortenName(t1.name)]: (() => { const losses = t1.recentGames.filter(g => g.margin < 0); return losses.length > 0 ? `${Math.round(losses.reduce((s, g) => s + g.margin, 0) / losses.length)}` : "N/A"; })() },
+        { stat: "Blowout Losses (15+)", [shortenName(t0.name)]: `${t0.recentGames.filter(g => g.margin <= -15).length}/${t0.recentGames.length}`, [shortenName(t1.name)]: `${t1.recentGames.filter(g => g.margin <= -15).length}/${t1.recentGames.length}` },
       ] : [
         { stat: "ATS Cover Rate", [shortenName(t0.name)]: `${Math.round((t0.ats?.coverRate ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.ats?.coverRate ?? 0) * 100)}%` },
       ]),
