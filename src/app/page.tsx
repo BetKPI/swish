@@ -242,7 +242,7 @@ export default function Home() {
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
-                  <span>Charts + Score</span>
+                  <span>Charts</span>
                 </div>
               </div>
 
