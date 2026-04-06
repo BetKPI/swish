@@ -1,1856 +1,1398 @@
 {
   "_meta": {
-    "gamesProcessed": 222,
-    "totalGames": 222,
-    "lastUpdated": "2026-04-06T12:54:10.860942",
-    "season": "20252026"
+    "gamesProcessed": 277,
+    "lastUpdated": "2026-04-06",
+    "season": "2025-26"
   },
   "teams": {
-    "DET": {
-      "abbrev": "DET",
-      "gamesPlayed": 13,
-      "firstGoalFor": 4,
-      "firstGoalAgainst": 9,
-      "firstGoalScorers": [
+    "NYI": {
+      "tricode": "NYI",
+      "totalGames": 17,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 4,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "MIN",
-              "time": "01:40",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "PHI",
-              "time": "18:49",
-              "period": 1
-            },
-            {
-              "date": "2026-03-27",
-              "vs": "BUF",
-              "time": "04:02",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "BOS",
-              "time": "03:35",
-              "period": 2
-            }
-          ],
-          "rate": 30.8
-        }
-      ],
-      "firstGoalForRate": 30.8
-    },
-    "MIN": {
-      "abbrev": "MIN",
-      "gamesPlayed": 13,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
+          "name": "Anders Lee",
+          "count": 3,
+          "rate": 17.6
+        },
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "OTT",
-              "time": "09:45",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "VAN",
-              "time": "08:32",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "FLA",
-              "time": "02:47",
-              "period": 2
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "TBL",
-              "time": "02:28",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "CHI",
-              "time": "06:17",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "UTA",
-              "time": "14:10",
-              "period": 1
-            }
-          ],
-          "rate": 46.2
+          "name": "Bo Horvat",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Marc Gatcomb",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Brayden Schenn",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Matthew Schaefer",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Casey Cizikas",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Tony DeAngelo",
+          "count": 1,
+          "rate": 5.9
         }
-      ],
-      "firstGoalForRate": 46.2
+      ]
     },
     "PIT": {
-      "abbrev": "PIT",
-      "gamesPlayed": 15,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 9,
-      "firstGoalScorers": [
+      "tricode": "PIT",
+      "totalGames": 19,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "FLA",
-              "time": "11:00",
-              "period": 1
-            },
-            {
-              "date": "2026-04-04",
-              "vs": "FLA",
-              "time": "00:20",
-              "period": 1
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "DET",
-              "time": "04:10",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "DAL",
-              "time": "02:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "WPG",
-              "time": "01:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-16",
-              "vs": "COL",
-              "time": "03:01",
-              "period": 1
-            }
-          ],
-          "rate": 40.0
-        }
-      ],
-      "firstGoalForRate": 40.0
-    },
-    "FLA": {
-      "abbrev": "FLA",
-      "gamesPlayed": 14,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
+          "name": "Rickard Rakell",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "BOS",
-              "time": "04:20",
-              "period": 1
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "OTT",
-              "time": "00:08",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "NYI",
-              "time": "08:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "SEA",
-              "time": "02:32",
-              "period": 2
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "EDM",
-              "time": "11:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "DET",
-              "time": "09:48",
-              "period": 1
-            }
-          ],
-          "rate": 42.9
-        }
-      ],
-      "firstGoalForRate": 42.9
-    },
-    "PHI": {
-      "abbrev": "PHI",
-      "gamesPlayed": 15,
-      "firstGoalFor": 9,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
+          "name": "Noel Acciari",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 9,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "BOS",
-              "time": "04:19",
-              "period": 1
-            },
-            {
-              "date": "2026-04-03",
-              "vs": "NYI",
-              "time": "13:54",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "DAL",
-              "time": "09:48",
-              "period": 2
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "DET",
-              "time": "04:07",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "CHI",
-              "time": "00:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "CBJ",
-              "time": "17:07",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "SJS",
-              "time": "02:26",
-              "period": 2
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "ANA",
-              "time": "02:51",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "MIN",
-              "time": "18:35",
-              "period": 1
-            }
-          ],
-          "rate": 60.0
-        }
-      ],
-      "firstGoalForRate": 60.0
-    },
-    "BOS": {
-      "abbrev": "BOS",
-      "gamesPlayed": 15,
-      "firstGoalFor": 9,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
+          "name": "Elmer Soderblom",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 9,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "TBL",
-              "time": "06:47",
-              "period": 2
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "DAL",
-              "time": "09:58",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "MIN",
-              "time": "01:01",
-              "period": 1
-            },
-            {
-              "date": "2026-03-25",
-              "vs": "BUF",
-              "time": "11:07",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "TOR",
-              "time": "05:04",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "WPG",
-              "time": "14:52",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "MTL",
-              "time": "02:22",
-              "period": 1
-            },
-            {
-              "date": "2026-03-16",
-              "vs": "NJD",
-              "time": "04:02",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "LAK",
-              "time": "08:22",
-              "period": 3
-            }
-          ],
-          "rate": 60.0
-        }
-      ],
-      "firstGoalForRate": 60.0
-    },
-    "OTT": {
-      "abbrev": "OTT",
-      "gamesPlayed": 15,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
+          "name": "Anthony Mantha",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-03-28",
-              "vs": "TBL",
-              "time": "00:18",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "PIT",
-              "time": "04:28",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "DET",
-              "time": "17:15",
-              "period": 1
-            },
-            {
-              "date": "2026-03-23",
-              "vs": "NYR",
-              "time": "06:30",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "TOR",
-              "time": "14:58",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "ANA",
-              "time": "03:54",
-              "period": 2
-            },
-            {
-              "date": "2026-03-09",
-              "vs": "VAN",
-              "time": "10:11",
-              "period": 2
-            }
-          ],
-          "rate": 46.7
-        }
-      ],
-      "firstGoalForRate": 46.7
-    },
-    "CAR": {
-      "abbrev": "CAR",
-      "gamesPlayed": 14,
-      "firstGoalFor": 10,
-      "firstGoalAgainst": 4,
-      "firstGoalScorers": [
+          "name": "Evgeni Malkin",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 10,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "OTT",
-              "time": "05:22",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "CBJ",
-              "time": "02:27",
-              "period": 1
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "CBJ",
-              "time": "13:29",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "MTL",
-              "time": "08:37",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "MTL",
-              "time": "02:36",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "PIT",
-              "time": "00:47",
-              "period": 1
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "PIT",
-              "time": "09:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "TBL",
-              "time": "00:36",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "STL",
-              "time": "08:38",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "PIT",
-              "time": "07:46",
-              "period": 1
-            }
-          ],
-          "rate": 71.4
-        }
-      ],
-      "firstGoalForRate": 71.4
-    },
-    "MTL": {
-      "abbrev": "MTL",
-      "gamesPlayed": 15,
-      "firstGoalFor": 10,
-      "firstGoalAgainst": 5,
-      "firstGoalScorers": [
+          "name": "Egor Chinakhov",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 10,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "NJD",
-              "time": "15:58",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "NYR",
-              "time": "04:36",
-              "period": 2
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "TBL",
-              "time": "12:25",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "NSH",
-              "time": "11:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "CBJ",
-              "time": "09:54",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "NYI",
-              "time": "04:10",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "DET",
-              "time": "17:45",
-              "period": 2
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "SJS",
-              "time": "07:21",
-              "period": 1
-            },
-            {
-              "date": "2026-03-11",
-              "vs": "OTT",
-              "time": "01:16",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "TOR",
-              "time": "04:46",
-              "period": 1
-            }
-          ],
-          "rate": 66.7
-        }
-      ],
-      "firstGoalForRate": 66.7
-    },
-    "NJD": {
-      "abbrev": "NJD",
-      "gamesPlayed": 13,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
+          "name": "Erik Karlsson",
+          "count": 1,
+          "rate": 5.3
+        },
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "MTL",
-              "time": "10:47",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "WSH",
-              "time": "05:22",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "CAR",
-              "time": "17:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "NSH",
-              "time": "18:02",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "DAL",
-              "time": "04:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "LAK",
-              "time": "07:58",
-              "period": 1
-            }
-          ],
-          "rate": 46.2
+          "name": "Tommy Novak",
+          "count": 1,
+          "rate": 5.3
         }
-      ],
-      "firstGoalForRate": 46.2
-    },
-    "NYR": {
-      "abbrev": "NYR",
-      "gamesPlayed": 16,
-      "firstGoalFor": 10,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 10,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "WSH",
-              "time": "00:23",
-              "period": 1
-            },
-            {
-              "date": "2026-04-04",
-              "vs": "DET",
-              "time": "13:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "NJD",
-              "time": "08:14",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "FLA",
-              "time": "05:10",
-              "period": 3
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "CBJ",
-              "time": "05:41",
-              "period": 1
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "NJD",
-              "time": "15:20",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "MIN",
-              "time": "02:41",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "WPG",
-              "time": "01:08",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "CGY",
-              "time": "17:27",
-              "period": 1
-            },
-            {
-              "date": "2026-03-09",
-              "vs": "PHI",
-              "time": "01:04",
-              "period": 1
-            }
-          ],
-          "rate": 62.5
-        }
-      ],
-      "firstGoalForRate": 62.5
-    },
-    "WSH": {
-      "abbrev": "WSH",
-      "gamesPlayed": 14,
-      "firstGoalFor": 10,
-      "firstGoalAgainst": 4,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 10,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "BUF",
-              "time": "03:15",
-              "period": 1
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "PHI",
-              "time": "14:59",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "VGK",
-              "time": "06:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "UTA",
-              "time": "02:07",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "COL",
-              "time": "11:53",
-              "period": 1
-            },
-            {
-              "date": "2026-03-20",
-              "vs": "NJD",
-              "time": "09:36",
-              "period": 1
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "OTT",
-              "time": "08:09",
-              "period": 2
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "BOS",
-              "time": "01:15",
-              "period": 2
-            },
-            {
-              "date": "2026-03-11",
-              "vs": "PHI",
-              "time": "09:51",
-              "period": 1
-            },
-            {
-              "date": "2026-03-09",
-              "vs": "CGY",
-              "time": "02:46",
-              "period": 1
-            }
-          ],
-          "rate": 71.4
-        }
-      ],
-      "firstGoalForRate": 71.4
+      ]
     },
     "COL": {
-      "abbrev": "COL",
-      "gamesPlayed": 14,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
+      "tricode": "COL",
+      "totalGames": 18,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "DAL",
-              "time": "10:39",
-              "period": 3
-            },
-            {
-              "date": "2026-03-30",
-              "vs": "CGY",
-              "time": "02:31",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "PIT",
-              "time": "04:57",
-              "period": 1
-            },
-            {
-              "date": "2026-03-20",
-              "vs": "CHI",
-              "time": "13:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "DAL",
-              "time": "18:33",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "SEA",
-              "time": "03:45",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "EDM",
-              "time": "00:32",
-              "period": 1
-            }
-          ],
-          "rate": 50.0
-        }
-      ],
-      "firstGoalForRate": 50.0
-    },
-    "STL": {
-      "abbrev": "STL",
-      "gamesPlayed": 13,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
+          "name": "Martin Necas",
+          "count": 3,
+          "rate": 16.7
+        },
         {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-05",
-              "vs": "COL",
-              "time": "12:01",
-              "period": 1
-            },
-            {
-              "date": "2026-03-30",
-              "vs": "SJS",
-              "time": "05:28",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "TOR",
-              "time": "05:21",
-              "period": 2
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "SJS",
-              "time": "17:19",
-              "period": 2
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "WSH",
-              "time": "02:39",
-              "period": 2
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "VAN",
-              "time": "10:17",
-              "period": 2
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "NYI",
-              "time": "04:06",
-              "period": 1
-            }
-          ],
-          "rate": 53.8
-        }
-      ],
-      "firstGoalForRate": 53.8
-    },
-    "DAL": {
-      "abbrev": "DAL",
-      "gamesPlayed": 14,
-      "firstGoalFor": 5,
-      "firstGoalAgainst": 9,
-      "firstGoalScorers": [
+          "name": "Nathan MacKinnon",
+          "count": 3,
+          "rate": 16.7
+        },
         {
-          "name": "Unknown",
-          "count": 5,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "WPG",
-              "time": "09:43",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "MIN",
-              "time": "14:21",
-              "period": 1
-            },
-            {
-              "date": "2026-03-16",
-              "vs": "UTA",
-              "time": "06:17",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "DET",
-              "time": "08:57",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "EDM",
-              "time": "01:23",
-              "period": 1
-            }
-          ],
-          "rate": 35.7
-        }
-      ],
-      "firstGoalForRate": 35.7
-    },
-    "TBL": {
-      "abbrev": "TBL",
-      "gamesPlayed": 14,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
+          "name": "Cale Makar",
+          "count": 3,
+          "rate": 16.7
+        },
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "PIT",
-              "time": "05:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "CGY",
-              "time": "07:25",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "VAN",
-              "time": "17:37",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "SEA",
-              "time": "05:45",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "DET",
-              "time": "00:49",
-              "period": 2
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "CBJ",
-              "time": "13:38",
-              "period": 1
-            }
-          ],
-          "rate": 42.9
-        }
-      ],
-      "firstGoalForRate": 42.9
-    },
-    "BUF": {
-      "abbrev": "BUF",
-      "gamesPlayed": 13,
-      "firstGoalFor": 8,
-      "firstGoalAgainst": 5,
-      "firstGoalScorers": [
+          "name": "Jack Drury",
+          "count": 1,
+          "rate": 5.6
+        },
         {
-          "name": "Unknown",
-          "count": 8,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "OTT",
-              "time": "08:49",
-              "period": 2
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "NYI",
-              "time": "14:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "ANA",
-              "time": "03:36",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "SJS",
-              "time": "09:05",
-              "period": 2
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "VGK",
-              "time": "18:02",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "TOR",
-              "time": "02:01",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "WSH",
-              "time": "06:02",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "SJS",
-              "time": "04:12",
-              "period": 1
-            }
-          ],
-          "rate": 61.5
+          "name": "Ross Colton",
+          "count": 1,
+          "rate": 5.6
         }
-      ],
-      "firstGoalForRate": 61.5
-    },
-    "NYI": {
-      "abbrev": "NYI",
-      "gamesPlayed": 14,
-      "firstGoalFor": 8,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 8,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "CAR",
-              "time": "05:17",
-              "period": 1
-            },
-            {
-              "date": "2026-03-30",
-              "vs": "PIT",
-              "time": "01:27",
-              "period": 2
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "DAL",
-              "time": "04:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "CHI",
-              "time": "00:49",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "CBJ",
-              "time": "01:25",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "OTT",
-              "time": "04:45",
-              "period": 2
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "TOR",
-              "time": "04:15",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "CGY",
-              "time": "10:06",
-              "period": 1
-            }
-          ],
-          "rate": 57.1
-        }
-      ],
-      "firstGoalForRate": 57.1
-    },
-    "CBJ": {
-      "abbrev": "CBJ",
-      "gamesPlayed": 15,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "WPG",
-              "time": "01:17",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "BOS",
-              "time": "06:17",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "SJS",
-              "time": "00:31",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "SEA",
-              "time": "02:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "CAR",
-              "time": "05:25",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "PHI",
-              "time": "04:21",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "FLA",
-              "time": "13:01",
-              "period": 2
-            }
-          ],
-          "rate": 46.7
-        }
-      ],
-      "firstGoalForRate": 46.7
-    },
-    "WPG": {
-      "abbrev": "WPG",
-      "gamesPlayed": 14,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-03-28",
-              "vs": "COL",
-              "time": "03:51",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "COL",
-              "time": "09:55",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "VGK",
-              "time": "17:25",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "NYR",
-              "time": "13:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "STL",
-              "time": "02:31",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "COL",
-              "time": "02:05",
-              "period": 2
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "ANA",
-              "time": "05:04",
-              "period": 2
-            }
-          ],
-          "rate": 50.0
-        }
-      ],
-      "firstGoalForRate": 50.0
-    },
-    "VAN": {
-      "abbrev": "VAN",
-      "gamesPlayed": 13,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "UTA",
-              "time": "02:28",
-              "period": 1
-            },
-            {
-              "date": "2026-04-01",
-              "vs": "COL",
-              "time": "00:29",
-              "period": 1
-            },
-            {
-              "date": "2026-03-30",
-              "vs": "VGK",
-              "time": "12:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "ANA",
-              "time": "05:45",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "FLA",
-              "time": "03:49",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "NSH",
-              "time": "08:40",
-              "period": 1
-            }
-          ],
-          "rate": 46.2
-        }
-      ],
-      "firstGoalForRate": 46.2
-    },
-    "UTA": {
-      "abbrev": "UTA",
-      "gamesPlayed": 13,
-      "firstGoalFor": 8,
-      "firstGoalAgainst": 5,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 8,
-          "games": [
-            {
-              "date": "2026-03-28",
-              "vs": "LAK",
-              "time": "02:31",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "EDM",
-              "time": "11:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "LAK",
-              "time": "07:04",
-              "period": 1
-            },
-            {
-              "date": "2026-03-20",
-              "vs": "ANA",
-              "time": "01:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "VGK",
-              "time": "02:52",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "PIT",
-              "time": "05:06",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "CHI",
-              "time": "05:47",
-              "period": 2
-            },
-            {
-              "date": "2026-03-09",
-              "vs": "CHI",
-              "time": "09:43",
-              "period": 1
-            }
-          ],
-          "rate": 61.5
-        }
-      ],
-      "firstGoalForRate": 61.5
-    },
-    "LAK": {
-      "abbrev": "LAK",
-      "gamesPlayed": 14,
-      "firstGoalFor": 8,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 8,
-          "games": [
-            {
-              "date": "2026-04-01",
-              "vs": "STL",
-              "time": "16:59",
-              "period": 2
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "VAN",
-              "time": "17:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "CGY",
-              "time": "02:35",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "BUF",
-              "time": "10:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "PHI",
-              "time": "19:31",
-              "period": 1
-            },
-            {
-              "date": "2026-03-16",
-              "vs": "NYR",
-              "time": "13:29",
-              "period": 1
-            },
-            {
-              "date": "2026-03-13",
-              "vs": "NYI",
-              "time": "03:33",
-              "period": 1
-            },
-            {
-              "date": "2026-03-09",
-              "vs": "CBJ",
-              "time": "06:46",
-              "period": 1
-            }
-          ],
-          "rate": 57.1
-        }
-      ],
-      "firstGoalForRate": 57.1
-    },
-    "TOR": {
-      "abbrev": "TOR",
-      "gamesPlayed": 13,
-      "firstGoalFor": 5,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 5,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "LAK",
-              "time": "04:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-25",
-              "vs": "NYR",
-              "time": "05:15",
-              "period": 1
-            },
-            {
-              "date": "2026-03-20",
-              "vs": "CAR",
-              "time": "11:48",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "MIN",
-              "time": "01:07",
-              "period": 2
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "ANA",
-              "time": "07:19",
-              "period": 1
-            }
-          ],
-          "rate": 38.5
-        }
-      ],
-      "firstGoalForRate": 38.5
-    },
-    "EDM": {
-      "abbrev": "EDM",
-      "gamesPlayed": 13,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "CHI",
-              "time": "05:32",
-              "period": 2
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "SEA",
-              "time": "05:28",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "ANA",
-              "time": "07:36",
-              "period": 2
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "VGK",
-              "time": "11:52",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "TBL",
-              "time": "19:37",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "NSH",
-              "time": "03:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-13",
-              "vs": "STL",
-              "time": "15:41",
-              "period": 2
-            }
-          ],
-          "rate": 53.8
-        }
-      ],
-      "firstGoalForRate": 53.8
-    },
-    "VGK": {
-      "abbrev": "VGK",
-      "gamesPlayed": 13,
-      "firstGoalFor": 5,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 5,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "EDM",
-              "time": "11:43",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "DAL",
-              "time": "04:01",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "CHI",
-              "time": "08:33",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "PIT",
-              "time": "08:41",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "DAL",
-              "time": "01:31",
-              "period": 2
-            }
-          ],
-          "rate": 38.5
-        }
-      ],
-      "firstGoalForRate": 38.5
-    },
-    "ANA": {
-      "abbrev": "ANA",
-      "gamesPlayed": 14,
-      "firstGoalFor": 4,
-      "firstGoalAgainst": 10,
-      "firstGoalScorers": [
-        {
-          "name": "Unknown",
-          "count": 4,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "CGY",
-              "time": "10:11",
-              "period": 1
-            },
-            {
-              "date": "2026-04-03",
-              "vs": "STL",
-              "time": "01:51",
-              "period": 1
-            },
-            {
-              "date": "2026-03-30",
-              "vs": "TOR",
-              "time": "06:43",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "MTL",
-              "time": "07:46",
-              "period": 1
-            }
-          ],
-          "rate": 28.6
-        }
-      ],
-      "firstGoalForRate": 28.6
+      ]
     },
     "CGY": {
-      "abbrev": "CGY",
-      "gamesPlayed": 14,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
+      "tricode": "CGY",
+      "totalGames": 17,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "VGK",
-              "time": "07:41",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "VAN",
-              "time": "03:04",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "ANA",
-              "time": "01:06",
-              "period": 2
-            },
-            {
-              "date": "2026-03-20",
-              "vs": "FLA",
-              "time": "07:44",
-              "period": 2
-            },
-            {
-              "date": "2026-03-18",
-              "vs": "STL",
-              "time": "02:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-16",
-              "vs": "DET",
-              "time": "17:35",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "NJD",
-              "time": "05:04",
-              "period": 1
-            }
-          ],
-          "rate": 50.0
+          "name": "Morgan Frost",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Blake Coleman",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Matt Coronato",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Connor Zary",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Joel Farabee",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "John Beecher",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Martin Pospisil",
+          "count": 1,
+          "rate": 5.9
         }
-      ],
-      "firstGoalForRate": 50.0
+      ]
+    },
+    "VGK": {
+      "tricode": "VGK",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Brett Howden",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Brayden McNabb",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Jack Eichel",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Colton Sissons",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Pavel Dorofeyev",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Reilly Smith",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "VAN": {
+      "tricode": "VAN",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Evander Kane",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Linus Karlsson",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Max Sasson",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Jake DeBrusk",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Elias Pettersson",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Brock Boeser",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "ANA": {
+      "tricode": "ANA",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Leo Carlsson",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Ryan Poehling",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Beckett Sennecke",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Cutter Gauthier",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "TOR": {
+      "tricode": "TOR",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Matias Maccelli",
+          "count": 4,
+          "rate": 23.5
+        },
+        {
+          "name": "Dakota Joshua",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Matthew Knies",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Jake McCabe",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Morgan Rielly",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
     },
     "SJS": {
-      "abbrev": "SJS",
-      "gamesPlayed": 14,
-      "firstGoalFor": 5,
-      "firstGoalAgainst": 9,
-      "firstGoalScorers": [
+      "tricode": "SJS",
+      "totalGames": 17,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 5,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "TOR",
-              "time": "03:27",
-              "period": 1
-            },
-            {
-              "date": "2026-04-01",
-              "vs": "ANA",
-              "time": "04:37",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "EDM",
-              "time": "07:24",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "OTT",
-              "time": "04:05",
-              "period": 1
-            },
-            {
-              "date": "2026-03-12",
-              "vs": "BOS",
-              "time": "05:57",
-              "period": 1
-            }
-          ],
-          "rate": 35.7
+          "name": "Will Smith",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Zack Ostapchuk",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Dmitry Orlov",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Michael Misa",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Mario Ferraro",
+          "count": 1,
+          "rate": 5.9
         }
-      ],
-      "firstGoalForRate": 35.7
+      ]
     },
-    "NSH": {
-      "abbrev": "NSH",
-      "gamesPlayed": 13,
-      "firstGoalFor": 7,
-      "firstGoalAgainst": 6,
-      "firstGoalScorers": [
+    "STL": {
+      "tricode": "STL",
+      "totalGames": 16,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 7,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "SJS",
-              "time": "08:38",
-              "period": 1
-            },
-            {
-              "date": "2026-04-02",
-              "vs": "LAK",
-              "time": "00:52",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "TBL",
-              "time": "08:31",
-              "period": 2
-            },
-            {
-              "date": "2026-03-24",
-              "vs": "SJS",
-              "time": "02:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-21",
-              "vs": "VGK",
-              "time": "00:40",
-              "period": 1
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "SEA",
-              "time": "06:14",
-              "period": 1
-            },
-            {
-              "date": "2026-03-17",
-              "vs": "WPG",
-              "time": "13:02",
-              "period": 1
-            }
-          ],
-          "rate": 53.8
+          "name": "Jimmy Snuggerud",
+          "count": 3,
+          "rate": 18.8
+        },
+        {
+          "name": "Theo Lindstein",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Robert Thomas",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Dalibor Dvorsky",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Pius Suter",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Philip Broberg",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jordan Kyrou",
+          "count": 1,
+          "rate": 6.2
         }
-      ],
-      "firstGoalForRate": 53.8
+      ]
     },
-    "SEA": {
-      "abbrev": "SEA",
-      "gamesPlayed": 13,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 7,
-      "firstGoalScorers": [
+    "BOS": {
+      "tricode": "BOS",
+      "totalGames": 19,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-02",
-              "vs": "UTA",
-              "time": "00:41",
-              "period": 1
-            },
-            {
-              "date": "2026-03-28",
-              "vs": "BUF",
-              "time": "12:42",
-              "period": 1
-            },
-            {
-              "date": "2026-03-26",
-              "vs": "TBL",
-              "time": "15:18",
-              "period": 1
-            },
-            {
-              "date": "2026-03-15",
-              "vs": "FLA",
-              "time": "05:28",
-              "period": 1
-            },
-            {
-              "date": "2026-03-14",
-              "vs": "VAN",
-              "time": "04:12",
-              "period": 1
-            },
-            {
-              "date": "2026-03-10",
-              "vs": "NSH",
-              "time": "02:14",
-              "period": 1
-            }
-          ],
-          "rate": 46.2
+          "name": "David Pastrnak",
+          "count": 3,
+          "rate": 15.8
+        },
+        {
+          "name": "Pavel Zacha",
+          "count": 3,
+          "rate": 15.8
+        },
+        {
+          "name": "Marat Khusnutdinov",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Casey Mittelstadt",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Elias Lindholm",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Andrew Peeke",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Mason Lohrei",
+          "count": 1,
+          "rate": 5.3
         }
-      ],
-      "firstGoalForRate": 46.2
+      ]
+    },
+    "DAL": {
+      "tricode": "DAL",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Sam Steel",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Matt Duchene",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Jason Robertson",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Jamie Benn",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Wyatt Johnston",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "BUF": {
+      "tricode": "BUF",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Jack Quinn",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Josh Doan",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Mattias Samuelsson",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Noah Ostlund",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Alex Tuch",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Sam Carrick",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Owen Power",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Jason Zucker",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Ryan McLeod",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "TBL": {
+      "tricode": "TBL",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Gage Goncalves",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Jake Guentzel",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Anthony Cirelli",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Ryan McDonagh",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "MTL": {
+      "tricode": "MTL",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Juraj Slafkovsk\u00fd",
+          "count": 4,
+          "rate": 22.2
+        },
+        {
+          "name": "Jayden Struble",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Oliver Kapanen",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Alex Newhook",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Ivan Demidov",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Cole Caufield",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "FLA": {
+      "tricode": "FLA",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Matthew Tkachuk",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Noah Gregor",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Mackie Samoskevich",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Nolan Foote",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Cole Reinhardt",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Vinnie Hinostroza",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "OTT": {
+      "tricode": "OTT",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Dylan Cozens",
+          "count": 2,
+          "rate": 11.1
+        },
+        {
+          "name": "Shane Pinto",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Brady Tkachuk",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Drake Batherson",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Tim St\u00fctzle",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Ridly Greig",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Michael Amadio",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "NYR": {
+      "tricode": "NYR",
+      "totalGames": 19,
+      "firstScorers": [
+        {
+          "name": "Conor Sheary",
+          "count": 2,
+          "rate": 10.5
+        },
+        {
+          "name": "Noah Laba",
+          "count": 2,
+          "rate": 10.5
+        },
+        {
+          "name": "Jaroslav Chmelar",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Adam Sykora",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Vladislav Gavrikov",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Vincent Trocheck",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Alexis Lafreni\u00e8re",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Adam Fox",
+          "count": 1,
+          "rate": 5.3
+        }
+      ]
+    },
+    "NJD": {
+      "tricode": "NJD",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Cody Glass",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Timo Meier",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Jesper Bratt",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Jack Hughes",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Arseny Gritsyuk",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "DET": {
+      "tricode": "DET",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Alex DeBrincat",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Albert Johansson",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Lucas Raymond",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Emmitt Finnie",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Moritz Seider",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "WSH": {
+      "tricode": "WSH",
+      "totalGames": 16,
+      "firstScorers": [
+        {
+          "name": "Hendrix Lapierre",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Ryan Leonard",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Tom Wilson",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jakob Chychrun",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Ivan Miroshnichenko",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Alex Ovechkin",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Justin Sourdif",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Matt Roy",
+          "count": 1,
+          "rate": 6.2
+        }
+      ]
+    },
+    "PHI": {
+      "tricode": "PHI",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Owen Tippett",
+          "count": 3,
+          "rate": 16.7
+        },
+        {
+          "name": "Christian Dvorak",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Sean Couturier",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Alex Bump",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Travis Konecny",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Luke Glendening",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Emil Andrae",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
+    },
+    "CBJ": {
+      "tricode": "CBJ",
+      "totalGames": 19,
+      "firstScorers": [
+        {
+          "name": "Adam Fantilli",
+          "count": 3,
+          "rate": 15.8
+        },
+        {
+          "name": "Ivan Provorov",
+          "count": 2,
+          "rate": 10.5
+        },
+        {
+          "name": "Denton Mateychuk",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Boone Jenner",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Mason Marchment",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Danton Heinen",
+          "count": 1,
+          "rate": 5.3
+        },
+        {
+          "name": "Kirill Marchenko",
+          "count": 1,
+          "rate": 5.3
+        }
+      ]
+    },
+    "CAR": {
+      "tricode": "CAR",
+      "totalGames": 18,
+      "firstScorers": [
+        {
+          "name": "Logan Stankoven",
+          "count": 3,
+          "rate": 16.7
+        },
+        {
+          "name": "Andrei Svechnikov",
+          "count": 3,
+          "rate": 16.7
+        },
+        {
+          "name": "Shayne Gostisbehere",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Nikolaj Ehlers",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Jordan Martinook",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Sebastian Aho",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Mark Jankowski",
+          "count": 1,
+          "rate": 5.6
+        },
+        {
+          "name": "Seth Jarvis",
+          "count": 1,
+          "rate": 5.6
+        }
+      ]
     },
     "CHI": {
-      "abbrev": "CHI",
-      "gamesPlayed": 14,
-      "firstGoalFor": 6,
-      "firstGoalAgainst": 8,
-      "firstGoalScorers": [
+      "tricode": "CHI",
+      "totalGames": 17,
+      "firstScorers": [
         {
-          "name": "Unknown",
-          "count": 6,
-          "games": [
-            {
-              "date": "2026-04-04",
-              "vs": "SEA",
-              "time": "09:15",
-              "period": 2
-            },
-            {
-              "date": "2026-03-31",
-              "vs": "WPG",
-              "time": "04:42",
-              "period": 1
-            },
-            {
-              "date": "2026-03-29",
-              "vs": "NJD",
-              "time": "04:19",
-              "period": 1
-            },
-            {
-              "date": "2026-03-27",
-              "vs": "NYR",
-              "time": "17:34",
-              "period": 1
-            },
-            {
-              "date": "2026-03-22",
-              "vs": "NSH",
-              "time": "04:34",
-              "period": 2
-            },
-            {
-              "date": "2026-03-19",
-              "vs": "MIN",
-              "time": "16:22",
-              "period": 1
-            }
-          ],
-          "rate": 42.9
+          "name": "Nick Lardis",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Ilya Mikheyev",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Anton Frondell",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Teuvo Teravainen",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Ryan Donato",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Tyler Bertuzzi",
+          "count": 1,
+          "rate": 5.9
         }
-      ],
-      "firstGoalForRate": 42.9
+      ]
+    },
+    "WPG": {
+      "tricode": "WPG",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Kyle Connor",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Morgan Barron",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Mark Scheifele",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Gabriel Vilardi",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Adam Lowry",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Haydn Fleury",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Dylan Samberg",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "EDM": {
+      "tricode": "EDM",
+      "totalGames": 16,
+      "firstScorers": [
+        {
+          "name": "Connor McDavid",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Max Jones",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Adam Henrique",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Matt Savoie",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Kasperi Kapanen",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Leon Draisaitl",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Zach Hyman",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Trent Frederic",
+          "count": 1,
+          "rate": 6.2
+        }
+      ]
+    },
+    "SEA": {
+      "tricode": "SEA",
+      "totalGames": 16,
+      "firstScorers": [
+        {
+          "name": "Kaapo Kakko",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Jordan Eberle",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Brandon Montour",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Chandler Stephenson",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jared McCann",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Ben Meyers",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jaden Schwartz",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jacob Melanson",
+          "count": 1,
+          "rate": 6.2
+        }
+      ]
+    },
+    "LAK": {
+      "tricode": "LAK",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Quinton Byfield",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Scott Laughton",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Artemi Panarin",
+          "count": 2,
+          "rate": 11.8
+        },
+        {
+          "name": "Adrian Kempe",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Drew Doughty",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Trevor Moore",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Anze Kopitar",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
+    },
+    "MIN": {
+      "tricode": "MIN",
+      "totalGames": 16,
+      "firstScorers": [
+        {
+          "name": "Mats Zuccarello",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Matt Boldy",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Jonas Brodin",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Marcus Foligno",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Ryan Hartman",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Kirill Kaprizov",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Brock Faber",
+          "count": 1,
+          "rate": 6.2
+        }
+      ]
+    },
+    "UTA": {
+      "tricode": "UTA",
+      "totalGames": 16,
+      "firstScorers": [
+        {
+          "name": "Dylan Guenther",
+          "count": 4,
+          "rate": 25.0
+        },
+        {
+          "name": "Alexander Kerfoot",
+          "count": 2,
+          "rate": 12.5
+        },
+        {
+          "name": "Clayton Keller",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Lawson Crouse",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Barrett Hayton",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Nick Schmaltz",
+          "count": 1,
+          "rate": 6.2
+        },
+        {
+          "name": "Michael Carcone",
+          "count": 1,
+          "rate": 6.2
+        }
+      ]
+    },
+    "NSH": {
+      "tricode": "NSH",
+      "totalGames": 17,
+      "firstScorers": [
+        {
+          "name": "Filip Forsberg",
+          "count": 3,
+          "rate": 17.6
+        },
+        {
+          "name": "Joakim Kemell",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Erik Haula",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Ryan Ufko",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Steven Stamkos",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Nicolas Hague",
+          "count": 1,
+          "rate": 5.9
+        },
+        {
+          "name": "Zachary L'Heureux",
+          "count": 1,
+          "rate": 5.9
+        }
+      ]
     }
   },
-  "players": {},
-  "topFirstScorers": []
+  "topFirstScorers": [
+    {
+      "name": "Juraj Slafkovsk\u00fd",
+      "count": 4,
+      "team": "MTL"
+    },
+    {
+      "name": "Dylan Guenther",
+      "count": 4,
+      "team": "UTA"
+    },
+    {
+      "name": "Matias Maccelli",
+      "count": 4,
+      "team": "TOR"
+    },
+    {
+      "name": "Anders Lee",
+      "count": 3,
+      "team": "NYI"
+    },
+    {
+      "name": "Logan Stankoven",
+      "count": 3,
+      "team": "CAR"
+    },
+    {
+      "name": "Filip Forsberg",
+      "count": 3,
+      "team": "NSH"
+    },
+    {
+      "name": "Owen Tippett",
+      "count": 3,
+      "team": "PHI"
+    },
+    {
+      "name": "Martin Necas",
+      "count": 3,
+      "team": "COL"
+    },
+    {
+      "name": "Nathan MacKinnon",
+      "count": 3,
+      "team": "COL"
+    },
+    {
+      "name": "Jimmy Snuggerud",
+      "count": 3,
+      "team": "STL"
+    },
+    {
+      "name": "David Pastrnak",
+      "count": 3,
+      "team": "BOS"
+    },
+    {
+      "name": "Andrei Svechnikov",
+      "count": 3,
+      "team": "CAR"
+    },
+    {
+      "name": "Pavel Zacha",
+      "count": 3,
+      "team": "BOS"
+    },
+    {
+      "name": "Cale Makar",
+      "count": 3,
+      "team": "COL"
+    },
+    {
+      "name": "Adam Fantilli",
+      "count": 3,
+      "team": "CBJ"
+    },
+    {
+      "name": "Evander Kane",
+      "count": 2,
+      "team": "VAN"
+    },
+    {
+      "name": "Leo Carlsson",
+      "count": 2,
+      "team": "ANA"
+    },
+    {
+      "name": "Jack Quinn",
+      "count": 2,
+      "team": "BUF"
+    },
+    {
+      "name": "Conor Sheary",
+      "count": 2,
+      "team": "NYR"
+    },
+    {
+      "name": "Alex DeBrincat",
+      "count": 2,
+      "team": "DET"
+    },
+    {
+      "name": "Cody Glass",
+      "count": 2,
+      "team": "NJD"
+    },
+    {
+      "name": "Morgan Frost",
+      "count": 2,
+      "team": "CGY"
+    },
+    {
+      "name": "Jayden Struble",
+      "count": 2,
+      "team": "MTL"
+    },
+    {
+      "name": "Ivan Provorov",
+      "count": 2,
+      "team": "CBJ"
+    },
+    {
+      "name": "Linus Karlsson",
+      "count": 2,
+      "team": "VAN"
+    },
+    {
+      "name": "Timo Meier",
+      "count": 2,
+      "team": "NJD"
+    },
+    {
+      "name": "Mats Zuccarello",
+      "count": 2,
+      "team": "MIN"
+    },
+    {
+      "name": "Kyle Connor",
+      "count": 2,
+      "team": "WPG"
+    },
+    {
+      "name": "Quinton Byfield",
+      "count": 2,
+      "team": "LAK"
+    },
+    {
+      "name": "Alexander Kerfoot",
+      "count": 2,
+      "team": "UTA"
+    }
+  ]
 }
