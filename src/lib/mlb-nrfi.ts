@@ -1,18 +1,13 @@
 /**
- * MLB First Inning (NRFI/YRFI) data from MLB Stats API.
+ * MLB First Inning (NRFI/YRFI) data from models/nrfi-data.json.
  *
- * Uses free statsapi.mlb.com endpoints (no API key) to extract:
- * - First inning run data from play-by-play feeds
- * - Per-pitcher "clean first inning" rates
- * - Recent game NRFI/YRFI results
- *
- * Data is cached in-memory with 6h TTL.
+ * Pre-built from recent game play-by-play data.
+ * Data is per-pitcher: clean first inning rates, recent game results.
+ * Updated by research/collect-nrfi.py.
  */
 
-import { cachedFetch, TTL } from "./fetch";
-import { searchPlayer } from "./mlbstats";
-
-const BASE = "https://statsapi.mlb.com/api/v1";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 // ── Types ──────────────────────────────────────────────────────────
 
@@ -36,87 +31,33 @@ export interface NRFIData {
   recentGames: NRFIRecentGame[];
 }
 
-// ── Internals ─────────────────────────────────────────────────────
+// ── Static JSON shape ────────────────────────────────────────────
 
-/**
- * Get recent game IDs (gamePk) from a pitcher's game log.
- * Returns up to `limit` most recent game PKs.
- */
-async function getPitcherGamePks(
-  playerId: number,
-  limit: number = 30
-): Promise<{ gamePk: number; date: string; opponent: string }[]> {
-  try {
-    const season = new Date().getFullYear();
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = await cachedFetch(
-      `${BASE}/people/${playerId}/stats?stats=gameLog&season=${season}&group=pitching`,
-      TTL.LONG
-    );
-    if (!data) return [];
-
-    const results: { gamePk: number; date: string; opponent: string }[] = [];
-    for (const statGroup of data.stats || []) {
-      for (const split of statGroup.splits || []) {
-        if (split.game?.gamePk) {
-          results.push({
-            gamePk: split.game.gamePk,
-            date: split.date || "",
-            opponent: split.opponent?.name || "Unknown",
-          });
-        }
-      }
-    }
-
-    // Return most recent games up to limit
-    return results.slice(-limit);
-  } catch {
-    return [];
-  }
+interface NRFIPitcherEntry {
+  name: string;
+  team: string;
+  playerId: number;
+  gamesStarted: number;
+  cleanFirstInnings: number;
+  nrfiRate: number;
+  recentGames: { date: string; opponent: string; firstInningRuns: number; result: "NRFI" | "YRFI" }[];
 }
 
-/**
- * Fetch play-by-play for a game and count runs scored in the 1st inning
- * while the given pitcher was pitching.
- */
-async function getFirstInningRuns(
-  gamePk: number,
-  pitcherId: number
-): Promise<number | null> {
+interface NRFIDB {
+  _meta: { gamesProcessed: number; lastUpdated: string; season: string };
+  pitchers: Record<string, NRFIPitcherEntry>;
+}
+
+// ── Singleton loader ─────────────────────────────────────────────
+
+let _db: NRFIDB | null = null;
+
+function loadDB(): NRFIDB | null {
+  if (_db) return _db;
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = await cachedFetch(
-      `https://statsapi.mlb.com/api/v1.1/game/${gamePk}/feed/live`,
-      TTL.LONG
-    );
-    if (!data?.liveData?.plays?.allPlays) return null;
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const allPlays: any[] = data.liveData.plays.allPlays;
-    let runsInFirst = 0;
-
-    for (const play of allPlays) {
-      const inning = play.about?.inning;
-      if (inning === undefined) continue;
-      if (inning > 1) break; // past first inning, stop
-      if (inning < 1) continue;
-
-      // Only count runs scored while our pitcher was on the mound.
-      // The pitcher is on defense when the opposing team bats.
-      // Check if the matchup pitcher ID matches.
-      const matchupPitcherId = play.matchup?.pitcher?.id;
-      if (matchupPitcherId !== pitcherId) continue;
-
-      // Count runs from this at-bat's events
-      const runners = play.runners || [];
-      for (const runner of runners) {
-        if (runner.movement?.end === "score") {
-          runsInFirst++;
-        }
-      }
-    }
-
-    return runsInFirst;
+    const raw = readFileSync(join(process.cwd(), "models", "nrfi-data.json"), "utf-8");
+    _db = JSON.parse(raw);
+    return _db;
   } catch {
     return null;
   }
@@ -131,74 +72,51 @@ async function getFirstInningRuns(
 export async function getFirstInningData(
   pitcherName: string
 ): Promise<NRFIData | null> {
-  try {
-    // Find the pitcher via existing MLB search
-    const player = await searchPlayer(pitcherName);
-    if (!player) {
-      console.log(`[NRFI] Pitcher not found: "${pitcherName}"`);
-      return null;
+  const db = loadDB();
+  if (!db) return null;
+
+  const nameLower = pitcherName.toLowerCase();
+
+  // Find the pitcher by name (exact or fuzzy)
+  let match: NRFIPitcherEntry | null = null;
+  for (const [, entry] of Object.entries(db.pitchers)) {
+    const entryLower = entry.name.toLowerCase();
+    if (
+      entryLower === nameLower ||
+      entryLower.includes(nameLower) ||
+      nameLower.includes(entryLower)
+    ) {
+      match = entry;
+      break;
     }
+  }
 
-    console.log(`[NRFI] Found pitcher: "${pitcherName}" → id=${player.id}`);
-
-    // Get recent game PKs from game log
-    const gamePks = await getPitcherGamePks(player.id, 30);
-    if (gamePks.length === 0) {
-      console.log(`[NRFI] No game log entries for pitcher ${player.id}`);
-      return null;
-    }
-
-    // Fetch first-inning data in batches of 5
-    const recentGames: NRFIRecentGame[] = [];
-    const runsInFirstInning: number[] = [];
-
-    for (let i = 0; i < gamePks.length; i += 5) {
-      const batch = gamePks.slice(i, i + 5);
-      const results = await Promise.all(
-        batch.map((g) => getFirstInningRuns(g.gamePk, player.id))
-      );
-
-      for (let j = 0; j < batch.length; j++) {
-        const runs = results[j];
-        if (runs === null) continue; // skip failed fetches
-
-        runsInFirstInning.push(runs);
-        recentGames.push({
-          date: batch[j].date,
-          opponent: batch[j].opponent,
-          firstInningRuns: runs,
-          result: runs === 0 ? "NRFI" : "YRFI",
-        });
+  if (!match) {
+    // Try partial last-name match
+    const parts = nameLower.split(/\s+/);
+    const lastName = parts[parts.length - 1];
+    if (lastName.length >= 3) {
+      for (const [, entry] of Object.entries(db.pitchers)) {
+        if (entry.name.toLowerCase().includes(lastName)) {
+          match = entry;
+          break;
+        }
       }
     }
-
-    if (recentGames.length === 0) {
-      console.log(`[NRFI] No parseable games for pitcher ${player.id}`);
-      return null;
-    }
-
-    const cleanCount = runsInFirstInning.filter((r) => r === 0).length;
-    const cleanRate =
-      recentGames.length > 0
-        ? Math.round((cleanCount / recentGames.length) * 1000) / 10
-        : 0;
-
-    console.log(
-      `[NRFI] ${player.fullName}: ${cleanCount}/${recentGames.length} clean 1st innings (${cleanRate}%)`
-    );
-
-    return {
-      pitcher: {
-        name: player.fullName,
-        firstInningCleanRate: cleanRate,
-        gamesStarted: recentGames.length,
-        cleanFirstInnings: cleanCount,
-        runsInFirstInning,
-      },
-      recentGames,
-    };
-  } catch (e) {
-    console.error("[NRFI] Error:", e);
-    return null;
   }
+
+  if (!match) return null;
+
+  const runsArr = match.recentGames.map((g) => g.firstInningRuns);
+
+  return {
+    pitcher: {
+      name: match.name,
+      firstInningCleanRate: match.nrfiRate,
+      gamesStarted: match.gamesStarted,
+      cleanFirstInnings: match.cleanFirstInnings,
+      runsInFirstInning: runsArr,
+    },
+    recentGames: match.recentGames,
+  };
 }

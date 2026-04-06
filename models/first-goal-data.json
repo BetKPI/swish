@@ -1,0 +1,1856 @@
+{
+  "_meta": {
+    "gamesProcessed": 222,
+    "totalGames": 222,
+    "lastUpdated": "2026-04-06T12:54:10.860942",
+    "season": "20252026"
+  },
+  "teams": {
+    "DET": {
+      "abbrev": "DET",
+      "gamesPlayed": 13,
+      "firstGoalFor": 4,
+      "firstGoalAgainst": 9,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 4,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "MIN",
+              "time": "01:40",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "PHI",
+              "time": "18:49",
+              "period": 1
+            },
+            {
+              "date": "2026-03-27",
+              "vs": "BUF",
+              "time": "04:02",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "BOS",
+              "time": "03:35",
+              "period": 2
+            }
+          ],
+          "rate": 30.8
+        }
+      ],
+      "firstGoalForRate": 30.8
+    },
+    "MIN": {
+      "abbrev": "MIN",
+      "gamesPlayed": 13,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "OTT",
+              "time": "09:45",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "VAN",
+              "time": "08:32",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "FLA",
+              "time": "02:47",
+              "period": 2
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "TBL",
+              "time": "02:28",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "CHI",
+              "time": "06:17",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "UTA",
+              "time": "14:10",
+              "period": 1
+            }
+          ],
+          "rate": 46.2
+        }
+      ],
+      "firstGoalForRate": 46.2
+    },
+    "PIT": {
+      "abbrev": "PIT",
+      "gamesPlayed": 15,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 9,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "FLA",
+              "time": "11:00",
+              "period": 1
+            },
+            {
+              "date": "2026-04-04",
+              "vs": "FLA",
+              "time": "00:20",
+              "period": 1
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "DET",
+              "time": "04:10",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "DAL",
+              "time": "02:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "WPG",
+              "time": "01:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-16",
+              "vs": "COL",
+              "time": "03:01",
+              "period": 1
+            }
+          ],
+          "rate": 40.0
+        }
+      ],
+      "firstGoalForRate": 40.0
+    },
+    "FLA": {
+      "abbrev": "FLA",
+      "gamesPlayed": 14,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "BOS",
+              "time": "04:20",
+              "period": 1
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "OTT",
+              "time": "00:08",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "NYI",
+              "time": "08:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "SEA",
+              "time": "02:32",
+              "period": 2
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "EDM",
+              "time": "11:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "DET",
+              "time": "09:48",
+              "period": 1
+            }
+          ],
+          "rate": 42.9
+        }
+      ],
+      "firstGoalForRate": 42.9
+    },
+    "PHI": {
+      "abbrev": "PHI",
+      "gamesPlayed": 15,
+      "firstGoalFor": 9,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 9,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "BOS",
+              "time": "04:19",
+              "period": 1
+            },
+            {
+              "date": "2026-04-03",
+              "vs": "NYI",
+              "time": "13:54",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "DAL",
+              "time": "09:48",
+              "period": 2
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "DET",
+              "time": "04:07",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "CHI",
+              "time": "00:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "CBJ",
+              "time": "17:07",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "SJS",
+              "time": "02:26",
+              "period": 2
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "ANA",
+              "time": "02:51",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "MIN",
+              "time": "18:35",
+              "period": 1
+            }
+          ],
+          "rate": 60.0
+        }
+      ],
+      "firstGoalForRate": 60.0
+    },
+    "BOS": {
+      "abbrev": "BOS",
+      "gamesPlayed": 15,
+      "firstGoalFor": 9,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 9,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "TBL",
+              "time": "06:47",
+              "period": 2
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "DAL",
+              "time": "09:58",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "MIN",
+              "time": "01:01",
+              "period": 1
+            },
+            {
+              "date": "2026-03-25",
+              "vs": "BUF",
+              "time": "11:07",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "TOR",
+              "time": "05:04",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "WPG",
+              "time": "14:52",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "MTL",
+              "time": "02:22",
+              "period": 1
+            },
+            {
+              "date": "2026-03-16",
+              "vs": "NJD",
+              "time": "04:02",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "LAK",
+              "time": "08:22",
+              "period": 3
+            }
+          ],
+          "rate": 60.0
+        }
+      ],
+      "firstGoalForRate": 60.0
+    },
+    "OTT": {
+      "abbrev": "OTT",
+      "gamesPlayed": 15,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-03-28",
+              "vs": "TBL",
+              "time": "00:18",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "PIT",
+              "time": "04:28",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "DET",
+              "time": "17:15",
+              "period": 1
+            },
+            {
+              "date": "2026-03-23",
+              "vs": "NYR",
+              "time": "06:30",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "TOR",
+              "time": "14:58",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "ANA",
+              "time": "03:54",
+              "period": 2
+            },
+            {
+              "date": "2026-03-09",
+              "vs": "VAN",
+              "time": "10:11",
+              "period": 2
+            }
+          ],
+          "rate": 46.7
+        }
+      ],
+      "firstGoalForRate": 46.7
+    },
+    "CAR": {
+      "abbrev": "CAR",
+      "gamesPlayed": 14,
+      "firstGoalFor": 10,
+      "firstGoalAgainst": 4,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 10,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "OTT",
+              "time": "05:22",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "CBJ",
+              "time": "02:27",
+              "period": 1
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "CBJ",
+              "time": "13:29",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "MTL",
+              "time": "08:37",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "MTL",
+              "time": "02:36",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "PIT",
+              "time": "00:47",
+              "period": 1
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "PIT",
+              "time": "09:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "TBL",
+              "time": "00:36",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "STL",
+              "time": "08:38",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "PIT",
+              "time": "07:46",
+              "period": 1
+            }
+          ],
+          "rate": 71.4
+        }
+      ],
+      "firstGoalForRate": 71.4
+    },
+    "MTL": {
+      "abbrev": "MTL",
+      "gamesPlayed": 15,
+      "firstGoalFor": 10,
+      "firstGoalAgainst": 5,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 10,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "NJD",
+              "time": "15:58",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "NYR",
+              "time": "04:36",
+              "period": 2
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "TBL",
+              "time": "12:25",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "NSH",
+              "time": "11:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "CBJ",
+              "time": "09:54",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "NYI",
+              "time": "04:10",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "DET",
+              "time": "17:45",
+              "period": 2
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "SJS",
+              "time": "07:21",
+              "period": 1
+            },
+            {
+              "date": "2026-03-11",
+              "vs": "OTT",
+              "time": "01:16",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "TOR",
+              "time": "04:46",
+              "period": 1
+            }
+          ],
+          "rate": 66.7
+        }
+      ],
+      "firstGoalForRate": 66.7
+    },
+    "NJD": {
+      "abbrev": "NJD",
+      "gamesPlayed": 13,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "MTL",
+              "time": "10:47",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "WSH",
+              "time": "05:22",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "CAR",
+              "time": "17:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "NSH",
+              "time": "18:02",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "DAL",
+              "time": "04:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "LAK",
+              "time": "07:58",
+              "period": 1
+            }
+          ],
+          "rate": 46.2
+        }
+      ],
+      "firstGoalForRate": 46.2
+    },
+    "NYR": {
+      "abbrev": "NYR",
+      "gamesPlayed": 16,
+      "firstGoalFor": 10,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 10,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "WSH",
+              "time": "00:23",
+              "period": 1
+            },
+            {
+              "date": "2026-04-04",
+              "vs": "DET",
+              "time": "13:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "NJD",
+              "time": "08:14",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "FLA",
+              "time": "05:10",
+              "period": 3
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "CBJ",
+              "time": "05:41",
+              "period": 1
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "NJD",
+              "time": "15:20",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "MIN",
+              "time": "02:41",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "WPG",
+              "time": "01:08",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "CGY",
+              "time": "17:27",
+              "period": 1
+            },
+            {
+              "date": "2026-03-09",
+              "vs": "PHI",
+              "time": "01:04",
+              "period": 1
+            }
+          ],
+          "rate": 62.5
+        }
+      ],
+      "firstGoalForRate": 62.5
+    },
+    "WSH": {
+      "abbrev": "WSH",
+      "gamesPlayed": 14,
+      "firstGoalFor": 10,
+      "firstGoalAgainst": 4,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 10,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "BUF",
+              "time": "03:15",
+              "period": 1
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "PHI",
+              "time": "14:59",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "VGK",
+              "time": "06:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "UTA",
+              "time": "02:07",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "COL",
+              "time": "11:53",
+              "period": 1
+            },
+            {
+              "date": "2026-03-20",
+              "vs": "NJD",
+              "time": "09:36",
+              "period": 1
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "OTT",
+              "time": "08:09",
+              "period": 2
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "BOS",
+              "time": "01:15",
+              "period": 2
+            },
+            {
+              "date": "2026-03-11",
+              "vs": "PHI",
+              "time": "09:51",
+              "period": 1
+            },
+            {
+              "date": "2026-03-09",
+              "vs": "CGY",
+              "time": "02:46",
+              "period": 1
+            }
+          ],
+          "rate": 71.4
+        }
+      ],
+      "firstGoalForRate": 71.4
+    },
+    "COL": {
+      "abbrev": "COL",
+      "gamesPlayed": 14,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "DAL",
+              "time": "10:39",
+              "period": 3
+            },
+            {
+              "date": "2026-03-30",
+              "vs": "CGY",
+              "time": "02:31",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "PIT",
+              "time": "04:57",
+              "period": 1
+            },
+            {
+              "date": "2026-03-20",
+              "vs": "CHI",
+              "time": "13:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "DAL",
+              "time": "18:33",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "SEA",
+              "time": "03:45",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "EDM",
+              "time": "00:32",
+              "period": 1
+            }
+          ],
+          "rate": 50.0
+        }
+      ],
+      "firstGoalForRate": 50.0
+    },
+    "STL": {
+      "abbrev": "STL",
+      "gamesPlayed": 13,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-05",
+              "vs": "COL",
+              "time": "12:01",
+              "period": 1
+            },
+            {
+              "date": "2026-03-30",
+              "vs": "SJS",
+              "time": "05:28",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "TOR",
+              "time": "05:21",
+              "period": 2
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "SJS",
+              "time": "17:19",
+              "period": 2
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "WSH",
+              "time": "02:39",
+              "period": 2
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "VAN",
+              "time": "10:17",
+              "period": 2
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "NYI",
+              "time": "04:06",
+              "period": 1
+            }
+          ],
+          "rate": 53.8
+        }
+      ],
+      "firstGoalForRate": 53.8
+    },
+    "DAL": {
+      "abbrev": "DAL",
+      "gamesPlayed": 14,
+      "firstGoalFor": 5,
+      "firstGoalAgainst": 9,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 5,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "WPG",
+              "time": "09:43",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "MIN",
+              "time": "14:21",
+              "period": 1
+            },
+            {
+              "date": "2026-03-16",
+              "vs": "UTA",
+              "time": "06:17",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "DET",
+              "time": "08:57",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "EDM",
+              "time": "01:23",
+              "period": 1
+            }
+          ],
+          "rate": 35.7
+        }
+      ],
+      "firstGoalForRate": 35.7
+    },
+    "TBL": {
+      "abbrev": "TBL",
+      "gamesPlayed": 14,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "PIT",
+              "time": "05:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "CGY",
+              "time": "07:25",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "VAN",
+              "time": "17:37",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "SEA",
+              "time": "05:45",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "DET",
+              "time": "00:49",
+              "period": 2
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "CBJ",
+              "time": "13:38",
+              "period": 1
+            }
+          ],
+          "rate": 42.9
+        }
+      ],
+      "firstGoalForRate": 42.9
+    },
+    "BUF": {
+      "abbrev": "BUF",
+      "gamesPlayed": 13,
+      "firstGoalFor": 8,
+      "firstGoalAgainst": 5,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 8,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "OTT",
+              "time": "08:49",
+              "period": 2
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "NYI",
+              "time": "14:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "ANA",
+              "time": "03:36",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "SJS",
+              "time": "09:05",
+              "period": 2
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "VGK",
+              "time": "18:02",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "TOR",
+              "time": "02:01",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "WSH",
+              "time": "06:02",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "SJS",
+              "time": "04:12",
+              "period": 1
+            }
+          ],
+          "rate": 61.5
+        }
+      ],
+      "firstGoalForRate": 61.5
+    },
+    "NYI": {
+      "abbrev": "NYI",
+      "gamesPlayed": 14,
+      "firstGoalFor": 8,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 8,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "CAR",
+              "time": "05:17",
+              "period": 1
+            },
+            {
+              "date": "2026-03-30",
+              "vs": "PIT",
+              "time": "01:27",
+              "period": 2
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "DAL",
+              "time": "04:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "CHI",
+              "time": "00:49",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "CBJ",
+              "time": "01:25",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "OTT",
+              "time": "04:45",
+              "period": 2
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "TOR",
+              "time": "04:15",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "CGY",
+              "time": "10:06",
+              "period": 1
+            }
+          ],
+          "rate": 57.1
+        }
+      ],
+      "firstGoalForRate": 57.1
+    },
+    "CBJ": {
+      "abbrev": "CBJ",
+      "gamesPlayed": 15,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "WPG",
+              "time": "01:17",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "BOS",
+              "time": "06:17",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "SJS",
+              "time": "00:31",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "SEA",
+              "time": "02:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "CAR",
+              "time": "05:25",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "PHI",
+              "time": "04:21",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "FLA",
+              "time": "13:01",
+              "period": 2
+            }
+          ],
+          "rate": 46.7
+        }
+      ],
+      "firstGoalForRate": 46.7
+    },
+    "WPG": {
+      "abbrev": "WPG",
+      "gamesPlayed": 14,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-03-28",
+              "vs": "COL",
+              "time": "03:51",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "COL",
+              "time": "09:55",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "VGK",
+              "time": "17:25",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "NYR",
+              "time": "13:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "STL",
+              "time": "02:31",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "COL",
+              "time": "02:05",
+              "period": 2
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "ANA",
+              "time": "05:04",
+              "period": 2
+            }
+          ],
+          "rate": 50.0
+        }
+      ],
+      "firstGoalForRate": 50.0
+    },
+    "VAN": {
+      "abbrev": "VAN",
+      "gamesPlayed": 13,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "UTA",
+              "time": "02:28",
+              "period": 1
+            },
+            {
+              "date": "2026-04-01",
+              "vs": "COL",
+              "time": "00:29",
+              "period": 1
+            },
+            {
+              "date": "2026-03-30",
+              "vs": "VGK",
+              "time": "12:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "ANA",
+              "time": "05:45",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "FLA",
+              "time": "03:49",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "NSH",
+              "time": "08:40",
+              "period": 1
+            }
+          ],
+          "rate": 46.2
+        }
+      ],
+      "firstGoalForRate": 46.2
+    },
+    "UTA": {
+      "abbrev": "UTA",
+      "gamesPlayed": 13,
+      "firstGoalFor": 8,
+      "firstGoalAgainst": 5,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 8,
+          "games": [
+            {
+              "date": "2026-03-28",
+              "vs": "LAK",
+              "time": "02:31",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "EDM",
+              "time": "11:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "LAK",
+              "time": "07:04",
+              "period": 1
+            },
+            {
+              "date": "2026-03-20",
+              "vs": "ANA",
+              "time": "01:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "VGK",
+              "time": "02:52",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "PIT",
+              "time": "05:06",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "CHI",
+              "time": "05:47",
+              "period": 2
+            },
+            {
+              "date": "2026-03-09",
+              "vs": "CHI",
+              "time": "09:43",
+              "period": 1
+            }
+          ],
+          "rate": 61.5
+        }
+      ],
+      "firstGoalForRate": 61.5
+    },
+    "LAK": {
+      "abbrev": "LAK",
+      "gamesPlayed": 14,
+      "firstGoalFor": 8,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 8,
+          "games": [
+            {
+              "date": "2026-04-01",
+              "vs": "STL",
+              "time": "16:59",
+              "period": 2
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "VAN",
+              "time": "17:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "CGY",
+              "time": "02:35",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "BUF",
+              "time": "10:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "PHI",
+              "time": "19:31",
+              "period": 1
+            },
+            {
+              "date": "2026-03-16",
+              "vs": "NYR",
+              "time": "13:29",
+              "period": 1
+            },
+            {
+              "date": "2026-03-13",
+              "vs": "NYI",
+              "time": "03:33",
+              "period": 1
+            },
+            {
+              "date": "2026-03-09",
+              "vs": "CBJ",
+              "time": "06:46",
+              "period": 1
+            }
+          ],
+          "rate": 57.1
+        }
+      ],
+      "firstGoalForRate": 57.1
+    },
+    "TOR": {
+      "abbrev": "TOR",
+      "gamesPlayed": 13,
+      "firstGoalFor": 5,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 5,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "LAK",
+              "time": "04:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-25",
+              "vs": "NYR",
+              "time": "05:15",
+              "period": 1
+            },
+            {
+              "date": "2026-03-20",
+              "vs": "CAR",
+              "time": "11:48",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "MIN",
+              "time": "01:07",
+              "period": 2
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "ANA",
+              "time": "07:19",
+              "period": 1
+            }
+          ],
+          "rate": 38.5
+        }
+      ],
+      "firstGoalForRate": 38.5
+    },
+    "EDM": {
+      "abbrev": "EDM",
+      "gamesPlayed": 13,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "CHI",
+              "time": "05:32",
+              "period": 2
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "SEA",
+              "time": "05:28",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "ANA",
+              "time": "07:36",
+              "period": 2
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "VGK",
+              "time": "11:52",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "TBL",
+              "time": "19:37",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "NSH",
+              "time": "03:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-13",
+              "vs": "STL",
+              "time": "15:41",
+              "period": 2
+            }
+          ],
+          "rate": 53.8
+        }
+      ],
+      "firstGoalForRate": 53.8
+    },
+    "VGK": {
+      "abbrev": "VGK",
+      "gamesPlayed": 13,
+      "firstGoalFor": 5,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 5,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "EDM",
+              "time": "11:43",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "DAL",
+              "time": "04:01",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "CHI",
+              "time": "08:33",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "PIT",
+              "time": "08:41",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "DAL",
+              "time": "01:31",
+              "period": 2
+            }
+          ],
+          "rate": 38.5
+        }
+      ],
+      "firstGoalForRate": 38.5
+    },
+    "ANA": {
+      "abbrev": "ANA",
+      "gamesPlayed": 14,
+      "firstGoalFor": 4,
+      "firstGoalAgainst": 10,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 4,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "CGY",
+              "time": "10:11",
+              "period": 1
+            },
+            {
+              "date": "2026-04-03",
+              "vs": "STL",
+              "time": "01:51",
+              "period": 1
+            },
+            {
+              "date": "2026-03-30",
+              "vs": "TOR",
+              "time": "06:43",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "MTL",
+              "time": "07:46",
+              "period": 1
+            }
+          ],
+          "rate": 28.6
+        }
+      ],
+      "firstGoalForRate": 28.6
+    },
+    "CGY": {
+      "abbrev": "CGY",
+      "gamesPlayed": 14,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "VGK",
+              "time": "07:41",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "VAN",
+              "time": "03:04",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "ANA",
+              "time": "01:06",
+              "period": 2
+            },
+            {
+              "date": "2026-03-20",
+              "vs": "FLA",
+              "time": "07:44",
+              "period": 2
+            },
+            {
+              "date": "2026-03-18",
+              "vs": "STL",
+              "time": "02:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-16",
+              "vs": "DET",
+              "time": "17:35",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "NJD",
+              "time": "05:04",
+              "period": 1
+            }
+          ],
+          "rate": 50.0
+        }
+      ],
+      "firstGoalForRate": 50.0
+    },
+    "SJS": {
+      "abbrev": "SJS",
+      "gamesPlayed": 14,
+      "firstGoalFor": 5,
+      "firstGoalAgainst": 9,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 5,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "TOR",
+              "time": "03:27",
+              "period": 1
+            },
+            {
+              "date": "2026-04-01",
+              "vs": "ANA",
+              "time": "04:37",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "EDM",
+              "time": "07:24",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "OTT",
+              "time": "04:05",
+              "period": 1
+            },
+            {
+              "date": "2026-03-12",
+              "vs": "BOS",
+              "time": "05:57",
+              "period": 1
+            }
+          ],
+          "rate": 35.7
+        }
+      ],
+      "firstGoalForRate": 35.7
+    },
+    "NSH": {
+      "abbrev": "NSH",
+      "gamesPlayed": 13,
+      "firstGoalFor": 7,
+      "firstGoalAgainst": 6,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 7,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "SJS",
+              "time": "08:38",
+              "period": 1
+            },
+            {
+              "date": "2026-04-02",
+              "vs": "LAK",
+              "time": "00:52",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "TBL",
+              "time": "08:31",
+              "period": 2
+            },
+            {
+              "date": "2026-03-24",
+              "vs": "SJS",
+              "time": "02:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-21",
+              "vs": "VGK",
+              "time": "00:40",
+              "period": 1
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "SEA",
+              "time": "06:14",
+              "period": 1
+            },
+            {
+              "date": "2026-03-17",
+              "vs": "WPG",
+              "time": "13:02",
+              "period": 1
+            }
+          ],
+          "rate": 53.8
+        }
+      ],
+      "firstGoalForRate": 53.8
+    },
+    "SEA": {
+      "abbrev": "SEA",
+      "gamesPlayed": 13,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 7,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-02",
+              "vs": "UTA",
+              "time": "00:41",
+              "period": 1
+            },
+            {
+              "date": "2026-03-28",
+              "vs": "BUF",
+              "time": "12:42",
+              "period": 1
+            },
+            {
+              "date": "2026-03-26",
+              "vs": "TBL",
+              "time": "15:18",
+              "period": 1
+            },
+            {
+              "date": "2026-03-15",
+              "vs": "FLA",
+              "time": "05:28",
+              "period": 1
+            },
+            {
+              "date": "2026-03-14",
+              "vs": "VAN",
+              "time": "04:12",
+              "period": 1
+            },
+            {
+              "date": "2026-03-10",
+              "vs": "NSH",
+              "time": "02:14",
+              "period": 1
+            }
+          ],
+          "rate": 46.2
+        }
+      ],
+      "firstGoalForRate": 46.2
+    },
+    "CHI": {
+      "abbrev": "CHI",
+      "gamesPlayed": 14,
+      "firstGoalFor": 6,
+      "firstGoalAgainst": 8,
+      "firstGoalScorers": [
+        {
+          "name": "Unknown",
+          "count": 6,
+          "games": [
+            {
+              "date": "2026-04-04",
+              "vs": "SEA",
+              "time": "09:15",
+              "period": 2
+            },
+            {
+              "date": "2026-03-31",
+              "vs": "WPG",
+              "time": "04:42",
+              "period": 1
+            },
+            {
+              "date": "2026-03-29",
+              "vs": "NJD",
+              "time": "04:19",
+              "period": 1
+            },
+            {
+              "date": "2026-03-27",
+              "vs": "NYR",
+              "time": "17:34",
+              "period": 1
+            },
+            {
+              "date": "2026-03-22",
+              "vs": "NSH",
+              "time": "04:34",
+              "period": 2
+            },
+            {
+              "date": "2026-03-19",
+              "vs": "MIN",
+              "time": "16:22",
+              "period": 1
+            }
+          ],
+          "rate": 42.9
+        }
+      ],
+      "firstGoalForRate": 42.9
+    }
+  },
+  "players": {},
+  "topFirstScorers": []
+}

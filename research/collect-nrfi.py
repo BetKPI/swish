@@ -150,7 +150,7 @@ def main():
 
             result_str = "NRFI" if runs == 0 else "YRFI"
             opponent = game["away"] if sp["side"] == "home" else game["home"]
-            print(f"  {sp['name']} ({sp['team']}): {runs} runs in 1st → {result_str}")
+            print(f"  {sp['name']} ({sp['team']}): {runs} runs in 1st -> {result_str}")
 
             key = sp["name"]
             if key not in pitcher_data:

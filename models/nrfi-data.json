@@ -1,0 +1,5193 @@
+{
+  "_meta": {
+    "gamesProcessed": 252,
+    "lastUpdated": "2026-04-06T12:52:49.706993",
+    "season": "2026"
+  },
+  "pitchers": {
+    "Slade Cecconi": {
+      "name": "Slade Cecconi",
+      "team": "Cleveland Guardians",
+      "playerId": 677944,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Edward Cabrera": {
+      "name": "Edward Cabrera",
+      "team": "Chicago Cubs",
+      "playerId": 665795,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Parker Messick": {
+      "name": "Parker Messick",
+      "team": "Cleveland Guardians",
+      "playerId": 800048,
+      "gamesStarted": 5,
+      "cleanFirstInnings": 5,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-05",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Shota Imanaga": {
+      "name": "Shota Imanaga",
+      "team": "Chicago Cubs",
+      "playerId": 684007,
+      "gamesStarted": 5,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-05",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 60.0
+    },
+    "Foster Griffin": {
+      "name": "Foster Griffin",
+      "team": "Washington Nationals",
+      "playerId": 656492,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Roki Sasaki": {
+      "name": "Roki Sasaki",
+      "team": "Los Angeles Dodgers",
+      "playerId": 808963,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Braxton Ashcraft": {
+      "name": "Braxton Ashcraft",
+      "team": "Pittsburgh Pirates",
+      "playerId": 677952,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Chris Bassitt": {
+      "name": "Chris Bassitt",
+      "team": "Baltimore Orioles",
+      "playerId": 605135,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Ranger Suarez": {
+      "name": "Ranger Suarez",
+      "team": "Boston Red Sox",
+      "playerId": 624133,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Walker Buehler": {
+      "name": "Walker Buehler",
+      "team": "San Diego Padres",
+      "playerId": 621111,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Max Fried": {
+      "name": "Max Fried",
+      "team": "New York Yankees",
+      "playerId": 608331,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-31",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-25",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Pete Fairbanks": {
+      "name": "Pete Fairbanks",
+      "team": "Miami Marlins",
+      "playerId": 664126,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Simeon Woods Richardson": {
+      "name": "Simeon Woods Richardson",
+      "team": "Minnesota Twins",
+      "playerId": 680573,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Nick Martinez": {
+      "name": "Nick Martinez",
+      "team": "Tampa Bay Rays",
+      "playerId": 607259,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 6,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Davis Martin": {
+      "name": "Davis Martin",
+      "team": "Chicago White Sox",
+      "playerId": 663436,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Eric Lauer": {
+      "name": "Eric Lauer",
+      "team": "Toronto Blue Jays",
+      "playerId": 641778,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Kris Bubic": {
+      "name": "Kris Bubic",
+      "team": "Kansas City Royals",
+      "playerId": 663460,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Kyle Harrison": {
+      "name": "Kyle Harrison",
+      "team": "Milwaukee Brewers",
+      "playerId": 690986,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Jack Leiter": {
+      "name": "Jack Leiter",
+      "team": "Texas Rangers",
+      "playerId": 683004,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Chase Burns": {
+      "name": "Chase Burns",
+      "team": "Cincinnati Reds",
+      "playerId": 695505,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Tomoyuki Sugano": {
+      "name": "Tomoyuki Sugano",
+      "team": "Colorado Rockies",
+      "playerId": 608372,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Taijuan Walker": {
+      "name": "Taijuan Walker",
+      "team": "Philadelphia Phillies",
+      "playerId": 592836,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Jacob Lopez": {
+      "name": "Jacob Lopez",
+      "team": "Athletics",
+      "playerId": 682052,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Lance McCullers Jr.": {
+      "name": "Lance McCullers Jr.",
+      "team": "Houston Astros",
+      "playerId": 621121,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Sugar Land Space Cowboys",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Logan Webb": {
+      "name": "Logan Webb",
+      "team": "San Francisco Giants",
+      "playerId": 657277,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-31",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-25",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Kodai Senga": {
+      "name": "Kodai Senga",
+      "team": "New York Mets",
+      "playerId": 673540,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-31",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "George Klassen": {
+      "name": "George Klassen",
+      "team": "Los Angeles Angels",
+      "playerId": 691946,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Luis Castillo": {
+      "name": "Luis Castillo",
+      "team": "Seattle Mariners",
+      "playerId": 622491,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Brandon Pfaadt": {
+      "name": "Brandon Pfaadt",
+      "team": "Arizona Diamondbacks",
+      "playerId": 694297,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-31",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Mart\u00edn P\u00e9rez": {
+      "name": "Mart\u00edn P\u00e9rez",
+      "team": "Atlanta Braves",
+      "playerId": 527048,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Keider Montero": {
+      "name": "Keider Montero",
+      "team": "Detroit Tigers",
+      "playerId": 672456,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Kyle Leahy": {
+      "name": "Kyle Leahy",
+      "team": "St. Louis Cardinals",
+      "playerId": 681517,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-05",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "New York Mets",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Jack Flaherty": {
+      "name": "Jack Flaherty",
+      "team": "Detroit Tigers",
+      "playerId": 656427,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Dustin May": {
+      "name": "Dustin May",
+      "team": "St. Louis Cardinals",
+      "playerId": 669160,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Springfield Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Grant Taylor": {
+      "name": "Grant Taylor",
+      "team": "Chicago White Sox",
+      "playerId": 691799,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-03",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-03",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Mason Fluharty": {
+      "name": "Mason Fluharty",
+      "team": "Toronto Blue Jays",
+      "playerId": 689254,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Luinder Avila": {
+      "name": "Luinder Avila",
+      "team": "Kansas City Royals",
+      "playerId": 679883,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Chad Patrick": {
+      "name": "Chad Patrick",
+      "team": "Milwaukee Brewers",
+      "playerId": 694477,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Seth Lugo": {
+      "name": "Seth Lugo",
+      "team": "Kansas City Royals",
+      "playerId": 607625,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-04",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Logan Henderson": {
+      "name": "Logan Henderson",
+      "team": "Milwaukee Brewers",
+      "playerId": 701656,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-04-04",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jake Irvin": {
+      "name": "Jake Irvin",
+      "team": "Washington Nationals",
+      "playerId": 663623,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Tyler Glasnow": {
+      "name": "Tyler Glasnow",
+      "team": "Los Angeles Dodgers",
+      "playerId": 607192,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Luis Morales": {
+      "name": "Luis Morales",
+      "team": "Athletics",
+      "playerId": 806960,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 25.0
+    },
+    "Tatsuya Imai": {
+      "name": "Tatsuya Imai",
+      "team": "Houston Astros",
+      "playerId": 837227,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Sugar Land Space Cowboys",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Carmen Mlodzinski": {
+      "name": "Carmen Mlodzinski",
+      "team": "Pittsburgh Pirates",
+      "playerId": 669387,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Shane Baz": {
+      "name": "Shane Baz",
+      "team": "Baltimore Orioles",
+      "playerId": 669358,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Connelly Early": {
+      "name": "Connelly Early",
+      "team": "Boston Red Sox",
+      "playerId": 813349,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Randy V\u00e1squez": {
+      "name": "Randy V\u00e1squez",
+      "team": "San Diego Padres",
+      "playerId": 681190,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Kumar Rocker": {
+      "name": "Kumar Rocker",
+      "team": "Texas Rangers",
+      "playerId": 677958,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Rhett Lowder": {
+      "name": "Rhett Lowder",
+      "team": "Cincinnati Reds",
+      "playerId": 695076,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Ryan Weathers": {
+      "name": "Ryan Weathers",
+      "team": "New York Yankees",
+      "playerId": 677960,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Max Meyer": {
+      "name": "Max Meyer",
+      "team": "Miami Marlins",
+      "playerId": 676974,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Mick Abel": {
+      "name": "Mick Abel",
+      "team": "Minnesota Twins",
+      "playerId": 690953,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Steven Matz": {
+      "name": "Steven Matz",
+      "team": "Tampa Bay Rays",
+      "playerId": 571927,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Michael Soroka": {
+      "name": "Michael Soroka",
+      "team": "Arizona Diamondbacks",
+      "playerId": 647336,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Bryce Elder": {
+      "name": "Bryce Elder",
+      "team": "Atlanta Braves",
+      "playerId": 693821,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Brennan Bernardino": {
+      "name": "Brennan Bernardino",
+      "team": "Colorado Rockies",
+      "playerId": 657514,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Jes\u00fas Luzardo": {
+      "name": "Jes\u00fas Luzardo",
+      "team": "Philadelphia Phillies",
+      "playerId": 666200,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Landen Roupp": {
+      "name": "Landen Roupp",
+      "team": "San Francisco Giants",
+      "playerId": 694738,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Sultanes de Monterrey",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Clay Holmes": {
+      "name": "Clay Holmes",
+      "team": "New York Mets",
+      "playerId": 605280,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-30",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Jack Kochanowicz": {
+      "name": "Jack Kochanowicz",
+      "team": "Los Angeles Angels",
+      "playerId": 686799,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Emerson Hancock": {
+      "name": "Emerson Hancock",
+      "team": "Seattle Mariners",
+      "playerId": 676106,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-04",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Miles Mikolas": {
+      "name": "Miles Mikolas",
+      "team": "Washington Nationals",
+      "playerId": 571945,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Emmet Sheehan": {
+      "name": "Emmet Sheehan",
+      "team": "Los Angeles Dodgers",
+      "playerId": 686218,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Framber Valdez": {
+      "name": "Framber Valdez",
+      "team": "Detroit Tigers",
+      "playerId": 664285,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Michael McGreevy": {
+      "name": "Michael McGreevy",
+      "team": "St. Louis Cardinals",
+      "playerId": 700241,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Will Warren": {
+      "name": "Will Warren",
+      "team": "New York Yankees",
+      "playerId": 701542,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Eury P\u00e9rez": {
+      "name": "Eury P\u00e9rez",
+      "team": "Miami Marlins",
+      "playerId": 691587,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Sonny Gray": {
+      "name": "Sonny Gray",
+      "team": "Boston Red Sox",
+      "playerId": 543243,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Michael King": {
+      "name": "Michael King",
+      "team": "San Diego Padres",
+      "playerId": 650633,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Dylan Cease": {
+      "name": "Dylan Cease",
+      "team": "Toronto Blue Jays",
+      "playerId": 656302,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-04-03",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "MacKenzie Gore": {
+      "name": "MacKenzie Gore",
+      "team": "Texas Rangers",
+      "playerId": 669022,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Brady Singer": {
+      "name": "Brady Singer",
+      "team": "Cincinnati Reds",
+      "playerId": 663903,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Joey Cantillo": {
+      "name": "Joey Cantillo",
+      "team": "Cleveland Guardians",
+      "playerId": 676282,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cade Horton": {
+      "name": "Cade Horton",
+      "team": "Chicago Cubs",
+      "playerId": 690990,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Bailey Ober": {
+      "name": "Bailey Ober",
+      "team": "Minnesota Twins",
+      "playerId": 641927,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 75.0
+    },
+    "Joe Boyle": {
+      "name": "Joe Boyle",
+      "team": "Tampa Bay Rays",
+      "playerId": 671212,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Michael Lorenzen": {
+      "name": "Michael Lorenzen",
+      "team": "Colorado Rockies",
+      "playerId": 547179,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 7,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Athletics",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Aaron Nola": {
+      "name": "Aaron Nola",
+      "team": "Philadelphia Phillies",
+      "playerId": 605400,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Mitch Keller": {
+      "name": "Mitch Keller",
+      "team": "Pittsburgh Pirates",
+      "playerId": 656605,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Kyle Bradish": {
+      "name": "Kyle Bradish",
+      "team": "Baltimore Orioles",
+      "playerId": 680694,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Reid Detmers": {
+      "name": "Reid Detmers",
+      "team": "Los Angeles Angels",
+      "playerId": 672282,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Bryan Woo": {
+      "name": "Bryan Woo",
+      "team": "Seattle Mariners",
+      "playerId": 693433,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jeffrey Springs": {
+      "name": "Jeffrey Springs",
+      "team": "Athletics",
+      "playerId": 605488,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cristian Javier": {
+      "name": "Cristian Javier",
+      "team": "Houston Astros",
+      "playerId": 664299,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Eduardo Rodriguez": {
+      "name": "Eduardo Rodriguez",
+      "team": "Arizona Diamondbacks",
+      "playerId": 593958,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Grant Holmes": {
+      "name": "Grant Holmes",
+      "team": "Atlanta Braves",
+      "playerId": 656550,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Tyler Mahle": {
+      "name": "Tyler Mahle",
+      "team": "San Francisco Giants",
+      "playerId": 641816,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "New York Mets",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Sacramento River Cats",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Nolan McLean": {
+      "name": "Nolan McLean",
+      "team": "New York Mets",
+      "playerId": 690997,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-03",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-29",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Cole Ragans": {
+      "name": "Cole Ragans",
+      "team": "Kansas City Royals",
+      "playerId": 666142,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Taj Bradley": {
+      "name": "Taj Bradley",
+      "team": "Minnesota Twins",
+      "playerId": 671737,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Ryne Nelson": {
+      "name": "Ryne Nelson",
+      "team": "Arizona Diamondbacks",
+      "playerId": 669194,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Reynaldo L\u00f3pez": {
+      "name": "Reynaldo L\u00f3pez",
+      "team": "Atlanta Braves",
+      "playerId": 625643,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Robbie Ray": {
+      "name": "Robbie Ray",
+      "team": "San Francisco Giants",
+      "playerId": 592662,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "New York Mets",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "David Peterson": {
+      "name": "David Peterson",
+      "team": "New York Mets",
+      "playerId": 656849,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-02",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-28",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Chris Sale": {
+      "name": "Chris Sale",
+      "team": "Atlanta Braves",
+      "playerId": 519242,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Luis Severino": {
+      "name": "Luis Severino",
+      "team": "Athletics",
+      "playerId": 622663,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Trevor Rogers": {
+      "name": "Trevor Rogers",
+      "team": "Baltimore Orioles",
+      "playerId": 669432,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Nathan Eovaldi": {
+      "name": "Nathan Eovaldi",
+      "team": "Texas Rangers",
+      "playerId": 543135,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Andrew Abbott": {
+      "name": "Andrew Abbott",
+      "team": "Cincinnati Reds",
+      "playerId": 671096,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Paul Skenes": {
+      "name": "Paul Skenes",
+      "team": "Pittsburgh Pirates",
+      "playerId": 694973,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "New York Mets",
+          "firstInningRuns": 5,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Cristopher S\u00e1nchez": {
+      "name": "Cristopher S\u00e1nchez",
+      "team": "Philadelphia Phillies",
+      "playerId": 650911,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cade Cavalli": {
+      "name": "Cade Cavalli",
+      "team": "Washington Nationals",
+      "playerId": 676917,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Kevin Gausman": {
+      "name": "Kevin Gausman",
+      "team": "Toronto Blue Jays",
+      "playerId": 592332,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Kyle Freeland": {
+      "name": "Kyle Freeland",
+      "team": "Colorado Rockies",
+      "playerId": 607536,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Sandy Alcantara": {
+      "name": "Sandy Alcantara",
+      "team": "Miami Marlins",
+      "playerId": 645261,
+      "gamesStarted": 4,
+      "cleanFirstInnings": 4,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Shane Smith": {
+      "name": "Shane Smith",
+      "team": "Chicago White Sox",
+      "playerId": 681343,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Matthew Liberatore": {
+      "name": "Matthew Liberatore",
+      "team": "St. Louis Cardinals",
+      "playerId": 669461,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Freddy Peralta": {
+      "name": "Freddy Peralta",
+      "team": "New York Mets",
+      "playerId": 642547,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Jacob Misiorowski": {
+      "name": "Jacob Misiorowski",
+      "team": "Milwaukee Brewers",
+      "playerId": 694819,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Drew Rasmussen": {
+      "name": "Drew Rasmussen",
+      "team": "Tampa Bay Rays",
+      "playerId": 656876,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Mike Burrows": {
+      "name": "Mike Burrows",
+      "team": "Houston Astros",
+      "playerId": 681347,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Garrett Crochet": {
+      "name": "Garrett Crochet",
+      "team": "Boston Red Sox",
+      "playerId": 676979,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Matthew Boyd": {
+      "name": "Matthew Boyd",
+      "team": "Chicago Cubs",
+      "playerId": 571510,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Yusei Kikuchi": {
+      "name": "Yusei Kikuchi",
+      "team": "Los Angeles Angels",
+      "playerId": 579328,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 33.3
+    },
+    "Zac Gallen": {
+      "name": "Zac Gallen",
+      "team": "Arizona Diamondbacks",
+      "playerId": 668678,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Tarik Skubal": {
+      "name": "Tarik Skubal",
+      "team": "Detroit Tigers",
+      "playerId": 669373,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Nick Pivetta": {
+      "name": "Nick Pivetta",
+      "team": "San Diego Padres",
+      "playerId": 601713,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Adrian Houser": {
+      "name": "Adrian Houser",
+      "team": "San Francisco Giants",
+      "playerId": 605288,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "George Kirby": {
+      "name": "George Kirby",
+      "team": "Seattle Mariners",
+      "playerId": 669923,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Cam Schlittler": {
+      "name": "Cam Schlittler",
+      "team": "New York Yankees",
+      "playerId": 693645,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Noah Cameron": {
+      "name": "Noah Cameron",
+      "team": "Kansas City Royals",
+      "playerId": 702070,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Joe Ryan": {
+      "name": "Joe Ryan",
+      "team": "Minnesota Twins",
+      "playerId": 657746,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Kansas City Royals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Yoshinobu Yamamoto": {
+      "name": "Yoshinobu Yamamoto",
+      "team": "Los Angeles Dodgers",
+      "playerId": 808967,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Gavin Williams": {
+      "name": "Gavin Williams",
+      "team": "Cleveland Guardians",
+      "playerId": 668909,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-04-01",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-27",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Zach Eflin": {
+      "name": "Zach Eflin",
+      "team": "Baltimore Orioles",
+      "playerId": 621107,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jacob deGrom": {
+      "name": "Jacob deGrom",
+      "team": "Texas Rangers",
+      "playerId": 594798,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Brandon Williamson": {
+      "name": "Brandon Williamson",
+      "team": "Cincinnati Reds",
+      "playerId": 682227,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Bubba Chandler": {
+      "name": "Bubba Chandler",
+      "team": "Pittsburgh Pirates",
+      "playerId": 696149,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Andrew Painter": {
+      "name": "Andrew Painter",
+      "team": "Philadelphia Phillies",
+      "playerId": 691725,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "PJ Poulin": {
+      "name": "PJ Poulin",
+      "team": "Washington Nationals",
+      "playerId": 676571,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Janson Junk": {
+      "name": "Janson Junk",
+      "team": "Miami Marlins",
+      "playerId": 676083,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Erick Fedde": {
+      "name": "Erick Fedde",
+      "team": "Chicago White Sox",
+      "playerId": 607200,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Max Scherzer": {
+      "name": "Max Scherzer",
+      "team": "Toronto Blue Jays",
+      "playerId": 453286,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Ryan Feltner": {
+      "name": "Ryan Feltner",
+      "team": "Colorado Rockies",
+      "playerId": 663372,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Detroit Tigers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jos\u00e9 Suarez": {
+      "name": "Jos\u00e9 Suarez",
+      "team": "Atlanta Braves",
+      "playerId": 660761,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Aaron Civale": {
+      "name": "Aaron Civale",
+      "team": "Athletics",
+      "playerId": 650644,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Jameson Taillon": {
+      "name": "Jameson Taillon",
+      "team": "Chicago Cubs",
+      "playerId": 592791,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jos\u00e9 Soriano": {
+      "name": "Jos\u00e9 Soriano",
+      "team": "Los Angeles Angels",
+      "playerId": 667755,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Brandon Woodruff": {
+      "name": "Brandon Woodruff",
+      "team": "Milwaukee Brewers",
+      "playerId": 605540,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Shane McClanahan": {
+      "name": "Shane McClanahan",
+      "team": "Tampa Bay Rays",
+      "playerId": 663556,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Andre Pallante": {
+      "name": "Andre Pallante",
+      "team": "St. Louis Cardinals",
+      "playerId": 669467,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Hunter Brown": {
+      "name": "Hunter Brown",
+      "team": "Houston Astros",
+      "playerId": 686613,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Brayan Bello": {
+      "name": "Brayan Bello",
+      "team": "Boston Red Sox",
+      "playerId": 678394,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Casey Mize": {
+      "name": "Casey Mize",
+      "team": "Detroit Tigers",
+      "playerId": 663554,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Germ\u00e1n M\u00e1rquez": {
+      "name": "Germ\u00e1n M\u00e1rquez",
+      "team": "San Diego Padres",
+      "playerId": 608566,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Logan Gilbert": {
+      "name": "Logan Gilbert",
+      "team": "Seattle Mariners",
+      "playerId": 669302,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Shohei Ohtani": {
+      "name": "Shohei Ohtani",
+      "team": "Los Angeles Dodgers",
+      "playerId": 660271,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 3,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Los Angeles Angels",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Tanner Bibee": {
+      "name": "Tanner Bibee",
+      "team": "Cleveland Guardians",
+      "playerId": 676440,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-31",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-26",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-21",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Chris Paddack": {
+      "name": "Chris Paddack",
+      "team": "Miami Marlins",
+      "playerId": 663978,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-30",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cody Ponce": {
+      "name": "Cody Ponce",
+      "team": "Toronto Blue Jays",
+      "playerId": 664074,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-30",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Ryan Johnson": {
+      "name": "Ryan Johnson",
+      "team": "Los Angeles Angels",
+      "playerId": 696270,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-30",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Justin Verlander": {
+      "name": "Justin Verlander",
+      "team": "Detroit Tigers",
+      "playerId": 434378,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-30",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Jose Quintana": {
+      "name": "Jose Quintana",
+      "team": "Colorado Rockies",
+      "playerId": 500779,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-29",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Brandon Sproat": {
+      "name": "Brandon Sproat",
+      "team": "Milwaukee Brewers",
+      "playerId": 687075,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-29",
+          "opponent": "Chicago White Sox",
+          "firstInningRuns": 4,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-24",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Anthony Kay": {
+      "name": "Anthony Kay",
+      "team": "Chicago White Sox",
+      "playerId": 641743,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-29",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Jacob Latz": {
+      "name": "Jacob Latz",
+      "team": "Texas Rangers",
+      "playerId": 656641,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-28",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-19",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Sean Burke": {
+      "name": "Sean Burke",
+      "team": "Chicago White Sox",
+      "playerId": 680732,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-28",
+          "opponent": "Milwaukee Brewers",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-22",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Michael Wacha": {
+      "name": "Michael Wacha",
+      "team": "Kansas City Royals",
+      "playerId": 608379,
+      "gamesStarted": 3,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-28",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-23",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 66.7
+    },
+    "Cam Booser": {
+      "name": "Cam Booser",
+      "team": "Tampa Bay Rays",
+      "playerId": 592155,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-24",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Zak Kent": {
+      "name": "Zak Kent",
+      "team": "Minnesota Twins",
+      "playerId": 687849,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-24",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Gerrit Cole": {
+      "name": "Gerrit Cole",
+      "team": "New York Yankees",
+      "playerId": 543037,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-24",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Boston Red Sox",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Miguel Ullola": {
+      "name": "Miguel Ullola",
+      "team": "Sugar Land Space Cowboys",
+      "playerId": 699044,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-24",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Justus Sheffield": {
+      "name": "Justus Sheffield",
+      "team": "Sultanes de Monterrey",
+      "playerId": 656954,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-24",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Johan Oviedo": {
+      "name": "Johan Oviedo",
+      "team": "Boston Red Sox",
+      "playerId": 670912,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Carson Fulmer": {
+      "name": "Carson Fulmer",
+      "team": "Pittsburgh Pirates",
+      "playerId": 608334,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Didier Fuentes": {
+      "name": "Didier Fuentes",
+      "team": "Atlanta Braves",
+      "playerId": 800311,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Pittsburgh Pirates",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Carlos Lagrange": {
+      "name": "Carlos Lagrange",
+      "team": "New York Yankees",
+      "playerId": 801739,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Kyle Hart": {
+      "name": "Kyle Hart",
+      "team": "San Diego Padres",
+      "playerId": 606996,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Brycen Mautz": {
+      "name": "Brycen Mautz",
+      "team": "Springfield Cardinals",
+      "playerId": 802408,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Aaron Ashby": {
+      "name": "Aaron Ashby",
+      "team": "Milwaukee Brewers",
+      "playerId": 676879,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Colton Gordon": {
+      "name": "Colton Gordon",
+      "team": "Sugar Land Space Cowboys",
+      "playerId": 676467,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Merrill Kelly": {
+      "name": "Merrill Kelly",
+      "team": "Arizona Diamondbacks",
+      "playerId": 518876,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-18",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "Spencer Bivens": {
+      "name": "Spencer Bivens",
+      "team": "San Francisco Giants",
+      "playerId": 702352,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 2,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "Sultanes de Monterrey",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        },
+        {
+          "date": "2026-03-20",
+          "opponent": "Texas Rangers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Stephen Tarpley": {
+      "name": "Stephen Tarpley",
+      "team": "Sultanes de Monterrey",
+      "playerId": 605501,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-23",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Mitchell Parker": {
+      "name": "Mitchell Parker",
+      "team": "Washington Nationals",
+      "playerId": 680730,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-22",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Nick Lodolo": {
+      "name": "Nick Lodolo",
+      "team": "Cincinnati Reds",
+      "playerId": 666157,
+      "gamesStarted": 2,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-22",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        },
+        {
+          "date": "2026-03-17",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 50.0
+    },
+    "John Michael Bertrand": {
+      "name": "John Michael Bertrand",
+      "team": "Sacramento River Cats",
+      "playerId": 802609,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-22",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "John Curtiss": {
+      "name": "John Curtiss",
+      "team": "Arizona Diamondbacks",
+      "playerId": 595928,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-22",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Joander Suarez": {
+      "name": "Joander Suarez",
+      "team": "New York Mets",
+      "playerId": 680933,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jackson Baumeister": {
+      "name": "Jackson Baumeister",
+      "team": "Tampa Bay Rays",
+      "playerId": 691765,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Minnesota Twins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Levi Wells": {
+      "name": "Levi Wells",
+      "team": "Baltimore Orioles",
+      "playerId": 694370,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Philadelphia Phillies",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Ryan Cusick": {
+      "name": "Ryan Cusick",
+      "team": "Philadelphia Phillies",
+      "playerId": 680743,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Mason Molina": {
+      "name": "Mason Molina",
+      "team": "St. Louis Cardinals",
+      "playerId": 695766,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jonah Tong": {
+      "name": "Jonah Tong",
+      "team": "New York Mets",
+      "playerId": 804636,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Houston Astros",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Austin Gomber": {
+      "name": "Austin Gomber",
+      "team": "Texas Rangers",
+      "playerId": 596295,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Arizona Diamondbacks",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Robert Gasser": {
+      "name": "Robert Gasser",
+      "team": "Milwaukee Brewers",
+      "playerId": 688107,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Jedixson Paez": {
+      "name": "Jedixson Paez",
+      "team": "Chicago White Sox",
+      "playerId": 699151,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Colin Rea": {
+      "name": "Colin Rea",
+      "team": "Chicago Cubs",
+      "playerId": 607067,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-21",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Blake Wehunt": {
+      "name": "Blake Wehunt",
+      "team": "Boston Red Sox",
+      "playerId": 687762,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Tobias Myers": {
+      "name": "Tobias Myers",
+      "team": "New York Mets",
+      "playerId": 668964,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Yohan Ram\u00edrez": {
+      "name": "Yohan Ram\u00edrez",
+      "team": "Pittsburgh Pirates",
+      "playerId": 670990,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Atlanta Braves",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Luis Gil": {
+      "name": "Luis Gil",
+      "team": "New York Yankees",
+      "playerId": 661563,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Ryan Bergert": {
+      "name": "Ryan Bergert",
+      "team": "Kansas City Royals",
+      "playerId": 686701,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "San Francisco Giants",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Marco Gonzales": {
+      "name": "Marco Gonzales",
+      "team": "San Diego Padres",
+      "playerId": 594835,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Logan Allen": {
+      "name": "Logan Allen",
+      "team": "Cleveland Guardians",
+      "playerId": 671106,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Gabe Mosser": {
+      "name": "Gabe Mosser",
+      "team": "Seattle Mariners",
+      "playerId": 682077,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "Cleveland Guardians",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Juan Mejia": {
+      "name": "Juan Mejia",
+      "team": "Colorado Rockies",
+      "playerId": 675848,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-20",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Quinn Mathews": {
+      "name": "Quinn Mathews",
+      "team": "St. Louis Cardinals",
+      "playerId": 687273,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "Washington Nationals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Zack Littell": {
+      "name": "Zack Littell",
+      "team": "Washington Nationals",
+      "playerId": 641793,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Tim Mayza": {
+      "name": "Tim Mayza",
+      "team": "Philadelphia Phillies",
+      "playerId": 641835,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "Tampa Bay Rays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Dean Kremer": {
+      "name": "Dean Kremer",
+      "team": "Baltimore Orioles",
+      "playerId": 665152,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Peter Lambert": {
+      "name": "Peter Lambert",
+      "team": "Houston Astros",
+      "playerId": 663567,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "New York Mets",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cam Sanders": {
+      "name": "Cam Sanders",
+      "team": "Pittsburgh Pirates",
+      "playerId": 676742,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Randy Dobnak": {
+      "name": "Randy Dobnak",
+      "team": "Seattle Mariners",
+      "playerId": 677976,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "Athletics",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Adisyn Coffey": {
+      "name": "Adisyn Coffey",
+      "team": "Chicago White Sox",
+      "playerId": 676249,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-19",
+          "opponent": "San Diego Padres",
+          "firstInningRuns": 3,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "J.P. France": {
+      "name": "J.P. France",
+      "team": "Houston Astros",
+      "playerId": 641585,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-18",
+          "opponent": "St. Louis Cardinals",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Josh Fleming": {
+      "name": "Josh Fleming",
+      "team": "Toronto Blue Jays",
+      "playerId": 676596,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-18",
+          "opponent": "Baltimore Orioles",
+          "firstInningRuns": 2,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Albert Su\u00e1rez": {
+      "name": "Albert Su\u00e1rez",
+      "team": "Baltimore Orioles",
+      "playerId": 544150,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-18",
+          "opponent": "Toronto Blue Jays",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Carlos Rodriguez": {
+      "name": "Carlos Rodriguez",
+      "team": "Milwaukee Brewers",
+      "playerId": 692230,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 0,
+      "recentGames": [
+        {
+          "date": "2026-03-18",
+          "opponent": "Seattle Mariners",
+          "firstInningRuns": 1,
+          "result": "YRFI"
+        }
+      ],
+      "nrfiRate": 0.0
+    },
+    "Ryan Pepiot": {
+      "name": "Ryan Pepiot",
+      "team": "Tampa Bay Rays",
+      "playerId": 686752,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "New York Yankees",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Sean Manaea": {
+      "name": "Sean Manaea",
+      "team": "New York Mets",
+      "playerId": 640455,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "Miami Marlins",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Cooper Criswell": {
+      "name": "Cooper Criswell",
+      "team": "Seattle Mariners",
+      "playerId": 681867,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "Colorado Rockies",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Alek Manoah": {
+      "name": "Alek Manoah",
+      "team": "Los Angeles Angels",
+      "playerId": 666201,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "Chicago Cubs",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Kolby Allard": {
+      "name": "Kolby Allard",
+      "team": "Cleveland Guardians",
+      "playerId": 663465,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "Cincinnati Reds",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    },
+    "Aaron Sanchez": {
+      "name": "Aaron Sanchez",
+      "team": "Kansas City Royals",
+      "playerId": 592717,
+      "gamesStarted": 1,
+      "cleanFirstInnings": 1,
+      "recentGames": [
+        {
+          "date": "2026-03-17",
+          "opponent": "Los Angeles Dodgers",
+          "firstInningRuns": 0,
+          "result": "NRFI"
+        }
+      ],
+      "nrfiRate": 100.0
+    }
+  }
+}

@@ -76,28 +76,74 @@ def get_recent_games(weeks_back: int = 4) -> list:
     return games
 
 
+def build_roster_map(data: dict) -> dict:
+    """Build a player ID -> name map from the play-by-play roster data."""
+    roster = {}
+    # rosterSpots is the usual location in NHL play-by-play
+    for spot in data.get("rosterSpots", []):
+        pid = spot.get("playerId")
+        if not pid:
+            continue
+        first = spot.get("firstName", {})
+        last = spot.get("lastName", {})
+        if isinstance(first, dict):
+            first = first.get("default", "")
+        if isinstance(last, dict):
+            last = last.get("default", "")
+        name = f"{first} {last}".strip()
+        if name:
+            roster[pid] = name
+    return roster
+
+
 def get_first_goal(gameId: int) -> dict | None:
     """Fetch play-by-play and find the first goal scorer."""
     data = fetch_json(f"{BASE}/gamecenter/{gameId}/play-by-play")
     if not data or "plays" not in data:
         return None
 
+    # Build roster lookup for player names
+    roster = build_roster_map(data)
+
     for play in data["plays"]:
         if play.get("typeDescKey") == "goal":
             details = play.get("details", {})
-            # Try multiple field patterns the NHL API uses
-            scorer_name = details.get("scoringPlayerName", "")
+
+            # Try multiple field patterns the NHL API uses for scorer name
+            scorer_name = ""
+            scorer_id = 0
+
+            # Pattern 1: scoringPlayerId + roster lookup
+            scoring_pid = details.get("scoringPlayerId", 0)
+            if scoring_pid and scoring_pid in roster:
+                scorer_name = roster[scoring_pid]
+                scorer_id = scoring_pid
+
+            # Pattern 2: direct name fields
+            if not scorer_name:
+                scorer_name = details.get("scoringPlayerName", "")
+
+            # Pattern 3: firstName/lastName (may be dicts with "default")
             if not scorer_name:
                 first = details.get("firstName", {})
                 last = details.get("lastName", {})
-                # These can be dicts with "default" key or plain strings
                 if isinstance(first, dict):
                     first = first.get("default", "")
                 if isinstance(last, dict):
                     last = last.get("default", "")
                 scorer_name = f"{first} {last}".strip()
 
-            scorer_id = details.get("scoringPlayerId", details.get("playerId", 0))
+            # Pattern 4: check play-level fields
+            if not scorer_name:
+                # Some versions put it under play.details with playerId
+                pid = details.get("playerId", 0)
+                if pid and pid in roster:
+                    scorer_name = roster[pid]
+                    scorer_id = pid
+
+            if not scorer_id:
+                scorer_id = scoring_pid or details.get("playerId", 0)
+
             period = play.get("periodDescriptor", {}).get("number", 1)
             time_in = play.get("timeInPeriod", "")
             event_team = details.get("eventOwnerTeamId")
