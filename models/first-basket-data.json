@@ -1,0 +1,844 @@
+{
+  "_meta": {
+    "gamesProcessed": 35,
+    "lastUpdated": "2026-04-06"
+  },
+  "players": {
+    "A. Thompson": {
+      "name": "A. Thompson",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "B. Adebayo": {
+      "name": "B. Adebayo",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "K. Durant": {
+      "name": "K. Durant",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "O. Okongwu": {
+      "name": "O. Okongwu",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "P. Siakam": {
+      "name": "P. Siakam",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "S. Henderson": {
+      "name": "S. Henderson",
+      "firstBaskets": 2,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        },
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "J. Brown": {
+      "name": "J. Brown",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "C. Johnson": {
+      "name": "C. Johnson",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "Z. Williamson": {
+      "name": "Z. Williamson",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "W. Carter Jr.": {
+      "name": "W. Carter Jr.",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "N. Queta": {
+      "name": "N. Queta",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "S. Barnes": {
+      "name": "S. Barnes",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "M. Robinson": {
+      "name": "M. Robinson",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "V. Edgecombe": {
+      "name": "V. Edgecombe",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "B. Lopez": {
+      "name": "B. Lopez",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "D. Green": {
+      "name": "D. Green",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "I. Hartenstein": {
+      "name": "I. Hartenstein",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "D. Jenkins": {
+      "name": "D. Jenkins",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "C. Gillespie": {
+      "name": "C. Gillespie",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "V. Wembanyama": {
+      "name": "V. Wembanyama",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "J. Murray": {
+      "name": "J. Murray",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "D. Gafford": {
+      "name": "D. Gafford",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "J. Poeltl": {
+      "name": "J. Poeltl",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "P. George": {
+      "name": "P. George",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "J. Allen": {
+      "name": "J. Allen",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "J. Duren": {
+      "name": "J. Duren",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "B. Miller": {
+      "name": "B. Miller",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "3pt"
+        }
+      ]
+    },
+    "J. Suggs": {
+      "name": "J. Suggs",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    },
+    "L. James": {
+      "name": "L. James",
+      "firstBaskets": 1,
+      "firstShots": 0,
+      "games": [
+        {
+          "vs": "",
+          "scoredFirst": true,
+          "shotFirst": false,
+          "shotType": "2pt"
+        }
+      ]
+    }
+  },
+  "tipOff": {
+    "J. Poeltl": {
+      "name": "J. Poeltl",
+      "wins": 3,
+      "losses": 1,
+      "total": 4,
+      "winRate": 75
+    },
+    "W. Carter Jr.": {
+      "name": "W. Carter Jr.",
+      "wins": 3,
+      "losses": 0,
+      "total": 3,
+      "winRate": 100
+    },
+    "N. Queta": {
+      "name": "N. Queta",
+      "wins": 2,
+      "losses": 1,
+      "total": 3,
+      "winRate": 67
+    },
+    "J. Duren": {
+      "name": "J. Duren",
+      "wins": 2,
+      "losses": 1,
+      "total": 3,
+      "winRate": 67
+    },
+    "V. Wembanyama": {
+      "name": "V. Wembanyama",
+      "wins": 2,
+      "losses": 0,
+      "total": 2,
+      "winRate": 100
+    },
+    "B. Adebayo": {
+      "name": "B. Adebayo",
+      "wins": 2,
+      "losses": 0,
+      "total": 2,
+      "winRate": 100
+    },
+    "J. Huff": {
+      "name": "J. Huff",
+      "wins": 2,
+      "losses": 0,
+      "total": 2,
+      "winRate": 100
+    },
+    "B. Lopez": {
+      "name": "B. Lopez",
+      "wins": 2,
+      "losses": 0,
+      "total": 2,
+      "winRate": 100
+    },
+    "J. Allen": {
+      "name": "J. Allen",
+      "wins": 2,
+      "losses": 0,
+      "total": 2,
+      "winRate": 100
+    },
+    "D. Ayton": {
+      "name": "D. Ayton",
+      "wins": 2,
+      "losses": 1,
+      "total": 3,
+      "winRate": 67
+    },
+    "N. Joki\u0107": {
+      "name": "N. Joki\u0107",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "M. Raynaud": {
+      "name": "M. Raynaud",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "D. Gafford": {
+      "name": "D. Gafford",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "K. Filipowski": {
+      "name": "K. Filipowski",
+      "wins": 1,
+      "losses": 0,
+      "total": 1,
+      "winRate": 100
+    },
+    "A. Sengun": {
+      "name": "A. Sengun",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "M. Robinson": {
+      "name": "M. Robinson",
+      "wins": 1,
+      "losses": 0,
+      "total": 1,
+      "winRate": 100
+    },
+    "O. Okongwu": {
+      "name": "O. Okongwu",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "N. Claxton": {
+      "name": "N. Claxton",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "R. Gobert": {
+      "name": "R. Gobert",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "D. Clingan": {
+      "name": "D. Clingan",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "O. Ighodaro": {
+      "name": "O. Ighodaro",
+      "wins": 1,
+      "losses": 1,
+      "total": 2,
+      "winRate": 50
+    },
+    "A. Thompson": {
+      "name": "A. Thompson",
+      "wins": 1,
+      "losses": 0,
+      "total": 1,
+      "winRate": 100
+    },
+    "A. Bona": {
+      "name": "A. Bona",
+      "wins": 1,
+      "losses": 0,
+      "total": 1,
+      "winRate": 100
+    },
+    "A. Drummond": {
+      "name": "A. Drummond",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "A. Gill": {
+      "name": "A. Gill",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "Y. Missi": {
+      "name": "Y. Missi",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "M. Turner": {
+      "name": "M. Turner",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "T. Hendricks": {
+      "name": "T. Hendricks",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "M. Buzelis": {
+      "name": "M. Buzelis",
+      "wins": 0,
+      "losses": 2,
+      "total": 2,
+      "winRate": 0
+    },
+    "D. Barlow": {
+      "name": "D. Barlow",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "R. Kalkbrenner": {
+      "name": "R. Kalkbrenner",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "L. Kornet": {
+      "name": "L. Kornet",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "Z. Williamson": {
+      "name": "Z. Williamson",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "K. Porzi\u0146\u0123is": {
+      "name": "K. Porzi\u0146\u0123is",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "C. Holmgren": {
+      "name": "C. Holmgren",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "M. Diabat\u00e9": {
+      "name": "M. Diabat\u00e9",
+      "wins": 0,
+      "losses": 2,
+      "total": 2,
+      "winRate": 0
+    },
+    "D. Green": {
+      "name": "D. Green",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "A. Bailey": {
+      "name": "A. Bailey",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "O. Prosper": {
+      "name": "O. Prosper",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "G. Trent Jr.": {
+      "name": "G. Trent Jr.",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    },
+    "T. Vukcevic": {
+      "name": "T. Vukcevic",
+      "wins": 0,
+      "losses": 2,
+      "total": 2,
+      "winRate": 0
+    },
+    "K. Towns": {
+      "name": "K. Towns",
+      "wins": 0,
+      "losses": 1,
+      "total": 1,
+      "winRate": 0
+    }
+  },
+  "topFirstScorers": [
+    {
+      "name": "A. Thompson",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "B. Adebayo",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "K. Durant",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "O. Okongwu",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "P. Siakam",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "S. Henderson",
+      "count": 2,
+      "shotCount": 0
+    },
+    {
+      "name": "J. Brown",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "C. Johnson",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "Z. Williamson",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "W. Carter Jr.",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "N. Queta",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "S. Barnes",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "M. Robinson",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "V. Edgecombe",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "B. Lopez",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "D. Green",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "I. Hartenstein",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "D. Jenkins",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "C. Gillespie",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "V. Wembanyama",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "J. Murray",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "D. Gafford",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "J. Poeltl",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "P. George",
+      "count": 1,
+      "shotCount": 0
+    },
+    {
+      "name": "J. Allen",
+      "count": 1,
+      "shotCount": 0
+    }
+  ]
+}

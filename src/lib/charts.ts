@@ -249,7 +249,30 @@ function buildFirstBasketCharts(
   const player = fbData.player;
   const topScorers = fbData.topFirstScorers || [];
 
-  // 1. Top first basket scorers leaderboard
+  // 1. Tip-off matchup — who wins the tip and gets first possession
+  const tipOffs = fbData.tipOff || [];
+  if (Array.isArray(tipOffs) && tipOffs.length > 0) {
+    const data = tipOffs.slice(0, 10).map((t: { name: string; wins: number; losses: number; total: number; winRate: number }) => ({
+      center: t.name,
+      record: `${t.wins}-${t.losses}`,
+      winRate: `${t.winRate}%`,
+      tips: t.total,
+    }));
+    charts.push({
+      type: "table",
+      title: "Tip-Off Win Rates — Active Centers",
+      relevance: `The team that wins the tip gets first possession. Who's winning jump balls?`,
+      data,
+      columns: [
+        { key: "center", label: "Center" },
+        { key: "record", label: "W-L" },
+        { key: "winRate", label: "Win %" },
+        { key: "tips", label: "Tips" },
+      ],
+    });
+  }
+
+  // 2. Top first basket scorers leaderboard
   if (topScorers.length > 0) {
     // Include the target player even if not in top 10
     let data = topScorers.map((p: { name: string; rate: number; count: number }) => ({
