@@ -591,7 +591,7 @@ function analyzeMLBProp(
 }
 
 function mapMLBMarketToStat(market: string, player: MLBPlayer): string {
-  const m = market.toLowerCase();
+  const m = (market || "").toLowerCase();
   const isPitcher =
     player.primaryPosition?.abbreviation === "P" ||
     m.includes("strikeout") ||

@@ -35,7 +35,7 @@ const SPORT_MAP: Record<string, { sport: string; league: string }> = {
 };
 
 function getLeagueInfo(sport: string): { sport: string; league: string } | null {
-  const key = sport.toUpperCase();
+  const key = (sport || "").toUpperCase();
   return SPORT_MAP[key] || null;
 }
 
@@ -203,7 +203,7 @@ export async function searchTeam(
     const match = teams.find(
       (t: { team: { displayName: string; shortDisplayName: string; abbreviation: string; name: string } }) => {
         const team = t.team;
-        const name = teamName.toLowerCase();
+        const name = (teamName || "").toLowerCase();
         return (
           team.displayName?.toLowerCase().includes(name) ||
           team.shortDisplayName?.toLowerCase().includes(name) ||
@@ -256,7 +256,7 @@ export async function fetchAllTeamData(
   teamNames: string[],
   playerNames?: string[]
 ): Promise<Record<string, unknown>> {
-  const key = sport.toUpperCase();
+  const key = (sport || "").toUpperCase();
   if (!SPORT_MAP[key]) {
     console.log(`[ESPN] Sport not supported: "${sport}" (key: "${key}")`);
     return { _unsupported: true, _sport: sport };
@@ -299,7 +299,7 @@ export async function fetchAllTeamData(
   }
 
   // For golf and player-focused sports, players alone count as "found"
-  const isGolf = sport.toUpperCase() === "GOLF" || sport.toUpperCase() === "PGA";
+  const isGolf = (sport || "").toUpperCase() === "GOLF" || (sport || "").toUpperCase() === "PGA";
   if (!anyFound && !isGolf) {
     console.log(`[ESPN] No teams found for any of: ${JSON.stringify(teamNames)}`);
     return { _unsupported: true, _sport: sport };
@@ -343,7 +343,7 @@ export async function fetchGolfLeaderboard(
     // Find specific players
     const playerData: Record<string, unknown> = {};
     for (const name of playerNames) {
-      const nameLower = name.toLowerCase();
+      const nameLower = (name || "").toLowerCase();
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const match = competitors.find((c: any) => {
         const cName = (c.athlete?.displayName || "").toLowerCase();

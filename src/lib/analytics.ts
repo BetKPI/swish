@@ -149,7 +149,7 @@ function parseRecentGames(
   const recentGamesRaw = (raw as any)?.recentGames || [];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const teamInfo = (raw as any)?.team;
-  const teamDisplayName = teamInfo?.displayName?.toLowerCase() || teamName.toLowerCase();
+  const teamDisplayName = teamInfo?.displayName?.toLowerCase() || (teamName || "").toLowerCase();
   const teamShortName = teamInfo?.shortDisplayName?.toLowerCase() || "";
   const teamAbbr = teamInfo?.abbreviation?.toLowerCase() || "";
 
@@ -355,18 +355,18 @@ function computeHeadToHead(
   team2: TeamMetrics
 ): HeadToHeadRecord | undefined {
   // Find common opponents by matching opponent names in recent games
-  const t2Name = team2.name.toLowerCase();
-  const t1Name = team1.name.toLowerCase();
+  const t2Name = (team2.name || "").toLowerCase();
+  const t1Name = (team1.name || "").toLowerCase();
 
   const t1vsT2 = team1.recentGames.filter(
     (g) =>
-      g.opponent.toLowerCase().includes(t2Name) ||
-      t2Name.includes(g.opponent.toLowerCase())
+      (g.opponent || "").toLowerCase().includes(t2Name) ||
+      t2Name.includes((g.opponent || "").toLowerCase())
   );
   const t2vsT1 = team2.recentGames.filter(
     (g) =>
-      g.opponent.toLowerCase().includes(t1Name) ||
-      t1Name.includes(g.opponent.toLowerCase())
+      (g.opponent || "").toLowerCase().includes(t1Name) ||
+      t1Name.includes((g.opponent || "").toLowerCase())
   );
 
   // Use whichever set has more matches (both should be similar)

@@ -97,7 +97,7 @@ export default function BetHistory({ onLoad }: BetHistoryProps) {
                     ? "bg-red-500/20 text-red-400"
                     : "bg-yellow-500/20 text-yellow-400"
                 }`}>
-                  {entry.grade.result.toUpperCase()}
+                  {(entry.grade.result || "").toUpperCase()}
                 </span>
               )}
               {/* Delete single entry */}

@@ -63,7 +63,7 @@ export async function checkGameStatus(
   market?: string,
   line?: number
 ): Promise<GameStatus | null> {
-  const key = sport.toUpperCase();
+  const key = (sport || "").toUpperCase();
   const mapping = SPORT_MAP[key];
   if (!mapping) return null;
 
@@ -136,7 +136,7 @@ export async function checkGameStatus(
         result: "pending",
         actual: current,
         line,
-        detail: `${current} ${market.toLowerCase()} so far — needs ${line > current ? `${(line - current + (line % 1 === 0.5 ? 0.5 : 1)).toFixed(line % 1 === 0.5 ? 1 : 0)} more` : "already over the line"}`,
+        detail: `${current} ${(market || "").toLowerCase()} so far — needs ${line > current ? `${(line - current + (line % 1 === 0.5 ? 0.5 : 1)).toFixed(line % 1 === 0.5 ? 1 : 0)} more` : "already over the line"}`,
       };
     }
 
@@ -152,7 +152,7 @@ export async function checkGameStatus(
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function findMatchingGame(events: any[], teams: string[]): any | null {
   if (teams.length === 0) return null;
-  const teamLower = teams.map((t) => t.toLowerCase());
+  const teamLower = teams.map((t) => (t || "").toLowerCase());
 
   for (const event of events) {
     const comp = event.competitions?.[0];
@@ -202,7 +202,7 @@ async function getPlayerStatLine(
     );
     if (!data?.boxscore?.players) return null;
 
-    const nameLower = playerName.toLowerCase();
+    const nameLower = (playerName || "").toLowerCase();
 
     for (const team of data.boxscore.players) {
       for (const statGroup of team.statistics || []) {
@@ -299,7 +299,7 @@ function gradeBet(
       const actual = Number(rawVal) || 0;
       const over = actual > line;
       const push = actual === line;
-      const marketLabel = market.toLowerCase();
+      const marketLabel = (market || "").toLowerCase();
       return {
         result: push ? "push" : over ? "hit" : "miss",
         actual,
@@ -320,7 +320,7 @@ function gradeBet(
 // ── Map market names to ESPN box score labels ─────────────────────
 
 function mapMarketToBoxScoreKey(market: string): string {
-  const m = market.toLowerCase();
+  const m = (market || "").toLowerCase();
   // NBA box score labels: MIN, PTS, FG, 3PT, FT, REB, AST, TO, STL, BLK, OREB, DREB, PF, +/-
   if (m.includes("point") || m.includes("pts")) return "PTS";
   if (m.includes("rebound") || m.includes("reb")) return "REB";

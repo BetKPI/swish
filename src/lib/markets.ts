@@ -450,8 +450,8 @@ export function getMarketIntelligence(
   market: string,
   sport: string
 ): MarketIntelligence | null {
-  const m = market.toLowerCase();
-  const s = sport.toUpperCase();
+  const m = (market || "").toLowerCase();
+  const s = (sport || "").toUpperCase();
 
   // Cross-sport markets (SGP, alt lines, combos)
   if (m.includes("same game parlay") || m.includes("sgp")) return NBA_MARKETS.sgp;

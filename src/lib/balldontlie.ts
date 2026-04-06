@@ -384,7 +384,7 @@ function analyzeProp(
 }
 
 function mapMarketToStat(market: string): string {
-  const m = market.toLowerCase();
+  const m = (market || "").toLowerCase();
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";

@@ -55,19 +55,25 @@ function buildGolfCharts(
   const masters = (rawData as any)?._masters;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const leaderboard = (rawData as any)?.leaderboard;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tournamentStatus = (rawData as any)?.status as string | undefined; // "pre" | "in" | "post"
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const tournamentName = (rawData as any)?.tournament as string | undefined;
   const playerName = extraction.players[0] || "";
+  const isTournamentStarted = tournamentStatus !== "pre";
 
-  // 1. Current tournament leaderboard (if available)
-  if (leaderboard && Array.isArray(leaderboard) && leaderboard.length > 0) {
+  // 1. Current tournament leaderboard — only show if tournament is in progress or finished
+  if (isTournamentStarted && leaderboard && Array.isArray(leaderboard) && leaderboard.length > 0) {
     const data = leaderboard.slice(0, 10).map((p: { position: number; name: string; score: string }) => ({
       pos: p.position,
       player: p.name === playerName ? `** ${p.name} **` : p.name,
       score: p.score,
-      isTarget: p.name === playerName || p.name?.toLowerCase() === playerName.toLowerCase(),
+      isTarget: p.name === playerName || p.name?.toLowerCase() === (playerName || "").toLowerCase(),
     }));
+    const titlePrefix = tournamentStatus === "post" ? "Final Leaderboard" : "Current Leaderboard";
     charts.push({
       type: "table",
-      title: "Current Leaderboard",
+      title: tournamentName ? `${titlePrefix} — ${tournamentName}` : titlePrefix,
       relevance: `Where ${playerName} stands right now`,
       data,
       columns: [
@@ -76,11 +82,20 @@ function buildGolfCharts(
         { key: "score", label: "Score" },
       ],
     });
+  } else if (!isTournamentStarted && tournamentName) {
+    // Tournament hasn't started — show a status note instead of stale data
+    charts.push({
+      type: "table",
+      title: `${tournamentName} — Not Yet Started`,
+      relevance: `The tournament hasn't started yet. Leaderboard will be available once play begins.`,
+      data: [{ info: `${tournamentName} has not started yet. Check back once the first round begins.` }],
+      columns: [{ key: "info", label: "Status" }],
+    });
   }
 
-  // 2. Player round-by-round scores (from leaderboard data)
+  // 2. Player round-by-round scores (from leaderboard data) — only if tournament started
   const pData = players?.[playerName];
-  if (pData?.rounds && Array.isArray(pData.rounds) && pData.rounds.length > 0) {
+  if (isTournamentStarted && pData?.rounds && Array.isArray(pData.rounds) && pData.rounds.length > 0) {
     const data = pData.rounds.map((r: { round: number; strokes: number; toPar: string }) => ({
       round: `R${r.round}`,
       strokes: r.strokes,
@@ -933,7 +948,7 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
 }
 
 function mapMarketToStatKey(market: string): string {
-  const m = market.toLowerCase();
+  const m = (market || "").toLowerCase();
   // NHL
   if (m.includes("shot")) return "shots";
   if (m.includes("save")) return "saves";

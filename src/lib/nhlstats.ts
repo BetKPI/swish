@@ -416,7 +416,7 @@ function analyzeNHLProp(
 }
 
 function mapNHLMarketToStat(market: string): string {
-  const m = market.toLowerCase();
+  const m = (market || "").toLowerCase();
   if (m.includes("goal")) return "goals";
   if (m.includes("assist")) return "assists";
   if (m.includes("point")) return "points";

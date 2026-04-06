@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as mlb from "@/lib/mlbstats";
 import * as bdl from "@/lib/balldontlie";
 import * as nhl from "@/lib/nhlstats";
-import { fetchAllTeamData } from "@/lib/espn";
+import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
 import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring } from "@/lib/masters";
@@ -151,9 +151,16 @@ async function executeFetch(
       }
 
       case "golf_player": {
-        const data = await fetchAllTeamData("Golf", [], [fetchReq.playerName]);
+        const data = await fetchGolfLeaderboard([fetchReq.playerName]);
         const players = data._players as Record<string, unknown> | undefined;
-        return players?.[fetchReq.playerName] as Record<string, unknown> || null;
+        const playerInfo = players?.[fetchReq.playerName] as Record<string, unknown> | null;
+        // Also include leaderboard context and tournament info
+        return {
+          player: playerInfo,
+          tournament: data.tournament,
+          status: data.status,
+          leaderboard: (data.leaderboard as unknown[])?.slice(0, 10),
+        };
       }
 
       case "masters_hole": {
@@ -238,10 +245,16 @@ export async function POST(request: NextRequest) {
     // Step 1: Ask AI what it needs
     const currentYear = new Date().getFullYear();
     const players = extraction.players?.length ? extraction.players.join(", ") : "none";
+    const isGolf = ["GOLF", "PGA", "PGA TOUR", "THE MASTERS", "MASTERS"].includes(sport);
+    const isMasters = sport === "THE MASTERS" || sport === "MASTERS" || (extraction.description || "").toLowerCase().includes("master");
+
     const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}).
 ${extraction.players?.length ? `Players in this bet: ${players}` : ""}
 ${extraction.market ? `Market: ${extraction.market}` : ""}
 ${extraction.line != null ? `Line: ${extraction.line}` : ""}
+${extraction.description ? `Bet description: ${extraction.description}` : ""}
+${isGolf ? `\nTHIS IS A GOLF BET. For golf questions, prefer "masters_hole" (for Masters/Augusta history) or "golf_player" (for current tournament data). Masters hole-by-hole data covers 2019-2025 and includes every round at Augusta.` : ""}
+${isMasters ? `This is a MASTERS bet at Augusta National. You have access to rich hole-by-hole historical data via "masters_hole" action.` : ""}
 
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 
@@ -294,18 +307,18 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 }
 
 RULES:
+- BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to — that's what you're here for.
 - IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
 - PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
 - If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
-- For pitcher matchups between two MLB teams (who is starting, season stats), use "mlb_pitcher_matchup".
-- For historical head-to-head between two specific pitchers (their records against each other's teams, games they both started), use "mlb_pitcher_h2h". Extract pitcher names from the existing data if available (e.g. probablePitchers), otherwise from user's message.
-- For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context (see "Players in this bet" above).
-- For NHL goalie stats (save percentage, saves, goals against), use "nhl_team_goalie" with the team name. This fetches the starting goalie's stats and game log automatically — you do NOT need to know the goalie's name.
-- For golf player stats, use "golf_player" with the golfer's name.
-- For Masters/Augusta hole-by-hole history, use "masters_hole" with playerName and optionally "hole" (1-18). This returns historical scoring data at Augusta National for that player across 2019-2025. Use this for questions about specific holes, Amen Corner (11-12-13), Sunday scoring, or course history. If no hole specified, returns all 18 holes + Amen Corner + Sunday analysis.
-- SEASON/YEAR INFERENCE: When the user says "last year", "last season", "2025", "tho" (implying a different year), or any year number, include "season" in the fetch request. Map: "last year"/"last season" → ${currentYear - 1}, "2025" → 2025, "2024" → 2024, etc. For NHL, season format is "20242025". If the user replies with just a year (e.g., "2025 tho"), they want data from THAT year — re-fetch with the correct season parameter.
-- We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests. Use FORMAT 2 with the season parameter.
+- GOLF: For ANY golf question, ALWAYS fetch data. Use "masters_hole" for Masters/Augusta questions (returns hole-by-hole history across 2019-2025 — Amen Corner, Sunday scoring, all 18 holes). Use "golf_player" for current tournament position and leaderboard. If the user asks about a golfer and you have no data, default to "masters_hole" for Masters bets or "golf_player" otherwise.
+- For pitcher matchups between two MLB teams, use "mlb_pitcher_matchup".
+- For historical H2H between two pitchers, use "mlb_pitcher_h2h". Extract pitcher names from existing data if available.
+- For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context.
+- For NHL goalie stats, use "nhl_team_goalie" with the team name.
+- SEASON/YEAR INFERENCE: "last year"/"last season" → ${currentYear - 1}. For NHL, format is "20242025". If user says a year number, re-fetch with that season.
+- We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests.
 - Data keys must be camelCase.
 - Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.`;
 
@@ -351,12 +364,15 @@ RULES:
       // Step 2: Generate chart from fetched data
       const chartPrompt = `You are a sports analytics assistant. The user asked: "${message}"
 
-We just fetched this data for them:
+THEIR BET: ${extraction.description || `${extraction.sport} ${extraction.betType}`}
+${extraction.players?.length ? `Player: ${extraction.players.join(", ")}` : ""}
+${extraction.market ? `Market: ${extraction.market}` : ""}
+${extraction.line != null ? `Line: ${extraction.line}` : ""}
+
+We just fetched this data:
 ${JSON.stringify(fetchedData, null, 2)}
 
-Original bet context: ${extraction.sport} ${extraction.betType} — ${extraction.teams?.join(" vs ")}
-
-Create a chart from this data. Respond with ONLY valid JSON:
+Create a chart that ANALYZES this data in the context of their bet. Don't just display raw numbers — tell them something useful about whether the data supports or undermines their bet. Respond with ONLY valid JSON:
 {
   "type": "chart",
   "message": "Brief explanation of what the chart shows (1 sentence)",

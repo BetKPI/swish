@@ -23,7 +23,7 @@ const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_pr
 async function fetchSportData(
   extraction: BetExtraction
 ): Promise<{ data: Record<string, unknown>; source: string }> {
-  const sport = extraction.sport.toUpperCase();
+  const sport = (extraction.sport || "").toUpperCase();
   const isNBA = sport === "NBA" || sport === "BASKETBALL";
   const isMLB = sport === "MLB" || sport === "BASEBALL";
 

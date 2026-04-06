@@ -241,7 +241,7 @@ function sportColorClass(sport: string): string {
     MLB: "bg-red-500/20 text-red-400",
     NHL: "bg-blue-500/20 text-blue-400",
     Soccer: "bg-emerald-500/20 text-emerald-400",
-    Golf: "bg-emerald-500/20 text-emerald-400",
+    Golf: "bg-lime-500/20 text-lime-400",
     NCAAB: "bg-blue-500/20 text-blue-400",
     NCAAF: "bg-amber-500/20 text-amber-400",
   };
