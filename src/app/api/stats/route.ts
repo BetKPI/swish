@@ -605,6 +605,33 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Log every bet submission to Discord
+    const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+    if (webhookUrl) {
+      const isParlay = extraction.betType === "parlay";
+      const legCount = extraction.legs?.length || 0;
+      fetch(webhookUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          embeds: [{
+            title: `${isParlay ? "🎰" : "📊"} Bet Submitted`,
+            color: 0x6366f1,
+            fields: [
+              { name: "Bet", value: (extraction.description || "?").slice(0, 200), inline: false },
+              { name: "Sport", value: extraction.sport || "?", inline: true },
+              { name: "Type", value: extraction.betType?.replace("_", "/") || "?", inline: true },
+              ...(extraction.market ? [{ name: "Market", value: extraction.market, inline: true }] : []),
+              ...(extraction.players?.length ? [{ name: "Players", value: extraction.players.join(", "), inline: true }] : []),
+              { name: "Teams", value: extraction.teams?.join(" vs ") || "?", inline: true },
+              ...(isParlay ? [{ name: "Legs", value: String(legCount), inline: true }] : []),
+            ],
+            timestamp: new Date().toISOString(),
+          }],
+        }),
+      }).catch(() => {});
+    }
+
     if (extraction.betType === "parlay") {
       const legs = extraction.legs || [];
       if (legs.length === 0) {
