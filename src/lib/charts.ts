@@ -705,7 +705,13 @@ function buildSpreadCharts(
     const t0 = teams[0], t1 = teams[1];
     const data = [
       { stat: "Record", [shortenName(t0.name)]: `${t0.record.wins}-${t0.record.losses}`, [shortenName(t1.name)]: `${t1.record.wins}-${t1.record.losses}` },
-      { stat: "ATS Cover Rate", [shortenName(t0.name)]: `${Math.round((t0.ats?.coverRate ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.ats?.coverRate ?? 0) * 100)}%` },
+      // For alt spreads (cover rate > 90%), show blowout risk instead
+      ...(((t0.ats?.coverRate ?? 0) > 0.9 && (t1.ats?.coverRate ?? 0) > 0.9) ? [
+        { stat: "ATS Record", [shortenName(t0.name)]: `${t0.ats?.covers ?? 0}-${t0.ats?.fails ?? 0}`, [shortenName(t1.name)]: `${t1.ats?.covers ?? 0}-${t1.ats?.fails ?? 0}` },
+        { stat: "Games Lost 20+", [shortenName(t0.name)]: `${t0.recentGames.filter(g => g.margin <= -20).length}/${t0.recentGames.length}`, [shortenName(t1.name)]: `${t1.recentGames.filter(g => g.margin <= -20).length}/${t1.recentGames.length}` },
+      ] : [
+        { stat: "ATS Cover Rate", [shortenName(t0.name)]: `${Math.round((t0.ats?.coverRate ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.ats?.coverRate ?? 0) * 100)}%` },
+      ]),
       { stat: "Home Win %", [shortenName(t0.name)]: `${Math.round((t0.homeRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.homeRecord?.pct ?? 0) * 100)}%` },
       { stat: "Away Win %", [shortenName(t0.name)]: `${Math.round((t0.awayRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.awayRecord?.pct ?? 0) * 100)}%` },
       { stat: "Avg Margin", [shortenName(t0.name)]: `${(t0.scoring.avgPointsFor - t0.scoring.avgPointsAgainst) > 0 ? "+" : ""}${(t0.scoring.avgPointsFor - t0.scoring.avgPointsAgainst).toFixed(1)}`, [shortenName(t1.name)]: `${(t1.scoring.avgPointsFor - t1.scoring.avgPointsAgainst) > 0 ? "+" : ""}${(t1.scoring.avgPointsFor - t1.scoring.avgPointsAgainst).toFixed(1)}` },
