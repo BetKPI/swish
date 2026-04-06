@@ -324,15 +324,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bet Counter */}
-          <div className="text-center py-4">
-            <p className="text-sm text-muted">
-              <span className="font-semibold text-foreground/70">
-                {(847 + Math.floor((Date.now() - new Date("2026-04-01").getTime()) / (1000 * 60 * 30))).toLocaleString()}
-              </span>
-              {" "}bets analyzed
-            </p>
-          </div>
+          {/* Spacer */}
+          <div className="py-2" />
 
           {/* Bet History */}
           <div className="max-w-lg mx-auto px-4 py-8">

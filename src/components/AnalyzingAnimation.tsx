@@ -32,6 +32,29 @@ const TIPS = [
 export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: AnalyzingAnimationProps) {
   const [tipIndex, setTipIndex] = useState(0);
   const [dots, setDots] = useState(0);
+  const [step, setStep] = useState(0);
+
+  // Progress steps on a timer — gives real feeling of progression
+  useEffect(() => {
+    // Step 0: Read (immediate)
+    // Step 1: Fetch (after 2s)
+    // Step 2: Analyze (after 5s or when status changes to "pull")
+    // Step 3: Score (after 8s)
+    const timers = [
+      setTimeout(() => setStep(1), 2000),
+      setTimeout(() => setStep(2), isParlay ? 8000 : 5000),
+      setTimeout(() => setStep(3), isParlay ? 15000 : 8000),
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [isParlay]);
+
+  // Also advance step when status message changes
+  useEffect(() => {
+    const msg = statusMsg.toLowerCase();
+    if (msg.includes("pull") || msg.includes("break") || msg.includes("fetch")) {
+      setStep((prev) => Math.max(prev, 1));
+    }
+  }, [statusMsg]);
 
   // Rotate tips every 4s
   useEffect(() => {
@@ -78,18 +101,17 @@ export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: Analy
 
       {/* Progress steps */}
       <div className="flex items-center justify-center gap-2">
-        {["Read", "Fetch", "Analyze", "Score"].map((step, i) => {
-          const isActive = statusMsg.toLowerCase().includes("read") ? i === 0
-            : statusMsg.toLowerCase().includes("pull") || statusMsg.toLowerCase().includes("break") ? i === 1
-            : i <= 2;
+        {["Read", "Fetch", "Analyze", "Score"].map((label, i) => {
+          const isDone = i < step;
+          const isActive = i === step;
           return (
-            <div key={step} className="flex items-center gap-2">
-              <div className={`w-2 h-2 rounded-full transition-colors ${
-                isActive ? "bg-accent" : "bg-surface-light"
+            <div key={label} className="flex items-center gap-2">
+              <div className={`w-2 h-2 rounded-full transition-all duration-500 ${
+                isDone ? "bg-accent" : isActive ? "bg-accent animate-pulse" : "bg-surface-light"
               }`} />
-              <span className={`text-xs transition-colors ${
-                isActive ? "text-accent font-medium" : "text-muted/50"
-              }`}>{step}</span>
+              <span className={`text-xs transition-colors duration-500 ${
+                isDone ? "text-accent/70" : isActive ? "text-accent font-medium" : "text-muted/50"
+              }`}>{label}</span>
               {i < 3 && <span className="text-muted/30 text-xs">{"\u2014"}</span>}
             </div>
           );
