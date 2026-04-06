@@ -89,6 +89,7 @@ export async function getFirstBasketData(
   playerTipCenter: TipOffCenter | null;
   opponentTipCenter: TipOffCenter | null;
   tipMatchup: { player: TipOffCenter; opponent: TipOffCenter; headToHead: string } | null;
+  tipH2H: { player: string; opponent: string; playerWins: number; opponentWins: number; total: number } | null;
   gamesProcessed: number;
   season: string;
 } | null> {
