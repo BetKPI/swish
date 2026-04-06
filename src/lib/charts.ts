@@ -627,15 +627,26 @@ function buildPlayerPropCharts(
       }
     }
 
-    // 5. vs Opponent if we have enough data
-    if (gameValues && extraction.teams && extraction.teams.length > 0) {
-      const opponentName = extraction.teams.find((t) =>
-        !gameValues.some((g: { opponent?: string }) => g.opponent?.toLowerCase().includes(t.toLowerCase()))
-      ) || extraction.teams[1] || extraction.teams[0];
+    // 6. vs Opponent if we have enough data
+    if (gameValues && extraction.teams && extraction.teams.length >= 2) {
+      // Figure out which team is the opponent (not the player's team)
+      // The player's team will NOT appear in their game log opponents
+      // The opponent team WILL appear if they've played against them
+      const teamMatchCounts = extraction.teams.map((t) => ({
+        name: t,
+        matches: gameValues.filter((g: { opponent?: string }) => {
+          const opp = g.opponent?.toLowerCase() || "";
+          return opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp);
+        }).length,
+      }));
+      // The team with MORE matches in the opponent column is the actual opponent
+      // (the player's own team should have 0 matches since you don't play against yourself)
+      const sorted = [...teamMatchCounts].sort((a, b) => b.matches - a.matches);
+      const opponentName = sorted[0].matches > 0 ? sorted[0].name : sorted[1]?.name || extraction.teams[1];
 
       const vsOpponent = gameValues.filter((g: { opponent?: string }) => {
         const opp = g.opponent?.toLowerCase() || "";
-        return extraction.teams?.some((t) => opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp));
+        return opp.includes(opponentName.toLowerCase()) || opponentName.toLowerCase().includes(opp);
       });
 
       if (vsOpponent.length > 0) {
@@ -658,9 +669,20 @@ function buildPlayerPropCharts(
 
     // 7. Opponent defensive context — how much does the other team allow?
     if (extraction.teams && extraction.teams.length >= 2 && Object.keys(computed.teamMetrics).length >= 2) {
-      const teamNames = Object.keys(computed.teamMetrics);
-      // Find the opponent team (not the player's team)
-      const opponentMetrics = computed.teamMetrics[teamNames[1]] || computed.teamMetrics[teamNames[0]];
+      // Find the opponent team: check which team the player is NOT on
+      // by seeing which team shows up in the game log opponents
+      const opponentTeamName = gameValues ? (() => {
+        const counts = extraction.teams!.map((t) => ({
+          name: t,
+          matches: gameValues.filter((g: { opponent?: string }) => {
+            const opp = g.opponent?.toLowerCase() || "";
+            return opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp);
+          }).length,
+        }));
+        const sorted = [...counts].sort((a, b) => b.matches - a.matches);
+        return sorted[0]?.matches > 0 ? sorted[0].name : extraction.teams![1];
+      })() : extraction.teams[1];
+      const opponentMetrics = computed.teamMetrics[opponentTeamName] || Object.values(computed.teamMetrics)[1] || Object.values(computed.teamMetrics)[0];
       if (opponentMetrics) {
         const oppAllows = opponentMetrics.scoring.avgPointsAgainst;
         const oppL5Allows = opponentMetrics.scoring.last5AvgAgainst;
