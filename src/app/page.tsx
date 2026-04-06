@@ -217,30 +217,28 @@ export default function Home() {
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                Check the charts before
-                <br />
-                <span className="text-accent">you place the bet.</span>
+                Due diligence for <span className="text-accent">every bet.</span>
               </h2>
 
-              <p className="text-muted text-base sm:text-lg max-w-md mx-auto">
-                Screenshot any bet, get historical stats and a Swish Score — like pulling up a stock chart before you buy.
+              <p className="text-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+                Upload any bet screenshot. Get the charts, stats, and trends that actually matter — scored out of 10.
               </p>
 
               {/* 3-step explainer */}
-              <div className="flex items-center justify-center gap-2 sm:gap-4 text-sm text-muted max-w-md mx-auto">
+              <div className="flex items-center justify-center gap-3 sm:gap-5 text-sm text-muted max-w-lg mx-auto">
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">1</span>
-                  <span>Screenshot any bet</span>
+                  <span>Screenshot</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">2</span>
-                  <span>Upload it</span>
+                  <span>Upload</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
-                  <span>See the data</span>
+                  <span>Charts + Score</span>
                 </div>
               </div>
 
@@ -298,13 +296,13 @@ export default function Home() {
                         </svg>
                       </div>
                       <p className="text-lg sm:text-xl font-bold">
-                        Drop your bet screenshot
+                        Drop your bet screenshot here
                       </p>
                       <p className="text-muted text-sm">
-                        Any app — DraftKings, FanDuel, PrizePicks, Underdog, Bet365
+                        DraftKings, FanDuel, PrizePicks, Underdog — any app
                       </p>
                       <p className="text-accent text-xs font-medium">
-                        Props, parlays, O/U, spreads, picks — all scored
+                        Props / parlays / O/U / spreads / moneylines
                       </p>
                     </div>
                   )}
@@ -349,12 +347,10 @@ export default function Home() {
           <div className="border-t border-border/30" />
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
-              <p className="text-2xl sm:text-3xl font-bold">
-                You wouldn&apos;t buy a stock blind.
-                <br />
-                Don&apos;t bet blind either.
+              <p className="text-2xl sm:text-3xl font-bold leading-tight">
+                You wouldn&apos;t buy a stock without checking the chart.
               </p>
-              <p className="text-muted">Free. No sign-up. Takes 20 seconds.</p>
+              <p className="text-muted text-base mt-2">Free. No sign-up. 20 seconds.</p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"
