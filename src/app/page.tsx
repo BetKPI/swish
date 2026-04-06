@@ -217,13 +217,15 @@ export default function Home() {
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                Know before you bet.
+                What does the data say
+                <br />
+                <span className="text-accent">about your bet?</span>
               </h2>
 
               <p className="text-muted text-base sm:text-lg max-w-md mx-auto leading-relaxed">
-                Upload a screenshot of your bet slip.
+                Screenshot your bet slip. Get instant charts,
                 <br className="hidden sm:block" />
-                Get the stats, charts, and a score out of 10.
+                hit rates, trends, and a Swish Score.
               </p>
 
               {/* 3-step explainer */}
@@ -350,7 +352,9 @@ export default function Home() {
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
               <p className="text-2xl sm:text-3xl font-bold leading-tight">
-                Your gut plus data wins more.
+                Your gut is good.
+                <br />
+                Your gut + data is better.
               </p>
               <p className="text-muted text-base mt-2">Free. No sign-up. 20 seconds.</p>
               <button
