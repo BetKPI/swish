@@ -12,14 +12,22 @@ export function buildCharts(
   betType: string,
   computed: ComputedAnalysis,
   extraction: {
+    sport?: string;
     teams: string[];
     players: string[];
     line?: number;
     odds: string;
     market?: string;
+    description?: string;
   },
   rawData: Record<string, unknown>
 ): ChartConfig[] {
+  // Golf gets its own chart builder — data structure is completely different
+  const sport = (extraction.sport || "").toUpperCase();
+  if (sport === "GOLF" || sport === "PGA" || sport === "PGA TOUR" || sport === "THE MASTERS" || sport === "MASTERS") {
+    return buildGolfCharts(extraction, rawData);
+  }
+
   switch (betType) {
     case "spread":
       return buildSpreadCharts(computed, extraction);
@@ -32,6 +40,149 @@ export function buildCharts(
     default:
       return []; // exotic bets handled by AI fallback
   }
+}
+
+// ── Golf charts ───────────────────────────────────────────────────
+
+function buildGolfCharts(
+  extraction: { players: string[]; line?: number; market?: string; description?: string },
+  rawData: Record<string, unknown>
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const players = (rawData as any)?._players;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const masters = (rawData as any)?._masters;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const leaderboard = (rawData as any)?.leaderboard;
+  const playerName = extraction.players[0] || "";
+
+  // 1. Current tournament leaderboard (if available)
+  if (leaderboard && Array.isArray(leaderboard) && leaderboard.length > 0) {
+    const data = leaderboard.slice(0, 10).map((p: { position: number; name: string; score: string }) => ({
+      pos: p.position,
+      player: p.name === playerName ? `** ${p.name} **` : p.name,
+      score: p.score,
+      isTarget: p.name === playerName || p.name?.toLowerCase() === playerName.toLowerCase(),
+    }));
+    charts.push({
+      type: "table",
+      title: "Current Leaderboard",
+      relevance: `Where ${playerName} stands right now`,
+      data,
+      columns: [
+        { key: "pos", label: "Pos" },
+        { key: "player", label: "Player" },
+        { key: "score", label: "Score" },
+      ],
+    });
+  }
+
+  // 2. Player round-by-round scores (from leaderboard data)
+  const pData = players?.[playerName];
+  if (pData?.rounds && Array.isArray(pData.rounds) && pData.rounds.length > 0) {
+    const data = pData.rounds.map((r: { round: number; strokes: number; toPar: string }) => ({
+      round: `R${r.round}`,
+      strokes: r.strokes,
+      toPar: r.toPar,
+    }));
+    charts.push({
+      type: "bar",
+      title: `${playerName} — Round-by-Round Scores`,
+      relevance: `Stroke totals each round — shows consistency and Sunday form`,
+      data,
+      xKey: "round",
+      yKeys: ["strokes"],
+    });
+  }
+
+  // 3. Masters hole-by-hole history (if available)
+  if (masters && masters[playerName]) {
+    const mData = masters[playerName];
+
+    // Amen Corner analysis (holes 11-13) — the most famous stretch in golf
+    if (mData.amenCorner && Array.isArray(mData.amenCorner) && mData.amenCorner.length > 0) {
+      const data = mData.amenCorner.map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; bogeyRate: number; totalRounds: number }) => ({
+        hole: `#${h.hole} ${h.holeName}`,
+        par: h.par,
+        avgStrokes: h.avgStrokes,
+        birdieRate: `${h.birdieRate}%`,
+        bogeyRate: `${h.bogeyRate}%`,
+      }));
+      charts.push({
+        type: "table",
+        title: `${playerName} — Amen Corner History`,
+        relevance: `Holes 11-13 at Augusta across ${mData.amenCorner[0]?.totalRounds || 0} career rounds — where tournaments are won and lost`,
+        data,
+        columns: [
+          { key: "hole", label: "Hole" },
+          { key: "par", label: "Par" },
+          { key: "avgStrokes", label: "Avg" },
+          { key: "birdieRate", label: "Birdie %" },
+          { key: "bogeyRate", label: "Bogey %" },
+        ],
+      });
+    }
+
+    // Full 18-hole performance at Augusta
+    if (mData.holeByHole && Array.isArray(mData.holeByHole) && mData.holeByHole.length > 0) {
+      const data = mData.holeByHole.map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; bogeyRate: number }) => ({
+        hole: h.hole,
+        name: h.holeName,
+        par: h.par,
+        avg: h.avgStrokes,
+        vsPar: Math.round((h.avgStrokes - h.par) * 100) / 100,
+      }));
+      charts.push({
+        type: "line",
+        title: `${playerName} — Augusta Hole-by-Hole Avg vs Par`,
+        relevance: `Where ${playerName} gains and loses strokes at Augusta across multiple Masters`,
+        data,
+        xKey: "hole",
+        yKeys: ["vsPar"],
+      });
+    }
+
+    // Sunday scoring history
+    if (mData.sundays && Array.isArray(mData.sundays) && mData.sundays.length > 0) {
+      const data = mData.sundays.map((s: { year: number; round4Score: number; round4ToPar: string; frontNine: number; backNine: number }) => ({
+        year: String(s.year),
+        total: s.round4Score,
+        toPar: s.round4ToPar,
+        front9: s.frontNine,
+        back9: s.backNine,
+      }));
+      charts.push({
+        type: "bar",
+        title: `${playerName} — Masters Sunday Scores`,
+        relevance: `Final round history — ${data.length} Sundays at Augusta. Back 9 pressure is where it matters.`,
+        data,
+        xKey: "year",
+        yKeys: ["front9", "back9"],
+      });
+    }
+
+    // Year-over-year total scores
+    if (mData.history?.years && Array.isArray(mData.history.years) && mData.history.years.length > 0) {
+      const data = mData.history.years.map((y: { year: number; totalScore?: number; totalToPar?: string }) => ({
+        year: String(y.year),
+        totalScore: y.totalScore || 0,
+        toPar: y.totalToPar || "E",
+      }));
+      if (data.length >= 2) {
+        charts.push({
+          type: "bar",
+          title: `${playerName} — Masters History`,
+          relevance: `Total scores across ${data.length} Masters appearances`,
+          data,
+          xKey: "year",
+          yKeys: ["totalScore"],
+        });
+      }
+    }
+  }
+
+  return charts;
 }
 
 // ── Spread charts ──────────────────────────────────────────────────
