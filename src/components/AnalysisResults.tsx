@@ -25,21 +25,22 @@ interface AnalysisResultsProps {
   onReset: () => void;
 }
 
+/** Score is now 0-10 scale */
 function scoreColor(score: number): string {
-  if (score <= 30) return "text-red-500";
-  if (score <= 45) return "text-orange-400";
-  if (score <= 55) return "text-yellow-400";
-  if (score <= 70) return "text-emerald-400";
-  if (score <= 85) return "text-green-400";
+  if (score <= 3) return "text-red-500";
+  if (score <= 4.5) return "text-orange-400";
+  if (score <= 5.5) return "text-yellow-400";
+  if (score <= 7) return "text-emerald-400";
+  if (score <= 8.5) return "text-green-400";
   return "text-green-300";
 }
 
 function scoreRingColor(score: number): string {
-  if (score <= 30) return "stroke-red-500";
-  if (score <= 45) return "stroke-orange-400";
-  if (score <= 55) return "stroke-yellow-400";
-  if (score <= 70) return "stroke-emerald-400";
-  if (score <= 85) return "stroke-green-400";
+  if (score <= 3) return "stroke-red-500";
+  if (score <= 4.5) return "stroke-orange-400";
+  if (score <= 5.5) return "stroke-yellow-400";
+  if (score <= 7) return "stroke-emerald-400";
+  if (score <= 8.5) return "stroke-green-400";
   return "stroke-green-300";
 }
 
@@ -93,13 +94,14 @@ export default function AnalysisResults({
                 cx="60" cy="60" r="52" fill="none" strokeWidth="8"
                 className={scoreRingColor(swishScore.score)}
                 strokeLinecap="round"
-                strokeDasharray={`${(swishScore.score / 100) * 327} 327`}
+                strokeDasharray={`${(swishScore.score / 10) * 327} 327`}
               />
             </svg>
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center">
               <span className={`text-3xl font-black ${scoreColor(swishScore.score)}`}>
                 {swishScore.score}
               </span>
+              <span className="text-xs text-muted -mt-0.5">/ 10</span>
             </div>
           </div>
           <p className={`text-sm font-bold mt-2 ${scoreColor(swishScore.score)}`}>

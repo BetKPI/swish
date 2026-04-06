@@ -1,14 +1,44 @@
 /**
- * Swish Score — a 0-100 data-strength rating for any bet type.
- * Computed entirely from pre-fetched data, no API calls.
+ * Swish Score — a 0-10 data-strength rating for any bet type.
+ * Computed internally on 0-100, displayed as X.X/10.
  *
- * Scale: 50 = neutral, 70+ = data looks strong, 85+ = very strong, below 40 = data looks weak.
+ * Scale: 5 = neutral, 7+ = data looks strong, 8.5+ = very strong, below 4 = data looks weak.
  */
 
+import { readFileSync } from "fs";
+import { join } from "path";
 import type { ComputedAnalysis } from "./analytics";
 import type { BetExtraction } from "@/types";
 
+// Load model weights from JSON — updated by autoresearch loop
+interface ModelWeights {
+  player_prop: { hitRate: number; trend: number; consistency: number; sampleSize: number; homeAway: number };
+  spread: { atsCoverRate: number; closeGames: number; marginTrend: number; homeAwayRecord: number; restAdvantage: number };
+  over_under: { overRate: number; paceProjection: number; scoringTrend: number; avgVsLine: number };
+  moneyline: { winPct: number; recentForm: number; pointDiff: number; homeAwayPct: number; streak: number };
+}
+
+let _weights: ModelWeights | null = null;
+function getWeights(): ModelWeights {
+  if (!_weights) {
+    try {
+      const raw = readFileSync(join(process.cwd(), "models", "swish-weights.json"), "utf-8");
+      _weights = JSON.parse(raw) as ModelWeights;
+    } catch {
+      // Fallback to defaults if file missing
+      _weights = {
+        player_prop: { hitRate: 0.4, trend: 0.2, consistency: 0.15, sampleSize: 0.1, homeAway: 0.15 },
+        spread: { atsCoverRate: 0.35, closeGames: 0.2, marginTrend: 0.2, homeAwayRecord: 0.15, restAdvantage: 0.1 },
+        over_under: { overRate: 0.35, paceProjection: 0.25, scoringTrend: 0.2, avgVsLine: 0.2 },
+        moneyline: { winPct: 0.3, recentForm: 0.25, pointDiff: 0.2, homeAwayPct: 0.15, streak: 0.1 },
+      };
+    }
+  }
+  return _weights;
+}
+
 export interface SwishScoreResult {
+  /** Display score: 0-10 scale (one decimal) */
   score: number;
   label: string;
   detail: string;
@@ -18,13 +48,19 @@ function clamp(v: number, min = 0, max = 100): number {
   return Math.max(min, Math.min(max, v));
 }
 
-function getLabel(score: number): string {
-  if (score <= 30) return "Weak";
-  if (score <= 45) return "Shaky";
-  if (score <= 55) return "Toss-Up";
-  if (score <= 70) return "Solid";
-  if (score <= 85) return "Strong";
-  return "Lock-Level Data";
+/** Takes raw 0-100 score, returns label */
+function getLabel(raw: number): string {
+  if (raw <= 30) return "Weak";
+  if (raw <= 45) return "Shaky";
+  if (raw <= 55) return "Toss-Up";
+  if (raw <= 70) return "Solid";
+  if (raw <= 85) return "Strong";
+  return "Lock";
+}
+
+/** Convert internal 0-100 to display 0-10 (one decimal) */
+function toDisplay(raw: number): number {
+  return Math.round(raw) / 10;
 }
 
 // ── Player Prop scoring ───────────────────────────────────────────
@@ -42,7 +78,7 @@ function scorePlayerProp(
   const pa = pData?.propAnalysis;
 
   if (!pa) {
-    return { score: 45, label: getLabel(45), detail: "45 — Limited player data available for this prop" };
+    return { score: toDisplay(45), label: getLabel(45), detail: "Limited player data available for this prop" };
   }
 
   const hitRate = pa.hitRate ?? 0; // 0-1
@@ -93,13 +129,15 @@ function scorePlayerProp(
     homeAwayScore = clamp(50 + ((venueAvg - line) / line) * 100);
   }
 
-  const raw = hitRateScore * 0.4 + trendScore * 0.2 + consistencyScore * 0.15 + sampleScore * 0.1 + homeAwayScore * 0.15;
+  const w = getWeights().player_prop;
+  const raw = hitRateScore * w.hitRate + trendScore * w.trend + consistencyScore * w.consistency + sampleScore * w.sampleSize + homeAwayScore * w.homeAway;
   const score = Math.round(clamp(raw));
 
   const trendWord = trend === "rising" ? "rising trend" : trend === "falling" ? "falling trend" : "steady trend";
-  const detail = `${score} — ${hitCount}/${totalGames} over the line, avg ${average} vs ${line} line, ${trendWord}`;
+  const displayScore = toDisplay(score);
+  const detail = `${hitCount}/${totalGames} over the line, avg ${average} vs ${line} line, ${trendWord}`;
 
-  return { score, label: getLabel(score), detail };
+  return { score: displayScore, label: getLabel(score), detail };
 }
 
 // ── Spread scoring ────────────────────────────────────────────────
@@ -111,7 +149,7 @@ function scoreSpread(
   const teams = Object.values(computed.teamMetrics);
   const team = teams[0];
   if (!team) {
-    return { score: 45, label: getLabel(45), detail: "45 — Not enough team data for spread analysis" };
+    return { score: toDisplay(45), label: getLabel(45), detail: "Not enough team data for spread analysis" };
   }
 
   const ats = team.ats;
@@ -156,7 +194,8 @@ function scoreSpread(
     else restScore = 55; // too much rest can be bad
   }
 
-  const raw = atsScore * 0.35 + closeScore * 0.2 + marginTrendScore * 0.2 + homeAwayScore * 0.15 + restScore * 0.1;
+  const w = getWeights().spread;
+  const raw = atsScore * w.atsCoverRate + closeScore * w.closeGames + marginTrendScore * w.marginTrend + homeAwayScore * w.homeAwayRecord + restScore * w.restAdvantage;
   const score = Math.round(clamp(raw));
 
   const covers = ats?.covers ?? 0;
@@ -164,9 +203,10 @@ function scoreSpread(
   const avgMargin = games.length > 0
     ? Math.round((games.reduce((s, g) => s + g.margin, 0) / games.length) * 10) / 10
     : 0;
-  const detail = `${score} — Covered ${line} in ${covers}/${total}, avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}`;
+  const displayScore = toDisplay(score);
+  const detail = `Covered ${line} in ${covers}/${total}, avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}`;
 
-  return { score, label: getLabel(score), detail };
+  return { score: displayScore, label: getLabel(score), detail };
 }
 
 // ── Over/Under scoring ────────────────────────────────────────────
@@ -222,15 +262,17 @@ function scoreOverUnder(
     avgVsLineScore = clamp(50 + (diff / line) * 200);
   }
 
-  const raw = overRateScore * 0.35 + paceScore * 0.25 + trendScore * 0.2 + avgVsLineScore * 0.2;
+  const w = getWeights().over_under;
+  const raw = overRateScore * w.overRate + paceScore * w.paceProjection + trendScore * w.scoringTrend + avgVsLineScore * w.avgVsLine;
   const score = Math.round(clamp(raw));
 
   const projRounded = Math.round(projection * 10) / 10;
   const diff = Math.round((projection - line) * 10) / 10;
   const overUnder = diff >= 0 ? "over" : "under";
-  const detail = `${score} — Projects ~${projRounded} total, ${Math.abs(diff)} ${overUnder} the ${line} line`;
+  const displayScore = toDisplay(score);
+  const detail = `Projects ~${projRounded} total, ${Math.abs(diff)} ${overUnder} the ${line} line`;
 
-  return { score, label: getLabel(score), detail };
+  return { score: displayScore, label: getLabel(score), detail };
 }
 
 // ── Moneyline scoring ─────────────────────────────────────────────
@@ -242,7 +284,7 @@ function scoreMoneyline(
   const teams = Object.values(computed.teamMetrics);
   const team = teams[0];
   if (!team) {
-    return { score: 45, label: getLabel(45), detail: "45 — Not enough data for moneyline analysis" };
+    return { score: toDisplay(45), label: getLabel(45), detail: "Not enough data for moneyline analysis" };
   }
 
   // Win pct: 30% weight
@@ -265,14 +307,16 @@ function scoreMoneyline(
   if (team.streak.type === "W") streakScore = clamp(50 + team.streak.count * 10);
   else streakScore = clamp(50 - team.streak.count * 10);
 
-  const raw = winPctScore * 0.3 + formScore * 0.25 + diffScore * 0.2 + homeAwayScore * 0.15 + streakScore * 0.1;
+  const w = getWeights().moneyline;
+  const raw = winPctScore * w.winPct + formScore * w.recentForm + diffScore * w.pointDiff + homeAwayScore * w.homeAwayPct + streakScore * w.streak;
   const score = Math.round(clamp(raw));
 
   const winPct = Math.round(team.record.pct * 100);
   const streakStr = `${team.streak.type}${team.streak.count}`;
-  const detail = `${score} — ${team.name} ${winPct}% win rate, on a ${streakStr} streak`;
+  const displayScore = toDisplay(score);
+  const detail = `${team.name} ${winPct}% win rate, on a ${streakStr} streak`;
 
-  return { score, label: getLabel(score), detail };
+  return { score: displayScore, label: getLabel(score), detail };
 }
 
 // ── Main entry point ──────────────────────────────────────────────
@@ -294,6 +338,6 @@ export function computeSwishScore(
       return scoreMoneyline(computed, extraction);
     default:
       // For exotic / unsupported bet types, return a neutral score
-      return { score: 50, label: getLabel(50), detail: "50 — Standard bet type with mixed data signals" };
+      return { score: toDisplay(50), label: getLabel(50), detail: "Standard bet type with mixed data signals" };
   }
 }

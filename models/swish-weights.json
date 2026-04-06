@@ -1,0 +1,35 @@
+{
+  "_meta": {
+    "version": 1,
+    "updated": "2026-04-06",
+    "source": "manual — initial weights matching hardcoded swishScore.ts",
+    "notes": "These weights are loaded by swishScore.ts. Run research/run_loop.sh to optimize against historical outcomes."
+  },
+  "player_prop": {
+    "hitRate": 0.40,
+    "trend": 0.20,
+    "consistency": 0.15,
+    "sampleSize": 0.10,
+    "homeAway": 0.15
+  },
+  "spread": {
+    "atsCoverRate": 0.35,
+    "closeGames": 0.20,
+    "marginTrend": 0.20,
+    "homeAwayRecord": 0.15,
+    "restAdvantage": 0.10
+  },
+  "over_under": {
+    "overRate": 0.35,
+    "paceProjection": 0.25,
+    "scoringTrend": 0.20,
+    "avgVsLine": 0.20
+  },
+  "moneyline": {
+    "winPct": 0.30,
+    "recentForm": 0.25,
+    "pointDiff": 0.20,
+    "homeAwayPct": 0.15,
+    "streak": 0.10
+  }
+}

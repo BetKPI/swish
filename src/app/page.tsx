@@ -217,26 +217,30 @@ export default function Home() {
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
               <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                Screenshot your bet.
+                Is your bet any good?
                 <br />
-                <span className="text-accent">Get the real numbers.</span>
+                <span className="text-accent">Find out in 20 seconds.</span>
               </h2>
+
+              <p className="text-muted text-base sm:text-lg max-w-md mx-auto">
+                Upload a screenshot of any bet. Get a Swish Score out of 10 plus the charts and stats that matter.
+              </p>
 
               {/* 3-step explainer */}
               <div className="flex items-center justify-center gap-2 sm:gap-4 text-sm text-muted max-w-md mx-auto">
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">1</span>
-                  <span>Screenshot</span>
+                  <span>Screenshot your bet</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">2</span>
-                  <span>Upload</span>
+                  <span>Drop it here</span>
                 </div>
                 <span className="text-border">&#8594;</span>
                 <div className="flex items-center gap-1.5">
                   <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
-                  <span>See the data</span>
+                  <span>Get your score</span>
                 </div>
               </div>
 
@@ -294,13 +298,13 @@ export default function Home() {
                         </svg>
                       </div>
                       <p className="text-lg sm:text-xl font-bold">
-                        Upload your bet screenshot
+                        Drop your bet screenshot
                       </p>
                       <p className="text-muted text-sm">
-                        From FanDuel, DraftKings, Bet365 — any sportsbook app
+                        Any sportsbook — FanDuel, DraftKings, Bet365, whatever
                       </p>
                       <p className="text-accent text-xs font-medium">
-                        Works with spreads, props, O/U, parlays, moneylines
+                        Spreads, props, O/U, parlays, moneylines — all scored
                       </p>
                     </div>
                   )}
@@ -346,11 +350,11 @@ export default function Home() {
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
               <p className="text-2xl sm:text-3xl font-bold">
-                Your gut is good.
+                Stop guessing.
                 <br />
-                Your gut + data is better.
+                Start knowing.
               </p>
-              <p className="text-muted">Takes 10 seconds. Totally free.</p>
+              <p className="text-muted">20 seconds. Totally free. No sign-up.</p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"

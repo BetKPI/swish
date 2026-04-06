@@ -650,15 +650,15 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      // Compute average Swish Score across all legs
+      // Compute average Swish Score across all legs (scores are 0-10 scale)
       const legScores = finalLegs
         .map((l) => l.swishScore?.score)
         .filter((s): s is number => s != null);
       const avgScore = legScores.length > 0
-        ? Math.round(legScores.reduce((s, v) => s + v, 0) / legScores.length)
+        ? Math.round((legScores.reduce((s, v) => s + v, 0) / legScores.length) * 10) / 10
         : undefined;
       const parlaySwishScore = avgScore != null
-        ? { score: avgScore, label: avgScore <= 30 ? "Weak" : avgScore <= 45 ? "Shaky" : avgScore <= 55 ? "Toss-Up" : avgScore <= 70 ? "Solid" : avgScore <= 85 ? "Strong" : "Lock-Level Data", detail: `${avgScore} — Average across ${legScores.length} legs` }
+        ? { score: avgScore, label: avgScore <= 3 ? "Weak" : avgScore <= 4.5 ? "Shaky" : avgScore <= 5.5 ? "Toss-Up" : avgScore <= 7 ? "Solid" : avgScore <= 8.5 ? "Strong" : "Lock", detail: `Average across ${legScores.length} legs` }
         : undefined;
 
       // Log successful parlay to Discord

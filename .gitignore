@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# research data (regenerated each run, not committed)
+research/data/
+research/notes/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
