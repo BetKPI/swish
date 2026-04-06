@@ -33,6 +33,7 @@ interface FirstBasketDB {
 }
 
 let _db: FirstBasketDB | null = null;
+let _h2h: Record<string, Record<string, number>> | null = null;
 
 function loadDB(): FirstBasketDB | null {
   if (_db) return _db;
@@ -129,6 +130,35 @@ export async function getFirstBasketData(
     }
   }
 
+  // Load H2H tip-off data
+  if (!_h2h) {
+    try {
+      const h2hRaw = readFileSync(join(process.cwd(), "models", "tip-h2h.json"), "utf-8");
+      _h2h = JSON.parse(h2hRaw);
+    } catch {
+      _h2h = {};
+    }
+  }
+
+  // Find H2H record between these two centers
+  let tipH2H: { player: string; opponent: string; playerWins: number; opponentWins: number; total: number } | null = null;
+  if (playerTipCenter && opponentTipCenter && _h2h) {
+    const pair1 = `${playerTipCenter.name} vs ${opponentTipCenter.name}`;
+    const pair2 = `${opponentTipCenter.name} vs ${playerTipCenter.name}`;
+    const record = _h2h[pair1] || _h2h[pair2];
+    if (record) {
+      const pWins = record[playerTipCenter.name] || 0;
+      const oWins = record[opponentTipCenter.name] || 0;
+      tipH2H = {
+        player: playerTipCenter.name,
+        opponent: opponentTipCenter.name,
+        playerWins: pWins,
+        opponentWins: oWins,
+        total: pWins + oWins,
+      };
+    }
+  }
+
   // Head-to-head tip matchup
   let tipMatchup = null;
   if (playerTipCenter && opponentTipCenter) {
@@ -151,6 +181,7 @@ export async function getFirstBasketData(
     playerTipCenter,
     opponentTipCenter,
     tipMatchup,
+    tipH2H,
     gamesProcessed: db._meta.gamesProcessed,
     season: db._meta.season,
   };

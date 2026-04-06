@@ -1,0 +1,3378 @@
+{
+  "C. Holmgren vs S. Adams": {
+    "C. Holmgren": 0,
+    "S. Adams": 1
+  },
+  "D. Ayton vs D. Green": {
+    "D. Ayton": 1,
+    "D. Green": 1
+  },
+  "A. Hukporti vs J. Allen": {
+    "A. Hukporti": 0,
+    "J. Allen": 1
+  },
+  "D. Lively II vs V. Wembanyama": {
+    "D. Lively II": 0,
+    "V. Wembanyama": 1
+  },
+  "C. Holmgren vs I. Jackson": {
+    "C. Holmgren": 1,
+    "I. Jackson": 0
+  },
+  "D. Green vs N. Joki\u0107": {
+    "D. Green": 2,
+    "N. Joki\u0107": 0
+  },
+  "J. Allen vs J. Duren": {
+    "J. Allen": 2,
+    "J. Duren": 1
+  },
+  "N. Joki\u0107 vs R. Gobert": {
+    "N. Joki\u0107": 2,
+    "R. Gobert": 2
+  },
+  "J. Allen vs K. Towns": {
+    "J. Allen": 0,
+    "K. Towns": 2
+  },
+  "C. Holmgren vs L. Kornet": {
+    "C. Holmgren": 2,
+    "L. Kornet": 0
+  },
+  "A. Davis vs Q. Post": {
+    "A. Davis": 0,
+    "Q. Post": 1
+  },
+  "A. Sengun vs D. Ayton": {
+    "A. Sengun": 1,
+    "D. Ayton": 1
+  },
+  "M. Turner vs O. Okongwu": {
+    "M. Turner": 0,
+    "O. Okongwu": 3
+  },
+  "C. Holmgren vs J. Allen": {
+    "C. Holmgren": 0,
+    "J. Allen": 2
+  },
+  "D. Powell vs K. Towns": {
+    "D. Powell": 1,
+    "K. Towns": 0
+  },
+  "J. Duren vs N. Queta": {
+    "J. Duren": 0,
+    "N. Queta": 2
+  },
+  "K. Towns vs N. Queta": {
+    "K. Towns": 1,
+    "N. Queta": 2
+  },
+  "D. Ayton vs R. Gobert": {
+    "D. Ayton": 2,
+    "R. Gobert": 1
+  },
+  "I. Jackson vs K. Porzi\u0146\u0123is": {
+    "I. Jackson": 0,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "K. Oubre Jr. vs N. Queta": {
+    "K. Oubre Jr.": 0,
+    "N. Queta": 1
+  },
+  "C. Murray-Boyles vs E. Mobley": {
+    "C. Murray-Boyles": 0,
+    "E. Mobley": 1
+  },
+  "M. Robinson vs N. Vu\u010devi\u0107": {
+    "M. Robinson": 2,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "D. Ayton vs J. Jackson Jr.": {
+    "D. Ayton": 2,
+    "J. Jackson Jr.": 0
+  },
+  "M. Williams vs W. Kessler": {
+    "M. Williams": 0,
+    "W. Kessler": 1
+  },
+  "D. Clingan vs N. Joki\u0107": {
+    "D. Clingan": 1,
+    "N. Joki\u0107": 2
+  },
+  "I. Zubac vs Y. Missi": {
+    "I. Zubac": 0,
+    "Y. Missi": 1
+  },
+  "N. Queta vs W. Carter Jr.": {
+    "N. Queta": 0,
+    "W. Carter Jr.": 2
+  },
+  "A. Sarr vs J. Allen": {
+    "A. Sarr": 0,
+    "J. Allen": 1
+  },
+  "J. Poeltl vs K. Porzi\u0146\u0123is": {
+    "J. Poeltl": 1,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "J. Duren vs N. Claxton": {
+    "J. Duren": 2,
+    "N. Claxton": 2
+  },
+  "A. Sengun vs V. Wembanyama": {
+    "A. Sengun": 0,
+    "V. Wembanyama": 4
+  },
+  "K. Ware vs R. Kalkbrenner": {
+    "K. Ware": 2,
+    "R. Kalkbrenner": 0
+  },
+  "D. Gafford vs J. Jackson Jr.": {
+    "D. Gafford": 1,
+    "J. Jackson Jr.": 0
+  },
+  "M. Turner vs N. Vu\u010devi\u0107": {
+    "M. Turner": 0,
+    "N. Vu\u010devi\u0107": 3
+  },
+  "J. Nurki\u0107 vs R. Gobert": {
+    "J. Nurki\u0107": 3,
+    "R. Gobert": 0
+  },
+  "C. Holmgren vs D. Eubanks": {
+    "C. Holmgren": 2,
+    "D. Eubanks": 0
+  },
+  "K. Ware vs M. Robinson": {
+    "K. Ware": 1,
+    "M. Robinson": 1
+  },
+  "N. Claxton vs W. Carter Jr.": {
+    "N. Claxton": 1,
+    "W. Carter Jr.": 1
+  },
+  "A. Drummond vs P. Reed": {
+    "A. Drummond": 0,
+    "P. Reed": 1
+  },
+  "A. Sengun vs D. Clingan": {
+    "A. Sengun": 1,
+    "D. Clingan": 1
+  },
+  "M. Diabat\u00e9 vs M. Turner": {
+    "M. Diabat\u00e9": 2,
+    "M. Turner": 0
+  },
+  "D. Sabonis vs R. Gobert": {
+    "D. Sabonis": 0,
+    "R. Gobert": 2
+  },
+  "D. Ayton vs K. Looney": {
+    "D. Ayton": 1,
+    "K. Looney": 0
+  },
+  "D. Gafford vs I. Zubac": {
+    "D. Gafford": 0,
+    "I. Zubac": 1
+  },
+  "D. Green vs V. Wembanyama": {
+    "D. Green": 0,
+    "V. Wembanyama": 4
+  },
+  "E. Mobley vs I. Jackson": {
+    "E. Mobley": 1,
+    "I. Jackson": 0
+  },
+  "N. Claxton vs N. Queta": {
+    "N. Claxton": 4,
+    "N. Queta": 0
+  },
+  "J. Poeltl vs T. Vukcevic": {
+    "J. Poeltl": 1,
+    "T. Vukcevic": 1
+  },
+  "K. Ware vs M. Buzelis": {
+    "K. Ware": 1,
+    "M. Buzelis": 0
+  },
+  "D. Gafford vs D. Queen": {
+    "D. Gafford": 0,
+    "D. Queen": 1
+  },
+  "M. Williams vs R. Gobert": {
+    "M. Williams": 2,
+    "R. Gobert": 0
+  },
+  "N. Joki\u0107 vs S. Adams": {
+    "N. Joki\u0107": 1,
+    "S. Adams": 0
+  },
+  "C. Holmgren vs J. Nurki\u0107": {
+    "C. Holmgren": 1,
+    "J. Nurki\u0107": 2
+  },
+  "D. Clingan vs D. Green": {
+    "D. Clingan": 1,
+    "D. Green": 0
+  },
+  "A. Sarr vs K. Porzi\u0146\u0123is": {
+    "A. Sarr": 1,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "A. Drummond vs W. Carter Jr.": {
+    "A. Drummond": 1,
+    "W. Carter Jr.": 0
+  },
+  "I. Zubac vs J. Hayes": {
+    "I. Zubac": 0,
+    "J. Hayes": 2
+  },
+  "J. Duren vs L. Garza": {
+    "J. Duren": 1,
+    "L. Garza": 0
+  },
+  "K. Towns vs R. Kalkbrenner": {
+    "K. Towns": 0,
+    "R. Kalkbrenner": 1
+  },
+  "B. Adebayo vs M. Turner": {
+    "B. Adebayo": 1,
+    "M. Turner": 1
+  },
+  "I. Jackson vs J. Poeltl": {
+    "I. Jackson": 0,
+    "J. Poeltl": 1
+  },
+  "C. Holmgren vs R. Gobert": {
+    "C. Holmgren": 2,
+    "R. Gobert": 2
+  },
+  "D. Queen vs Z. Edey": {
+    "D. Queen": 0,
+    "Z. Edey": 1
+  },
+  "A. Sengun vs D. Green": {
+    "A. Sengun": 1,
+    "D. Green": 0
+  },
+  "D. Clingan vs L. Kornet": {
+    "D. Clingan": 1,
+    "L. Kornet": 1
+  },
+  "D. Eubanks vs M. Williams": {
+    "D. Eubanks": 0,
+    "M. Williams": 1
+  },
+  "J. Allen vs O. Okongwu": {
+    "J. Allen": 1,
+    "O. Okongwu": 0
+  },
+  "A. Drummond vs N. Claxton": {
+    "A. Drummond": 0,
+    "N. Claxton": 1
+  },
+  "N. Vu\u010devi\u0107 vs R. Kalkbrenner": {
+    "N. Vu\u010devi\u0107": 0,
+    "R. Kalkbrenner": 1
+  },
+  "J. Duren vs W. Carter Jr.": {
+    "J. Duren": 0,
+    "W. Carter Jr.": 3
+  },
+  "A. Sarr vs J. Huff": {
+    "A. Sarr": 0,
+    "J. Huff": 1
+  },
+  "K. Towns vs M. Turner": {
+    "K. Towns": 2,
+    "M. Turner": 1
+  },
+  "C. Holmgren vs M. Williams": {
+    "C. Holmgren": 1,
+    "M. Williams": 2
+  },
+  "L. Kornet vs N. Joki\u0107": {
+    "L. Kornet": 2,
+    "N. Joki\u0107": 0
+  },
+  "D. Eubanks vs J. Nurki\u0107": {
+    "D. Eubanks": 1,
+    "J. Nurki\u0107": 0
+  },
+  "A. Davis vs D. Ayton": {
+    "A. Davis": 0,
+    "D. Ayton": 1
+  },
+  "I. Zubac vs Z. Edey": {
+    "I. Zubac": 0,
+    "Z. Edey": 2
+  },
+  "N. Claxton vs R. Kalkbrenner": {
+    "N. Claxton": 1,
+    "R. Kalkbrenner": 1
+  },
+  "B. Adebayo vs W. Carter Jr.": {
+    "B. Adebayo": 1,
+    "W. Carter Jr.": 1
+  },
+  "D. Barlow vs N. Queta": {
+    "D. Barlow": 0,
+    "N. Queta": 1
+  },
+  "J. Duren vs N. Vu\u010devi\u0107": {
+    "J. Duren": 0,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "J. Jackson Jr. vs Y. Missi": {
+    "J. Jackson Jr.": 1,
+    "Y. Missi": 0
+  },
+  "A. Sarr vs M. Turner": {
+    "A. Sarr": 3,
+    "M. Turner": 0
+  },
+  "I. Zubac vs W. Kessler": {
+    "I. Zubac": 0,
+    "W. Kessler": 1
+  },
+  "D. Eubanks vs O. Ighodaro": {
+    "D. Eubanks": 0,
+    "O. Ighodaro": 1
+  },
+  "D. Clingan vs R. Gobert": {
+    "D. Clingan": 2,
+    "R. Gobert": 2
+  },
+  "O. Okongwu vs W. Carter Jr.": {
+    "O. Okongwu": 0,
+    "W. Carter Jr.": 3
+  },
+  "J. Allen vs N. Claxton": {
+    "J. Allen": 0,
+    "N. Claxton": 1
+  },
+  "J. Poeltl vs M. Turner": {
+    "J. Poeltl": 3,
+    "M. Turner": 0
+  },
+  "J. Duren vs S. Adams": {
+    "J. Duren": 1,
+    "S. Adams": 0
+  },
+  "J. Jackson Jr. vs K. Ware": {
+    "J. Jackson Jr.": 1,
+    "K. Ware": 0
+  },
+  "T. Murphy III vs V. Wembanyama": {
+    "T. Murphy III": 1,
+    "V. Wembanyama": 0
+  },
+  "A. Sarr vs D. Lively II": {
+    "A. Sarr": 0,
+    "D. Lively II": 1
+  },
+  "D. Clingan vs Q. Post": {
+    "D. Clingan": 1,
+    "Q. Post": 1
+  },
+  "D. Sabonis vs W. Kessler": {
+    "D. Sabonis": 0,
+    "W. Kessler": 1
+  },
+  "I. Zubac vs O. Ighodaro": {
+    "I. Zubac": 1,
+    "O. Ighodaro": 1
+  },
+  "N. Vu\u010devi\u0107 vs W. Carter Jr.": {
+    "N. Vu\u010devi\u0107": 0,
+    "W. Carter Jr.": 3
+  },
+  "C. Holmgren vs M. Gueye": {
+    "C. Holmgren": 0,
+    "M. Gueye": 1
+  },
+  "D. Barlow vs R. Kalkbrenner": {
+    "D. Barlow": 0,
+    "R. Kalkbrenner": 1
+  },
+  "J. Jackson Jr. vs J. Wiseman": {
+    "J. Jackson Jr.": 0,
+    "J. Wiseman": 1
+  },
+  "N. Joki\u0107 vs O. Ighodaro": {
+    "N. Joki\u0107": 2,
+    "O. Ighodaro": 0
+  },
+  "C. Thomas vs K. Johnson": {
+    "C. Thomas": 1,
+    "K. Johnson": 0
+  },
+  "J. Allen vs M. Turner": {
+    "J. Allen": 2,
+    "M. Turner": 1
+  },
+  "A. Hukporti vs K. Ware": {
+    "A. Hukporti": 0,
+    "K. Ware": 1
+  },
+  "A. Sarr vs R. Kalkbrenner": {
+    "A. Sarr": 0,
+    "R. Kalkbrenner": 1
+  },
+  "J. Huff vs R. Gobert": {
+    "J. Huff": 0,
+    "R. Gobert": 1
+  },
+  "D. Lively II vs J. Poeltl": {
+    "D. Lively II": 0,
+    "J. Poeltl": 1
+  },
+  "D. Clingan vs I. Zubac": {
+    "D. Clingan": 1,
+    "I. Zubac": 1
+  },
+  "D. Ayton vs D. Sabonis": {
+    "D. Ayton": 0,
+    "D. Sabonis": 1
+  },
+  "A. Bona vs W. Carter Jr.": {
+    "A. Bona": 0,
+    "W. Carter Jr.": 1
+  },
+  "K. Porzi\u0146\u0123is vs N. Vu\u010devi\u0107": {
+    "K. Porzi\u0146\u0123is": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "A. Sengun vs N. Claxton": {
+    "A. Sengun": 1,
+    "N. Claxton": 1
+  },
+  "N. Queta vs Y. Missi": {
+    "N. Queta": 1,
+    "Y. Missi": 0
+  },
+  "J. Poeltl vs V. Wembanyama": {
+    "J. Poeltl": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Davis vs C. Holmgren": {
+    "A. Davis": 1,
+    "C. Holmgren": 1
+  },
+  "O. Ighodaro vs W. Kessler": {
+    "O. Ighodaro": 0,
+    "W. Kessler": 1
+  },
+  "D. Green vs J. Jackson Jr.": {
+    "D. Green": 1,
+    "J. Jackson Jr.": 0
+  },
+  "D. Ayton vs D. Clingan": {
+    "D. Ayton": 1,
+    "D. Clingan": 1
+  },
+  "A. Sarr vs K. Oubre Jr.": {
+    "A. Sarr": 0,
+    "K. Oubre Jr.": 1
+  },
+  "D. Sabonis vs I. Hartenstein": {
+    "D. Sabonis": 0,
+    "I. Hartenstein": 1
+  },
+  "I. Zubac vs Q. Post": {
+    "I. Zubac": 0,
+    "Q. Post": 2
+  },
+  "J. Allen vs N. Queta": {
+    "J. Allen": 1,
+    "N. Queta": 0
+  },
+  "K. Porzi\u0146\u0123is vs N. Claxton": {
+    "K. Porzi\u0146\u0123is": 1,
+    "N. Claxton": 1
+  },
+  "A. Sengun vs C. Murray-Boyles": {
+    "A. Sengun": 1,
+    "C. Murray-Boyles": 0
+  },
+  "D. Sabonis vs N. Vu\u010devi\u0107": {
+    "D. Sabonis": 0,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "A. Davis vs I. Jackson": {
+    "A. Davis": 1,
+    "I. Jackson": 0
+  },
+  "D. Jordan vs N. Joki\u0107": {
+    "D. Jordan": 0,
+    "N. Joki\u0107": 1
+  },
+  "D. Clingan vs W. Kessler": {
+    "D. Clingan": 0,
+    "W. Kessler": 1
+  },
+  "J. Jackson Jr. vs M. Williams": {
+    "J. Jackson Jr.": 0,
+    "M. Williams": 2
+  },
+  "R. Kalkbrenner vs W. Carter Jr.": {
+    "R. Kalkbrenner": 0,
+    "W. Carter Jr.": 1
+  },
+  "M. Turner vs Q. Post": {
+    "M. Turner": 2,
+    "Q. Post": 0
+  },
+  "A. Sarr vs I. Hartenstein": {
+    "A. Sarr": 1,
+    "I. Hartenstein": 0
+  },
+  "K. Ware vs V. Wembanyama": {
+    "K. Ware": 0,
+    "V. Wembanyama": 1
+  },
+  "D. Sabonis vs M. Turner": {
+    "D. Sabonis": 0,
+    "M. Turner": 1
+  },
+  "R. Gobert vs R. Kalkbrenner": {
+    "R. Gobert": 1,
+    "R. Kalkbrenner": 0
+  },
+  "D. Green vs I. Jackson": {
+    "D. Green": 0,
+    "I. Jackson": 1
+  },
+  "A. Sarr vs W. Carter Jr.": {
+    "A. Sarr": 0,
+    "W. Carter Jr.": 3
+  },
+  "A. Sengun vs N. Queta": {
+    "A. Sengun": 1,
+    "N. Queta": 1
+  },
+  "D. Gafford vs J. Duren": {
+    "D. Gafford": 1,
+    "J. Duren": 0
+  },
+  "I. Hartenstein vs Y. Missi": {
+    "I. Hartenstein": 1,
+    "Y. Missi": 0
+  },
+  "A. Bona vs N. Claxton": {
+    "A. Bona": 1,
+    "N. Claxton": 0
+  },
+  "J. Nurki\u0107 vs R. Kalkbrenner": {
+    "J. Nurki\u0107": 1,
+    "R. Kalkbrenner": 0
+  },
+  "E. Mobley vs K. Porzi\u0146\u0123is": {
+    "E. Mobley": 0,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "C. Murray-Boyles vs J. Jackson Jr.": {
+    "C. Murray-Boyles": 0,
+    "J. Jackson Jr.": 1
+  },
+  "M. Williams vs V. Wembanyama": {
+    "M. Williams": 0,
+    "V. Wembanyama": 2
+  },
+  "J. Hayes vs K. Ware": {
+    "J. Hayes": 1,
+    "K. Ware": 0
+  },
+  "N. Claxton vs R. Gobert": {
+    "N. Claxton": 0,
+    "R. Gobert": 2
+  },
+  "I. Jackson vs M. Turner": {
+    "I. Jackson": 1,
+    "M. Turner": 0
+  },
+  "J. Nurki\u0107 vs N. Queta": {
+    "J. Nurki\u0107": 2,
+    "N. Queta": 0
+  },
+  "A. Sarr vs K. Towns": {
+    "A. Sarr": 1,
+    "K. Towns": 1
+  },
+  "A. Sengun vs D. Gafford": {
+    "A. Sengun": 2,
+    "D. Gafford": 1
+  },
+  "J. Duren vs J. Jackson Jr.": {
+    "J. Duren": 1,
+    "J. Jackson Jr.": 0
+  },
+  "D. Sabonis vs N. Joki\u0107": {
+    "D. Sabonis": 1,
+    "N. Joki\u0107": 1
+  },
+  "B. Adebayo vs I. Zubac": {
+    "B. Adebayo": 1,
+    "I. Zubac": 1
+  },
+  "K. Porzi\u0146\u0123is vs W. Carter Jr.": {
+    "K. Porzi\u0146\u0123is": 0,
+    "W. Carter Jr.": 1
+  },
+  "J. Embiid vs N. Vu\u010devi\u0107": {
+    "J. Embiid": 2,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "K. Looney vs R. Kalkbrenner": {
+    "K. Looney": 0,
+    "R. Kalkbrenner": 1
+  },
+  "M. Williams vs Q. Post": {
+    "M. Williams": 3,
+    "Q. Post": 0
+  },
+  "C. Holmgren vs I. Zubac": {
+    "C. Holmgren": 2,
+    "I. Zubac": 0
+  },
+  "A. Bona vs J. Allen": {
+    "A. Bona": 0,
+    "J. Allen": 1
+  },
+  "J. Duren vs J. Nurki\u0107": {
+    "J. Duren": 2,
+    "J. Nurki\u0107": 0
+  },
+  "I. Jackson vs N. Claxton": {
+    "I. Jackson": 0,
+    "N. Claxton": 1
+  },
+  "A. Sarr vs N. Queta": {
+    "A. Sarr": 2,
+    "N. Queta": 0
+  },
+  "M. Robinson vs R. Gobert": {
+    "M. Robinson": 2,
+    "R. Gobert": 0
+  },
+  "A. Sengun vs J. Jackson Jr.": {
+    "A. Sengun": 1,
+    "J. Jackson Jr.": 1
+  },
+  "D. Gafford vs K. Looney": {
+    "D. Gafford": 1,
+    "K. Looney": 0
+  },
+  "B. Adebayo vs N. Joki\u0107": {
+    "B. Adebayo": 1,
+    "N. Joki\u0107": 0
+  },
+  "D. Ayton vs V. Wembanyama": {
+    "D. Ayton": 0,
+    "V. Wembanyama": 1
+  },
+  "D. Clingan vs I. Hartenstein": {
+    "D. Clingan": 0,
+    "I. Hartenstein": 1
+  },
+  "D. Eubanks vs Q. Post": {
+    "D. Eubanks": 0,
+    "Q. Post": 1
+  },
+  "I. Zubac vs M. Williams": {
+    "I. Zubac": 1,
+    "M. Williams": 2
+  },
+  "A. Sarr vs D. Gafford": {
+    "A. Sarr": 1,
+    "D. Gafford": 0
+  },
+  "J. Embiid vs S. Barnes": {
+    "J. Embiid": 0,
+    "S. Barnes": 2
+  },
+  "D. Ayton vs O. Okongwu": {
+    "D. Ayton": 2,
+    "O. Okongwu": 0
+  },
+  "J. Allen vs N. Vu\u010devi\u0107": {
+    "J. Allen": 2,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "D. Clingan vs K. Ware": {
+    "D. Clingan": 0,
+    "K. Ware": 1
+  },
+  "K. Looney vs V. Wembanyama": {
+    "K. Looney": 0,
+    "V. Wembanyama": 1
+  },
+  "I. Jackson vs N. Joki\u0107": {
+    "I. Jackson": 0,
+    "N. Joki\u0107": 1
+  },
+  "A. Sengun vs M. Turner": {
+    "A. Sengun": 0,
+    "M. Turner": 1
+  },
+  "M. Robinson vs N. Claxton": {
+    "M. Robinson": 1,
+    "N. Claxton": 0
+  },
+  "C. Holmgren vs J. Jackson Jr.": {
+    "C. Holmgren": 1,
+    "J. Jackson Jr.": 0
+  },
+  "A. Drummond vs J. Duren": {
+    "A. Drummond": 1,
+    "J. Duren": 1
+  },
+  "I. Jackson vs Q. Post": {
+    "I. Jackson": 0,
+    "Q. Post": 1
+  },
+  "D. Ayton vs R. Kalkbrenner": {
+    "D. Ayton": 0,
+    "R. Kalkbrenner": 1
+  },
+  "A. Sarr vs J. Duren": {
+    "A. Sarr": 2,
+    "J. Duren": 1
+  },
+  "D. Clingan vs W. Carter Jr.": {
+    "D. Clingan": 1,
+    "W. Carter Jr.": 1
+  },
+  "J. Allen vs K. Ware": {
+    "J. Allen": 1,
+    "K. Ware": 1
+  },
+  "N. Vu\u010devi\u0107 vs V. Wembanyama": {
+    "N. Vu\u010devi\u0107": 0,
+    "V. Wembanyama": 1
+  },
+  "D. Gafford vs M. Turner": {
+    "D. Gafford": 1,
+    "M. Turner": 0
+  },
+  "K. Looney vs M. Williams": {
+    "K. Looney": 0,
+    "M. Williams": 1
+  },
+  "I. Zubac vs K. Porzi\u0146\u0123is": {
+    "I. Zubac": 1,
+    "K. Porzi\u0146\u0123is": 0
+  },
+  "J. Poeltl vs N. Claxton": {
+    "J. Poeltl": 0,
+    "N. Claxton": 2
+  },
+  "J. Jackson Jr. vs K. Towns": {
+    "J. Jackson Jr.": 1,
+    "K. Towns": 0
+  },
+  "A. Drummond vs N. Queta": {
+    "A. Drummond": 2,
+    "N. Queta": 0
+  },
+  "C. Holmgren vs Q. Post": {
+    "C. Holmgren": 2,
+    "Q. Post": 0
+  },
+  "J. Nurki\u0107 vs T. Bradley": {
+    "J. Nurki\u0107": 1,
+    "T. Bradley": 0
+  },
+  "M. Turner vs R. Kalkbrenner": {
+    "M. Turner": 0,
+    "R. Kalkbrenner": 1
+  },
+  "N. Vu\u010devi\u0107 vs P. Reed": {
+    "N. Vu\u010devi\u0107": 1,
+    "P. Reed": 1
+  },
+  "M. Robinson vs W. Carter Jr.": {
+    "M. Robinson": 2,
+    "W. Carter Jr.": 1
+  },
+  "J. Jackson Jr. vs N. Queta": {
+    "J. Jackson Jr.": 1,
+    "N. Queta": 0
+  },
+  "A. Sarr vs A. Sengun": {
+    "A. Sarr": 1,
+    "A. Sengun": 0
+  },
+  "D. Clingan vs K. Looney": {
+    "D. Clingan": 1,
+    "K. Looney": 0
+  },
+  "D. Gafford vs M. Williams": {
+    "D. Gafford": 0,
+    "M. Williams": 2
+  },
+  "C. Holmgren vs D. Ayton": {
+    "C. Holmgren": 0,
+    "D. Ayton": 3
+  },
+  "D. Sabonis vs K. Porzi\u0146\u0123is": {
+    "D. Sabonis": 0,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "I. Zubac vs N. Joki\u0107": {
+    "I. Zubac": 1,
+    "N. Joki\u0107": 1
+  },
+  "J. Allen vs J. Poeltl": {
+    "J. Allen": 0,
+    "J. Poeltl": 1
+  },
+  "N. Richards vs T. Bradley": {
+    "N. Richards": 0,
+    "T. Bradley": 1
+  },
+  "J. Nurki\u0107 vs O. Okongwu": {
+    "J. Nurki\u0107": 1,
+    "O. Okongwu": 0
+  },
+  "J. Allen vs Z. Edey": {
+    "J. Allen": 0,
+    "Z. Edey": 1
+  },
+  "C. Holmgren vs R. Kalkbrenner": {
+    "C. Holmgren": 0,
+    "R. Kalkbrenner": 1
+  },
+  "J. Poeltl vs T. Bradley": {
+    "J. Poeltl": 0,
+    "T. Bradley": 1
+  },
+  "D. Ayton vs M. Turner": {
+    "D. Ayton": 2,
+    "M. Turner": 0
+  },
+  "I. Zubac vs N. Queta": {
+    "I. Zubac": 1,
+    "N. Queta": 0
+  },
+  "D. Sabonis vs L. Kornet": {
+    "D. Sabonis": 1,
+    "L. Kornet": 0
+  },
+  "A. Sarr vs N. Claxton": {
+    "A. Sarr": 1,
+    "N. Claxton": 0
+  },
+  "A. Sengun vs W. Carter Jr.": {
+    "A. Sengun": 0,
+    "W. Carter Jr.": 2
+  },
+  "D. Green vs D. Queen": {
+    "D. Green": 0,
+    "D. Queen": 1
+  },
+  "D. Clingan vs D. Gafford": {
+    "D. Clingan": 2,
+    "D. Gafford": 0
+  },
+  "M. Williams vs O. Okongwu": {
+    "M. Williams": 2,
+    "O. Okongwu": 0
+  },
+  "J. Nurki\u0107 vs N. Vu\u010devi\u0107": {
+    "J. Nurki\u0107": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "I. Jackson vs J. Duren": {
+    "I. Jackson": 1,
+    "J. Duren": 1
+  },
+  "A. Drummond vs I. Zubac": {
+    "A. Drummond": 1,
+    "I. Zubac": 0
+  },
+  "J. Poeltl vs R. Kalkbrenner": {
+    "J. Poeltl": 3,
+    "R. Kalkbrenner": 0
+  },
+  "M. Cisse vs R. Gobert": {
+    "M. Cisse": 1,
+    "R. Gobert": 0
+  },
+  "C. Holmgren vs Y. Missi": {
+    "C. Holmgren": 1,
+    "Y. Missi": 0
+  },
+  "N. Joki\u0107 vs N. Vu\u010devi\u0107": {
+    "N. Joki\u0107": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "D. Green vs W. Carter Jr.": {
+    "D. Green": 0,
+    "W. Carter Jr.": 1
+  },
+  "J. Duren vs O. Okongwu": {
+    "J. Duren": 0,
+    "O. Okongwu": 3
+  },
+  "L. Kornet vs Z. Edey": {
+    "L. Kornet": 1,
+    "Z. Edey": 1
+  },
+  "D. Ayton vs J. Nurki\u0107": {
+    "D. Ayton": 1,
+    "J. Nurki\u0107": 1
+  },
+  "D. Clingan vs M. Williams": {
+    "D. Clingan": 1,
+    "M. Williams": 2
+  },
+  "J. Allen vs S. Adams": {
+    "J. Allen": 2,
+    "S. Adams": 0
+  },
+  "I. Jackson vs R. Kalkbrenner": {
+    "I. Jackson": 1,
+    "R. Kalkbrenner": 0
+  },
+  "B. Adebayo vs T. Jackson-Davis": {
+    "B. Adebayo": 1,
+    "T. Jackson-Davis": 0
+  },
+  "A. Drummond vs J. Poeltl": {
+    "A. Drummond": 1,
+    "J. Poeltl": 0
+  },
+  "M. Bagley III vs R. Gobert": {
+    "M. Bagley III": 1,
+    "R. Gobert": 0
+  },
+  "D. Queen vs N. Joki\u0107": {
+    "D. Queen": 0,
+    "N. Joki\u0107": 1
+  },
+  "D. Lively II vs M. Robinson": {
+    "D. Lively II": 0,
+    "M. Robinson": 1
+  },
+  "D. Clingan vs N. Vu\u010devi\u0107": {
+    "D. Clingan": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "I. Zubac vs W. Carter Jr.": {
+    "I. Zubac": 0,
+    "W. Carter Jr.": 1
+  },
+  "D. Eubanks vs Z. Edey": {
+    "D. Eubanks": 0,
+    "Z. Edey": 2
+  },
+  "A. Drummond vs M. Turner": {
+    "A. Drummond": 2,
+    "M. Turner": 0
+  },
+  "K. Porzi\u0146\u0123is vs L. Kornet": {
+    "K. Porzi\u0146\u0123is": 1,
+    "L. Kornet": 0
+  },
+  "I. Zubac vs R. Kalkbrenner": {
+    "I. Zubac": 1,
+    "R. Kalkbrenner": 0
+  },
+  "D. Queen vs K. Porzi\u0146\u0123is": {
+    "D. Queen": 0,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "A. Sarr vs N. Vu\u010devi\u0107": {
+    "A. Sarr": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "J. Duren vs M. Turner": {
+    "J. Duren": 1,
+    "M. Turner": 2
+  },
+  "D. Gafford vs Z. Edey": {
+    "D. Gafford": 0,
+    "Z. Edey": 1
+  },
+  "D. Eubanks vs N. Joki\u0107": {
+    "D. Eubanks": 1,
+    "N. Joki\u0107": 0
+  },
+  "A. Drummond vs K. Ware": {
+    "A. Drummond": 1,
+    "K. Ware": 0
+  },
+  "M. Plumlee vs O. Okongwu": {
+    "M. Plumlee": 1,
+    "O. Okongwu": 0
+  },
+  "N. Queta vs O. Robinson": {
+    "N. Queta": 0,
+    "O. Robinson": 1
+  },
+  "E. Mobley vs I. Zubac": {
+    "E. Mobley": 1,
+    "I. Zubac": 0
+  },
+  "N. Claxton vs S. Mamukelashvili": {
+    "N. Claxton": 1,
+    "S. Mamukelashvili": 0
+  },
+  "C. Holmgren vs D. Clingan": {
+    "C. Holmgren": 1,
+    "D. Clingan": 1
+  },
+  "L. Kornet vs M. Williams": {
+    "L. Kornet": 0,
+    "M. Williams": 1
+  },
+  "E. Mobley vs J. Poeltl": {
+    "E. Mobley": 1,
+    "J. Poeltl": 0
+  },
+  "K. Towns vs N. Claxton": {
+    "K. Towns": 1,
+    "N. Claxton": 2
+  },
+  "D. Gafford vs K. Ware": {
+    "D. Gafford": 0,
+    "K. Ware": 1
+  },
+  "N. Joki\u0107 vs Z. Edey": {
+    "N. Joki\u0107": 1,
+    "Z. Edey": 0
+  },
+  "D. Clingan vs M. Turner": {
+    "D. Clingan": 1,
+    "M. Turner": 0
+  },
+  "D. Queen vs P. Williams": {
+    "D. Queen": 1,
+    "P. Williams": 0
+  },
+  "A. Sengun vs N. Richards": {
+    "A. Sengun": 1,
+    "N. Richards": 1
+  },
+  "J. Nurki\u0107 vs Q. Post": {
+    "J. Nurki\u0107": 0,
+    "Q. Post": 1
+  },
+  "D. Eubanks vs R. Gobert": {
+    "D. Eubanks": 1,
+    "R. Gobert": 0
+  },
+  "N. Queta vs R. Gobert": {
+    "N. Queta": 0,
+    "R. Gobert": 2
+  },
+  "J. Huff vs N. Vu\u010devi\u0107": {
+    "J. Huff": 0,
+    "N. Vu\u010devi\u0107": 2
+  },
+  "B. Adebayo vs I. Stewart": {
+    "B. Adebayo": 1,
+    "I. Stewart": 0
+  },
+  "M. Turner vs N. Claxton": {
+    "M. Turner": 0,
+    "N. Claxton": 1
+  },
+  "D. Queen vs Q. Post": {
+    "D. Queen": 0,
+    "Q. Post": 1
+  },
+  "D. Powell vs I. Zubac": {
+    "D. Powell": 0,
+    "I. Zubac": 1
+  },
+  "A. Sengun vs J. Nurki\u0107": {
+    "A. Sengun": 0,
+    "J. Nurki\u0107": 2
+  },
+  "E. Mobley vs X. Tillman": {
+    "E. Mobley": 0,
+    "X. Tillman": 1
+  },
+  "K. Towns vs S. Barnes": {
+    "K. Towns": 1,
+    "S. Barnes": 1
+  },
+  "D. Barlow vs O. Okongwu": {
+    "D. Barlow": 0,
+    "O. Okongwu": 1
+  },
+  "C. Holmgren vs J. Grant": {
+    "C. Holmgren": 1,
+    "J. Grant": 0
+  },
+  "L. Kornet vs R. Gobert": {
+    "L. Kornet": 0,
+    "R. Gobert": 1
+  },
+  "D. Ayton vs Y. Missi": {
+    "D. Ayton": 1,
+    "Y. Missi": 0
+  },
+  "E. Mobley vs J. Huff": {
+    "E. Mobley": 1,
+    "J. Huff": 0
+  },
+  "M. Bagley III vs M. Turner": {
+    "M. Bagley III": 1,
+    "M. Turner": 0
+  },
+  "A. Davis vs N. Joki\u0107": {
+    "A. Davis": 2,
+    "N. Joki\u0107": 0
+  },
+  "D. Ayton vs M. Williams": {
+    "D. Ayton": 1,
+    "M. Williams": 2
+  },
+  "A. Drummond vs M. Bagley III": {
+    "A. Drummond": 1,
+    "M. Bagley III": 0
+  },
+  "D. Clingan vs J. Poeltl": {
+    "D. Clingan": 0,
+    "J. Poeltl": 1
+  },
+  "D. Queen vs R. Gobert": {
+    "D. Queen": 1,
+    "R. Gobert": 2
+  },
+  "C. Holmgren vs D. Green": {
+    "C. Holmgren": 1,
+    "D. Green": 0
+  },
+  "D. Clingan vs E. Mobley": {
+    "D. Clingan": 1,
+    "E. Mobley": 0
+  },
+  "J. Huff vs N. Joki\u0107": {
+    "J. Huff": 1,
+    "N. Joki\u0107": 0
+  },
+  "L. Kornet vs W. Carter Jr.": {
+    "L. Kornet": 1,
+    "W. Carter Jr.": 0
+  },
+  "I. Zubac vs O. Okongwu": {
+    "I. Zubac": 1,
+    "O. Okongwu": 0
+  },
+  "K. Towns vs M. Diabat\u00e9": {
+    "K. Towns": 2,
+    "M. Diabat\u00e9": 0
+  },
+  "N. Claxton vs N. Vu\u010devi\u0107": {
+    "N. Claxton": 1,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "A. Sengun vs D. Eubanks": {
+    "A. Sengun": 1,
+    "D. Eubanks": 0
+  },
+  "A. Davis vs B. Adebayo": {
+    "A. Davis": 0,
+    "B. Adebayo": 1
+  },
+  "A. Horford vs D. Barlow": {
+    "A. Horford": 0,
+    "D. Barlow": 1
+  },
+  "M. Bagley III vs N. Queta": {
+    "M. Bagley III": 0,
+    "N. Queta": 1
+  },
+  "K. Filipowski vs N. Claxton": {
+    "K. Filipowski": 1,
+    "N. Claxton": 1
+  },
+  "D. Ayton vs S. Barnes": {
+    "D. Ayton": 2,
+    "S. Barnes": 0
+  },
+  "D. Ayton vs N. Queta": {
+    "D. Ayton": 2,
+    "N. Queta": 0
+  },
+  "K. Ware vs W. Carter Jr.": {
+    "K. Ware": 0,
+    "W. Carter Jr.": 2
+  },
+  "N. Joki\u0107 vs O. Okongwu": {
+    "N. Joki\u0107": 1,
+    "O. Okongwu": 0
+  },
+  "B. Biyombo vs E. Mobley": {
+    "B. Biyombo": 1,
+    "E. Mobley": 0
+  },
+  "J. Duren vs R. Williams III": {
+    "J. Duren": 1,
+    "R. Williams III": 0
+  },
+  "J. Nurki\u0107 vs K. Towns": {
+    "J. Nurki\u0107": 1,
+    "K. Towns": 0
+  },
+  "M. Williams vs S. Adams": {
+    "M. Williams": 1,
+    "S. Adams": 1
+  },
+  "D. Queen vs N. Claxton": {
+    "D. Queen": 1,
+    "N. Claxton": 1
+  },
+  "M. Bagley III vs O. Okongwu": {
+    "M. Bagley III": 1,
+    "O. Okongwu": 0
+  },
+  "E. Mobley vs Q. Post": {
+    "E. Mobley": 1,
+    "Q. Post": 0
+  },
+  "K. Ware vs M. Raynaud": {
+    "K. Ware": 1,
+    "M. Raynaud": 0
+  },
+  "I. Zubac vs R. Gobert": {
+    "I. Zubac": 0,
+    "R. Gobert": 1
+  },
+  "A. Davis vs C. Capela": {
+    "A. Davis": 1,
+    "C. Capela": 0
+  },
+  "J. Poeltl vs N. Queta": {
+    "J. Poeltl": 1,
+    "N. Queta": 1
+  },
+  "N. Joki\u0107 vs R. Kalkbrenner": {
+    "N. Joki\u0107": 0,
+    "R. Kalkbrenner": 1
+  },
+  "Yang vs Z. Edey": {
+    "Yang": 0,
+    "Z. Edey": 1
+  },
+  "N. Vu\u010devi\u0107 vs Q. Post": {
+    "N. Vu\u010devi\u0107": 1,
+    "Q. Post": 0
+  },
+  "D. Ayton vs D. Barlow": {
+    "D. Ayton": 1,
+    "D. Barlow": 0
+  },
+  "J. Huff vs M. Raynaud": {
+    "J. Huff": 1,
+    "M. Raynaud": 1
+  },
+  "D. Queen vs L. Kornet": {
+    "D. Queen": 0,
+    "L. Kornet": 1
+  },
+  "J. Jackson Jr. vs R. Gobert": {
+    "J. Jackson Jr.": 2,
+    "R. Gobert": 0
+  },
+  "A. Sarr vs L. Kornet": {
+    "A. Sarr": 0,
+    "L. Kornet": 1
+  },
+  "O. Okongwu vs R. Kalkbrenner": {
+    "O. Okongwu": 2,
+    "R. Kalkbrenner": 0
+  },
+  "A. Hukporti vs J. Huff": {
+    "A. Hukporti": 0,
+    "J. Huff": 1
+  },
+  "K. Ware vs N. Claxton": {
+    "K. Ware": 0,
+    "N. Claxton": 1
+  },
+  "M. Turner vs S. Barnes": {
+    "M. Turner": 0,
+    "S. Barnes": 1
+  },
+  "A. Sengun vs D. Queen": {
+    "A. Sengun": 0,
+    "D. Queen": 1
+  },
+  "A. Davis vs J. Duren": {
+    "A. Davis": 0,
+    "J. Duren": 1
+  },
+  "N. Joki\u0107 vs W. Carter Jr.": {
+    "N. Joki\u0107": 1,
+    "W. Carter Jr.": 1
+  },
+  "J. Hayes vs J. Nurki\u0107": {
+    "J. Hayes": 0,
+    "J. Nurki\u0107": 1
+  },
+  "D. Clingan vs M. Raynaud": {
+    "D. Clingan": 1,
+    "M. Raynaud": 2
+  },
+  "K. Ware vs N. Queta": {
+    "K. Ware": 1,
+    "N. Queta": 0
+  },
+  "A. Drummond vs K. Towns": {
+    "A. Drummond": 1,
+    "K. Towns": 0
+  },
+  "L. Kornet vs O. Okongwu": {
+    "L. Kornet": 1,
+    "O. Okongwu": 0
+  },
+  "A. Sengun vs N. Joki\u0107": {
+    "A. Sengun": 1,
+    "N. Joki\u0107": 1
+  },
+  "A. Davis vs A. Drummond": {
+    "A. Davis": 0,
+    "A. Drummond": 1
+  },
+  "N. Queta vs S. Barnes": {
+    "N. Queta": 1,
+    "S. Barnes": 0
+  },
+  "D. Queen vs J. Huff": {
+    "D. Queen": 0,
+    "J. Huff": 2
+  },
+  "J. Duren vs R. Kalkbrenner": {
+    "J. Duren": 0,
+    "R. Kalkbrenner": 1
+  },
+  "A. Sarr vs J. Jackson Jr.": {
+    "A. Sarr": 1,
+    "J. Jackson Jr.": 1
+  },
+  "J. Nurki\u0107 vs W. Carter Jr.": {
+    "J. Nurki\u0107": 2,
+    "W. Carter Jr.": 0
+  },
+  "N. Vu\u010devi\u0107 vs O. Okongwu": {
+    "N. Vu\u010devi\u0107": 1,
+    "O. Okongwu": 1
+  },
+  "K. Towns vs K. Ware": {
+    "K. Towns": 1,
+    "K. Ware": 0
+  },
+  "L. Kornet vs T. Vukcevic": {
+    "L. Kornet": 1,
+    "T. Vukcevic": 0
+  },
+  "M. Turner vs R. Gobert": {
+    "M. Turner": 0,
+    "R. Gobert": 1
+  },
+  "A. Sengun vs M. Raynaud": {
+    "A. Sengun": 0,
+    "M. Raynaud": 3
+  },
+  "J. Allen vs M. Plumlee": {
+    "J. Allen": 1,
+    "M. Plumlee": 0
+  },
+  "J. Huff vs N. Queta": {
+    "J. Huff": 2,
+    "N. Queta": 2
+  },
+  "A. Davis vs D. Queen": {
+    "A. Davis": 1,
+    "D. Queen": 0
+  },
+  "J. Nurki\u0107 vs N. Joki\u0107": {
+    "J. Nurki\u0107": 0,
+    "N. Joki\u0107": 1
+  },
+  "B. Carlson vs J. Jackson Jr.": {
+    "B. Carlson": 1,
+    "J. Jackson Jr.": 1
+  },
+  "Q. Post vs W. Carter Jr.": {
+    "Q. Post": 0,
+    "W. Carter Jr.": 1
+  },
+  "D. Clingan vs J. Duren": {
+    "D. Clingan": 0,
+    "J. Duren": 1
+  },
+  "A. Sarr vs M. Diabat\u00e9": {
+    "A. Sarr": 1,
+    "M. Diabat\u00e9": 1
+  },
+  "J. Embiid vs N. Claxton": {
+    "J. Embiid": 1,
+    "N. Claxton": 0
+  },
+  "D. Queen vs J. Allen": {
+    "D. Queen": 0,
+    "J. Allen": 1
+  },
+  "J. Huff vs M. Turner": {
+    "J. Huff": 1,
+    "M. Turner": 1
+  },
+  "K. Ware vs S. Barnes": {
+    "K. Ware": 1,
+    "S. Barnes": 0
+  },
+  "J. Jackson Jr. vs K. Filipowski": {
+    "J. Jackson Jr.": 1,
+    "K. Filipowski": 0
+  },
+  "J. Duren vs M. Raynaud": {
+    "J. Duren": 0,
+    "M. Raynaud": 1
+  },
+  "A. Sengun vs B. Lopez": {
+    "A. Sengun": 1,
+    "B. Lopez": 1
+  },
+  "K. Ware vs O. Okongwu": {
+    "K. Ware": 1,
+    "O. Okongwu": 0
+  },
+  "M. Diabat\u00e9 vs W. Carter Jr.": {
+    "M. Diabat\u00e9": 0,
+    "W. Carter Jr.": 2
+  },
+  "A. Sarr vs S. Barnes": {
+    "A. Sarr": 1,
+    "S. Barnes": 0
+  },
+  "J. Jackson Jr. vs M. Turner": {
+    "J. Jackson Jr.": 1,
+    "M. Turner": 0
+  },
+  "D. Queen vs M. Williams": {
+    "D. Queen": 0,
+    "M. Williams": 1
+  },
+  "B. Lopez vs D. Clingan": {
+    "B. Lopez": 2,
+    "D. Clingan": 0
+  },
+  "D. Gafford vs M. Raynaud": {
+    "D. Gafford": 0,
+    "M. Raynaud": 2
+  },
+  "D. Queen vs O. Ighodaro": {
+    "D. Queen": 0,
+    "O. Ighodaro": 1
+  },
+  "K. Towns vs O. Okongwu": {
+    "K. Towns": 1,
+    "O. Okongwu": 0
+  },
+  "J. Huff vs K. Ware": {
+    "J. Huff": 1,
+    "K. Ware": 0
+  },
+  "J. Nurki\u0107 vs V. Wembanyama": {
+    "J. Nurki\u0107": 1,
+    "V. Wembanyama": 2
+  },
+  "Q. Post vs S. Barnes": {
+    "Q. Post": 1,
+    "S. Barnes": 1
+  },
+  "A. Drummond vs C. Holmgren": {
+    "A. Drummond": 1,
+    "C. Holmgren": 0
+  },
+  "D. Clingan vs N. Queta": {
+    "D. Clingan": 2,
+    "N. Queta": 0
+  },
+  "B. Lopez vs J. Duren": {
+    "B. Lopez": 1,
+    "J. Duren": 0
+  },
+  "D. Ayton vs M. Raynaud": {
+    "D. Ayton": 2,
+    "M. Raynaud": 1
+  },
+  "A. Sarr vs O. Ighodaro": {
+    "A. Sarr": 0,
+    "O. Ighodaro": 1
+  },
+  "D. Green vs N. Claxton": {
+    "D. Green": 0,
+    "N. Claxton": 1
+  },
+  "K. Ware vs N. Joki\u0107": {
+    "K. Ware": 0,
+    "N. Joki\u0107": 1
+  },
+  "S. Barnes vs W. Carter Jr.": {
+    "S. Barnes": 0,
+    "W. Carter Jr.": 2
+  },
+  "N. Vu\u010devi\u0107 vs R. Gobert": {
+    "N. Vu\u010devi\u0107": 0,
+    "R. Gobert": 1
+  },
+  "J. Huff vs S. Adams": {
+    "J. Huff": 1,
+    "S. Adams": 0
+  },
+  "D. Queen vs K. Towns": {
+    "D. Queen": 0,
+    "K. Towns": 1
+  },
+  "C. Holmgren vs O. Okongwu": {
+    "C. Holmgren": 1,
+    "O. Okongwu": 0
+  },
+  "J. Allen vs V. Wembanyama": {
+    "J. Allen": 0,
+    "V. Wembanyama": 1
+  },
+  "C. Koloko vs J. Embiid": {
+    "C. Koloko": 1,
+    "J. Embiid": 0
+  },
+  "D. Ayton vs J. Duren": {
+    "D. Ayton": 1,
+    "J. Duren": 1
+  },
+  "B. Lopez vs M. Raynaud": {
+    "B. Lopez": 1,
+    "M. Raynaud": 3
+  },
+  "M. Diabat\u00e9 vs Q. Post": {
+    "M. Diabat\u00e9": 0,
+    "Q. Post": 1
+  },
+  "O. Okongwu vs R. Gobert": {
+    "O. Okongwu": 1,
+    "R. Gobert": 1
+  },
+  "J. Huff vs W. Carter Jr.": {
+    "J. Huff": 0,
+    "W. Carter Jr.": 1
+  },
+  "J. Allen vs M. Williams": {
+    "J. Allen": 1,
+    "M. Williams": 1
+  },
+  "D. Queen vs N. Vu\u010devi\u0107": {
+    "D. Queen": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "K. Towns vs V. Wembanyama": {
+    "K. Towns": 0,
+    "V. Wembanyama": 2
+  },
+  "J. Valan\u010di\u016bnas vs S. Barnes": {
+    "J. Valan\u010di\u016bnas": 1,
+    "S. Barnes": 0
+  },
+  "J. Duren vs K. Ware": {
+    "J. Duren": 0,
+    "K. Ware": 1
+  },
+  "A. Davis vs J. Embiid": {
+    "A. Davis": 1,
+    "J. Embiid": 0
+  },
+  "M. Raynaud vs N. Queta": {
+    "M. Raynaud": 0,
+    "N. Queta": 2
+  },
+  "B. Lopez vs K. Filipowski": {
+    "B. Lopez": 1,
+    "K. Filipowski": 0
+  },
+  "L. Kornet vs M. Potter": {
+    "L. Kornet": 1,
+    "M. Potter": 0
+  },
+  "A. Sarr vs D. Sharpe": {
+    "A. Sarr": 0,
+    "D. Sharpe": 1
+  },
+  "D. Holmes II vs J. Allen": {
+    "D. Holmes II": 0,
+    "J. Allen": 1
+  },
+  "A. Hukporti vs O. Okongwu": {
+    "A. Hukporti": 1,
+    "O. Okongwu": 0
+  },
+  "M. Turner vs P. Hall": {
+    "M. Turner": 0,
+    "P. Hall": 1
+  },
+  "D. Clingan vs Y. Missi": {
+    "D. Clingan": 1,
+    "Y. Missi": 0
+  },
+  "M. Raynaud vs M. Williams": {
+    "M. Raynaud": 0,
+    "M. Williams": 2
+  },
+  "C. Koloko vs D. Ayton": {
+    "C. Koloko": 0,
+    "D. Ayton": 1
+  },
+  "K. Ware vs R. Gobert": {
+    "K. Ware": 0,
+    "R. Gobert": 2
+  },
+  "J. Embiid vs M. Robinson": {
+    "J. Embiid": 0,
+    "M. Robinson": 1
+  },
+  "O. Okongwu vs S. Barnes": {
+    "O. Okongwu": 2,
+    "S. Barnes": 0
+  },
+  "N. Vu\u010devi\u0107 vs P. Hall": {
+    "N. Vu\u010devi\u0107": 0,
+    "P. Hall": 1
+  },
+  "L. Markkanen vs Q. Post": {
+    "L. Markkanen": 0,
+    "Q. Post": 1
+  },
+  "B. Lopez vs N. Queta": {
+    "B. Lopez": 0,
+    "N. Queta": 1
+  },
+  "E. Mobley vs P. Reed": {
+    "E. Mobley": 0,
+    "P. Reed": 1
+  },
+  "M. Potter vs W. Carter Jr.": {
+    "M. Potter": 0,
+    "W. Carter Jr.": 1
+  },
+  "D. Holmes II vs D. Sharpe": {
+    "D. Holmes II": 1,
+    "D. Sharpe": 0
+  },
+  "K. Matkovi\u0107 vs K. Ware": {
+    "K. Matkovi\u0107": 0,
+    "K. Ware": 1
+  },
+  "A. Sarr vs R. Gobert": {
+    "A. Sarr": 0,
+    "R. Gobert": 1
+  },
+  "M. Raynaud vs M. Turner": {
+    "M. Raynaud": 1,
+    "M. Turner": 0
+  },
+  "M. Robinson vs P. Reed": {
+    "M. Robinson": 1,
+    "P. Reed": 0
+  },
+  "N. Queta vs N. Vu\u010devi\u0107": {
+    "N. Queta": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "C. Holmgren vs M. Diabat\u00e9": {
+    "C. Holmgren": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "D. Holmes II vs J. Embiid": {
+    "D. Holmes II": 1,
+    "J. Embiid": 0
+  },
+  "D. Clingan vs J. Nurki\u0107": {
+    "D. Clingan": 1,
+    "J. Nurki\u0107": 0
+  },
+  "J. Allen vs J. Huff": {
+    "J. Allen": 1,
+    "J. Huff": 0
+  },
+  "J. Jackson Jr. vs L. Kornet": {
+    "J. Jackson Jr.": 1,
+    "L. Kornet": 0
+  },
+  "D. Ayton vs D. Queen": {
+    "D. Ayton": 1,
+    "D. Queen": 0
+  },
+  "M. Diabat\u00e9 vs S. Barnes": {
+    "M. Diabat\u00e9": 0,
+    "S. Barnes": 1
+  },
+  "A. Sarr vs J. Embiid": {
+    "A. Sarr": 0,
+    "J. Embiid": 1
+  },
+  "K. Matkovi\u0107 vs M. Gueye": {
+    "K. Matkovi\u0107": 0,
+    "M. Gueye": 1
+  },
+  "D. Holmes II vs N. Queta": {
+    "D. Holmes II": 0,
+    "N. Queta": 1
+  },
+  "D. Sharpe vs W. Carter Jr.": {
+    "D. Sharpe": 0,
+    "W. Carter Jr.": 1
+  },
+  "I. Zubac vs K. Towns": {
+    "I. Zubac": 2,
+    "K. Towns": 0
+  },
+  "D. Ayton vs L. Kornet": {
+    "D. Ayton": 1,
+    "L. Kornet": 0
+  },
+  "D. Clingan vs S. Adams": {
+    "D. Clingan": 1,
+    "S. Adams": 1
+  },
+  "J. Huff vs M. Diabat\u00e9": {
+    "J. Huff": 1,
+    "M. Diabat\u00e9": 1
+  },
+  "B. Adebayo vs N. Vu\u010devi\u0107": {
+    "B. Adebayo": 2,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "J. Allen vs R. Gobert": {
+    "J. Allen": 1,
+    "R. Gobert": 1
+  },
+  "D. Gafford vs L. Markkanen": {
+    "D. Gafford": 1,
+    "L. Markkanen": 0
+  },
+  "N. Queta vs S. Mamukelashvili": {
+    "N. Queta": 1,
+    "S. Mamukelashvili": 0
+  },
+  "J. Embiid vs W. Carter Jr.": {
+    "J. Embiid": 0,
+    "W. Carter Jr.": 1
+  },
+  "A. Sarr vs D. Queen": {
+    "A. Sarr": 1,
+    "D. Queen": 0
+  },
+  "I. Zubac vs N. Claxton": {
+    "I. Zubac": 0,
+    "N. Claxton": 2
+  },
+  "D. Holmes II vs O. Okongwu": {
+    "D. Holmes II": 0,
+    "O. Okongwu": 1
+  },
+  "K. Towns vs M. Williams": {
+    "K. Towns": 0,
+    "M. Williams": 2
+  },
+  "M. Raynaud vs Q. Post": {
+    "M. Raynaud": 0,
+    "Q. Post": 1
+  },
+  "B. Adebayo vs P. Siakam": {
+    "B. Adebayo": 1,
+    "P. Siakam": 0
+  },
+  "I. Zubac vs P. Reed": {
+    "I. Zubac": 1,
+    "P. Reed": 0
+  },
+  "L. Kornet vs N. Queta": {
+    "L. Kornet": 0,
+    "N. Queta": 1
+  },
+  "D. Gafford vs N. Vu\u010devi\u0107": {
+    "D. Gafford": 0,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "M. Diabat\u00e9 vs T. Hendricks": {
+    "M. Diabat\u00e9": 1,
+    "T. Hendricks": 0
+  },
+  "D. Queen vs G. Bitadze": {
+    "D. Queen": 0,
+    "G. Bitadze": 1
+  },
+  "J. Jackson Jr. vs N. Claxton": {
+    "J. Jackson Jr.": 0,
+    "N. Claxton": 1
+  },
+  "A. Drummond vs S. Barnes": {
+    "A. Drummond": 1,
+    "S. Barnes": 0
+  },
+  "D. Clingan vs K. Towns": {
+    "D. Clingan": 1,
+    "K. Towns": 1
+  },
+  "R. Gobert vs V. Wembanyama": {
+    "R. Gobert": 0,
+    "V. Wembanyama": 1
+  },
+  "B. Adebayo vs C. Holmgren": {
+    "B. Adebayo": 2,
+    "C. Holmgren": 0
+  },
+  "A. Gordon vs M. Turner": {
+    "A. Gordon": 1,
+    "M. Turner": 0
+  },
+  "A. Sarr vs M. Williams": {
+    "A. Sarr": 0,
+    "M. Williams": 1
+  },
+  "O. Okongwu vs Q. Post": {
+    "O. Okongwu": 1,
+    "Q. Post": 1
+  },
+  "J. Allen vs J. Nurki\u0107": {
+    "J. Allen": 0,
+    "J. Nurki\u0107": 1
+  },
+  "D. Powell vs N. Claxton": {
+    "D. Powell": 0,
+    "N. Claxton": 1
+  },
+  "I. Zubac vs M. Diabat\u00e9": {
+    "I. Zubac": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "B. Adebayo vs M. Williams": {
+    "B. Adebayo": 1,
+    "M. Williams": 1
+  },
+  "A. Sengun vs N. Vu\u010devi\u0107": {
+    "A. Sengun": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "B. Portis vs N. Reid": {
+    "B. Portis": 0,
+    "N. Reid": 1
+  },
+  "A. Gordon vs D. Queen": {
+    "A. Gordon": 1,
+    "D. Queen": 0
+  },
+  "C. Holmgren vs V. Wembanyama": {
+    "C. Holmgren": 0,
+    "V. Wembanyama": 1
+  },
+  "J. Huff vs S. Barnes": {
+    "J. Huff": 1,
+    "S. Barnes": 1
+  },
+  "D. Barlow vs J. Allen": {
+    "D. Barlow": 0,
+    "J. Allen": 1
+  },
+  "K. Filipowski vs N. Vu\u010devi\u0107": {
+    "K. Filipowski": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "A. Gordon vs D. Gafford": {
+    "A. Gordon": 0,
+    "D. Gafford": 1
+  },
+  "K. Towns vs M. Raynaud": {
+    "K. Towns": 1,
+    "M. Raynaud": 0
+  },
+  "A. Sarr vs B. Lopez": {
+    "A. Sarr": 0,
+    "B. Lopez": 1
+  },
+  "J. Jackson Jr. vs W. Carter Jr.": {
+    "J. Jackson Jr.": 1,
+    "W. Carter Jr.": 1
+  },
+  "J. Duren vs M. Williams": {
+    "J. Duren": 0,
+    "M. Williams": 2
+  },
+  "B. Adebayo vs N. Queta": {
+    "B. Adebayo": 2,
+    "N. Queta": 1
+  },
+  "A. Sengun vs C. Holmgren": {
+    "A. Sengun": 1,
+    "C. Holmgren": 1
+  },
+  "M. Turner vs V. Wembanyama": {
+    "M. Turner": 0,
+    "V. Wembanyama": 2
+  },
+  "D. Powell vs K. Filipowski": {
+    "D. Powell": 2,
+    "K. Filipowski": 0
+  },
+  "K. Towns vs Q. Post": {
+    "K. Towns": 2,
+    "Q. Post": 0
+  },
+  "D. Clingan vs O. Okongwu": {
+    "D. Clingan": 1,
+    "O. Okongwu": 1
+  },
+  "D. Ayton vs M. Diabat\u00e9": {
+    "D. Ayton": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "J. Allen vs J. Embiid": {
+    "J. Allen": 1,
+    "J. Embiid": 0
+  },
+  "I. Zubac vs S. Barnes": {
+    "I. Zubac": 1,
+    "S. Barnes": 0
+  },
+  "A. Sengun vs R. Gobert": {
+    "A. Sengun": 1,
+    "R. Gobert": 1
+  },
+  "A. Sarr vs M. Raynaud": {
+    "A. Sarr": 0,
+    "M. Raynaud": 1
+  },
+  "N. Queta vs O. Okongwu": {
+    "N. Queta": 2,
+    "O. Okongwu": 0
+  },
+  "J. Duren vs J. Huff": {
+    "J. Duren": 0,
+    "J. Huff": 1
+  },
+  "N. Reid vs V. Wembanyama": {
+    "N. Reid": 0,
+    "V. Wembanyama": 1
+  },
+  "Q. Post vs R. Kalkbrenner": {
+    "Q. Post": 1,
+    "R. Kalkbrenner": 0
+  },
+  "A. Gordon vs A. Sarr": {
+    "A. Gordon": 1,
+    "A. Sarr": 0
+  },
+  "D. Clingan vs M. Kleber": {
+    "D. Clingan": 0,
+    "M. Kleber": 1
+  },
+  "J. Smith vs N. Claxton": {
+    "J. Smith": 0,
+    "N. Claxton": 1
+  },
+  "D. Queen vs S. Adams": {
+    "D. Queen": 0,
+    "S. Adams": 1
+  },
+  "D. Holmes II vs M. Diabat\u00e9": {
+    "D. Holmes II": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "A. Sarr vs I. Zubac": {
+    "A. Sarr": 0,
+    "I. Zubac": 1
+  },
+  "J. Embiid vs J. Huff": {
+    "J. Embiid": 0,
+    "J. Huff": 1
+  },
+  "M. Williams vs N. Claxton": {
+    "M. Williams": 1,
+    "N. Claxton": 1
+  },
+  "B. Adebayo vs Q. Post": {
+    "B. Adebayo": 0,
+    "Q. Post": 1
+  },
+  "A. Drummond vs M. Williams": {
+    "A. Drummond": 0,
+    "M. Williams": 1
+  },
+  "I. Zubac vs N. Vu\u010devi\u0107": {
+    "I. Zubac": 0,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "A. Gordon vs D. Ayton": {
+    "A. Gordon": 1,
+    "D. Ayton": 0
+  },
+  "B. Adebayo vs M. Raynaud": {
+    "B. Adebayo": 1,
+    "M. Raynaud": 0
+  },
+  "J. Allen vs M. Diabat\u00e9": {
+    "J. Allen": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "J. Jackson Jr. vs O. Okongwu": {
+    "J. Jackson Jr.": 1,
+    "O. Okongwu": 0
+  },
+  "D. Queen vs J. Duren": {
+    "D. Queen": 0,
+    "J. Duren": 1
+  },
+  "C. Holmgren vs G. Antetokounmpo": {
+    "C. Holmgren": 0,
+    "G. Antetokounmpo": 1
+  },
+  "M. Raynaud vs S. Barnes": {
+    "M. Raynaud": 1,
+    "S. Barnes": 0
+  },
+  "A. Sengun vs J. Embiid": {
+    "A. Sengun": 0,
+    "J. Embiid": 1
+  },
+  "A. Sarr vs J. Valan\u010di\u016bnas": {
+    "A. Sarr": 0,
+    "J. Valan\u010di\u016bnas": 1
+  },
+  "D. Green vs D. Powell": {
+    "D. Green": 0,
+    "D. Powell": 1
+  },
+  "J. Smith vs R. Gobert": {
+    "J. Smith": 0,
+    "R. Gobert": 1
+  },
+  "D. Ayton vs I. Zubac": {
+    "D. Ayton": 1,
+    "I. Zubac": 0
+  },
+  "B. Adebayo vs D. Clingan": {
+    "B. Adebayo": 1,
+    "D. Clingan": 0
+  },
+  "A. Sengun vs J. Duren": {
+    "A. Sengun": 0,
+    "J. Duren": 1
+  },
+  "J. Allen vs M. Raynaud": {
+    "J. Allen": 1,
+    "M. Raynaud": 1
+  },
+  "D. Queen vs J. Jackson Jr.": {
+    "D. Queen": 0,
+    "J. Jackson Jr.": 2
+  },
+  "M. Turner vs Z. Nnaji": {
+    "M. Turner": 1,
+    "Z. Nnaji": 0
+  },
+  "C. Holmgren vs J. Walker": {
+    "C. Holmgren": 1,
+    "J. Walker": 0
+  },
+  "D. Clingan vs S. Barnes": {
+    "D. Clingan": 0,
+    "S. Barnes": 1
+  },
+  "J. Embiid vs K. Towns": {
+    "J. Embiid": 0,
+    "K. Towns": 1
+  },
+  "A. Horford vs R. Gobert": {
+    "A. Horford": 0,
+    "R. Gobert": 1
+  },
+  "J. Allen vs W. Carter Jr.": {
+    "J. Allen": 2,
+    "W. Carter Jr.": 0
+  },
+  "A. Williams vs N. Vu\u010devi\u0107": {
+    "A. Williams": 0,
+    "N. Vu\u010devi\u0107": 1
+  },
+  "D. Ayton vs D. Powell": {
+    "D. Ayton": 1,
+    "D. Powell": 0
+  },
+  "B. Adebayo vs J. Nurki\u0107": {
+    "B. Adebayo": 0,
+    "J. Nurki\u0107": 1
+  },
+  "D. Sabonis vs J. Duren": {
+    "D. Sabonis": 0,
+    "J. Duren": 1
+  },
+  "N. Joki\u0107 vs O. Prosper": {
+    "N. Joki\u0107": 1,
+    "O. Prosper": 0
+  },
+  "D. Gafford vs J. Sims": {
+    "D. Gafford": 0,
+    "J. Sims": 1
+  },
+  "C. Holmgren vs S. Barnes": {
+    "C. Holmgren": 2,
+    "S. Barnes": 0
+  },
+  "D. Queen vs V. Wembanyama": {
+    "D. Queen": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Drummond vs M. Diabat\u00e9": {
+    "A. Drummond": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "J. Walker vs O. Okongwu": {
+    "J. Walker": 0,
+    "O. Okongwu": 1
+  },
+  "D. Ayton vs N. Vu\u010devi\u0107": {
+    "D. Ayton": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "Q. Post vs R. Gobert": {
+    "Q. Post": 0,
+    "R. Gobert": 1
+  },
+  "A. Sarr vs D. Clingan": {
+    "A. Sarr": 0,
+    "D. Clingan": 1
+  },
+  "D. Sabonis vs K. Towns": {
+    "D. Sabonis": 1,
+    "K. Towns": 0
+  },
+  "J. Embiid vs M. Turner": {
+    "J. Embiid": 1,
+    "M. Turner": 0
+  },
+  "C. Holmgren vs D. Queen": {
+    "C. Holmgren": 1,
+    "D. Queen": 0
+  },
+  "J. Duren vs J. Valan\u010di\u016bnas": {
+    "J. Duren": 0,
+    "J. Valan\u010di\u016bnas": 1
+  },
+  "I. Zubac vs L. Markkanen": {
+    "I. Zubac": 0,
+    "L. Markkanen": 1
+  },
+  "D. Ayton vs J. Allen": {
+    "D. Ayton": 0,
+    "J. Allen": 2
+  },
+  "J. Walker vs N. Vu\u010devi\u0107": {
+    "J. Walker": 1,
+    "N. Vu\u010devi\u0107": 0
+  },
+  "A. Williams vs O. Okongwu": {
+    "A. Williams": 0,
+    "O. Okongwu": 1
+  },
+  "J. Jackson Jr. vs M. Diabat\u00e9": {
+    "J. Jackson Jr.": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "D. Gafford vs R. Gobert": {
+    "D. Gafford": 1,
+    "R. Gobert": 2
+  },
+  "A. Horford vs J. Nurki\u0107": {
+    "A. Horford": 0,
+    "J. Nurki\u0107": 1
+  },
+  "D. Sabonis vs J. Embiid": {
+    "D. Sabonis": 0,
+    "J. Embiid": 1
+  },
+  "A. Sengun vs C. Koloko": {
+    "A. Sengun": 0,
+    "C. Koloko": 1
+  },
+  "D. Gafford vs M. Diabat\u00e9": {
+    "D. Gafford": 1,
+    "M. Diabat\u00e9": 1
+  },
+  "J. Valan\u010di\u016bnas vs N. Claxton": {
+    "J. Valan\u010di\u016bnas": 1,
+    "N. Claxton": 0
+  },
+  "A. Sarr vs D. Ayton": {
+    "A. Sarr": 0,
+    "D. Ayton": 1
+  },
+  "B. Adebayo vs M. Buzelis": {
+    "B. Adebayo": 1,
+    "M. Buzelis": 0
+  },
+  "A. Horford vs J. Duren": {
+    "A. Horford": 1,
+    "J. Duren": 0
+  },
+  "M. Diabat\u00e9 vs V. Wembanyama": {
+    "M. Diabat\u00e9": 0,
+    "V. Wembanyama": 2
+  },
+  "J. Walker vs M. Gueye": {
+    "J. Walker": 0,
+    "M. Gueye": 1
+  },
+  "D. Queen vs J. Embiid": {
+    "D. Queen": 0,
+    "J. Embiid": 1
+  },
+  "J. Landale vs R. Gobert": {
+    "J. Landale": 0,
+    "R. Gobert": 1
+  },
+  "M. Turner vs N. Queta": {
+    "M. Turner": 1,
+    "N. Queta": 1
+  },
+  "V. Wembanyama vs W. Carter Jr.": {
+    "V. Wembanyama": 1,
+    "W. Carter Jr.": 0
+  },
+  "J. Nurki\u0107 vs S. Barnes": {
+    "J. Nurki\u0107": 1,
+    "S. Barnes": 0
+  },
+  "M. Bagley III vs M. Raynaud": {
+    "M. Bagley III": 0,
+    "M. Raynaud": 2
+  },
+  "D. Ayton vs K. Towns": {
+    "D. Ayton": 1,
+    "K. Towns": 1
+  },
+  "D. Clingan vs J. Allen": {
+    "D. Clingan": 1,
+    "J. Allen": 0
+  },
+  "C. Holmgren vs N. Joki\u0107": {
+    "C. Holmgren": 1,
+    "N. Joki\u0107": 1
+  },
+  "D. Queen vs M. Diabat\u00e9": {
+    "D. Queen": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "A. Sengun vs J. Huff": {
+    "A. Sengun": 0,
+    "J. Huff": 1
+  },
+  "I. Zubac vs J. Embiid": {
+    "I. Zubac": 0,
+    "J. Embiid": 1
+  },
+  "J. Duren vs N. Joki\u0107": {
+    "J. Duren": 1,
+    "N. Joki\u0107": 0
+  },
+  "J. Huff vs L. Markkanen": {
+    "J. Huff": 0,
+    "L. Markkanen": 1
+  },
+  "D. Ayton vs N. Claxton": {
+    "D. Ayton": 1,
+    "N. Claxton": 1
+  },
+  "B. Adebayo vs C. Koloko": {
+    "B. Adebayo": 1,
+    "C. Koloko": 0
+  },
+  "D. Gafford vs N. Queta": {
+    "D. Gafford": 1,
+    "N. Queta": 0
+  },
+  "J. Smith vs M. Turner": {
+    "J. Smith": 0,
+    "M. Turner": 1
+  },
+  "C. Holmgren vs W. Carter Jr.": {
+    "C. Holmgren": 0,
+    "W. Carter Jr.": 2
+  },
+  "A. Drummond vs A. Horford": {
+    "A. Drummond": 1,
+    "A. Horford": 0
+  },
+  "K. Towns vs N. Joki\u0107": {
+    "K. Towns": 0,
+    "N. Joki\u0107": 2
+  },
+  "R. Gobert vs S. Barnes": {
+    "R. Gobert": 1,
+    "S. Barnes": 0
+  },
+  "D. Queen vs M. Turner": {
+    "D. Queen": 0,
+    "M. Turner": 1
+  },
+  "C. Wallace vs V. Wembanyama": {
+    "C. Wallace": 0,
+    "V. Wembanyama": 1
+  },
+  "D. Sabonis vs S. Aldama": {
+    "D. Sabonis": 1,
+    "S. Aldama": 0
+  },
+  "B. Lopez vs J. Allen": {
+    "B. Lopez": 0,
+    "J. Allen": 1
+  },
+  "J. Landale vs L. Markkanen": {
+    "J. Landale": 1,
+    "L. Markkanen": 0
+  },
+  "J. Smith vs S. Barnes": {
+    "J. Smith": 1,
+    "S. Barnes": 1
+  },
+  "A. Sengun vs M. Diabat\u00e9": {
+    "A. Sengun": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "D. Gafford vs V. Wembanyama": {
+    "D. Gafford": 0,
+    "V. Wembanyama": 2
+  },
+  "D. Green vs M. Williams": {
+    "D. Green": 0,
+    "M. Williams": 1
+  },
+  "D. Ayton vs J. Embiid": {
+    "D. Ayton": 0,
+    "J. Embiid": 1
+  },
+  "I. Stewart vs M. Robinson": {
+    "I. Stewart": 1,
+    "M. Robinson": 0
+  },
+  "D. Clingan vs O. Prosper": {
+    "D. Clingan": 2,
+    "O. Prosper": 0
+  },
+  "N. Claxton vs T. Vukcevic": {
+    "N. Claxton": 1,
+    "T. Vukcevic": 0
+  },
+  "M. Diabat\u00e9 vs O. Okongwu": {
+    "M. Diabat\u00e9": 0,
+    "O. Okongwu": 1
+  },
+  "M. Buzelis vs N. Joki\u0107": {
+    "M. Buzelis": 1,
+    "N. Joki\u0107": 0
+  },
+  "D. Green vs J. Hayes": {
+    "D. Green": 1,
+    "J. Hayes": 0
+  },
+  "J. Embiid vs M. Williams": {
+    "J. Embiid": 0,
+    "M. Williams": 1
+  },
+  "D. Clingan vs G. Jackson": {
+    "D. Clingan": 1,
+    "G. Jackson": 0
+  },
+  "A. Sarr vs B. Adebayo": {
+    "A. Sarr": 0,
+    "B. Adebayo": 2
+  },
+  "B. Lopez vs R. Gobert": {
+    "B. Lopez": 2,
+    "R. Gobert": 1
+  },
+  "J. Duren vs M. Diabat\u00e9": {
+    "J. Duren": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "M. Buzelis vs N. Claxton": {
+    "M. Buzelis": 1,
+    "N. Claxton": 0
+  },
+  "J. Nurki\u0107 vs K. Ware": {
+    "J. Nurki\u0107": 1,
+    "K. Ware": 0
+  },
+  "M. Turner vs W. Carter Jr.": {
+    "M. Turner": 0,
+    "W. Carter Jr.": 3
+  },
+  "D. Queen vs M. Raynaud": {
+    "D. Queen": 0,
+    "M. Raynaud": 1
+  },
+  "J. Allen vs N. Joki\u0107": {
+    "J. Allen": 0,
+    "N. Joki\u0107": 1
+  },
+  "D. Green vs G. Jackson": {
+    "D. Green": 1,
+    "G. Jackson": 0
+  },
+  "A. Drummond vs D. Clingan": {
+    "A. Drummond": 0,
+    "D. Clingan": 1
+  },
+  "K. Towns vs M. Potter": {
+    "K. Towns": 1,
+    "M. Potter": 0
+  },
+  "J. Hayes vs V. Wembanyama": {
+    "J. Hayes": 0,
+    "V. Wembanyama": 1
+  },
+  "B. Carrington vs J. Allen": {
+    "B. Carrington": 0,
+    "J. Allen": 1
+  },
+  "M. Buzelis vs N. Queta": {
+    "M. Buzelis": 0,
+    "N. Queta": 1
+  },
+  "D. Sharpe vs J. Huff": {
+    "D. Sharpe": 0,
+    "J. Huff": 1
+  },
+  "A. Bona vs K. Towns": {
+    "A. Bona": 1,
+    "K. Towns": 0
+  },
+  "J. Poeltl vs P. Reed": {
+    "J. Poeltl": 1,
+    "P. Reed": 0
+  },
+  "B. Lopez vs J. Smith Jr.": {
+    "B. Lopez": 1,
+    "J. Smith Jr.": 0
+  },
+  "D. Queen vs K. Ware": {
+    "D. Queen": 0,
+    "K. Ware": 1
+  },
+  "J. Nurki\u0107 vs M. Raynaud": {
+    "J. Nurki\u0107": 1,
+    "M. Raynaud": 0
+  },
+  "G. Jackson vs N. Joki\u0107": {
+    "G. Jackson": 0,
+    "N. Joki\u0107": 1
+  },
+  "C. Holmgren vs J. Sims": {
+    "C. Holmgren": 1,
+    "J. Sims": 0
+  },
+  "D. Clingan vs K. Filipowski": {
+    "D. Clingan": 2,
+    "K. Filipowski": 0
+  },
+  "D. Gafford vs J. Hayes": {
+    "D. Gafford": 0,
+    "J. Hayes": 1
+  },
+  "A. Sengun vs R. Kalkbrenner": {
+    "A. Sengun": 0,
+    "R. Kalkbrenner": 1
+  },
+  "D. Sharpe vs J. Allen": {
+    "D. Sharpe": 0,
+    "J. Allen": 2
+  },
+  "A. Drummond vs O. Okongwu": {
+    "A. Drummond": 1,
+    "O. Okongwu": 0
+  },
+  "J. Huff vs T. Vukcevic": {
+    "J. Huff": 2,
+    "T. Vukcevic": 0
+  },
+  "K. Towns vs P. Reed": {
+    "K. Towns": 1,
+    "P. Reed": 0
+  },
+  "D. Green vs N. Queta": {
+    "D. Green": 1,
+    "N. Queta": 0
+  },
+  "M. Raynaud vs W. Carter Jr.": {
+    "M. Raynaud": 1,
+    "W. Carter Jr.": 1
+  },
+  "B. Lopez vs N. Joki\u0107": {
+    "B. Lopez": 0,
+    "N. Joki\u0107": 1
+  },
+  "J. Allen vs R. Kalkbrenner": {
+    "J. Allen": 1,
+    "R. Kalkbrenner": 0
+  },
+  "K. Filipowski vs L. Lovering": {
+    "K. Filipowski": 0,
+    "L. Lovering": 1
+  },
+  "B. Adebayo vs O. Okongwu": {
+    "B. Adebayo": 1,
+    "O. Okongwu": 0
+  },
+  "D. Queen vs J. Sims": {
+    "D. Queen": 1,
+    "J. Sims": 0
+  },
+  "C. Holmgren vs D. Sharpe": {
+    "C. Holmgren": 1,
+    "D. Sharpe": 0
+  },
+  "B. Lopez vs D. Ayton": {
+    "B. Lopez": 0,
+    "D. Ayton": 1
+  },
+  "M. Williams vs W. Carter Jr.": {
+    "M. Williams": 1,
+    "W. Carter Jr.": 0
+  },
+  "A. Drummond vs D. Jordan": {
+    "A. Drummond": 1,
+    "D. Jordan": 0
+  },
+  "B. Adebayo vs O. Prosper": {
+    "B. Adebayo": 1,
+    "O. Prosper": 0
+  },
+  "J. Duren vs J. Smith": {
+    "J. Duren": 1,
+    "J. Smith": 0
+  },
+  "M. Raynaud vs V. Wembanyama": {
+    "M. Raynaud": 1,
+    "V. Wembanyama": 1
+  },
+  "A. Sengun vs K. Towns": {
+    "A. Sengun": 2,
+    "K. Towns": 0
+  },
+  "N. Claxton vs O. Okongwu": {
+    "N. Claxton": 2,
+    "O. Okongwu": 1
+  },
+  "A. Horford vs N. Joki\u0107": {
+    "A. Horford": 0,
+    "N. Joki\u0107": 1
+  },
+  "D. Gafford vs J. Huff": {
+    "D. Gafford": 1,
+    "J. Huff": 0
+  },
+  "A. Gill vs R. Kalkbrenner": {
+    "A. Gill": 0,
+    "R. Kalkbrenner": 1
+  },
+  "A. Drummond vs J. Beringer": {
+    "A. Drummond": 1,
+    "J. Beringer": 0
+  },
+  "J. Smith vs K. Towns": {
+    "J. Smith": 1,
+    "K. Towns": 0
+  },
+  "B. Lopez vs W. Carter Jr.": {
+    "B. Lopez": 1,
+    "W. Carter Jr.": 0
+  },
+  "J. Duren vs V. Wembanyama": {
+    "J. Duren": 0,
+    "V. Wembanyama": 2
+  },
+  "M. Raynaud vs O. Prosper": {
+    "M. Raynaud": 1,
+    "O. Prosper": 0
+  },
+  "A. Sengun vs K. Filipowski": {
+    "A. Sengun": 1,
+    "K. Filipowski": 1
+  },
+  "D. Barlow vs J. Huff": {
+    "D. Barlow": 1,
+    "J. Huff": 0
+  },
+  "O. Okongwu vs T. Vukcevic": {
+    "O. Okongwu": 2,
+    "T. Vukcevic": 0
+  },
+  "D. Gafford vs N. Claxton": {
+    "D. Gafford": 0,
+    "N. Claxton": 1
+  },
+  "G. Yabusele vs M. Diabat\u00e9": {
+    "G. Yabusele": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "D. Green vs D. Jordan": {
+    "D. Green": 0,
+    "D. Jordan": 1
+  },
+  "M. Williams vs N. Queta": {
+    "M. Williams": 1,
+    "N. Queta": 0
+  },
+  "D. Ayton vs W. Carter Jr.": {
+    "D. Ayton": 2,
+    "W. Carter Jr.": 0
+  },
+  "J. Duren vs J. Williams": {
+    "J. Duren": 1,
+    "J. Williams": 0
+  },
+  "C. Murray-Boyles vs V. Wembanyama": {
+    "C. Murray-Boyles": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Horford vs O. Prosper": {
+    "A. Horford": 1,
+    "O. Prosper": 0
+  },
+  "N. Joki\u0107 vs N. Queta": {
+    "N. Joki\u0107": 0,
+    "N. Queta": 1
+  },
+  "B. Adebayo vs D. Barlow": {
+    "B. Adebayo": 1,
+    "D. Barlow": 1
+  },
+  "N. Claxton vs V. Wembanyama": {
+    "N. Claxton": 0,
+    "V. Wembanyama": 1
+  },
+  "M. Buzelis vs T. Camara": {
+    "M. Buzelis": 1,
+    "T. Camara": 0
+  },
+  "D. Jordan vs K. Filipowski": {
+    "D. Jordan": 0,
+    "K. Filipowski": 1
+  },
+  "D. Gafford vs O. Prosper": {
+    "D. Gafford": 2,
+    "O. Prosper": 0
+  },
+  "D. Clingan vs M. Diabat\u00e9": {
+    "D. Clingan": 1,
+    "M. Diabat\u00e9": 1
+  },
+  "A. Sengun vs B. Adebayo": {
+    "A. Sengun": 1,
+    "B. Adebayo": 1
+  },
+  "A. Bailey vs D. Jordan": {
+    "A. Bailey": 0,
+    "D. Jordan": 1
+  },
+  "M. Buzelis vs M. Turner": {
+    "M. Buzelis": 1,
+    "M. Turner": 0
+  },
+  "J. Huff vs O. Prosper": {
+    "J. Huff": 1,
+    "O. Prosper": 0
+  },
+  "C. Holmgren vs D. Gafford": {
+    "C. Holmgren": 0,
+    "D. Gafford": 1
+  },
+  "B. Lopez vs D. Jordan": {
+    "B. Lopez": 1,
+    "D. Jordan": 0
+  },
+  "A. Sengun vs J. Reese": {
+    "A. Sengun": 1,
+    "J. Reese": 0
+  },
+  "K. Filipowski vs N. Joki\u0107": {
+    "K. Filipowski": 1,
+    "N. Joki\u0107": 1
+  },
+  "A. Horford vs B. Lopez": {
+    "A. Horford": 0,
+    "B. Lopez": 1
+  },
+  "G. Bitadze vs J. Reese": {
+    "G. Bitadze": 0,
+    "J. Reese": 1
+  },
+  "B. Adebayo vs N. Claxton": {
+    "B. Adebayo": 1,
+    "N. Claxton": 1
+  },
+  "J. Poeltl vs K. Towns": {
+    "J. Poeltl": 0,
+    "K. Towns": 1
+  },
+  "A. Drummond vs V. Wembanyama": {
+    "A. Drummond": 1,
+    "V. Wembanyama": 0
+  },
+  "C. Holmgren vs M. Buzelis": {
+    "C. Holmgren": 0,
+    "M. Buzelis": 1
+  },
+  "O. Prosper vs R. Gobert": {
+    "O. Prosper": 0,
+    "R. Gobert": 1
+  },
+  "D. Ayton vs H. Jones": {
+    "D. Ayton": 1,
+    "H. Jones": 0
+  },
+  "C. Holmgren vs K. Towns": {
+    "C. Holmgren": 2,
+    "K. Towns": 0
+  },
+  "M. Diabat\u00e9 vs N. Queta": {
+    "M. Diabat\u00e9": 1,
+    "N. Queta": 1
+  },
+  "A. Bona vs K. Filipowski": {
+    "A. Bona": 1,
+    "K. Filipowski": 1
+  },
+  "B. Lopez vs J. Huff": {
+    "B. Lopez": 2,
+    "J. Huff": 0
+  },
+  "D. Gafford vs W. Carter Jr.": {
+    "D. Gafford": 0,
+    "W. Carter Jr.": 2
+  },
+  "J. Reese vs K. Filipowski": {
+    "J. Reese": 0,
+    "K. Filipowski": 1
+  },
+  "A. Horford vs A. Sengun": {
+    "A. Horford": 1,
+    "A. Sengun": 0
+  },
+  "J. Poeltl vs R. Gobert": {
+    "J. Poeltl": 1,
+    "R. Gobert": 0
+  },
+  "G. Yabusele vs O. Ighodaro": {
+    "G. Yabusele": 0,
+    "O. Ighodaro": 1
+  },
+  "D. Ayton vs N. Joki\u0107": {
+    "D. Ayton": 0,
+    "N. Joki\u0107": 2
+  },
+  "M. Raynaud vs Y. Missi": {
+    "M. Raynaud": 2,
+    "Y. Missi": 0
+  },
+  "D. Powell vs N. Queta": {
+    "D. Powell": 0,
+    "N. Queta": 1
+  },
+  "B. Adebayo vs M. Diabat\u00e9": {
+    "B. Adebayo": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "O. Ighodaro vs Z. Williamson": {
+    "O. Ighodaro": 1,
+    "Z. Williamson": 0
+  },
+  "B. Lopez vs V. Wembanyama": {
+    "B. Lopez": 1,
+    "V. Wembanyama": 1
+  },
+  "J. Hayes vs J. Huff": {
+    "J. Hayes": 1,
+    "J. Huff": 1
+  },
+  "R. Gobert vs W. Carter Jr.": {
+    "R. Gobert": 0,
+    "W. Carter Jr.": 1
+  },
+  "A. Bona vs O. Okongwu": {
+    "A. Bona": 1,
+    "O. Okongwu": 0
+  },
+  "B. Lopez vs O. Prosper": {
+    "B. Lopez": 1,
+    "O. Prosper": 0
+  },
+  "K. Filipowski vs M. Turner": {
+    "K. Filipowski": 1,
+    "M. Turner": 1
+  },
+  "A. Horford vs J. Williams": {
+    "A. Horford": 1,
+    "J. Williams": 0
+  },
+  "E. Mobley vs N. Queta": {
+    "E. Mobley": 1,
+    "N. Queta": 0
+  },
+  "B. Adebayo vs J. Duren": {
+    "B. Adebayo": 1,
+    "J. Duren": 0
+  },
+  "D. Gafford vs J. Poeltl": {
+    "D. Gafford": 0,
+    "J. Poeltl": 1
+  },
+  "A. Sarr vs Z. Williamson": {
+    "A. Sarr": 1,
+    "Z. Williamson": 0
+  },
+  "M. Diabat\u00e9 vs O. Ighodaro": {
+    "M. Diabat\u00e9": 0,
+    "O. Ighodaro": 2
+  },
+  "D. Clingan vs J. Huff": {
+    "D. Clingan": 0,
+    "J. Huff": 1
+  },
+  "M. Buzelis vs M. Raynaud": {
+    "M. Buzelis": 0,
+    "M. Raynaud": 1
+  },
+  "A. Bona vs E. Mobley": {
+    "A. Bona": 0,
+    "E. Mobley": 1
+  },
+  "N. Claxton vs O. Prosper": {
+    "N. Claxton": 1,
+    "O. Prosper": 0
+  },
+  "J. Williams vs N. Joki\u0107": {
+    "J. Williams": 0,
+    "N. Joki\u0107": 1
+  },
+  "K. Filipowski vs Q. Post": {
+    "K. Filipowski": 0,
+    "Q. Post": 1
+  },
+  "B. Lopez vs K. Towns": {
+    "B. Lopez": 1,
+    "K. Towns": 0
+  },
+  "A. Bona vs O. Prosper": {
+    "A. Bona": 1,
+    "O. Prosper": 0
+  },
+  "D. Gafford vs O. Okongwu": {
+    "D. Gafford": 0,
+    "O. Okongwu": 1
+  },
+  "A. Sengun vs S. Barnes": {
+    "A. Sengun": 1,
+    "S. Barnes": 0
+  },
+  "M. Turner vs O. Ighodaro": {
+    "M. Turner": 0,
+    "O. Ighodaro": 2
+  },
+  "N. Queta vs V. Wembanyama": {
+    "N. Queta": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Horford vs M. Buzelis": {
+    "A. Horford": 1,
+    "M. Buzelis": 0
+  },
+  "E. Mobley vs W. Carter Jr.": {
+    "E. Mobley": 0,
+    "W. Carter Jr.": 2
+  },
+  "J. Poeltl vs Z. Williamson": {
+    "J. Poeltl": 1,
+    "Z. Williamson": 0
+  },
+  "K. Filipowski vs K. Towns": {
+    "K. Filipowski": 0,
+    "K. Towns": 1
+  },
+  "M. Diabat\u00e9 vs M. Raynaud": {
+    "M. Diabat\u00e9": 1,
+    "M. Raynaud": 1
+  },
+  "D. Barlow vs J. Duren": {
+    "D. Barlow": 0,
+    "J. Duren": 1
+  },
+  "K. Ware vs M. Turner": {
+    "K. Ware": 1,
+    "M. Turner": 0
+  },
+  "C. Holmgren vs N. Queta": {
+    "C. Holmgren": 1,
+    "N. Queta": 0
+  },
+  "D. Ayton vs J. Smith": {
+    "D. Ayton": 1,
+    "J. Smith": 0
+  },
+  "J. Duren vs O. Prosper": {
+    "J. Duren": 1,
+    "O. Prosper": 0
+  },
+  "I. Zubac vs M. Robinson": {
+    "I. Zubac": 0,
+    "M. Robinson": 1
+  },
+  "J. Poeltl vs O. Ighodaro": {
+    "J. Poeltl": 1,
+    "O. Ighodaro": 1
+  },
+  "T. Eason vs Z. Williamson": {
+    "T. Eason": 0,
+    "Z. Williamson": 1
+  },
+  "E. Mobley vs M. Bagley III": {
+    "E. Mobley": 1,
+    "M. Bagley III": 0
+  },
+  "K. Porzi\u0146\u0123is vs R. Gobert": {
+    "K. Porzi\u0146\u0123is": 1,
+    "R. Gobert": 0
+  },
+  "B. Lopez vs N. Richards": {
+    "B. Lopez": 1,
+    "N. Richards": 0
+  },
+  "A. Bona vs N. Clowney": {
+    "A. Bona": 0,
+    "N. Clowney": 1
+  },
+  "E. Mobley vs P. Washington": {
+    "E. Mobley": 1,
+    "P. Washington": 0
+  },
+  "J. Duren vs J. Poeltl": {
+    "J. Duren": 1,
+    "J. Poeltl": 1
+  },
+  "I. Zubac vs M. Turner": {
+    "I. Zubac": 0,
+    "M. Turner": 1
+  },
+  "A. Bona vs D. Clingan": {
+    "A. Bona": 0,
+    "D. Clingan": 1
+  },
+  "A. Garcia vs M. Raynaud": {
+    "A. Garcia": 0,
+    "M. Raynaud": 1
+  },
+  "D. Green vs J. Reese": {
+    "D. Green": 0,
+    "J. Reese": 1
+  },
+  "D. Clingan vs N. Claxton": {
+    "D. Clingan": 0,
+    "N. Claxton": 2
+  },
+  "N. Queta vs O. Ighodaro": {
+    "N. Queta": 0,
+    "O. Ighodaro": 1
+  },
+  "J. Smith vs O. Prosper": {
+    "J. Smith": 1,
+    "O. Prosper": 0
+  },
+  "P. Washington vs Y. Missi": {
+    "P. Washington": 0,
+    "Y. Missi": 1
+  },
+  "C. Capela vs D. Ayton": {
+    "C. Capela": 1,
+    "D. Ayton": 0
+  },
+  "K. Ware vs M. Diabat\u00e9": {
+    "K. Ware": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "A. Gill vs J. Duren": {
+    "A. Gill": 0,
+    "J. Duren": 1
+  },
+  "E. Mobley vs J. Sims": {
+    "E. Mobley": 0,
+    "J. Sims": 1
+  },
+  "O. Ighodaro vs R. Gobert": {
+    "O. Ighodaro": 0,
+    "R. Gobert": 1
+  },
+  "A. Bona vs N. Joki\u0107": {
+    "A. Bona": 0,
+    "N. Joki\u0107": 1
+  },
+  "K. Porzi\u0146\u0123is vs N. Queta": {
+    "K. Porzi\u0146\u0123is": 1,
+    "N. Queta": 0
+  },
+  "C. Holmgren vs N. Claxton": {
+    "C. Holmgren": 0,
+    "N. Claxton": 1
+  },
+  "J. Poeltl vs J. Smith": {
+    "J. Poeltl": 1,
+    "J. Smith": 0
+  },
+  "K. Towns vs O. Prosper": {
+    "K. Towns": 1,
+    "O. Prosper": 0
+  },
+  "K. Filipowski vs R. Gobert": {
+    "K. Filipowski": 0,
+    "R. Gobert": 1
+  },
+  "B. Lopez vs Z. Williamson": {
+    "B. Lopez": 0,
+    "Z. Williamson": 1
+  },
+  "O. Okongwu vs P. Washington": {
+    "O. Okongwu": 0,
+    "P. Washington": 1
+  },
+  "G. Bitadze vs M. Diabat\u00e9": {
+    "G. Bitadze": 1,
+    "M. Diabat\u00e9": 0
+  },
+  "B. Adebayo vs D. Ayton": {
+    "B. Adebayo": 1,
+    "D. Ayton": 0
+  },
+  "E. Mobley vs N. Richards": {
+    "E. Mobley": 0,
+    "N. Richards": 1
+  },
+  "B. Lopez vs Y. Missi": {
+    "B. Lopez": 0,
+    "Y. Missi": 1
+  },
+  "O. Ighodaro vs V. Wembanyama": {
+    "O. Ighodaro": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Bona vs M. Raynaud": {
+    "A. Bona": 0,
+    "M. Raynaud": 1
+  },
+  "J. Duren vs K. Porzi\u0146\u0123is": {
+    "J. Duren": 1,
+    "K. Porzi\u0146\u0123is": 0
+  },
+  "A. Sengun vs O. Okongwu": {
+    "A. Sengun": 1,
+    "O. Okongwu": 0
+  },
+  "N. Queta vs O. Prosper": {
+    "N. Queta": 1,
+    "O. Prosper": 0
+  },
+  "J. Poeltl vs N. Joki\u0107": {
+    "J. Poeltl": 0,
+    "N. Joki\u0107": 1
+  },
+  "A. Sarr vs C. Holmgren": {
+    "A. Sarr": 0,
+    "C. Holmgren": 1
+  },
+  "M. Diabat\u00e9 vs O. Prosper": {
+    "M. Diabat\u00e9": 1,
+    "O. Prosper": 0
+  },
+  "E. Mobley vs Z. Williamson": {
+    "E. Mobley": 1,
+    "Z. Williamson": 0
+  },
+  "P. Siakam vs V. Wembanyama": {
+    "P. Siakam": 0,
+    "V. Wembanyama": 1
+  },
+  "B. Lopez vs D. Gafford": {
+    "B. Lopez": 0,
+    "D. Gafford": 1
+  },
+  "D. Wolf vs M. Raynaud": {
+    "D. Wolf": 0,
+    "M. Raynaud": 1
+  },
+  "K. Towns vs T. Vukcevic": {
+    "K. Towns": 1,
+    "T. Vukcevic": 0
+  },
+  "O. Okongwu vs O. Prosper": {
+    "O. Okongwu": 1,
+    "O. Prosper": 0
+  },
+  "J. Huff vs P. Banchero": {
+    "J. Huff": 0,
+    "P. Banchero": 1
+  },
+  "A. Bona vs C. Holmgren": {
+    "A. Bona": 0,
+    "C. Holmgren": 1
+  },
+  "B. Adebayo vs V. Wembanyama": {
+    "B. Adebayo": 0,
+    "V. Wembanyama": 1
+  },
+  "K. Filipowski vs S. Mamukelashvili": {
+    "K. Filipowski": 1,
+    "S. Mamukelashvili": 0
+  },
+  "D. Gafford vs K. Porzi\u0146\u0123is": {
+    "D. Gafford": 0,
+    "K. Porzi\u0146\u0123is": 1
+  },
+  "B. Lopez vs M. Turner": {
+    "B. Lopez": 1,
+    "M. Turner": 0
+  },
+  "K. Towns vs Z. Williamson": {
+    "K. Towns": 0,
+    "Z. Williamson": 1
+  },
+  "D. Barlow vs N. Richards": {
+    "D. Barlow": 0,
+    "N. Richards": 1
+  },
+  "I. Hartenstein vs N. Queta": {
+    "I. Hartenstein": 1,
+    "N. Queta": 0
+  },
+  "B. Adebayo vs E. Mobley": {
+    "B. Adebayo": 1,
+    "E. Mobley": 0
+  },
+  "O. Prosper vs V. Wembanyama": {
+    "O. Prosper": 0,
+    "V. Wembanyama": 1
+  },
+  "A. Bailey vs J. Reese": {
+    "A. Bailey": 1,
+    "J. Reese": 0
+  },
+  "D. Powell vs N. Joki\u0107": {
+    "D. Powell": 1,
+    "N. Joki\u0107": 0
+  },
+  "D. Clingan vs J. Sims": {
+    "D. Clingan": 1,
+    "J. Sims": 0
+  },
+  "B. Lopez vs J. Poeltl": {
+    "B. Lopez": 0,
+    "J. Poeltl": 1
+  },
+  "D. Jordan vs J. Duren": {
+    "D. Jordan": 1,
+    "J. Duren": 0
+  },
+  "B. Adebayo vs J. Allen": {
+    "B. Adebayo": 0,
+    "J. Allen": 1
+  },
+  "A. Sengun vs T. Hendricks": {
+    "A. Sengun": 0,
+    "T. Hendricks": 1
+  },
+  "I. Hartenstein vs M. Buzelis": {
+    "I. Hartenstein": 0,
+    "M. Buzelis": 1
+  },
+  "J. Poeltl vs Y. Missi": {
+    "J. Poeltl": 1,
+    "Y. Missi": 0
+  },
+  "D. Clingan vs D. Powell": {
+    "D. Clingan": 0,
+    "D. Powell": 1
+  },
+  "J. Embiid vs M. Diabat\u00e9": {
+    "J. Embiid": 0,
+    "M. Diabat\u00e9": 1
+  },
+  "J. Landale vs M. Raynaud": {
+    "J. Landale": 1,
+    "M. Raynaud": 0
+  },
+  "M. Buzelis vs O. Prosper": {
+    "M. Buzelis": 1,
+    "O. Prosper": 0
+  },
+  "J. Duren vs R. Gobert": {
+    "J. Duren": 2,
+    "R. Gobert": 0
+  },
+  "K. Filipowski vs O. Ighodaro": {
+    "K. Filipowski": 0,
+    "O. Ighodaro": 1
+  },
+  "B. Lopez vs J. Sims": {
+    "B. Lopez": 0,
+    "J. Sims": 1
+  },
+  "B. Adebayo vs J. Slawson": {
+    "B. Adebayo": 0,
+    "J. Slawson": 1
+  },
+  "M. Raynaud vs N. Claxton": {
+    "M. Raynaud": 1,
+    "N. Claxton": 0
+  },
+  "J. Poeltl vs W. Carter Jr.": {
+    "J. Poeltl": 0,
+    "W. Carter Jr.": 1
+  },
+  "D. Clingan vs J. Reese": {
+    "D. Clingan": 1,
+    "J. Reese": 0
+  },
+  "A. Sengun vs Y. Missi": {
+    "A. Sengun": 0,
+    "Y. Missi": 1
+  },
+  "K. Porzi\u0146\u0123is vs N. Joki\u0107": {
+    "K. Porzi\u0146\u0123is": 1,
+    "N. Joki\u0107": 0
+  },
+  "L. Garza vs O. Okongwu": {
+    "L. Garza": 1,
+    "O. Okongwu": 0
+  },
+  "O. Ighodaro vs T. Hendricks": {
+    "O. Ighodaro": 0,
+    "T. Hendricks": 1
+  },
+  "M. Buzelis vs V. Wembanyama": {
+    "M. Buzelis": 0,
+    "V. Wembanyama": 1
+  },
+  "E. Mobley vs K. Filipowski": {
+    "E. Mobley": 1,
+    "K. Filipowski": 0
+  },
+  "C. Holmgren vs P. Reed": {
+    "C. Holmgren": 1,
+    "P. Reed": 0
+  },
+  "D. Ayton vs T. Vukcevic": {
+    "D. Ayton": 1,
+    "T. Vukcevic": 0
+  },
+  "O. Ighodaro vs W. Carter Jr.": {
+    "O. Ighodaro": 0,
+    "W. Carter Jr.": 1
+  },
+  "M. Diabat\u00e9 vs N. Claxton": {
+    "M. Diabat\u00e9": 0,
+    "N. Claxton": 1
+  },
+  "A. Bona vs T. Vukcevic": {
+    "A. Bona": 1,
+    "T. Vukcevic": 0
+  },
+  "J. Poeltl vs M. Raynaud": {
+    "J. Poeltl": 1,
+    "M. Raynaud": 0
+  },
+  "J. Huff vs M. Buzelis": {
+    "J. Huff": 1,
+    "M. Buzelis": 0
+  },
+  "A. Thompson vs G. Trent Jr.": {
+    "A. Thompson": 1,
+    "G. Trent Jr.": 0
+  },
+  "A. Bailey vs N. Joki\u0107": {
+    "A. Bailey": 0,
+    "N. Joki\u0107": 1
+  },
+  "J. Allen vs K. Porzi\u0146\u0123is": {
+    "J. Allen": 1,
+    "K. Porzi\u0146\u0123is": 0
+  },
+  "D. Clingan vs Z. Williamson": {
+    "D. Clingan": 1,
+    "Z. Williamson": 0
+  },
+  "B. Lopez vs L. Kornet": {
+    "B. Lopez": 1,
+    "L. Kornet": 0
+  },
+  "J. Huff vs R. Kalkbrenner": {
+    "J. Huff": 1,
+    "R. Kalkbrenner": 0
+  },
+  "D. Barlow vs R. Gobert": {
+    "D. Barlow": 0,
+    "R. Gobert": 1
+  },
+  "M. Buzelis vs M. Robinson": {
+    "M. Buzelis": 0,
+    "M. Robinson": 1
+  },
+  "J. Poeltl vs T. Hendricks": {
+    "J. Poeltl": 1,
+    "T. Hendricks": 0
+  },
+  "A. Gill vs B. Adebayo": {
+    "A. Gill": 0,
+    "B. Adebayo": 1
+  },
+  "N. Joki\u0107 vs V. Wembanyama": {
+    "N. Joki\u0107": 0,
+    "V. Wembanyama": 1
+  },
+  "C. Johnson vs J. Reese": {
+    "C. Johnson": 1,
+    "J. Reese": 0
+  },
+  "G. Yabusele vs M. Williams": {
+    "G. Yabusele": 0,
+    "M. Williams": 1
+  },
+  "M. Turner vs T. Hendricks": {
+    "M. Turner": 1,
+    "T. Hendricks": 0
+  },
+  "M. Potter vs T. Bryant": {
+    "M. Potter": 0,
+    "T. Bryant": 1
+  },
+  "M. Diabat\u00e9 vs R. Gobert": {
+    "M. Diabat\u00e9": 1,
+    "R. Gobert": 0
+  },
+  "W. Carter Jr. vs Y. Missi": {
+    "W. Carter Jr.": 1,
+    "Y. Missi": 0
+  },
+  "C. Holmgren vs O. Tshiebwe": {
+    "C. Holmgren": 0,
+    "O. Tshiebwe": 1
+  },
+  "D. Ayton vs D. Gafford": {
+    "D. Ayton": 1,
+    "D. Gafford": 0
+  },
+  "A. Sengun vs K. Porzi\u0146\u0123is": {
+    "A. Sengun": 0,
+    "K. Porzi\u0146\u0123is": 1
+  }
+}

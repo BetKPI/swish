@@ -254,17 +254,26 @@ function buildFirstBasketCharts(
   const lastName = (n: string) => n.split(". ")[1] || n.split(" ").pop() || n;
 
   // 1. Tip-off matchup — head to head, compact
+  const tipH2H = fbData.tipH2H;
   if (pTip && oTip) {
+    const data: Record<string, unknown>[] = [
+      { stat: "Center", [pTip.team + " *"]: lastName(pTip.name), [oTip.team]: lastName(oTip.name) },
+    ];
+    // H2H record first — most relevant
+    if (tipH2H && tipH2H.total > 0) {
+      data.push({ stat: "H2H Tips", [pTip.team + " *"]: `${tipH2H.playerWins}-${tipH2H.opponentWins}`, [oTip.team]: `${tipH2H.opponentWins}-${tipH2H.playerWins}` });
+    }
+    data.push(
+      { stat: "Season", [pTip.team + " *"]: `${pTip.wins}-${pTip.losses} (${pTip.winRate}%)`, [oTip.team]: `${oTip.wins}-${oTip.losses} (${oTip.winRate}%)` },
+    );
+    const h2hNote = tipH2H && tipH2H.total > 0
+      ? ` H2H: ${lastName(tipH2H.playerWins > tipH2H.opponentWins ? tipH2H.player : tipH2H.opponent)} leads ${Math.max(tipH2H.playerWins, tipH2H.opponentWins)}-${Math.min(tipH2H.playerWins, tipH2H.opponentWins)}.`
+      : "";
     charts.push({
       type: "table",
       title: "Tip-Off Matchup",
-      relevance: `${tipMatchup?.headToHead || "Who wins the tip?"}`,
-      data: [
-        { stat: "Center", [pTip.team + " *"]: lastName(pTip.name), [oTip.team]: lastName(oTip.name) },
-        { stat: "Record", [pTip.team + " *"]: `${pTip.wins}-${pTip.losses}`, [oTip.team]: `${oTip.wins}-${oTip.losses}` },
-        { stat: "Win %", [pTip.team + " *"]: `${pTip.winRate}%`, [oTip.team]: `${oTip.winRate}%` },
-        { stat: "Tips", [pTip.team + " *"]: String(pTip.total), [oTip.team]: String(oTip.total) },
-      ],
+      relevance: `${tipMatchup?.headToHead || "Who wins the tip?"}${h2hNote}`,
+      data,
       columns: [
         { key: "stat", label: "" },
         { key: pTip.team + " *", label: `${pTip.team} *` },
