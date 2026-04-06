@@ -2,11 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const { rating, comment, bet } = await request.json();
+    const { rating, comment, bet, type, chart } = await request.json();
 
     const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
     if (!webhookUrl) {
-      // Silently succeed if no webhook configured — don't break UX
       console.log("[Feedback] No DISCORD_WEBHOOK_URL set, skipping");
       return NextResponse.json({ ok: true });
     }
@@ -14,10 +13,21 @@ export async function POST(request: NextRequest) {
     const emoji = rating === "up" ? "\u{1F44D}" : "\u{1F44E}";
     const color = rating === "up" ? 0x10b981 : 0xef4444;
 
+    // Chart-specific rating
+    const isChartRating = type === "chart" && chart;
+    const title = isChartRating
+      ? `${emoji} Chart ${rating === "up" ? "Relevant" : "Not Relevant"}`
+      : `${emoji} ${rating === "up" ? "Positive" : "Negative"} Feedback`;
+
     const embed = {
-      title: `${emoji} ${rating === "up" ? "Positive" : "Negative"} Feedback`,
+      title,
       color,
       fields: [
+        ...(isChartRating ? [{
+          name: "Chart",
+          value: chart,
+          inline: false,
+        }] : []),
         {
           name: "Bet",
           value: bet?.description || "Unknown bet",
@@ -25,14 +35,14 @@ export async function POST(request: NextRequest) {
         },
         {
           name: "Sport / Type",
-          value: `${bet?.sport || "?"} — ${bet?.betType?.replace("_", "/") || "?"}`,
+          value: `${bet?.sport || "?"} — ${(bet?.betType || bet?.market || "?").replace("_", "/")}`,
           inline: true,
         },
-        {
-          name: "Teams",
-          value: bet?.teams?.join(" vs ") || "?",
+        ...(bet?.market ? [{
+          name: "Market",
+          value: bet.market,
           inline: true,
-        },
+        }] : []),
       ],
       timestamp: new Date().toISOString(),
     };
