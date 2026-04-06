@@ -237,6 +237,34 @@ export default function ParlayResults({
         </div>
       )}
 
+      {/* Overall Parlay Chat — covers all legs */}
+      {analyzedLegs.length > 1 && (
+        <AnalysisChat
+          key="parlay-overall-chat"
+          extraction={{
+            sport: extraction.sport || legs[0]?.sport || "NBA",
+            betType: "parlay",
+            teams: legs.flatMap((l) => l.teams || []),
+            players: legs.flatMap((l) => l.players || []),
+            market: extraction.market,
+            line: extraction.line,
+            odds: extraction.odds,
+            description: extraction.description || legs.map((l, i) => `Leg ${i + 1}: ${l.description}`).join(" | "),
+            confidence: 1,
+          }}
+          computedData={{
+            _parlayLegs: legs.map((l) => ({
+              description: l.description,
+              sport: l.sport,
+              betType: l.betType,
+              summary: l.summary,
+              stats: l.stats,
+              computedData: l.computedData,
+            })),
+          }}
+        />
+      )}
+
       {/* Feedback + Share */}
       <FeedbackShare extraction={extraction} summary={summaryText} />
 

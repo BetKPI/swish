@@ -13,19 +13,31 @@ cd "$(dirname "$0")/.."
 
 echo "=== Swish Daily Refresh — $(date) ==="
 
-# 1. First basket data (NBA play-by-play)
-echo "[1/4] Collecting NBA first basket data..."
-python research/collect-firstbasket.py --games 50 2>&1
+# 1. First basket data (NBA play-by-play — full season)
+echo "[1/6] Collecting NBA first basket data..."
+python research/collect-fullseason-fb.py 2>&1
 
-# 2. Autoresearch — collect training data and optimize weights
-echo "[2/4] Collecting training data..."
+# 2. NRFI data (MLB first inning)
+echo "[2/6] Collecting MLB NRFI data..."
+python research/collect-nrfi.py 2>&1 || echo "  (skipped — MLB data not available)"
+
+# 3. NHL first goal data
+echo "[3/6] Collecting NHL first goal data..."
+python research/collect-firstgoal.py 2>&1 || echo "  (skipped — NHL data not available)"
+
+# 4. Autoresearch — collect training data and optimize weights
+echo "[4/6] Collecting training data..."
 python research/collect_data.py --all --days 30 2>&1
 
-echo "[3/4] Optimizing Swish Score weights..."
+echo "[5/6] Optimizing Swish Score weights..."
 python research/optimize_weights.py --iterations 3000 2>&1
 
-# 4. Commit and deploy if anything changed
-echo "[4/4] Deploying..."
+# 6. Chart audit
+echo "[6/6] Running chart audit..."
+python research/audit-charts.py 2>&1 | tail -20
+
+# Deploy if anything changed
+echo "Deploying..."
 if git diff --quiet models/ 2>/dev/null; then
   echo "  No changes to models — skipping deploy."
 else

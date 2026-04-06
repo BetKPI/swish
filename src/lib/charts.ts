@@ -1178,10 +1178,14 @@ function buildPlayerPropCharts(
       const last3Avg = recent.slice(-3).reduce((s: number, g: { value: number }) => s + g.value, 0) / Math.min(3, recent.length);
       const seasonAvg = propAnalysis?.average || 0;
       const trendWord = last3Avg > seasonAvg * 1.1 ? "hot streak" : last3Avg < seasonAvg * 0.9 ? "cold stretch" : "steady";
+      // Trend direction: last 5 avg vs season avg
+      const last5Vals = recent.slice(-5);
+      const last5TrendAvg = last5Vals.length > 0 ? Math.round((last5Vals.reduce((s: number, g: { value: number }) => s + g.value, 0) / last5Vals.length) * 10) / 10 : 0;
+      const trendDirection = last5TrendAvg > seasonAvg * 1.05 ? "Trending up" : last5TrendAvg < seasonAvg * 0.95 ? "Trending down" : "Trending flat";
       charts.push({
         type: "line",
-        title: `${playerName} — ${statLabel} Game Log`,
-        relevance: `${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%) — avg ${seasonAvg}, on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
+        title: `${playerName} — ${statLabel} Trend (Last ${recent.length})`,
+        relevance: `${trendDirection} — last 5 avg ${last5TrendAvg} vs season avg ${seasonAvg} | ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%), on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
         data,
         xKey: "game",
         yKeys: [statLabel, "rollingAvg", "propLine"],
