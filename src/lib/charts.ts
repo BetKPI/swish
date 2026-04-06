@@ -573,7 +573,7 @@ function buildComboCharts(
 
   // Determine which stats to combine
   let statKeys: { key: string; label: string; extract: (g: Record<string, unknown>) => number }[] = [];
-  if (market.includes("pra") || market.includes("points+rebounds+assists")) {
+  if (market.includes("pra") || market.includes("pts+reb+ast") || market.includes("points+rebounds+assists")) {
     statKeys = [
       { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
       { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
@@ -1502,15 +1502,16 @@ function mapMarketToStatKey(market: string): string {
   if (m.includes("goal") && !m.includes("against")) return "goals";
   if (m.includes("goals against")) return "goalsAgainst";
   if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
-  // NBA
+  // NBA — specific combos/markets before generic ones
+  if (m.includes("pts+reb+ast") || m.includes("pra")) return "pra";
+  if (m.includes("three") || m.includes("3p") || m.includes("3pt")) return "fg3m";
+  if (m.includes("double-double") || m.includes("double double")) return "dd";
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";
-  if (m.includes("three") || m.includes("3p")) return "fg3m";
   if (m.includes("steal")) return "stl";
   if (m.includes("block") || m.includes("blk")) return "blk";
   if (m.includes("turnover")) return "turnover";
-  if (m.includes("pts+reb+ast") || m.includes("pra")) return "pra";
   // MLB
   if (m.includes("strikeout") || m.includes("k's")) return "strikeOuts";
   if (m.includes("home run") || m.includes("hr")) return "homeRuns";
