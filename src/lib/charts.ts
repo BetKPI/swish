@@ -246,124 +246,124 @@ function buildFirstBasketCharts(
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   const playerName = extraction.players[0] || "";
-  const player = fbData.player;
-  const topScorers = fbData.topFirstScorers || [];
+  const pTeam = fbData.playerTeam;
+  const oTeam = fbData.opponentTeam;
+  const pTip = fbData.playerTipCenter;
+  const oTip = fbData.opponentTipCenter;
+  const tipMatchup = fbData.tipMatchup;
+  const season = fbData.season || "2025-26";
 
-  // 1. Tip-off matchup — who wins the tip and gets first possession
-  const tipOffs = fbData.tipOff || [];
-  if (Array.isArray(tipOffs) && tipOffs.length > 0) {
-    const data = tipOffs.slice(0, 10).map((t: { name: string; wins: number; losses: number; total: number; winRate: number }) => ({
-      center: t.name,
-      record: `${t.wins}-${t.losses}`,
-      winRate: `${t.winRate}%`,
-      tips: t.total,
-    }));
+  // 1. Tip-off matchup — the two centers head to head
+  if (pTip && oTip) {
     charts.push({
       type: "table",
-      title: "Tip-Off Win Rates — Active Centers",
-      relevance: `The team that wins the tip gets first possession. Who's winning jump balls?`,
-      data,
+      title: "Tip-Off Matchup",
+      relevance: `${tipMatchup?.headToHead || "Who wins the tip and gets first possession?"}`,
+      data: [
+        { stat: "Center", [pTip.team]: pTip.name, [oTip.team]: oTip.name },
+        { stat: "Tip Record", [pTip.team]: `${pTip.wins}-${pTip.losses}`, [oTip.team]: `${oTip.wins}-${oTip.losses}` },
+        { stat: "Tip Win %", [pTip.team]: `${pTip.winRate}%`, [oTip.team]: `${oTip.winRate}%` },
+        { stat: "Total Tips", [pTip.team]: String(pTip.total), [oTip.team]: String(oTip.total) },
+      ],
       columns: [
-        { key: "center", label: "Center" },
-        { key: "record", label: "W-L" },
-        { key: "winRate", label: "Win %" },
-        { key: "tips", label: "Tips" },
+        { key: "stat", label: "" },
+        { key: pTip.team, label: pTip.team },
+        { key: oTip.team, label: oTip.team },
       ],
     });
   }
 
-  // 2. Top first basket scorers leaderboard
-  if (topScorers.length > 0) {
-    // Include the target player even if not in top 10
-    let data = topScorers.map((p: { name: string; rate: number; count: number }) => ({
-      player: p.name,
-      firstBasketRate: `${p.rate}%`,
-      timesFirst: p.count,
-      isTarget: p.name.toLowerCase().includes(playerName.toLowerCase()) || playerName.toLowerCase().includes(p.name.toLowerCase()),
-    }));
+  // 2. Who takes the first shot on each team
+  if (pTeam?.firstShots?.length > 0 || oTeam?.firstShots?.length > 0) {
+    const data: Record<string, unknown>[] = [];
+    const maxRows = Math.max(pTeam?.firstShots?.length || 0, oTeam?.firstShots?.length || 0, 5);
+    for (let i = 0; i < Math.min(maxRows, 6); i++) {
+      const pPlayer = pTeam?.firstShots?.[i];
+      const oPlayer = oTeam?.firstShots?.[i];
+      const row: Record<string, unknown> = { rank: i + 1 };
+      if (pPlayer) row[pTeam.tricode + "_player"] = pPlayer.name;
+      if (pPlayer) row[pTeam.tricode + "_rate"] = `${pPlayer.rate}%`;
+      if (oPlayer) row[oTeam.tricode + "_player"] = oPlayer.name;
+      if (oPlayer) row[oTeam.tricode + "_rate"] = `${oPlayer.rate}%`;
+      data.push(row);
+    }
+    const cols = [{ key: "rank", label: "#" }];
+    if (pTeam) {
+      cols.push({ key: pTeam.tricode + "_player", label: pTeam.tricode });
+      cols.push({ key: pTeam.tricode + "_rate", label: "1st Shot %" });
+    }
+    if (oTeam) {
+      cols.push({ key: oTeam.tricode + "_player", label: oTeam.tricode });
+      cols.push({ key: oTeam.tricode + "_rate", label: "1st Shot %" });
+    }
+    charts.push({
+      type: "table",
+      title: "Who Takes the First Shot?",
+      relevance: `Who gets the ball first on each team. First shot = first chance at first basket.`,
+      data,
+      columns: cols,
+    });
+  }
 
-    // If target player has data but isn't in the leaderboard, add them
-    if (player && player.firstBasketCount > 0 && !data.some((d: { isTarget: boolean }) => d.isTarget)) {
-      data.push({
-        player: player.playerName,
-        firstBasketRate: `${player.firstBasketRate}%`,
-        timesFirst: player.firstBasketCount,
-        isTarget: true,
-      });
+  // 3. First basket scorers — both teams side by side
+  if (pTeam?.firstScorers?.length > 0 || oTeam?.firstScorers?.length > 0) {
+    const data: Record<string, unknown>[] = [];
+    const maxRows = Math.max(pTeam?.firstScorers?.length || 0, oTeam?.firstScorers?.length || 0, 5);
+    for (let i = 0; i < Math.min(maxRows, 6); i++) {
+      const pPlayer = pTeam?.firstScorers?.[i];
+      const oPlayer = oTeam?.firstScorers?.[i];
+      const row: Record<string, unknown> = { rank: i + 1 };
+      if (pPlayer) {
+        row[pTeam.tricode + "_player"] = pPlayer.name;
+        row[pTeam.tricode + "_count"] = `${pPlayer.count} (${pPlayer.rate}%)`;
+      }
+      if (oPlayer) {
+        row[oTeam.tricode + "_player"] = oPlayer.name;
+        row[oTeam.tricode + "_count"] = `${oPlayer.count} (${oPlayer.rate}%)`;
+      }
+      data.push(row);
+    }
+    const cols = [{ key: "rank", label: "#" }];
+    if (pTeam) {
+      cols.push({ key: pTeam.tricode + "_player", label: pTeam.tricode });
+      cols.push({ key: pTeam.tricode + "_count", label: "1st Baskets" });
+    }
+    if (oTeam) {
+      cols.push({ key: oTeam.tricode + "_player", label: oTeam.tricode });
+      cols.push({ key: oTeam.tricode + "_count", label: "1st Baskets" });
     }
 
-    charts.push({
-      type: "table",
-      title: "First Basket Scorers — Recent Games",
-      relevance: `Who actually scores first. ${playerName}'s rate vs the league's best first-basket guys.`,
-      data,
-      columns: [
-        { key: "player", label: "Player" },
-        { key: "firstBasketRate", label: "1st Basket %" },
-        { key: "timesFirst", label: "Times First" },
-      ],
-    });
-  }
-
-  // 2. Player's first basket game log (if we have data)
-  if (player && player.recentGames && player.recentGames.length > 0) {
-    const data = player.recentGames.map((g: { opponent: string; scoredFirst: boolean; shotFirst: boolean; shotType?: string }) => ({
-      game: `vs ${g.opponent}`,
-      scoredFirst: g.scoredFirst ? "YES" : "No",
-      shotFirst: g.shotFirst ? "YES" : "No",
-      shotType: g.shotType || "-",
-    }));
+    // Find the target player's rank
+    const pRank = pTeam?.firstScorers?.findIndex((p: { name: string }) =>
+      p.name.toLowerCase().includes(playerName.toLowerCase()) || playerName.toLowerCase().includes(p.name.toLowerCase())
+    );
+    const playerEntry = pRank >= 0 ? pTeam.firstScorers[pRank] : null;
+    const relevance = playerEntry
+      ? `${playerName} has ${playerEntry.count} first baskets this season (${playerEntry.rate}%) — #${pRank + 1} on their team.`
+      : `First basket scorers for both teams this season (${season}).`;
 
     charts.push({
       type: "table",
-      title: `${playerName} — First Basket History`,
-      relevance: `${player.firstBasketCount} first baskets in recent games (${player.firstBasketRate}% rate). Also shows if they took the first shot for their team.`,
+      title: "First Basket Scorers — This Season",
+      relevance,
       data,
-      columns: [
-        { key: "game", label: "Game" },
-        { key: "scoredFirst", label: "Scored 1st" },
-        { key: "shotFirst", label: "Shot 1st" },
-        { key: "shotType", label: "Shot Type" },
-      ],
+      columns: cols,
     });
   }
 
-  // 3. First shot attempt rates (who takes the first shot on each team)
-  if (topScorers.length > 0) {
-    // Show as a bar chart — first basket rate for top candidates
-    const barData = topScorers.slice(0, 8).map((p: { name: string; rate: number; count: number }) => ({
-      player: p.name.split(". ")[1] || p.name.split(" ").pop() || p.name,
+  // 4. Bar chart — first basket rate for player's team
+  if (pTeam?.firstScorers?.length > 0) {
+    const barData = pTeam.firstScorers.slice(0, 6).map((p: { name: string; rate: number }) => ({
+      player: (p.name.split(". ")[1] || p.name.split(" ").pop() || p.name),
       rate: p.rate,
-      isTarget: p.name.toLowerCase().includes(playerName.toLowerCase()),
     }));
-
     charts.push({
       type: "bar",
-      title: "First Basket Rate — Top Players",
-      relevance: `How often each player scores the game's first basket. Higher = more likely first scorer.`,
+      title: `${pTeam.tricode} — First Basket Rate`,
+      relevance: `Who scores first on ${playerName}'s team. ${pTeam.totalGames} games this season.`,
       data: barData,
       xKey: "player",
       yKeys: ["rate"],
-    });
-  }
-
-  // 4. If no first basket specific data, fall back to explaining what matters
-  if (charts.length === 0) {
-    charts.push({
-      type: "table",
-      title: "First Basket — Key Factors",
-      relevance: "What actually matters for first basket bets — not PPG.",
-      data: [
-        { factor: "Tip-Off", why: "Team that wins the tip gets first possession" },
-        { factor: "First Play", why: "Some teams run set plays for specific players to open" },
-        { factor: "Shot Type", why: "Drivers to the basket hit first more than jump shooters" },
-        { factor: "Starter?", why: "Bench players almost never score the first basket" },
-        { factor: "Usage Rate Q1", why: "High early usage = more first-shot opportunities" },
-      ],
-      columns: [
-        { key: "factor", label: "Factor" },
-        { key: "why", label: "Why It Matters" },
-      ],
     });
   }
 

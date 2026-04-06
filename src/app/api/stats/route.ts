@@ -348,7 +348,7 @@ async function analyzeSingleBet(
       const fbData = await getFirstBasketData(extraction.players[0], extraction.teams);
       if (fbData) {
         (teamData as Record<string, unknown>)._firstBasket = fbData;
-        console.log(`[Stats] First basket data: ${fbData.player?.firstBasketCount || 0} first baskets for ${extraction.players[0]}`);
+        console.log(`[Stats] First basket data: ${fbData.gamesProcessed} games, teams: ${fbData.playerTeam?.tricode || "?"} vs ${fbData.opponentTeam?.tricode || "?"}`);
       }
     } catch (e) {
       console.error("[Stats] First basket data failed (non-blocking):", e);
