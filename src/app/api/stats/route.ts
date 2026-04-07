@@ -560,10 +560,21 @@ function computeHitRate(
       if (pa && pa.totalGames >= 3) {
         const pct = Math.round(pa.hitRate * 100);
         const thin = pa.totalGames < 10;
+        // Compute current streak
+        const gv = pa.gameValues || [];
+        let streak = 0;
+        if (gv.length > 0) {
+          const lastHit = gv[gv.length - 1]?.hit;
+          for (let i = gv.length - 1; i >= 0; i--) {
+            if (gv[i].hit === lastHit) streak++;
+            else break;
+          }
+        }
+        const streakText = streak >= 3 ? ` | ${gv[gv.length - 1]?.hit ? "Over" : "Under"} ${streak} straight` : "";
         return {
           label: "Line Hit Rate",
           value: `${pct}%`,
-          context: `Over ${pa.line} in ${pa.hitCount} of ${pa.totalGames} games${thin ? " (small sample — ask for last season in chat)" : ""}`,
+          context: `Over ${pa.line} in ${pa.hitCount} of ${pa.totalGames} games${streakText}${thin ? " (small sample)" : ""}`,
         };
       }
       return null;
@@ -574,10 +585,21 @@ function computeHitRate(
         const total = team.ats.covers + team.ats.fails;
         if (total < 3) return null;
         const pct = Math.round(team.ats.coverRate * 100);
+        // ATS streak
+        let atsStreak = 0;
+        const rg = team.recentGames;
+        if (rg.length > 0) {
+          const lastCovered = rg[rg.length - 1].margin + line > 0;
+          for (let i = rg.length - 1; i >= 0; i--) {
+            if ((rg[i].margin + line > 0) === lastCovered) atsStreak++;
+            else break;
+          }
+        }
+        const atsStreakText = atsStreak >= 3 ? ` | ${rg[rg.length - 1].margin + line > 0 ? "Covered" : "Failed"} ${atsStreak} straight` : "";
         return {
           label: "Cover Rate",
           value: `${pct}%`,
-          context: `Covered ${line > 0 ? "+" : ""}${line} in ${team.ats.covers} of ${total} games`,
+          context: `Covered ${line > 0 ? "+" : ""}${line} in ${team.ats.covers} of ${total} games${atsStreakText}`,
         };
       }
       return null;
@@ -615,10 +637,11 @@ function computeHitRate(
       const total = team.record.wins + team.record.losses;
       const pct = Math.round(team.record.pct * 100);
       const thin = total < 10;
+      const streakText = team.streak.count >= 2 ? ` | ${team.streak.type}${team.streak.count}` : "";
       return {
         label: "Win Rate",
         value: `${pct}%`,
-        context: `${team.record.wins}-${team.record.losses} this season (${total} games)${thin ? " — early season, ask for last year in chat" : ""}`,
+        context: `${team.record.wins}-${team.record.losses} this season${streakText}${thin ? " (early season)" : ""}`,
       };
     }
     default:

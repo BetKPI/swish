@@ -56,6 +56,7 @@ export interface ESPNPlayerGameLog {
   opponent: string;
   home: boolean;
   stats: Record<string, string | number>;
+  seasonType?: "regular" | "playoffs";
 }
 
 /**
@@ -116,28 +117,34 @@ export async function getPlayerGameLog(
 
     const labels: string[] = data.labels || [];
     const eventDetails = data.events || {};
-    const seasonType = data.seasonTypes?.[0]; // Regular season
-    if (!seasonType) return [];
+    const seasonTypes = data.seasonTypes || [];
+    if (seasonTypes.length === 0) return [];
 
     const games: ESPNPlayerGameLog[] = [];
-    for (const cat of seasonType.categories || []) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      for (const ev of (cat.events || []) as any[]) {
-        const info = eventDetails[ev.eventId] || {};
-        const statValues = ev.stats || [];
-        const stats: Record<string, string | number> = {};
-        labels.forEach((label, i) => {
-          const val = statValues[i];
-          // Try to parse as number, keep as string if it contains non-numeric chars (like "12-25")
-          const num = Number(val);
-          stats[label] = !isNaN(num) && !String(val).includes("-") ? num : val;
-        });
-        games.push({
-          date: info.gameDate || "",
-          opponent: info.opponent?.displayName || info.opponent?.abbreviation || "Unknown",
-          home: info.homeAway === "home",
-          stats,
-        });
+    // Loop through all season types (regular + playoffs)
+    for (let stIdx = 0; stIdx < seasonTypes.length; stIdx++) {
+      const seasonType = seasonTypes[stIdx];
+      const stName = stIdx === 0 ? "regular" : "playoffs";
+      for (const cat of seasonType.categories || []) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        for (const ev of (cat.events || []) as any[]) {
+          const info = eventDetails[ev.eventId] || {};
+          const statValues = ev.stats || [];
+          const stats: Record<string, string | number> = {};
+          labels.forEach((label, i) => {
+            const val = statValues[i];
+            // Try to parse as number, keep as string if it contains non-numeric chars (like "12-25")
+            const num = Number(val);
+            stats[label] = !isNaN(num) && !String(val).includes("-") ? num : val;
+          });
+          games.push({
+            date: info.gameDate || "",
+            opponent: info.opponent?.displayName || info.opponent?.abbreviation || "Unknown",
+            home: info.homeAway === "home",
+            stats,
+            seasonType: stName as "regular" | "playoffs",
+          });
+        }
       }
     }
 
