@@ -14,26 +14,30 @@ cd "$(dirname "$0")/.."
 echo "=== Swish Daily Refresh — $(date) ==="
 
 # 1. First basket data (NBA play-by-play — full season)
-echo "[1/6] Collecting NBA first basket data..."
+echo "[1/7] Collecting NBA first basket data..."
 python research/collect-fullseason-fb.py 2>&1
 
 # 2. NRFI data (MLB first inning)
-echo "[2/6] Collecting MLB NRFI data..."
+echo "[2/7] Collecting MLB NRFI data..."
 python research/collect-nrfi.py 2>&1 || echo "  (skipped — MLB data not available)"
 
 # 3. NHL first goal data
-echo "[3/6] Collecting NHL first goal data..."
+echo "[3/7] Collecting NHL first goal data..."
 python research/collect-firstgoal.py 2>&1 || echo "  (skipped — NHL data not available)"
 
 # 4. Autoresearch — collect training data and optimize weights
-echo "[4/6] Collecting training data..."
+echo "[4/7] Collecting training data..."
 python research/collect_data.py --all --days 30 2>&1
 
-echo "[5/6] Optimizing Swish Score weights..."
+echo "[5/7] Optimizing Swish Score weights..."
 python research/optimize_weights.py --iterations 3000 2>&1
 
 # 6. Chart audit
-echo "[6/6] Running chart audit..."
+# 6. PGA tournament history
+echo "[6/7] Refreshing PGA major tournament history..."
+python research/collect-pga-history.py 2>&1 || echo "  (skipped — PGA data not available)"
+
+echo "[7/7] Running chart audit..."
 python research/audit-charts.py 2>&1 | tail -20
 
 # Deploy if anything changed
