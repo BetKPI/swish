@@ -248,7 +248,47 @@ export async function getTeamSchedule(
   teamId: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}/schedule`, TTL.SHORT);
+
+  // Fetch regular season (type 2) and postseason (type 3) in parallel
+  const [regular, postseason] = await Promise.all([
+    cachedFetch<Record<string, unknown>>(
+      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=2`,
+      TTL.SHORT
+    ),
+    cachedFetch<Record<string, unknown>>(
+      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=3`,
+      TTL.SHORT
+    ),
+  ]);
+
+  if (!regular && !postseason) return null;
+  if (!regular) return postseason;
+  if (!postseason) return regular;
+
+  // Merge: combine events from both, keep the rest from regular
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const regularEvents = (regular as any)?.events || [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const postEvents = (postseason as any)?.events || [];
+
+  // Tag events with their season type before merging
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const taggedRegular = regularEvents.map((e: any) => ({ ...e, _seasonType: "regular" }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const taggedPost = postEvents.map((e: any) => ({ ...e, _seasonType: "playoffs" }));
+
+  // Deduplicate by event id
+  const seen = new Set<string>();
+  const merged = [];
+  for (const ev of [...taggedRegular, ...taggedPost]) {
+    const id = ev.id || ev.uid || JSON.stringify(ev.date + ev.name);
+    if (!seen.has(id)) {
+      seen.add(id);
+      merged.push(ev);
+    }
+  }
+
+  return { ...regular, events: merged };
 }
 
 export async function fetchAllTeamData(
@@ -377,6 +417,30 @@ export async function fetchGolfLeaderboard(
   }
 }
 
+/**
+ * Infer season type from an ESPN event object.
+ * Priority: our merged _seasonType tag > event.season.type > event.seasonType > default "regular"
+ * ESPN season type codes: 1=preseason, 2=regular, 3=postseason
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function inferSeasonType(event: any): "regular" | "playoffs" | "preseason" {
+  // If we tagged it during merge, use that
+  if (event._seasonType) return event._seasonType;
+
+  // ESPN numeric season type (from event.season.type or event.seasonType)
+  const numType = event.seasonType?.type ?? event.seasonType ?? event.season?.type;
+  if (numType === 1) return "preseason";
+  if (numType === 3) return "playoffs";
+  if (numType === 2) return "regular";
+
+  // ESPN slug-based detection
+  const slug: string = (event.season?.slug || event.seasonType?.slug || "").toLowerCase();
+  if (slug.includes("pre")) return "preseason";
+  if (slug.includes("post") || slug.includes("playoff")) return "playoffs";
+
+  return "regular";
+}
+
 function extractRecentGames(
   schedule: Record<string, unknown> | null
 ): Record<string, unknown>[] {
@@ -412,6 +476,7 @@ function extractRecentGames(
           homeScore: parseScore(comp?.competitors?.[0]?.score),
           awayTeam: comp?.competitors?.[1]?.team?.displayName,
           awayScore: parseScore(comp?.competitors?.[1]?.score),
+          seasonType: inferSeasonType(e),
         };
       });
   } catch {

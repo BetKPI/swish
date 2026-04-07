@@ -48,7 +48,8 @@ type FetchAction =
   | { action: "nhl_team_goalie"; teamName: string }
   | { action: "team_schedule"; sport: string; teamName: string }
   | { action: "golf_player"; playerName: string }
-  | { action: "masters_hole"; playerName: string; hole?: number };
+  | { action: "masters_hole"; playerName: string; hole?: number }
+  | { action: "pga_tournament"; playerName: string; tournament?: string };
 
 async function executeFetch(
   fetchReq: FetchAction,
@@ -177,6 +178,38 @@ async function executeFetch(
         };
       }
 
+      case "pga_tournament": {
+        // Try PGA history module first, fall back to Masters + leaderboard
+        try {
+          const { getPlayerTournamentHistory } = await import("@/lib/pga-history");
+          const result = getPlayerTournamentHistory(fetchReq.playerName, fetchReq.tournament);
+          if (result) return result;
+        } catch { /* pga-history module not available yet, fall through */ }
+        // Fall back: if Masters-related, use Masters history
+        const t = (fetchReq.tournament || "").toLowerCase();
+        if (t.includes("master") || t.includes("augusta")) {
+          const history = await fetchMastersHistory(fetchReq.playerName);
+          if (history) {
+            return {
+              player: fetchReq.playerName,
+              tournament: "The Masters",
+              amenCorner: analyzeAmenCorner(history),
+              sundays: analyzeSundayScoring(history),
+              allHoles: Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1)),
+            };
+          }
+        }
+        // Fall back to current leaderboard
+        const data = await fetchGolfLeaderboard([fetchReq.playerName]);
+        const players = data._players as Record<string, unknown> | undefined;
+        return {
+          player: players?.[fetchReq.playerName] || null,
+          tournament: data.tournament,
+          status: data.status,
+          leaderboard: (data.leaderboard as unknown[])?.slice(0, 10),
+        };
+      }
+
       default:
         return null;
     }
@@ -296,7 +329,7 @@ FORMAT 2 — You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
-    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player", "masters_hole",
+    "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player", "masters_hole", "pga_tournament",
     "playerName": "name" (for player actions),
     "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
     "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
@@ -304,7 +337,8 @@ FORMAT 2 — You NEED more data:
     "team1": "team" (for pitcher_matchup or pitcher_h2h),
     "team2": "team" (for pitcher_matchup or pitcher_h2h),
     "sport": "sport" (for team_schedule),
-    "teamName": "team" (for team_schedule or nhl_team_goalie)
+    "teamName": "team" (for team_schedule or nhl_team_goalie),
+    "tournament": "tournament name" (for pga_tournament — e.g. "US Open", "PGA Championship", "The Open")
   },
   "message": "Fetching that data now..."
 }
@@ -317,13 +351,25 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 }
 
 RULES:
-- DRILL-DOWN / ITERATIVE FILTERING: The user may ask follow-up questions that NARROW or FILTER previous results. Examples: "now just home games", "narrow to last 5", "what about without Brunson", "only vs winning teams". When the conversation history shows previous charts, the user's new question is a REFINEMENT — fetch the same data type but filter it, or re-slice existing data. ALWAYS produce a new chart that reflects the narrowed view, not just text. The user expects each message to produce an updated/filtered visualization.
+- DRILL-DOWN / ITERATIVE FILTERING: The user may ask follow-up questions that NARROW or FILTER previous results. ALWAYS produce a new chart that reflects the narrowed view, not just text. Recognized filters include:
+  • Home/away: "just home games", "road only", "at home" → filter by home/away flag in game data
+  • Recency: "last 5 games", "last 10", "most recent" → slice game data
+  • Season type: "playoffs only", "regular season only", "postseason" → filter by seasonType field
+  • Opponent: "vs the Celtics", "against Boston" → filter by opponent name
+  • Season: "last year", "2024-25 season" → re-fetch with prior season parameter
+  • Time range: "since January", "last 2 months" → filter by date
+  • Combined: "home games in the playoffs" → apply multiple filters
+  When the data has these fields (home, opponent, seasonType, date), filter from existing data (FORMAT 1). When you need richer data, re-fetch with the appropriate action (FORMAT 2).
 - BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to — that's what you're here for.
 - IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
 - PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
 - If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
-- GOLF: For ANY golf question, ALWAYS fetch data. Use "masters_hole" for Masters/Augusta questions (returns hole-by-hole history across 2019-2025 — Amen Corner, Sunday scoring, all 18 holes). Use "golf_player" for current tournament position and leaderboard. If the user asks about a golfer and you have no data, default to "masters_hole" for Masters bets or "golf_player" otherwise.
+- GOLF: For ANY golf question, ALWAYS fetch data. Available actions:
+  • "masters_hole" — Masters/Augusta hole-by-hole history 2019-2025 (Amen Corner, Sunday scoring, all 18 holes)
+  • "pga_tournament" — Historical results at specific major tournaments (US Open, PGA Championship, The Open). Use when user asks "how does he do at the US Open" or "his major history". Include "tournament" field with the tournament name.
+  • "golf_player" — Current tournament position and live leaderboard
+  For Masters questions, prefer "masters_hole". For other tournament history, use "pga_tournament". For current/live data, use "golf_player".
 - For pitcher matchups between two MLB teams, use "mlb_pitcher_matchup".
 - For historical H2H between two pitchers, use "mlb_pitcher_h2h". Extract pitcher names from existing data if available.
 - For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context.
@@ -400,7 +446,7 @@ For tables use "columns": [{"key":"k","label":"Label"}] instead of xKey/yKeys.
 
 RULES:
 - ONLY use data from above. Do not invent numbers.
-- If the user is filtering/narrowing (e.g. "just home games", "only last 5", "without player X"), filter the fetched data to match and chart ONLY the filtered subset. Title the chart to reflect the filter (e.g. "Last 5 Home Games" not just "Recent Games").
+- If the user is filtering/narrowing, filter the fetched data and chart ONLY the filtered subset. Title the chart to reflect the filter. Recognized filters: home/away, recency (last N), playoffs/regular season, vs specific opponent, date range. Combine filters when asked (e.g. "home playoff games" → filter both).
 - Make it relevant to the bet.
 - Data keys must be camelCase.`;
 

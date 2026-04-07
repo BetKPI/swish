@@ -559,10 +559,11 @@ function computeHitRate(
       const pa = pData?.propAnalysis;
       if (pa && pa.totalGames >= 3) {
         const pct = Math.round(pa.hitRate * 100);
+        const thin = pa.totalGames < 10;
         return {
           label: "Line Hit Rate",
           value: `${pct}%`,
-          context: `Over ${pa.line} in ${pa.hitCount} of ${pa.totalGames} games`,
+          context: `Over ${pa.line} in ${pa.hitCount} of ${pa.totalGames} games${thin ? " (small sample — ask for last season in chat)" : ""}`,
         };
       }
       return null;
@@ -613,10 +614,11 @@ function computeHitRate(
       if (!team || team.recentGames.length < 3) return null;
       const total = team.record.wins + team.record.losses;
       const pct = Math.round(team.record.pct * 100);
+      const thin = total < 10;
       return {
         label: "Win Rate",
         value: `${pct}%`,
-        context: `${team.record.wins}-${team.record.losses} this season (${total} games)`,
+        context: `${team.record.wins}-${team.record.losses} this season (${total} games)${thin ? " — early season, ask for last year in chat" : ""}`,
       };
     }
     default:

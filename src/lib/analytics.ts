@@ -44,6 +44,7 @@ export interface GameResult {
   home: boolean;
   margin: number;
   totalPoints: number;
+  seasonType?: "regular" | "playoffs" | "preseason";
 }
 
 export interface HeadToHeadRecord {
@@ -180,6 +181,7 @@ function parseRecentGames(
       home: isHome,
       margin: teamScore - opponentScore,
       totalPoints: homeScore + awayScore,
+      seasonType: g.seasonType || undefined,
     };
   });
 }
