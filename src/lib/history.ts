@@ -27,7 +27,49 @@ export interface HistoryEntry {
 }
 
 const STORAGE_KEY = "swish_history";
+const PENDING_KEY = "swish_pending";
 const MAX_ENTRIES = 5;
+
+export interface PendingAnalysis {
+  extraction: BetExtraction;
+  imagePreview: string;
+  timestamp: number;
+}
+
+export function savePending(extraction: BetExtraction, imagePreview: string): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.setItem(PENDING_KEY, JSON.stringify({
+      extraction,
+      imagePreview,
+      timestamp: Date.now(),
+    }));
+  } catch { /* silent */ }
+}
+
+export function getPending(): PendingAnalysis | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(PENDING_KEY);
+    if (!raw) return null;
+    const pending = JSON.parse(raw) as PendingAnalysis;
+    // Expire after 10 minutes
+    if (Date.now() - pending.timestamp > 10 * 60 * 1000) {
+      clearPending();
+      return null;
+    }
+    return pending;
+  } catch {
+    return null;
+  }
+}
+
+export function clearPending(): void {
+  if (typeof window === "undefined") return;
+  try {
+    localStorage.removeItem(PENDING_KEY);
+  } catch { /* silent */ }
+}
 
 export function getHistory(): HistoryEntry[] {
   if (typeof window === "undefined") return [];

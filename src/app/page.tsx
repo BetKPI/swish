@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import type {
   AppState,
   BetExtraction,
@@ -14,7 +14,7 @@ import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
 import BetHistory from "@/components/BetHistory";
 import AnalyzingAnimation from "@/components/AnalyzingAnimation";
-import { saveToHistory, isFull, type HistoryEntry } from "@/lib/history";
+import { saveToHistory, isFull, savePending, getPending, clearPending, type HistoryEntry } from "@/lib/history";
 
 export default function Home() {
   const [state, setState] = useState<AppState>("upload");
@@ -34,6 +34,103 @@ export default function Home() {
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Shared stats-fetching logic used by both fresh analysis and resume
+  const fetchStats = useCallback(async (ext: BetExtraction) => {
+    const timeout = (ms: number) => new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error("Taking too long — try again or use a clearer screenshot")), ms)
+    );
+    const isParlay = ext.betType === "parlay";
+    setStatusMsg(isParlay ? "Breaking down each leg..." : "Pulling the numbers that matter...");
+    const statsTimeout = isParlay ? 55000 : 30000;
+    const statsRes = await Promise.race([
+      fetch("/api/stats", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ extraction: ext }),
+      }),
+      timeout(statsTimeout),
+    ]);
+    if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
+    const statsData = await statsRes.json();
+
+    if (statsData.parlay) {
+      setExtraction(ext);
+      setParlayLegs(statsData.legs || []);
+      setState("parlay");
+      const parlayLegsData = statsData.legs || [];
+      const parlayGraded = parlayLegsData.filter((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result && l.gameStatus.grade.result !== "pending");
+      const allHit = parlayGraded.length === parlayLegsData.length && parlayGraded.every((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "hit");
+      const anyMiss = parlayGraded.some((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "miss");
+      saveToHistory({
+        extraction: ext,
+        summary: parlayLegsData.map((l: { summary?: string }) => l.summary).filter(Boolean).join(" "),
+        stats: [],
+        charts: [],
+        isParlay: true,
+        legCount: parlayLegsData.length,
+        parlayLegs: parlayLegsData,
+        grade: parlayGraded.length > 0 ? {
+          result: anyMiss ? "miss" : allHit ? "hit" : "pending",
+          detail: anyMiss ? "Parlay busted" : allHit ? "All legs hit!" : `${parlayGraded.length}/${parlayLegsData.length} graded`,
+        } : undefined,
+      });
+      clearPending();
+      return;
+    }
+
+    if (statsData.unsupported) {
+      setExtraction(ext);
+      setCharts([]);
+      setStats([]);
+      setSummary("");
+      setState("unsupported");
+      clearPending();
+      return;
+    }
+
+    setCharts(statsData.charts || []);
+    setStats(statsData.stats || []);
+    setSummary(statsData.summary || "");
+    setComputedData(statsData._computed || null);
+    setVisuals(statsData.visuals || null);
+    setGameStatus(statsData.gameStatus || null);
+    setSwishScore(statsData.swishScore || null);
+    setKeyInsight(statsData.keyInsight || "");
+    setState("results");
+    saveToHistory({
+      extraction: ext,
+      summary: statsData.summary || "",
+      stats: statsData.stats || [],
+      charts: statsData.charts || [],
+      gameStatus: statsData.gameStatus || undefined,
+      visuals: statsData.visuals || undefined,
+      computedData: statsData._computed || undefined,
+      grade: statsData.gameStatus?.grade || undefined,
+      swishScore: statsData.swishScore || undefined,
+      keyInsight: statsData.keyInsight || undefined,
+    });
+    clearPending();
+  }, []);
+
+  // Auto-resume if the user closed the browser mid-analysis
+  const resumedRef = useRef(false);
+  useEffect(() => {
+    if (resumedRef.current) return;
+    const pending = getPending();
+    if (!pending) return;
+    resumedRef.current = true;
+
+    setExtraction(pending.extraction);
+    setImagePreview(pending.imagePreview);
+    setState("analyzing");
+
+    fetchStats(pending.extraction).catch((err) => {
+      setError(err instanceof Error ? err.message : "Something went wrong");
+      setState("error");
+      clearPending();
+    });
+  }, [fetchStats]);
 
   const handleFile = useCallback((file: File) => {
     if (!file.type.match(/^image\/(png|jpeg|webp)$/)) {
@@ -97,81 +194,15 @@ export default function Home() {
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
 
-      const isParlay = analyzeData.extraction?.betType === "parlay";
-      setStatusMsg(isParlay ? "Breaking down each leg..." : "Pulling the numbers that matter...");
-      const statsTimeout = isParlay ? 55000 : 30000;
-      const statsRes = await Promise.race([
-        fetch("/api/stats", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ extraction: analyzeData.extraction }),
-        }),
-        timeout(statsTimeout),
-      ]);
-      if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
-      const statsData = await statsRes.json();
+      // Save pending state so closing the browser doesn't lose progress
+      savePending(analyzeData.extraction, imagePreview || "");
 
-      if (statsData.parlay) {
-        setExtraction(analyzeData.extraction);
-        setParlayLegs(statsData.legs || []);
-        setState("parlay");
-        // Save parlay to history (full data for re-viewing)
-        const parlayLegsData = statsData.legs || [];
-        const parlayGraded = parlayLegsData.filter((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result && l.gameStatus.grade.result !== "pending");
-        const allHit = parlayGraded.length === parlayLegsData.length && parlayGraded.every((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "hit");
-        const anyMiss = parlayGraded.some((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result === "miss");
-        saveToHistory({
-          extraction: analyzeData.extraction,
-          summary: parlayLegsData.map((l: { summary?: string }) => l.summary).filter(Boolean).join(" "),
-          stats: [],
-          charts: [],
-          isParlay: true,
-          legCount: parlayLegsData.length,
-          parlayLegs: parlayLegsData,
-          grade: parlayGraded.length > 0 ? {
-            result: anyMiss ? "miss" : allHit ? "hit" : "pending",
-            detail: anyMiss ? "Parlay busted" : allHit ? "All legs hit!" : `${parlayGraded.length}/${parlayLegsData.length} graded`,
-          } : undefined,
-        });
-        return;
-      }
-
-      if (statsData.unsupported) {
-        setExtraction(analyzeData.extraction);
-        setCharts([]);
-        setStats([]);
-        setSummary("");
-        setState("unsupported");
-        return;
-      }
-
-      setCharts(statsData.charts || []);
-      setStats(statsData.stats || []);
-      setSummary(statsData.summary || "");
-      setComputedData(statsData._computed || null);
-      setVisuals(statsData.visuals || null);
-      setGameStatus(statsData.gameStatus || null);
-      setSwishScore(statsData.swishScore || null);
-      setKeyInsight(statsData.keyInsight || "");
-      setState("results");
-      // Save full analysis to history for re-viewing
-      saveToHistory({
-        extraction: analyzeData.extraction,
-        summary: statsData.summary || "",
-        stats: statsData.stats || [],
-        charts: statsData.charts || [],
-        gameStatus: statsData.gameStatus || undefined,
-        visuals: statsData.visuals || undefined,
-        computedData: statsData._computed || undefined,
-        grade: statsData.gameStatus?.grade || undefined,
-        swishScore: statsData.swishScore || undefined,
-        keyInsight: statsData.keyInsight || undefined,
-      });
+      await fetchStats(analyzeData.extraction);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");
       setState("error");
     }
-  }, [imageBase64]);
+  }, [imageBase64, imagePreview, fetchStats]);
 
   const loadFromHistory = useCallback((entry: HistoryEntry) => {
     setExtraction(entry.extraction);
@@ -207,6 +238,7 @@ export default function Home() {
     setKeyInsight("");
     setError("");
     setStatusMsg("");
+    clearPending();
   }, []);
 
   return (
