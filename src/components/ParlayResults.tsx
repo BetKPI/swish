@@ -147,7 +147,7 @@ export default function ParlayResults({
             </div>
             <div className="flex flex-wrap gap-2">
               <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
-                {activeLeg.betType.replace("_", "/")}
+                {(activeLeg.betType || "player_prop").replace("_", "/")}
               </span>
               <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
                 {activeLeg.sport}
@@ -237,8 +237,9 @@ export default function ParlayResults({
         </div>
       )}
 
-      {/* Overall Parlay Chat — covers all legs */}
-      {analyzedLegs.length > 1 && (
+      {/* Overall Parlay Chat — always visible so users can ask follow-ups */}
+      <div className="border-t border-border/30 pt-4 mt-2">
+        <h3 className="text-sm font-semibold text-accent mb-1">Ask about this parlay</h3>
         <AnalysisChat
           key="parlay-overall-chat"
           extraction={{
@@ -263,7 +264,7 @@ export default function ParlayResults({
             })),
           }}
         />
-      )}
+      </div>
 
       {/* Feedback + Share */}
       <FeedbackShare extraction={extraction} summary={summaryText} />

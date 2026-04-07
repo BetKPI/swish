@@ -67,6 +67,13 @@ export default function AnalysisChat({
     setLoading(true);
 
     try {
+      // Build conversation history for drill-down context
+      const history = messages.map((m) => ({
+        role: m.role,
+        content: m.content,
+        ...(m.chart ? { chartTitle: m.chart.title, chartType: m.chart.type } : {}),
+      }));
+
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,6 +81,7 @@ export default function AnalysisChat({
           message: msg,
           extraction,
           computedData,
+          history,
         }),
       });
 

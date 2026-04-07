@@ -154,6 +154,7 @@ export async function getFirstGoalData(
   // If we have team context, also look for team-specific scorers
   if (!playerProfile && teamNames.length > 0) {
     for (const teamName of teamNames) {
+      if (!teamName) continue;
       const upper = teamName.toUpperCase().trim();
       const teamEntry = db.teams[upper];
       if (!teamEntry) continue;

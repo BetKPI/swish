@@ -1476,8 +1476,9 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
   const desc = (extraction.description || "").toLowerCase();
   if (!desc) return null;
 
-  // NHL
+  // NHL — match "shots on goal", "SOG", or standalone "shot(s)"
   if (desc.includes("shot") && (desc.includes("goal") || desc.includes("sog"))) return "Shots on Goal";
+  if (/\bsog\b/.test(desc)) return "Shots on Goal";
   if (desc.includes("shot")) return "Shots";
   if (desc.includes("save")) return "Saves";
   if (desc.includes("power play") || desc.includes("pp goal")) return "Power Play Goals";
@@ -1513,8 +1514,8 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
 
 function mapMarketToStatKey(market: string): string {
   const m = (market || "").toLowerCase();
-  // NHL
-  if (m.includes("shot")) return "shots";
+  // NHL — "shot", "shots on goal", "SOG", or any string containing "sog" as a word
+  if (m.includes("shot") || /\bsog\b/.test(m)) return "shots";
   if (m.includes("save")) return "saves";
   if (m.includes("goal") && !m.includes("against")) return "goals";
   if (m.includes("goals against")) return "goalsAgainst";

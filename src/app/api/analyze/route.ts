@@ -1,6 +1,73 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchWithRetry } from "@/lib/fetch";
 
+/**
+ * Normalize the sport string returned by Gemini into a canonical display name.
+ * Gemini sometimes returns tournament names (e.g. "The Masters") or league names
+ * (e.g. "PGA", "PGA Tour") instead of the generic sport name. This function maps
+ * all known variants to the correct display label so the UI badge is always right.
+ */
+function normalizeSport(raw: string): string {
+  const s = (raw || "").trim().toUpperCase();
+  const map: Record<string, string> = {
+    // Golf variants — Gemini sometimes returns tournament/league name
+    GOLF: "Golf",
+    PGA: "Golf",
+    "PGA TOUR": "Golf",
+    "THE MASTERS": "Golf",
+    MASTERS: "Golf",
+    LIV: "Golf",
+    LPGA: "Golf",
+    // Standard sports
+    NBA: "NBA",
+    NFL: "NFL",
+    MLB: "MLB",
+    NHL: "NHL",
+    NCAAB: "NCAAB",
+    NCAAF: "NCAAF",
+    WNBA: "WNBA",
+    MLS: "Soccer",
+    SOCCER: "Soccer",
+    EPL: "Soccer",
+    "PREMIER LEAGUE": "Soccer",
+    "LA LIGA": "Soccer",
+    "SERIE A": "Soccer",
+    BUNDESLIGA: "Soccer",
+    "LIGUE 1": "Soccer",
+    TENNIS: "Tennis",
+    MMA: "MMA",
+    UFC: "MMA",
+    BOXING: "Boxing",
+    // Common aliases
+    BASKETBALL: "NBA",
+    FOOTBALL: "NFL",
+    BASEBALL: "MLB",
+    HOCKEY: "NHL",
+    "COLLEGE FOOTBALL": "NCAAF",
+    "COLLEGE BASKETBALL": "NCAAB",
+    CFB: "NCAAF",
+    CBB: "NCAAB",
+  };
+  return map[s] || raw; // If not found, pass through the original
+}
+
+/**
+ * Apply normalization to a single extraction (and its parlay legs if present).
+ */
+function normalizeExtraction(extraction: Record<string, unknown>): void {
+  if (extraction.sport && typeof extraction.sport === "string") {
+    extraction.sport = normalizeSport(extraction.sport);
+  }
+  // Also normalize sport in parlay legs
+  if (Array.isArray(extraction.legs)) {
+    for (const leg of extraction.legs) {
+      if (leg && typeof leg === "object" && typeof leg.sport === "string") {
+        leg.sport = normalizeSport(leg.sport);
+      }
+    }
+  }
+}
+
 const EXTRACTION_PROMPT = `You are an expert sports betting analyst. Analyze this screenshot of a sports bet and extract structured information.
 
 Return a JSON object with these fields:
@@ -107,6 +174,10 @@ export async function POST(request: NextRequest) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
     const extraction = JSON.parse(jsonText);
+
+    // Normalize sport names so the UI badge is always correct
+    // (Gemini sometimes returns "PGA", "The Masters", etc. instead of "Golf")
+    normalizeExtraction(extraction);
 
     // Log parlay extractions to Discord for debugging
     if (extraction.betType === "parlay") {

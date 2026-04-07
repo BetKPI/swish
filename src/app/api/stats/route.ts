@@ -629,11 +629,21 @@ export async function POST(request: NextRequest) {
       }
 
       // Step 1: Fix up legs — inherit missing teams/sport from parent
+      // Gemini can return null for any field, so guard everything
       const fixedLegs = legs.slice(0, 6).map((leg) => {
         if (!leg.teams || leg.teams.length === 0) {
           leg.teams = extraction.teams || [];
         }
-        if (!leg.sport) leg.sport = extraction.sport;
+        // Filter out any null/undefined team names inside the array
+        leg.teams = (leg.teams || []).filter((t): t is string => !!t);
+        if (!leg.sport) leg.sport = extraction.sport || "";
+        if (!leg.market) leg.market = "";
+        if (!leg.description) leg.description = "";
+        if (!leg.players) leg.players = [];
+        // Filter out null player names
+        leg.players = (leg.players || []).filter((p): p is string => !!p);
+        if (!leg.betType) leg.betType = leg.market ? "player_prop" : "moneyline";
+        if (!leg.odds) leg.odds = "";
         return leg;
       });
 
@@ -718,7 +728,7 @@ export async function POST(request: NextRequest) {
         return {
           description: ld.leg.description,
           sport: ld.leg.sport,
-          betType: ld.leg.betType,
+          betType: ld.leg.betType || "player_prop",
           teams: ld.leg.teams,
           players: ld.leg.players || [],
           market: ld.leg.market,

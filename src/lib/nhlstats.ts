@@ -420,7 +420,7 @@ function mapNHLMarketToStat(market: string): string {
   if (m.includes("goal")) return "goals";
   if (m.includes("assist")) return "assists";
   if (m.includes("point")) return "points";
-  if (m.includes("shot")) return "shots";
+  if (m.includes("shot") || /\bsog\b/.test(m)) return "shots";
   if (m.includes("save")) return "saves";
   if (m.includes("block")) return "blockedShots";
   if (m.includes("power play") || m.includes("pp")) return "powerPlayGoals";

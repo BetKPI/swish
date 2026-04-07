@@ -164,7 +164,7 @@ export default function AnalysisResults({
             </h2>
             <div className="flex flex-wrap gap-2 mt-2">
               <span className={`text-xs px-2 py-0.5 rounded-full ${sportColorClass(extraction.sport)}`}>
-                {extraction.betType.replace("_", "/")}
+                {(extraction.betType || "player_prop").replace("_", "/")}
               </span>
               <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
                 {extraction.sport}

@@ -1016,12 +1016,13 @@ const standardStatProps: MarketDefinition[] = [
     subcategory: "Shot Volume",
     marketNames: [
       "Shots on Goal O/U",
+      "Shots on Goal",
       "Player Shots Over/Under",
       "SOG",
     ],
     platforms: ["DraftKings", "FanDuel", "PrizePicks", "Underdog"],
     sports: ["NHL"],
-    resolutionStats: ["shots_on_goal"],
+    resolutionStats: ["shots"],
     relevantData: [
       "Shots on goal per game trend (one of the stickiest stats in hockey)",
       "Time on ice trend",
@@ -3576,7 +3577,7 @@ export function matchMarket(
   marketName?: string,
   playerStats?: string[],
 ): MarketDefinition | undefined {
-  const sportUpper = sport.toUpperCase() as Sport;
+  const sportUpper = (sport || "").toUpperCase() as Sport;
 
   // 1. Try exact market name match first
   if (marketName) {

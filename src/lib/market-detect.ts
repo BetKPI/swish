@@ -26,7 +26,7 @@ export function detectExoticMarket(
   sport: string = ""
 ): ExoticMarket {
   const text = `${market} ${description}`.toLowerCase();
-  const s = sport.toUpperCase();
+  const s = (sport || "").toUpperCase();
 
   // First basket / first scorer (NBA)
   if (s === "NBA" || s === "BASKETBALL" || s === "NCAAB" || !s) {

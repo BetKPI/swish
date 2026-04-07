@@ -229,7 +229,8 @@ async function logChatToDiscord(
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, extraction, computedData } = await request.json();
+    const { message, extraction, computedData, history } = await request.json();
+    const chatHistory = Array.isArray(history) ? history : [];
 
     if (!message || !extraction) {
       return NextResponse.json({ error: "Missing message or extraction" }, { status: 400 });
@@ -248,6 +249,15 @@ export async function POST(request: NextRequest) {
     const isGolf = ["GOLF", "PGA", "PGA TOUR", "THE MASTERS", "MASTERS"].includes(sport);
     const isMasters = sport === "THE MASTERS" || sport === "MASTERS" || (extraction.description || "").toLowerCase().includes("master");
 
+    // Build conversation context string for drill-down
+    const conversationContext = chatHistory.length > 0
+      ? `\nCONVERSATION SO FAR (the user is drilling down — each message builds on the last):\n${chatHistory.map((m: { role: string; content: string; chartTitle?: string; chartType?: string }) =>
+          m.role === "user"
+            ? `  USER: "${m.content}"`
+            : `  ASSISTANT: ${m.content}${m.chartTitle ? ` [showed ${m.chartType} chart: "${m.chartTitle}"]` : ""}`
+        ).join("\n")}\n`
+      : "";
+
     const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}).
 ${extraction.players?.length ? `Players in this bet: ${players}` : ""}
 ${extraction.market ? `Market: ${extraction.market}` : ""}
@@ -257,7 +267,7 @@ ${isGolf ? `\nTHIS IS A GOLF BET. For golf questions, prefer "masters_hole" (for
 ${isMasters ? `This is a MASTERS bet at Augusta National. You have access to rich hole-by-hole historical data via "masters_hole" action.` : ""}
 
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
-
+${conversationContext}
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
 
@@ -307,6 +317,7 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
 }
 
 RULES:
+- DRILL-DOWN / ITERATIVE FILTERING: The user may ask follow-up questions that NARROW or FILTER previous results. Examples: "now just home games", "narrow to last 5", "what about without Brunson", "only vs winning teams". When the conversation history shows previous charts, the user's new question is a REFINEMENT — fetch the same data type but filter it, or re-slice existing data. ALWAYS produce a new chart that reflects the narrowed view, not just text. The user expects each message to produce an updated/filtered visualization.
 - BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to — that's what you're here for.
 - IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
 - PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
@@ -368,11 +379,11 @@ THEIR BET: ${extraction.description || `${extraction.sport} ${extraction.betType
 ${extraction.players?.length ? `Player: ${extraction.players.join(", ")}` : ""}
 ${extraction.market ? `Market: ${extraction.market}` : ""}
 ${extraction.line != null ? `Line: ${extraction.line}` : ""}
-
+${conversationContext}
 We just fetched this data:
 ${JSON.stringify(fetchedData, null, 2)}
 
-Create a chart that ANALYZES this data in the context of their bet. Don't just display raw numbers — tell them something useful about whether the data supports or undermines their bet. Respond with ONLY valid JSON:
+Create a chart that ANALYZES this data in the context of their bet and conversation. If the user is drilling down (e.g. "just home games", "last 5 games", "without player X"), FILTER the data accordingly and show only the filtered subset. Don't just display raw numbers — tell them something useful about whether the data supports or undermines their bet. Respond with ONLY valid JSON:
 {
   "type": "chart",
   "message": "Brief explanation of what the chart shows (1 sentence)",
@@ -389,6 +400,7 @@ For tables use "columns": [{"key":"k","label":"Label"}] instead of xKey/yKeys.
 
 RULES:
 - ONLY use data from above. Do not invent numbers.
+- If the user is filtering/narrowing (e.g. "just home games", "only last 5", "without player X"), filter the fetched data to match and chart ONLY the filtered subset. Title the chart to reflect the filter (e.g. "Last 5 Home Games" not just "Recent Games").
 - Make it relevant to the bet.
 - Data keys must be camelCase.`;
 

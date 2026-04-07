@@ -45,3 +45,5 @@ research/notes/
 next-env.d.ts
 
 .vercel
+
+.env*.local

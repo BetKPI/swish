@@ -52,6 +52,7 @@ function loadDB(): FirstBasketDB | null {
 function findTeamTricode(db: FirstBasketDB, teamName: string): string | null {
   const name = teamName.toLowerCase();
   // Direct tricode match
+  if (!teamName) return null;
   if (db.teams[teamName.toUpperCase()]) return teamName.toUpperCase();
   // Common name mappings
   const aliases: Record<string, string> = {
