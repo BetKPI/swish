@@ -76,9 +76,8 @@ def fetch_json(url: str):
 
 
 def fetch_event_leaderboard(event_id: str) -> list:
-    """Fetch leaderboard for a specific event by searching the scoreboard."""
-    # Use the event-specific scoreboard endpoint
-    url = f"{BASE}?event={event_id}"
+    """Fetch full leaderboard for a specific event via the web leaderboard API."""
+    url = f"{LEADERBOARD}?event={event_id}"
     data = fetch_json(url)
     if not data:
         return []
@@ -97,33 +96,48 @@ def fetch_event_leaderboard(event_id: str) -> list:
 
     for comp in competitors:
         athlete = comp.get("athlete", {})
-        player_name = athlete.get("displayName") or athlete.get("fullName", "Unknown")
+        player_name = athlete.get("displayName", "Unknown")
+
+        # Position from status.position.displayName (e.g. "1", "T3", "CUT")
+        status = comp.get("status", {})
+        pos_info = status.get("position", {})
+        pos_display = pos_info.get("displayName", "")
+        # Parse numeric position; for "T3" -> 3, for "CUT" -> 999
+        pos_num = 999
+        if pos_display:
+            digits = "".join(c for c in pos_display if c.isdigit())
+            if digits:
+                pos_num = int(digits)
+
+        # Score to par from statistics
+        score_to_par = ""
+        for stat in comp.get("statistics", []):
+            if stat.get("name") == "scoreToPar":
+                score_to_par = stat.get("displayValue", "")
+                break
+
+        # Total strokes from score.value
+        score_obj = comp.get("score", {})
+        total_strokes = None
+        if score_obj and score_obj.get("value") is not None:
+            total_strokes = int(score_obj["value"])
 
         # Round-by-round scores from linescores
         rounds = []
-        for ls in comp.get("linescores", []):
-            period = ls.get("period", 0)
-            if period > 4:
-                continue  # Skip playoffs
+        for i, ls in enumerate(comp.get("linescores", []), 1):
             value = ls.get("value")
-            display = ls.get("displayValue", "")
             if value is not None:
                 rounds.append({
-                    "round": period,
-                    "strokes": int(value) if value == int(value) else value,
-                    "toPar": display,
+                    "round": i,
+                    "strokes": int(value),
+                    "toPar": ls.get("displayValue", ""),
                 })
-
-        score_to_par = comp.get("score", "")
-        position = comp.get("order", 0)
-
-        # Calculate total strokes from rounds
-        total_strokes = sum(r["strokes"] for r in rounds) if rounds else None
 
         results.append({
             "playerName": player_name,
-            "playerId": comp.get("id", ""),
-            "position": position,
+            "playerId": athlete.get("id", comp.get("id", "")),
+            "position": pos_num,
+            "positionDisplay": pos_display,
             "scoreToPar": score_to_par,
             "totalStrokes": total_strokes,
             "rounds": rounds,

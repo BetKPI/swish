@@ -24,6 +24,7 @@ interface AnalysisResultsProps {
   visuals?: Record<string, unknown>;
   swishScore?: SwishScore;
   keyInsight?: string;
+  suggestions?: string[];
   onReset: () => void;
 }
 
@@ -56,6 +57,7 @@ export default function AnalysisResults({
   visuals,
   swishScore,
   keyInsight,
+  suggestions,
   onReset,
 }: AnalysisResultsProps) {
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
@@ -269,6 +271,7 @@ export default function AnalysisResults({
         <AnalysisChat
           extraction={extraction}
           computedData={computedData}
+          suggestions={suggestions}
         />
       )}
 

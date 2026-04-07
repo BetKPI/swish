@@ -1400,6 +1400,146 @@ function buildPlayerPropCharts(
       }
     }
 
+    // 8. Rest day impact — performance by days of rest between games
+    if (gameValues && gameValues.length >= 6) {
+      // Sort by date ascending to compute rest days
+      const sorted = [...gameValues]
+        .filter((g: { date: string }) => g.date)
+        .sort((a: { date: string }, b: { date: string }) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+      const buckets: { name: string; games: number; totalVal: number; hits: number }[] = [
+        { name: "Back-to-back (0-1d)", games: 0, totalVal: 0, hits: 0 },
+        { name: "Normal rest (2-3d)", games: 0, totalVal: 0, hits: 0 },
+        { name: "Extended rest (4+d)", games: 0, totalVal: 0, hits: 0 },
+      ];
+
+      for (let i = 1; i < sorted.length; i++) {
+        const prev = new Date(sorted[i - 1].date).getTime();
+        const curr = new Date(sorted[i].date).getTime();
+        const restDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+        const g = sorted[i] as { value: number; hit: boolean };
+        const bucketIdx = restDays <= 1 ? 0 : restDays <= 3 ? 1 : 2;
+        buckets[bucketIdx].games++;
+        buckets[bucketIdx].totalVal += g.value;
+        if (g.hit) buckets[bucketIdx].hits++;
+      }
+
+      const activeBuckets = buckets.filter((b) => b.games >= 2);
+      if (activeBuckets.length >= 2) {
+        const data = activeBuckets.map((b) => ({
+          bucket: b.name,
+          games: b.games,
+          avgValue: Math.round((b.totalVal / b.games) * 10) / 10,
+          hitRate: Math.round((b.hits / b.games) * 100),
+        }));
+        const avgs = activeBuckets.map((b) => b.totalVal / b.games);
+        const maxAvg = Math.max(...avgs);
+        const minAvg = Math.min(...avgs);
+        const diffPct = minAvg > 0 ? Math.round(((maxAvg - minAvg) / minAvg) * 100) : 0;
+        const bestBucket = activeBuckets[avgs.indexOf(maxAvg)].name;
+        const meaningful = diffPct >= 10;
+        charts.push({
+          type: "table" as ChartConfig["type"],
+          title: `${playerName} — ${statLabel} by Rest Days`,
+          relevance: meaningful
+            ? `Meaningful rest impact: best with ${bestBucket} (${diffPct}% higher avg) — consider schedule context`
+            : `Minimal rest impact (${diffPct}% difference between buckets) — rest days not a major factor`,
+          data,
+          xKey: "bucket",
+          yKeys: ["games", "avgValue", "hitRate"],
+        });
+      }
+    }
+
+    // 9. Minutes / TOI correlation — performance in high vs low playing-time games
+    if (gameValues && gameValues.length >= 6 && Array.isArray(gameLog) && gameLog.length > 0) {
+      // Extract minutes from raw game logs — supports NBA (min), NHL (toi), ESPN (stats.MIN / stats.minutes)
+      const parseMinutes = (raw: string | number | undefined): number | null => {
+        if (raw === undefined || raw === null || raw === "") return null;
+        if (typeof raw === "number") return raw;
+        const str = String(raw);
+        // "34:20" or "18:45" format
+        if (str.includes(":")) {
+          const [m, s] = str.split(":");
+          return Number(m) + (Number(s) || 0) / 60;
+        }
+        const n = parseFloat(str);
+        return isNaN(n) ? null : n;
+      };
+
+      // Try to get minutes from each game log entry
+      const minutesValues: (number | null)[] = gameLog.map((g: Record<string, unknown>) => {
+        // BDL NBA: min field
+        if (g.min !== undefined) return parseMinutes(g.min as string | number);
+        // NHL: toi or timeOnIce
+        if (g.toi !== undefined) return parseMinutes(g.toi as string);
+        if (g.timeOnIce !== undefined) return parseMinutes(g.timeOnIce as string);
+        // ESPN: stats.MIN or stats.minutes
+        const stats = g.stats as Record<string, unknown> | undefined;
+        if (stats) {
+          if (stats.MIN !== undefined) return parseMinutes(stats.MIN as string | number);
+          if (stats.minutes !== undefined) return parseMinutes(stats.minutes as string | number);
+        }
+        return null;
+      });
+
+      // Only proceed if we have minutes data (skip MLB which won't have it)
+      const validCount = minutesValues.filter((m) => m !== null && m > 0).length;
+      if (validCount >= 6) {
+        // Correlate game log entries with gameValues by index (both should be same order)
+        // Build paired data: { value, hit, minutes }
+        const paired: { value: number; hit: boolean; minutes: number }[] = [];
+        const len = Math.min(gameValues.length, minutesValues.length);
+        for (let i = 0; i < len; i++) {
+          const mins = minutesValues[i];
+          if (mins !== null && mins > 0) {
+            const gv = gameValues[i] as { value: number; hit: boolean };
+            paired.push({ value: gv.value, hit: gv.hit, minutes: mins });
+          }
+        }
+
+        if (paired.length >= 6) {
+          // Find median minutes
+          const sortedMins = paired.map((p) => p.minutes).sort((a, b) => a - b);
+          const median = sortedMins[Math.floor(sortedMins.length / 2)];
+
+          const highMin = paired.filter((p) => p.minutes >= median);
+          const lowMin = paired.filter((p) => p.minutes < median);
+
+          if (highMin.length >= 2 && lowMin.length >= 2) {
+            const avg = (arr: { value: number }[]) =>
+              Math.round((arr.reduce((s, v) => s + v.value, 0) / arr.length) * 10) / 10;
+            const hitPct = (arr: { hit: boolean }[]) =>
+              Math.round((arr.filter((g) => g.hit).length / arr.length) * 100);
+
+            const highAvg = avg(highMin);
+            const lowAvg = avg(lowMin);
+            const highHitRate = hitPct(highMin);
+            const lowHitRate = hitPct(lowMin);
+            const medianRounded = Math.round(median * 10) / 10;
+
+            const data = [
+              { group: `High (≥${medianRounded} min)`, games: highMin.length, avgValue: highAvg, hitRate: highHitRate },
+              { group: `Low (<${medianRounded} min)`, games: lowMin.length, avgValue: lowAvg, hitRate: lowHitRate },
+            ];
+
+            const diffPct = lowAvg > 0 ? Math.round(((highAvg - lowAvg) / lowAvg) * 100) : 0;
+            const meaningful = Math.abs(diffPct) >= 10;
+            charts.push({
+              type: "table" as ChartConfig["type"],
+              title: `${playerName} — ${statLabel} by Playing Time`,
+              relevance: meaningful
+                ? `Playing time matters: ${diffPct > 0 ? "higher" : "lower"} ${statLabel} in high-minutes games (${highAvg} vs ${lowAvg}, ${Math.abs(diffPct)}% diff) — monitor minutes projection`
+                : `Minimal playing time impact (${highAvg} vs ${lowAvg}) — stat output relatively stable regardless of minutes`,
+              data,
+              xKey: "group",
+              yKeys: ["games", "avgValue", "hitRate"],
+            });
+          }
+        }
+      }
+    }
+
     // Only build charts for the first player (primary prop target)
     break;
   }
@@ -1525,16 +1665,30 @@ function mapMarketToStatKey(market: string): string {
   if (m.includes("goals against")) return "goalsAgainst";
   if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
   // NBA — specific combos/markets before generic ones
-  if (m.includes("pts+reb+ast") || m.includes("pra")) return "pra";
+  if (m.includes("pts+reb+ast") || m === "pra" || m.includes("points rebounds assists") || m.includes("points+rebounds+assists")) return "pra";
+  if (m.includes("pts+reb") || m.includes("points+rebounds")) return "pts+reb";
+  if (m.includes("pts+ast") || m.includes("points+assists")) return "pts+ast";
+  if (m.includes("reb+ast") || m.includes("rebounds+assists")) return "reb+ast";
   if (m.includes("three") || m.includes("3p") || m.includes("3pt")) return "fg3m";
   if (m.includes("double-double") || m.includes("double double")) return "dd";
+  // MLB — combo stats before singles (order matters: "h+r+rbi" before "rbi" or "hit")
+  if (m.includes("h+r+rbi") || m.includes("hits+runs+rbi") || m.includes("hits runs rbi")) return "hits+runs+rbi";
+  if (m.includes("hits+runs") || m.includes("h+r")) return "hits+runs";
+  if (m.includes("hits+rbi") || m.includes("h+rbi")) return "hits+rbi";
+  if (m.includes("runs+rbi") || m.includes("r+rbi")) return "runs+rbi";
+  if (m.includes("total bases+runs") || m.includes("tb+r")) return "totalBases+runs";
+  // NHL — combo stats before singles
+  if (m.includes("goals+assists") || m.includes("g+a")) return "goals+assists";
+  if (m.includes("shots+goals") || m.includes("sog+g")) return "shots+goals";
+  if (m.includes("points+shots") || m.includes("pts+sog")) return "points+shots";
+  // NBA singles
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";
   if (m.includes("steal")) return "stl";
   if (m.includes("block") || m.includes("blk")) return "blk";
   if (m.includes("turnover")) return "turnover";
-  // MLB
+  // MLB singles
   if (m.includes("strikeout") || m.includes("k's")) return "strikeOuts";
   if (m.includes("home run") || m.includes("hr")) return "homeRuns";
   if (m.includes("rbi") || m.includes("runs batted")) return "rbi";
@@ -1621,6 +1775,16 @@ function formatStatLabel(stat: string): string {
     "pts+reb": "Pts+Reb",
     "pts+ast": "Pts+Ast",
     "reb+ast": "Reb+Ast",
+    // NHL combos
+    "goals+assists": "Goals+Assists",
+    "shots+goals": "Shots+Goals",
+    "points+shots": "Points+Shots",
+    // MLB combos
+    "hits+runs+rbi": "H+R+RBI",
+    "hits+runs": "Hits+Runs",
+    "hits+rbi": "Hits+RBI",
+    "runs+rbi": "Runs+RBI",
+    "totalBases+runs": "TB+Runs",
     // MLB
     hits: "Hits",
     homeRuns: "Home Runs",

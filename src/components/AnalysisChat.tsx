@@ -7,6 +7,7 @@ import ChartDisplay from "./ChartDisplay";
 interface AnalysisChatProps {
   extraction: BetExtraction;
   computedData: Record<string, unknown>;
+  suggestions?: string[];
 }
 
 interface ChatMessage {
@@ -52,6 +53,7 @@ const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
 export default function AnalysisChat({
   extraction,
   computedData,
+  suggestions: serverSuggestions,
 }: AnalysisChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -131,7 +133,7 @@ export default function AnalysisChat({
         {/* Suggestion chips — only show if no messages yet */}
         {messages.length === 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {(SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT).map((s) => (
+            {(serverSuggestions?.length ? serverSuggestions : (SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT)).map((s) => (
               <button
                 key={s}
                 onClick={() => send(s)}

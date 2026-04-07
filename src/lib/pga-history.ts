@@ -21,6 +21,7 @@ export interface PlayerResult {
   playerName: string;
   playerId: string;
   position: number;
+  positionDisplay: string;
   scoreToPar: string;
   totalStrokes: number | null;
   rounds: RoundScore[];

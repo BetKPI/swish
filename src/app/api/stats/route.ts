@@ -437,6 +437,9 @@ async function analyzeSingleBet(
   // Compute Key Insight
   const keyInsight = computeKeyInsight(extraction, computed, teamData);
 
+  // Compute smart suggestion chips
+  const suggestions = computeSmartSuggestions(extraction, computed, teamData);
+
   // Extract visual metadata (logos, headshots, colors) from team data
   const visuals = extractVisuals(teamData, extraction);
 
@@ -455,6 +458,7 @@ async function analyzeSingleBet(
       visuals,
       swishScore,
       keyInsight,
+      suggestions,
     };
   }
 
@@ -467,6 +471,7 @@ async function analyzeSingleBet(
     visuals,
     swishScore,
     keyInsight,
+    suggestions,
   };
 }
 
@@ -846,6 +851,11 @@ export async function POST(request: NextRequest) {
         const legHitRate = ld.computed && ld.teamData
           ? computeHitRate(ld.leg, ld.computed, ld.teamData)
           : null;
+
+        // Per-leg smart suggestions
+        const legSuggestions = ld.computed && ld.teamData
+          ? computeSmartSuggestions(ld.leg, ld.computed, ld.teamData)
+          : undefined;
         const allLegStats = legHitRate ? [legHitRate, ...legStats] : legStats;
 
         return {
@@ -865,6 +875,7 @@ export async function POST(request: NextRequest) {
           computedData: ld.teamData || undefined,
           gameStatus: legGameStatuses[i] || undefined,
           swishScore: legSwishScore,
+          suggestions: legSuggestions,
         };
       });
 
@@ -1005,6 +1016,106 @@ Return JSON with ONE key "legs" — an array with ${legData.length} objects (one
 Example: {"legs":[{"summary":"...","stats":[...]},{"summary":"...","stats":[...]}]}
 
 Return ONLY valid JSON. No markdown.`;
+}
+
+/**
+ * Generate context-aware suggestion chips based on the actual analysis data.
+ * Returns 3-4 short strings that make sense for what the data reveals.
+ */
+function computeSmartSuggestions(
+  extraction: BetExtraction,
+  computed: ReturnType<typeof computeAnalysis>,
+  rawData: Record<string, unknown>
+): string[] {
+  const suggestions: string[] = [];
+  const sport = (extraction.sport || "").toUpperCase();
+  const { teamMetrics, headToHead } = computed;
+  const teams = Object.values(teamMetrics);
+
+  if (extraction.betType === "player_prop") {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const playerData = (rawData as any)?._players;
+    const playerName = extraction.players?.[0] || "";
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pData = playerData?.[playerName] as any;
+    const pa = pData?.propAnalysis;
+
+    // Home/away split difference
+    if (pa?.homeAvg != null && pa?.awayAvg != null) {
+      const diff = Math.abs(pa.homeAvg - pa.awayAvg);
+      const total = (pa.homeAvg + pa.awayAvg) / 2 || 1;
+      if (diff / total > 0.15) {
+        suggestions.push("Show home vs away breakdown");
+      }
+    }
+
+    // Streak detection
+    if (pa?.gameValues?.length >= 3) {
+      const gv = pa.gameValues;
+      let streak = 1;
+      const lastHit = gv[gv.length - 1]?.hit;
+      for (let i = gv.length - 2; i >= 0; i--) {
+        if (gv[i].hit === lastHit) streak++;
+        else break;
+      }
+      if (streak >= 3) {
+        suggestions.push("Show last 5 games");
+      }
+    }
+
+    // Opponent history
+    if (extraction.teams.length >= 2) {
+      const opponent = extraction.teams[1] || extraction.teams[0];
+      suggestions.push(`How does he do vs ${opponent}?`);
+    }
+
+    // Sport-specific deep dive
+    if (sport === "NBA") {
+      suggestions.push("Show assist-to-turnover ratio trend");
+    } else if (sport === "MLB" || sport === "BASEBALL") {
+      suggestions.push("Compare vs lefty and righty pitchers");
+    } else if (sport === "NHL" || sport === "HOCKEY") {
+      suggestions.push("Show power play vs even strength");
+    } else if (sport === "NFL" || sport === "FOOTBALL") {
+      suggestions.push("Show red zone targets");
+    }
+
+    // Small sample fallback
+    if (pa && pa.totalGames < 15) {
+      suggestions.push("Show last season stats");
+    }
+  } else {
+    // Team bets: spread, moneyline, over/under
+    const team0 = teams[0];
+
+    // Home/away suggestion based on where tonight's game likely is
+    if (team0?.homeRecord && team0?.awayRecord) {
+      // If we can detect home/away from recent games or description
+      const desc = (extraction.description || "").toLowerCase();
+      if (desc.includes("@") || desc.includes("away") || desc.includes("road")) {
+        suggestions.push("Show away games only");
+      } else {
+        suggestions.push("Show home games only");
+      }
+    } else {
+      suggestions.push("Show home vs away splits");
+    }
+
+    suggestions.push("Show last 10 games");
+
+    // Head-to-head if both teams available
+    if (headToHead && extraction.teams.length >= 2) {
+      suggestions.push("Head-to-head history");
+    }
+
+    // Regular season vs playoffs
+    if (team0?.recentGames?.some((g) => g.seasonType === "playoffs")) {
+      suggestions.push("Regular season only");
+    }
+  }
+
+  // Cap at 4 suggestions
+  return suggestions.slice(0, 4);
 }
 
 function buildDataContext(

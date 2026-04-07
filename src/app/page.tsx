@@ -30,6 +30,7 @@ export default function Home() {
   const [gameStatus, setGameStatus] = useState<GameStatusData | null>(null);
   const [swishScore, setSwishScore] = useState<{ score: number; label: string; detail: string } | null>(null);
   const [keyInsight, setKeyInsight] = useState<string>("");
+  const [suggestions, setSuggestions] = useState<string[]>([]);
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -97,6 +98,7 @@ export default function Home() {
     setGameStatus(statsData.gameStatus || null);
     setSwishScore(statsData.swishScore || null);
     setKeyInsight(statsData.keyInsight || "");
+    setSuggestions(statsData.suggestions || []);
     setState("results");
     saveToHistory({
       extraction: ext,
@@ -487,6 +489,7 @@ export default function Home() {
             visuals={visuals ?? undefined}
             swishScore={swishScore ?? undefined}
             keyInsight={keyInsight || undefined}
+            suggestions={suggestions.length > 0 ? suggestions : undefined}
             onReset={reset}
           />
         </div>

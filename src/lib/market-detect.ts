@@ -58,17 +58,32 @@ export function detectExoticMarket(
     return "double_double";
   }
 
-  // Combo props (PRA, pts+reb, etc.)
+  // Combo props (PRA, pts+reb, H+R+RBI, goals+assists, etc.)
   if (
+    // NBA combos
     text.includes("pra") ||
     text.includes("pts+reb+ast") ||
     text.includes("points+rebounds+assists") ||
+    text.includes("points rebounds assists") ||
     (text.includes("pts+reb") && !text.includes("ast")) ||
     text.includes("pts+ast") ||
     text.includes("reb+ast") ||
     text.includes("points+rebounds") ||
     text.includes("points+assists") ||
-    text.includes("rebounds+assists")
+    text.includes("rebounds+assists") ||
+    // MLB combos
+    text.includes("h+r+rbi") ||
+    text.includes("hits+runs+rbi") ||
+    text.includes("hits+runs+rbis") ||
+    text.includes("hits runs rbis") ||
+    text.includes("hits+runs") ||
+    text.includes("hits+rbi") ||
+    text.includes("runs+rbi") ||
+    text.includes("total bases+runs") ||
+    // NHL combos
+    text.includes("goals+assists") ||
+    text.includes("shots+goals") ||
+    text.includes("points+shots")
   ) {
     return "combo_prop";
   }

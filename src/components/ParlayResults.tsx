@@ -243,6 +243,7 @@ export default function ParlayResults({
                 confidence: 1,
               }}
               computedData={activeLeg.computedData || {}}
+              suggestions={activeLeg.suggestions}
             />
           )}
         </div>
