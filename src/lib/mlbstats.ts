@@ -437,7 +437,7 @@ export interface MLBPropAnalysis {
   average: number;
   last5Avg: number;
   trend: "rising" | "falling" | "stable";
-  gameValues: { date: string; value: number; hit: boolean; opponent: string }[];
+  gameValues: { date: string; value: number; hit: boolean; opponent: string; home: boolean }[];
 }
 
 export async function fetchMLBData(

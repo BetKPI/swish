@@ -55,7 +55,18 @@ export interface BDLGameStats {
   fg3a: number;
   ftm: number;
   fta: number;
-  game: { id: number; date: string; home_team_score: number; visitor_team_score: number };
+  player: { id: number; team_id?: number; team?: { id: number; abbreviation: string; full_name: string } };
+  team: { id: number; abbreviation: string; full_name: string };
+  game: {
+    id: number;
+    date: string;
+    home_team_score: number;
+    visitor_team_score: number;
+    home_team_id?: number;
+    visitor_team_id?: number;
+    home_team?: { id: number; abbreviation: string; full_name: string };
+    visitor_team?: { id: number; abbreviation: string; full_name: string };
+  };
 }
 
 export interface BDLSeasonAverages {
@@ -248,7 +259,7 @@ export interface PropAnalysis {
   average: number;
   last5Avg: number;
   trend: "rising" | "falling" | "stable";
-  gameValues: { date: string; value: number; hit: boolean }[];
+  gameValues: { date: string; value: number; hit: boolean; opponent?: string; home?: boolean }[];
 }
 
 /**
@@ -333,11 +344,31 @@ function analyzeProp(
   line: number
 ): PropAnalysis {
   const stat = mapMarketToStat(market);
-  const values = gameLog.map((g) => ({
-    date: g.game?.date || g.date,
-    value: getStatValue(g, stat),
-    hit: getStatValue(g, stat) > line,
-  }));
+  const values = gameLog.map((g) => {
+    // Determine home/away and opponent from the game object
+    const playerTeamId = g.team?.id || g.player?.team_id || g.player?.team?.id;
+    const homeTeamId = g.game?.home_team_id || g.game?.home_team?.id;
+    const visitorTeamId = g.game?.visitor_team_id || g.game?.visitor_team?.id;
+    const isHome = playerTeamId && homeTeamId ? playerTeamId === homeTeamId : undefined;
+
+    // Get opponent abbreviation
+    let opponent: string | undefined;
+    if (playerTeamId && homeTeamId && visitorTeamId) {
+      if (playerTeamId === homeTeamId) {
+        opponent = g.game?.visitor_team?.abbreviation;
+      } else {
+        opponent = g.game?.home_team?.abbreviation;
+      }
+    }
+
+    return {
+      date: g.game?.date || g.date,
+      value: getStatValue(g, stat),
+      hit: getStatValue(g, stat) > line,
+      opponent,
+      home: isHome,
+    };
+  });
 
   const hitCount = values.filter((v) => v.hit).length;
   const total = values.length;

@@ -29,6 +29,7 @@ export interface NHLGameLog {
   opponentAbbrev: string | { default: string };
   opponentCommonName?: { default: string };
   homeRoadFlag: "H" | "R";
+  seasonType?: "regular" | "playoffs";
   // Skater stats
   goals?: number;
   assists?: number;
@@ -55,7 +56,7 @@ export interface NHLPropAnalysis {
   average: number;
   last5Avg: number;
   trend: "rising" | "falling" | "stable";
-  gameValues: { date: string; value: number; hit: boolean; opponent: string }[];
+  gameValues: { date: string; value: number; hit: boolean; opponent: string; home: boolean; seasonType?: "regular" | "playoffs" }[];
 }
 
 // ── Player search ──────────────────────────────────────────────────
@@ -118,14 +119,28 @@ export async function getPlayerGameLog(
 ): Promise<NHLGameLog[]> {
   const yr = season || getCurrentNHLSeason();
   try {
+    // Fetch regular season (2) and playoffs (3) in parallel
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const data: any = await cachedFetch(
-      `${BASE}/player/${playerId}/game-log/${yr}/2`, // 2 = regular season
-      TTL.MEDIUM
+    const [regData, playoffData]: any[] = await Promise.all([
+      cachedFetch(`${BASE}/player/${playerId}/game-log/${yr}/2`, TTL.MEDIUM),
+      cachedFetch(`${BASE}/player/${playerId}/game-log/${yr}/3`, TTL.MEDIUM).catch(() => null),
+    ]);
+
+    const regGames: NHLGameLog[] = (regData?.gameLog || []).map((g: NHLGameLog) => ({
+      ...g,
+      seasonType: "regular" as const,
+    }));
+    const playoffGames: NHLGameLog[] = (playoffData?.gameLog || []).map((g: NHLGameLog) => ({
+      ...g,
+      seasonType: "playoffs" as const,
+    }));
+
+    // Merge and sort by date descending (most recent first)
+    const allGames = [...regGames, ...playoffGames].sort(
+      (a, b) => new Date(b.gameDate).getTime() - new Date(a.gameDate).getTime()
     );
-    if (!data) return [];
-    const games: NHLGameLog[] = data.gameLog || [];
-    return games.slice(0, 15); // Most recent 15
+
+    return allGames.slice(0, 20); // Most recent 20 (may include playoff games)
   } catch {
     return [];
   }
@@ -386,6 +401,7 @@ function analyzeNHLProp(
     hit: getNHLStatValue(g, stat) > line,
     opponent: typeof g.opponentAbbrev === "string" ? g.opponentAbbrev : g.opponentAbbrev?.default || "?",
     home: g.homeRoadFlag === "H",
+    seasonType: g.seasonType,
   }));
 
   const hitCount = values.filter((v) => v.hit).length;
