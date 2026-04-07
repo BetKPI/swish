@@ -817,6 +817,12 @@ export async function POST(request: NextRequest) {
           legSwishScore = computeSwishScore(ld.leg.betType, ld.computed, ld.leg, ld.teamData);
         }
 
+        // Per-leg Hit Rate
+        const legHitRate = ld.computed && ld.teamData
+          ? computeHitRate(ld.leg, ld.computed, ld.teamData)
+          : null;
+        const allLegStats = legHitRate ? [legHitRate, ...legStats] : legStats;
+
         return {
           description: ld.leg.description,
           sport: ld.leg.sport,
@@ -827,7 +833,7 @@ export async function POST(request: NextRequest) {
           line: ld.leg.line,
           odds: ld.leg.odds,
           summary: legSummary,
-          stats: legStats,
+          stats: allLegStats,
           charts: legCharts,
           error: !hasAnything,
           unsupported: !ld.teamData && !hasAnything,

@@ -196,10 +196,21 @@ export default function ParlayResults({
             </div>
           )}
 
+          {/* Hit Rate Hero — first stat gets full-width treatment */}
+          {activeLeg.stats.length > 0 && activeLeg.stats[0]?.label?.toLowerCase().includes("rate") && (
+            <div className="bg-surface rounded-xl p-4 text-center border border-accent/20">
+              <p className="text-3xl font-black text-accent">
+                {String(activeLeg.stats[0].value)}
+              </p>
+              <p className="text-sm font-semibold mt-1">{activeLeg.stats[0].label}</p>
+              <p className="text-xs text-muted mt-0.5">{activeLeg.stats[0].context}</p>
+            </div>
+          )}
+
           {/* Stats */}
-          {activeLeg.stats.length > 0 && (
+          {activeLeg.stats.length > 1 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {activeLeg.stats.map((stat, i) => (
+              {activeLeg.stats.slice(activeLeg.stats[0]?.label?.toLowerCase().includes("rate") ? 1 : 0).map((stat, i) => (
                 <div key={i} className="bg-surface rounded-xl p-3 text-center">
                   <p className="text-xl font-bold text-accent">
                     {String(stat.value)}
