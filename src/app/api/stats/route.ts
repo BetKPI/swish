@@ -440,10 +440,15 @@ async function analyzeSingleBet(
   // Extract visual metadata (logos, headshots, colors) from team data
   const visuals = extractVisuals(teamData, extraction);
 
+  // Compute hit rate and prepend to stats
+  const hitRate = computeHitRate(extraction, computed, teamData);
+  const aiStats = (aiResult.stats || []) as { label: string; value: string; context: string }[];
+  const allStats = hitRate ? [hitRate, ...aiStats] : aiStats;
+
   if (isSummaryOnly) {
     return {
       summary: aiResult.summary || "Check the charts below.",
-      stats: aiResult.stats || [],
+      stats: allStats,
       charts,
       _computed: { oddsAnalysis: computed.oddsAnalysis, source },
       gameStatus,
@@ -455,7 +460,7 @@ async function analyzeSingleBet(
 
   return {
     summary: aiResult.summary || "",
-    stats: aiResult.stats || [],
+    stats: allStats,
     charts: (aiResult.charts as unknown[])?.length ? aiResult.charts : charts,
     _computed: { oddsAnalysis: computed.oddsAnalysis, source },
     gameStatus,
@@ -529,6 +534,93 @@ function computeKeyInsight(
     }
     default:
       return "";
+  }
+}
+
+/**
+ * Compute a "hit rate" hero stat showing how often this exact bet would have hit
+ * historically. Returns null if not enough data.
+ */
+function computeHitRate(
+  extraction: BetExtraction,
+  computed: ReturnType<typeof computeAnalysis>,
+  rawData: Record<string, unknown>
+): { label: string; value: string; context: string } | null {
+  const line = extraction.line ?? 0;
+  const teams = Object.values(computed.teamMetrics);
+
+  switch (extraction.betType) {
+    case "player_prop": {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const playerData = (rawData as any)?._players;
+      const playerName = extraction.players?.[0] || "";
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const pData = playerData?.[playerName] as any;
+      const pa = pData?.propAnalysis;
+      if (pa && pa.totalGames >= 3) {
+        const pct = Math.round(pa.hitRate * 100);
+        return {
+          label: "Line Hit Rate",
+          value: `${pct}%`,
+          context: `Over ${pa.line} in ${pa.hitCount} of ${pa.totalGames} games`,
+        };
+      }
+      return null;
+    }
+    case "spread": {
+      const team = teams[0];
+      if (team?.ats && line !== 0) {
+        const total = team.ats.covers + team.ats.fails;
+        if (total < 3) return null;
+        const pct = Math.round(team.ats.coverRate * 100);
+        return {
+          label: "Cover Rate",
+          value: `${pct}%`,
+          context: `Covered ${line > 0 ? "+" : ""}${line} in ${team.ats.covers} of ${total} games`,
+        };
+      }
+      return null;
+    }
+    case "over_under": {
+      if (line <= 0 || teams.length < 2) return null;
+      // Check each team's games against the line
+      const t0Games = teams[0].recentGames;
+      const t1Games = teams[1].recentGames;
+      const t0Overs = t0Games.filter((g) => g.totalPoints > line).length;
+      const t1Overs = t1Games.filter((g) => g.totalPoints > line).length;
+      const totalGames = t0Games.length + t1Games.length;
+      const totalOvers = t0Overs + t1Overs;
+      if (totalGames < 6) return null;
+      const pct = Math.round((totalOvers / totalGames) * 100);
+      const isOver = (extraction.description || "").toLowerCase().includes("over");
+      const isUnder = (extraction.description || "").toLowerCase().includes("under");
+      if (isUnder) {
+        const underPct = 100 - pct;
+        return {
+          label: "Under Hit Rate",
+          value: `${underPct}%`,
+          context: `Under ${line} in ${totalGames - totalOvers} of ${totalGames} combined games`,
+        };
+      }
+      return {
+        label: isOver ? "Over Hit Rate" : "O/U Hit Rate",
+        value: `${pct}%`,
+        context: `Over ${line} in ${totalOvers} of ${totalGames} combined games`,
+      };
+    }
+    case "moneyline": {
+      const team = teams[0];
+      if (!team || team.recentGames.length < 3) return null;
+      const total = team.record.wins + team.record.losses;
+      const pct = Math.round(team.record.pct * 100);
+      return {
+        label: "Win Rate",
+        value: `${pct}%`,
+        context: `${team.record.wins}-${team.record.losses} this season (${total} games)`,
+      };
+    }
+    default:
+      return null;
   }
 }
 
