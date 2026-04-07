@@ -433,6 +433,11 @@ function analyzeNHLProp(
 
 function mapNHLMarketToStat(market: string): string {
   const m = (market || "").toLowerCase();
+  // Combo stats — must check before singles
+  if (m.includes("goals+assists") || m.includes("g+a")) return "goals+assists";
+  if (m.includes("shots+goals") || m.includes("sog+g")) return "shots+goals";
+  if (m.includes("points+shots") || m.includes("pts+sog")) return "points+shots";
+  // Singles
   if (m.includes("goal")) return "goals";
   if (m.includes("assist")) return "assists";
   if (m.includes("point")) return "points";
@@ -455,6 +460,10 @@ function getNHLStatValue(game: NHLGameLog, stat: string): number {
     case "goalsAgainst": return game.goalsAgainst || 0;
     case "powerPlayGoals": return game.powerPlayGoals || 0;
     case "plusMinus": return game.plusMinus || 0;
+    // Combo stats
+    case "goals+assists": return (game.goals || 0) + (game.assists || 0);
+    case "shots+goals": return (game.shots || 0) + (game.goals || 0);
+    case "points+shots": return (game.goals || 0) + (game.assists || 0) + (game.shots || 0);
     default: return 0;
   }
 }

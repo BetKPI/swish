@@ -561,7 +561,7 @@ function buildDoubleDoubleCharts(
 // ── Combo Prop charts (PRA, Pts+Reb, etc.) ────────────────────────
 
 function buildComboCharts(
-  extraction: { players: string[]; line?: number; market?: string },
+  extraction: { players: string[]; line?: number; market?: string; description?: string; sport?: string },
   rawData: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
@@ -574,54 +574,102 @@ function buildComboCharts(
   const gameLog = pData.gameLog || pData.gameLogs || [];
   if (!Array.isArray(gameLog) || gameLog.length === 0) return [];
 
-  const market = (extraction.market || "").toLowerCase();
+  const market = (extraction.market || extraction.description || "").toLowerCase();
   const line = extraction.line || 0;
 
-  // Determine which stats to combine
-  let statKeys: { key: string; label: string; extract: (g: Record<string, unknown>) => number }[] = [];
-  if (market.includes("pra") || market.includes("pts+reb+ast") || market.includes("points+rebounds+assists")) {
-    statKeys = [
-      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
-      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
-      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
-    ];
+  // Detect game log format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const sample = gameLog[0] as any;
+  const isBDL = sample?.game && (sample?.pts !== undefined || sample?.reb !== undefined); // BDLGameStats
+  const isNHL = sample?.gameDate && (sample?.goals !== undefined || sample?.assists !== undefined || sample?.shots !== undefined);
+  const isMLB = sample?.stat && typeof sample.stat === "object"; // MLBGameLog — nested stat object
+  // ESPN format: has stats (not stat) object
+  const isESPN = sample?.stats && typeof sample.stats === "object";
+
+  // Determine which stats to combine based on market AND sport
+  type StatExtractor = { key: string; label: string; extract: (g: Record<string, unknown>) => number };
+  let statKeys: StatExtractor[] = [];
+
+  // --- NBA combos ---
+  if (market.includes("pra") || market.includes("pts+reb+ast") || market.includes("points+rebounds+assists") || market.includes("points rebounds assists")) {
+    statKeys = nbaComboExtractors(["pts", "reb", "ast"], isBDL, isESPN);
   } else if (market.includes("pts+reb") || market.includes("points+rebounds")) {
-    statKeys = [
-      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
-      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
-    ];
+    statKeys = nbaComboExtractors(["pts", "reb"], isBDL, isESPN);
   } else if (market.includes("pts+ast") || market.includes("points+assists")) {
-    statKeys = [
-      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
-      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
-    ];
+    statKeys = nbaComboExtractors(["pts", "ast"], isBDL, isESPN);
   } else if (market.includes("reb+ast") || market.includes("rebounds+assists")) {
+    statKeys = nbaComboExtractors(["reb", "ast"], isBDL, isESPN);
+  }
+  // --- NHL combos ---
+  else if (market.includes("goals+assists") || market.includes("g+a")) {
     statKeys = [
-      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
-      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+      { key: "goals", label: "G", extract: (g) => Number(g.goals) || 0 },
+      { key: "assists", label: "A", extract: (g) => Number(g.assists) || 0 },
     ];
-  } else {
-    // Default to PRA
+  } else if (market.includes("shots+goals") || market.includes("sog+g")) {
     statKeys = [
-      { key: "pts", label: "PTS", extract: (g) => Number(g.PTS || g.points || g.pts || 0) },
-      { key: "reb", label: "REB", extract: (g) => Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0) },
-      { key: "ast", label: "AST", extract: (g) => Number(g.AST || g.assists || g.ast || 0) },
+      { key: "shots", label: "SOG", extract: (g) => Number(g.shots) || 0 },
+      { key: "goals", label: "G", extract: (g) => Number(g.goals) || 0 },
     ];
+  } else if (market.includes("points+shots") || market.includes("pts+sog")) {
+    statKeys = [
+      { key: "points", label: "PTS", extract: (g) => (Number(g.goals) || 0) + (Number(g.assists) || 0) },
+      { key: "shots", label: "SOG", extract: (g) => Number(g.shots) || 0 },
+    ];
+  }
+  // --- MLB combos ---
+  else if (market.includes("h+r+rbi") || market.includes("hits+runs+rbi") || market.includes("hits runs rbi")) {
+    statKeys = mlbComboExtractors(["hits", "runs", "rbi"]);
+  } else if (market.includes("hits+runs") || market.includes("h+r")) {
+    statKeys = mlbComboExtractors(["hits", "runs"]);
+  } else if (market.includes("hits+rbi") || market.includes("h+rbi")) {
+    statKeys = mlbComboExtractors(["hits", "rbi"]);
+  } else if (market.includes("runs+rbi") || market.includes("r+rbi")) {
+    statKeys = mlbComboExtractors(["runs", "rbi"]);
+  } else if (market.includes("total bases+runs") || market.includes("tb+r")) {
+    statKeys = mlbComboExtractors(["totalBases", "runs"]);
+  }
+  // --- Default: PRA (NBA) ---
+  else {
+    statKeys = nbaComboExtractors(["pts", "reb", "ast"], isBDL, isESPN);
   }
 
   const comboLabel = statKeys.map((s) => s.label).join("+");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const games = gameLog.slice(-15).map((g: any, i: number) => {
+    // For MLB, extract from nested stat object
+    const source = isMLB ? { ...g, ...g.stat } : g;
     const values: Record<string, number> = {};
     let total = 0;
     for (const sk of statKeys) {
-      const v = sk.extract(g);
+      const v = sk.extract(source);
       values[sk.key] = v;
       total += v;
     }
+
+    // Get opponent label depending on format
+    let gameLabel: string;
+    if (isBDL) {
+      const playerTeamId = g.team?.id || g.player?.team_id || g.player?.team?.id;
+      const homeTeamId = g.game?.home_team_id || g.game?.home_team?.id;
+      const oppAbbr = playerTeamId === homeTeamId
+        ? g.game?.visitor_team?.abbreviation
+        : g.game?.home_team?.abbreviation;
+      gameLabel = oppAbbr ? `vs ${oppAbbr}` : `G${i + 1}`;
+    } else if (isNHL) {
+      const opp = typeof g.opponentAbbrev === "string"
+        ? g.opponentAbbrev
+        : g.opponentAbbrev?.default || g.opponentCommonName?.default || "?";
+      gameLabel = `vs ${opp}`;
+    } else if (g.opponent) {
+      gameLabel = `vs ${shortenName(String(g.opponent))}`;
+    } else {
+      gameLabel = `G${i + 1}`;
+    }
+
     return {
-      game: g.opponent ? `vs ${shortenName(String(g.opponent))}` : `G${i + 1}`,
+      game: gameLabel,
       ...values,
       total,
       overLine: line > 0 ? total > line : false,
@@ -630,13 +678,14 @@ function buildComboCharts(
 
   const hitCount = line > 0 ? games.filter((g: { overLine: boolean }) => g.overLine).length : 0;
   const hitRate = line > 0 ? Math.round((hitCount / games.length) * 100) : 0;
+  const avgTotal = games.length > 0 ? Math.round((games.reduce((s: number, g: { total: number }) => s + g.total, 0) / games.length) * 10) / 10 : 0;
 
   // 1. Hit rate bar chart
   if (line > 0) {
     charts.push({
       type: "hitrate",
       title: `${playerName} — ${comboLabel} vs ${line} Line`,
-      relevance: `${hitCount}/${games.length} over the line (${hitRate}%)`,
+      relevance: `${hitCount}/${games.length} over the line (${hitRate}%) | avg ${avgTotal}`,
       data: games.map((g: { game: string; total: number; overLine: boolean }) => ({
         game: g.game,
         value: g.total,
@@ -648,7 +697,33 @@ function buildComboCharts(
     });
   }
 
-  // 2. Component breakdown table
+  // 2. Trend line with rolling average
+  if (games.length >= 3) {
+    const data = games.map((g: Record<string, unknown>, i: number) => {
+      const window = games.slice(Math.max(0, i - 4), i + 1);
+      const rollingAvg = Math.round((window.reduce((s: number, w: { total: number }) => s + w.total, 0) / window.length) * 10) / 10;
+      const row: Record<string, unknown> = {
+        game: g.game,
+        [comboLabel]: g.total,
+        rollingAvg: i >= 2 ? rollingAvg : undefined,
+      };
+      if (line > 0) row.propLine = line;
+      return row;
+    });
+    const last3 = games.slice(-3);
+    const last3Avg = Math.round((last3.reduce((s: number, g: { total: number }) => s + g.total, 0) / last3.length) * 10) / 10;
+    const trendWord = last3Avg > avgTotal * 1.1 ? "hot streak" : last3Avg < avgTotal * 0.9 ? "cold stretch" : "steady";
+    charts.push({
+      type: "line",
+      title: `${playerName} — ${comboLabel} Trend`,
+      relevance: `Avg ${avgTotal}, last 3 avg ${last3Avg} — ${trendWord}`,
+      data,
+      xKey: "game",
+      yKeys: [comboLabel, "rollingAvg", ...(line > 0 ? ["propLine"] : [])],
+    });
+  }
+
+  // 3. Component breakdown table
   charts.push({
     type: "table",
     title: `${playerName} — ${comboLabel} Breakdown`,
@@ -666,7 +741,69 @@ function buildComboCharts(
     ],
   });
 
+  // 4. Hit rate by window (last 5, 10, season) — only if we have a line
+  if (line > 0 && games.length >= 5) {
+    const last5 = games.slice(-5);
+    const last10 = games.slice(-10);
+    const l5Hit = last5.filter((g: { overLine: boolean }) => g.overLine).length;
+    const l10Hit = last10.filter((g: { overLine: boolean }) => g.overLine).length;
+    charts.push({
+      type: "bar",
+      title: `Hit Rate: ${comboLabel} Over ${line}`,
+      relevance: `Hit rate by recency — trending ${l5Hit / Math.min(5, last5.length) > hitCount / games.length ? "up" : "down"}`,
+      data: [
+        { window: "Last 5", hitRate: Math.round((l5Hit / Math.min(5, last5.length)) * 100), games: `${l5Hit}/${Math.min(5, last5.length)}` },
+        { window: "Last 10", hitRate: Math.round((l10Hit / Math.min(10, last10.length)) * 100), games: `${l10Hit}/${Math.min(10, last10.length)}` },
+        { window: "Season", hitRate: hitRate, games: `${hitCount}/${games.length}` },
+      ],
+      xKey: "window",
+      yKeys: ["hitRate"],
+    });
+  }
+
   return charts;
+}
+
+// Helper: build NBA combo extractors that handle BDL, ESPN, and generic formats
+function nbaComboExtractors(
+  stats: ("pts" | "reb" | "ast")[],
+  isBDL: boolean,
+  isESPN: boolean
+): { key: string; label: string; extract: (g: Record<string, unknown>) => number }[] {
+  const labelMap: Record<string, string> = { pts: "PTS", reb: "REB", ast: "AST" };
+  return stats.map((s) => ({
+    key: s,
+    label: labelMap[s],
+    extract: (g: Record<string, unknown>) => {
+      if (isBDL) return Number(g[s]) || 0;
+      if (isESPN) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const st = (g as any).stats;
+        const espnKey = s === "pts" ? "PTS" : s === "reb" ? "REB" : "AST";
+        return Number(st?.[espnKey]) || 0;
+      }
+      // Generic/fallback — covers multiple field names
+      if (s === "pts") return Number(g.PTS || g.points || g.pts || 0);
+      if (s === "reb") return Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0);
+      if (s === "ast") return Number(g.AST || g.assists || g.ast || 0);
+      return 0;
+    },
+  }));
+}
+
+// Helper: build MLB combo extractors (always use nested stat object, flattened before call)
+function mlbComboExtractors(
+  stats: string[]
+): { key: string; label: string; extract: (g: Record<string, unknown>) => number }[] {
+  const labelMap: Record<string, string> = {
+    hits: "H", runs: "R", rbi: "RBI", totalBases: "TB",
+    stolenBases: "SB", homeRuns: "HR",
+  };
+  return stats.map((s) => ({
+    key: s,
+    label: labelMap[s] || s,
+    extract: (g: Record<string, unknown>) => Number(g[s]) || 0,
+  }));
 }
 
 // ── Spread charts ──────────────────────────────────────────────────
@@ -1025,11 +1162,15 @@ function buildPlayerPropCharts(
     const espnStatMap: Record<string, string> = {
       pts: "PTS", reb: "REB", ast: "AST", stl: "STL", blk: "BLK",
       fg3m: "3PT", turnover: "TO", pra: "_pra",
+      "pts+reb": "_pts+reb", "pts+ast": "_pts+ast", "reb+ast": "_reb+ast",
       // NHL
       shots: "SOG", goals: "G", saves: "SV",
+      "goals+assists": "_goals+assists", "shots+goals": "_shots+goals", "points+shots": "_points+shots",
       // MLB
       hits: "H", homeRuns: "HR", rbi: "RBI", strikeOuts: "SO",
       stolenBases: "SB", totalBases: "TB",
+      "hits+runs+rbi": "_hits+runs+rbi", "hits+runs": "_hits+runs",
+      "hits+rbi": "_hits+rbi", "runs+rbi": "_runs+rbi", "totalBases+runs": "_totalBases+runs",
     };
 
     // Try propAnalysis first (BDL/MLB), fall back to ESPN game log
@@ -1042,12 +1183,20 @@ function buildPlayerPropCharts(
         shots: "shots", goals: "goals", assists: "assists", points: "points",
         saves: "saves", goalsAgainst: "goalsAgainst", powerPlayGoals: "powerPlayGoals",
         plusMinus: "plusMinus",
+        // Combo stats map to themselves — handled below
+        "goals+assists": "goals+assists", "shots+goals": "shots+goals", "points+shots": "points+shots",
       };
       const nhlKey = nhlStatMap[statKey] || statKey;
       const values = gameLog.map((g: { gameDate: string; opponentAbbrev?: string | { default: string }; opponentCommonName?: { default: string }; homeRoadFlag?: string; [k: string]: unknown }) => {
         let val: number;
         if (statKey === "points" || nhlKey === "points") {
           val = (Number(g.goals) || 0) + (Number(g.assists) || 0);
+        } else if (statKey === "goals+assists") {
+          val = (Number(g.goals) || 0) + (Number(g.assists) || 0);
+        } else if (statKey === "shots+goals") {
+          val = (Number(g.shots) || 0) + (Number(g.goals) || 0);
+        } else if (statKey === "points+shots") {
+          val = (Number(g.goals) || 0) + (Number(g.assists) || 0) + (Number(g.shots) || 0);
         } else {
           val = Number(g[nhlKey]) || 0;
         }
@@ -1089,6 +1238,12 @@ function buildPlayerPropCharts(
         let val: number;
         if (statKey === "pra") {
           val = (Number(g.stats.PTS) || 0) + (Number(g.stats.REB) || 0) + (Number(g.stats.AST) || 0);
+        } else if (statKey === "pts+reb") {
+          val = (Number(g.stats.PTS) || 0) + (Number(g.stats.REB) || 0);
+        } else if (statKey === "pts+ast") {
+          val = (Number(g.stats.PTS) || 0) + (Number(g.stats.AST) || 0);
+        } else if (statKey === "reb+ast") {
+          val = (Number(g.stats.REB) || 0) + (Number(g.stats.AST) || 0);
         } else if (statKey === "fg3m" && g.stats["3PT"]) {
           // "3PT" is "4-10" format, extract made
           const parts = String(g.stats["3PT"]).split("-");
@@ -1125,12 +1280,28 @@ function buildPlayerPropCharts(
         stolenBases: "stolenBases", totalBases: "totalBases", strikeOuts: "strikeOuts",
         baseOnBalls: "baseOnBalls", strikeOuts_pitching: "strikeOuts",
         earnedRuns: "earnedRuns", inningsPitched: "inningsPitched",
+        // Combo stats map to themselves — handled below
+        "hits+runs+rbi": "hits+runs+rbi", "hits+runs": "hits+runs",
+        "hits+rbi": "hits+rbi", "runs+rbi": "runs+rbi", "totalBases+runs": "totalBases+runs",
       };
       const mlbKey = mlbStatKeyMap[statKey] || statKey;
       const values = gameLog.map((g: { date: string; opponent: string; stat: Record<string, unknown>; isHome?: boolean }) => {
-        const val = mlbKey === "inningsPitched"
-          ? parseFloat(String(g.stat[mlbKey] || "0"))
-          : Number(g.stat[mlbKey]) || 0;
+        let val: number;
+        if (statKey === "hits+runs+rbi") {
+          val = (Number(g.stat.hits) || 0) + (Number(g.stat.runs) || 0) + (Number(g.stat.rbi) || 0);
+        } else if (statKey === "hits+runs") {
+          val = (Number(g.stat.hits) || 0) + (Number(g.stat.runs) || 0);
+        } else if (statKey === "hits+rbi") {
+          val = (Number(g.stat.hits) || 0) + (Number(g.stat.rbi) || 0);
+        } else if (statKey === "runs+rbi") {
+          val = (Number(g.stat.runs) || 0) + (Number(g.stat.rbi) || 0);
+        } else if (statKey === "totalBases+runs") {
+          val = (Number(g.stat.totalBases) || 0) + (Number(g.stat.runs) || 0);
+        } else if (mlbKey === "inningsPitched") {
+          val = parseFloat(String(g.stat[mlbKey] || "0"));
+        } else {
+          val = Number(g.stat[mlbKey]) || 0;
+        }
         return { date: g.date, value: val, hit: val > line, opponent: g.opponent, home: g.isHome ?? false };
       });
 
@@ -1620,7 +1791,25 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
   const desc = (extraction.description || "").toLowerCase();
   if (!desc) return null;
 
-  // NHL — match "shots on goal", "SOG", or standalone "shot(s)"
+  // --- Combo stats (check BEFORE singles to avoid false matches) ---
+  // NBA combos
+  if (desc.includes("pts+reb+ast") || desc.includes("pra") || (desc.includes("points") && desc.includes("rebounds") && desc.includes("assists"))) return "Pts+Reb+Ast";
+  if (desc.includes("pts+reb") || (desc.includes("points") && desc.includes("rebounds") && !desc.includes("assists"))) return "Pts+Reb";
+  if (desc.includes("pts+ast") || (desc.includes("points") && desc.includes("assists") && !desc.includes("rebounds"))) return "Pts+Ast";
+  if (desc.includes("reb+ast") || (desc.includes("rebounds") && desc.includes("assists") && !desc.includes("points"))) return "Reb+Ast";
+  // MLB combos
+  if (desc.includes("h+r+rbi") || desc.includes("hits+runs+rbi") || (desc.includes("hits") && desc.includes("runs") && desc.includes("rbi"))) return "Hits+Runs+RBIs";
+  if (desc.includes("hits+runs") || desc.includes("h+r")) return "Hits+Runs";
+  if (desc.includes("hits+rbi") || desc.includes("h+rbi")) return "Hits+RBI";
+  if (desc.includes("runs+rbi") || desc.includes("r+rbi")) return "Runs+RBI";
+  if (desc.includes("total bases+runs") || desc.includes("tb+r")) return "TB+Runs";
+  // NHL combos
+  if (desc.includes("goals+assists") || desc.includes("g+a")) return "Goals+Assists";
+  if (desc.includes("shots+goals") || desc.includes("sog+g")) return "Shots+Goals";
+  if (desc.includes("points+shots") || desc.includes("pts+sog")) return "Points+Shots";
+
+  // --- Single stats ---
+  // NHL
   if (desc.includes("shot") && (desc.includes("goal") || desc.includes("sog"))) return "Shots on Goal";
   if (/\bsog\b/.test(desc)) return "Shots on Goal";
   if (desc.includes("shot")) return "Shots";
@@ -1629,7 +1818,6 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
   if (desc.includes("goals against")) return "Goals Against";
 
   // NBA
-  if (desc.includes("pts+reb+ast") || desc.includes("pra") || (desc.includes("points") && desc.includes("rebounds") && desc.includes("assists"))) return "Pts+Reb+Ast";
   if (desc.includes("three") || desc.includes("3-pointer") || desc.includes("3pt") || desc.includes("made three")) return "3-Pointers";
   if (desc.includes("rebound")) return "Rebounds";
   if (desc.includes("assist")) return "Assists";
@@ -1658,30 +1846,34 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
 
 function mapMarketToStatKey(market: string): string {
   const m = (market || "").toLowerCase();
-  // NHL — "shot", "shots on goal", "SOG", or any string containing "sog" as a word
-  if (m.includes("shot") || /\bsog\b/.test(m)) return "shots";
-  if (m.includes("save")) return "saves";
-  if (m.includes("goal") && !m.includes("against")) return "goals";
-  if (m.includes("goals against")) return "goalsAgainst";
-  if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
-  // NBA — specific combos/markets before generic ones
+
+  // ── Combo stats FIRST (order matters — combos contain single-stat keywords) ──
+  // NBA combos
   if (m.includes("pts+reb+ast") || m === "pra" || m.includes("points rebounds assists") || m.includes("points+rebounds+assists")) return "pra";
   if (m.includes("pts+reb") || m.includes("points+rebounds")) return "pts+reb";
   if (m.includes("pts+ast") || m.includes("points+assists")) return "pts+ast";
   if (m.includes("reb+ast") || m.includes("rebounds+assists")) return "reb+ast";
-  if (m.includes("three") || m.includes("3p") || m.includes("3pt")) return "fg3m";
   if (m.includes("double-double") || m.includes("double double")) return "dd";
-  // MLB — combo stats before singles (order matters: "h+r+rbi" before "rbi" or "hit")
+  // NHL combos
+  if (m.includes("goals+assists") || m.includes("g+a")) return "goals+assists";
+  if (m.includes("shots+goals") || m.includes("sog+g")) return "shots+goals";
+  if (m.includes("points+shots") || m.includes("pts+sog")) return "points+shots";
+  // MLB combos (before singles so "h+r+rbi" isn't caught by "rbi" or "hit")
   if (m.includes("h+r+rbi") || m.includes("hits+runs+rbi") || m.includes("hits runs rbi")) return "hits+runs+rbi";
   if (m.includes("hits+runs") || m.includes("h+r")) return "hits+runs";
   if (m.includes("hits+rbi") || m.includes("h+rbi")) return "hits+rbi";
   if (m.includes("runs+rbi") || m.includes("r+rbi")) return "runs+rbi";
   if (m.includes("total bases+runs") || m.includes("tb+r")) return "totalBases+runs";
-  // NHL — combo stats before singles
-  if (m.includes("goals+assists") || m.includes("g+a")) return "goals+assists";
-  if (m.includes("shots+goals") || m.includes("sog+g")) return "shots+goals";
-  if (m.includes("points+shots") || m.includes("pts+sog")) return "points+shots";
+
+  // ── Single stats ──
+  // NHL singles
+  if (m.includes("shot") || /\bsog\b/.test(m)) return "shots";
+  if (m.includes("save")) return "saves";
+  if (m.includes("goals against")) return "goalsAgainst";
+  if (m.includes("goal") && !m.includes("against")) return "goals";
+  if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
   // NBA singles
+  if (m.includes("three") || m.includes("3p") || m.includes("3pt")) return "fg3m";
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";

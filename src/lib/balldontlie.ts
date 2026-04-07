@@ -416,6 +416,12 @@ function analyzeProp(
 
 function mapMarketToStat(market: string): string {
   const m = (market || "").toLowerCase();
+  // Combo stats FIRST (they contain single-stat keywords)
+  if (m.includes("pts+reb+ast") || m === "pra" || m.includes("points+rebounds+assists") || m.includes("points rebounds assists")) return "pra";
+  if (m.includes("pts+reb") || m.includes("points+rebounds")) return "pts+reb";
+  if (m.includes("pts+ast") || m.includes("points+assists")) return "pts+ast";
+  if (m.includes("reb+ast") || m.includes("rebounds+assists")) return "reb+ast";
+  // Singles
   if (m.includes("point") || m.includes("pts")) return "pts";
   if (m.includes("rebound") || m.includes("reb")) return "reb";
   if (m.includes("assist") || m.includes("ast")) return "ast";
@@ -424,10 +430,6 @@ function mapMarketToStat(market: string): string {
   if (m.includes("three") || m.includes("3p") || m.includes("3-point"))
     return "fg3m";
   if (m.includes("turnover")) return "turnover";
-  if (m.includes("pts+reb+ast") || m.includes("pra")) return "pra";
-  if (m.includes("pts+reb") || m.includes("pr")) return "pts+reb";
-  if (m.includes("pts+ast") || m.includes("pa")) return "pts+ast";
-  if (m.includes("reb+ast") || m.includes("ra")) return "reb+ast";
   // Default to points
   return "pts";
 }

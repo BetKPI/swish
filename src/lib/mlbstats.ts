@@ -609,7 +609,13 @@ function mapMLBMarketToStat(market: string, player: MLBPlayer): string {
     return "strikeOuts_pitching"; // most common pitcher prop
   }
 
-  // Hitter props
+  // Hitter combos — must check before singles
+  if (m.includes("h+r+rbi") || m.includes("hits+runs+rbi") || m.includes("hits runs rbi")) return "hits+runs+rbi";
+  if (m.includes("hits+runs") || m.includes("h+r")) return "hits+runs";
+  if (m.includes("hits+rbi") || m.includes("h+rbi")) return "hits+rbi";
+  if (m.includes("runs+rbi") || m.includes("r+rbi")) return "runs+rbi";
+  if (m.includes("total bases+runs") || m.includes("tb+r")) return "totalBases+runs";
+  // Hitter singles
   if (m.includes("hit") || m.includes("h+")) return "hits";
   if (m.includes("home run") || m.includes("hr")) return "homeRuns";
   if (m.includes("rbi") || m.includes("runs batted")) return "rbi";
@@ -622,7 +628,13 @@ function mapMLBMarketToStat(market: string, player: MLBPlayer): string {
 }
 
 function getMLBStatValue(stat: Record<string, unknown>, key: string): number {
-  // Handle combined keys
+  // Combo stats
+  if (key === "hits+runs+rbi") return ((stat.hits as number) || 0) + ((stat.runs as number) || 0) + ((stat.rbi as number) || 0);
+  if (key === "hits+runs") return ((stat.hits as number) || 0) + ((stat.runs as number) || 0);
+  if (key === "hits+rbi") return ((stat.hits as number) || 0) + ((stat.rbi as number) || 0);
+  if (key === "runs+rbi") return ((stat.runs as number) || 0) + ((stat.rbi as number) || 0);
+  if (key === "totalBases+runs") return ((stat.totalBases as number) || 0) + ((stat.runs as number) || 0);
+  // Single stats
   if (key === "hits") return (stat.hits as number) || 0;
   if (key === "homeRuns") return (stat.homeRuns as number) || 0;
   if (key === "rbi") return (stat.rbi as number) || 0;
