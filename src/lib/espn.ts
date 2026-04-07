@@ -394,7 +394,6 @@ function extractRecentGames(
         const status = e.competitions?.[0]?.status?.type?.completed;
         return status === true;
       })
-      .slice(-10)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .map((e: any) => {
         const comp = e.competitions?.[0];

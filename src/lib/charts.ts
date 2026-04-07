@@ -682,7 +682,7 @@ function buildSpreadCharts(
   // 1. Margin of victory trend with spread line + rolling avg
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const recent = team.recentGames.slice(-10);
+    const recent = team.recentGames.slice(-15);
     const coversInWindow = recent.filter((g) => g.margin + line > 0).length;
     const data = recent.map((g, i) => {
       const window = recent.slice(Math.max(0, i - 2), i + 1);
@@ -831,7 +831,7 @@ function buildOverUnderCharts(
 
   // 1. Combined scoring trend with O/U line
   if (teams.length === 2) {
-    const maxLen = Math.min(teams[0].recentGames.length, teams[1].recentGames.length, 10);
+    const maxLen = Math.min(teams[0].recentGames.length, teams[1].recentGames.length, 15);
     if (maxLen >= 3) {
       const data = [];
       for (let i = 0; i < maxLen; i++) {
@@ -931,7 +931,7 @@ function buildMoneylineCharts(
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     let runningDiff = 0;
-    const data = team.recentGames.slice(-10).map((g, i) => {
+    const data = team.recentGames.slice(-15).map((g, i) => {
       runningDiff += g.margin;
       return {
         game: `G${i + 1}`,
@@ -953,7 +953,7 @@ function buildMoneylineCharts(
   // Scoring Trend removed — raw scoring numbers are noise for ML
   // (0.02 effect size). Point differential (above) is what matters.
 
-  // 3. Home vs Away Splits table
+  // 3. Home vs Away Splits table — full season
   for (const team of teams) {
     const homeGames = team.recentGames.filter((g) => g.home);
     const awayGames = team.recentGames.filter((g) => !g.home);
@@ -962,21 +962,25 @@ function buildMoneylineCharts(
         arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
       const homeWins = homeGames.filter((g) => g.won).length;
       const awayWins = awayGames.filter((g) => g.won).length;
+      const homeAvgMargin = avgG(homeGames, (g) => g.margin);
+      const awayAvgMargin = avgG(awayGames, (g) => g.margin);
       const data = [
         { stat: "Record", Home: `${homeWins}-${homeGames.length - homeWins}`, Away: `${awayWins}-${awayGames.length - awayWins}` },
         { stat: "Win %", Home: `${Math.round((homeWins / homeGames.length) * 100)}%`, Away: `${Math.round((awayWins / awayGames.length) * 100)}%` },
+        { stat: "Avg Margin", Home: `${homeAvgMargin > 0 ? "+" : ""}${homeAvgMargin}`, Away: `${awayAvgMargin > 0 ? "+" : ""}${awayAvgMargin}` },
         { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
         { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
+        { stat: "Games", Home: `${homeGames.length}`, Away: `${awayGames.length}` },
       ];
       charts.push({
         type: "table",
-        title: `${team.name} — Home vs Away Splits`,
-        relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeWins / homeGames.length) * 100)}% W), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayWins / awayGames.length) * 100)}% W)`,
+        title: `${team.name} — Home vs Away (Full Season)`,
+        relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeWins / homeGames.length) * 100)}% W), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayWins / awayGames.length) * 100)}% W) across ${team.recentGames.length} games`,
         data,
         columns: [
           { key: "stat", label: "" },
-          { key: "Home", label: "Home" },
-          { key: "Away", label: "Away" },
+          { key: "Home", label: `Home (${homeGames.length}g)` },
+          { key: "Away", label: `Away (${awayGames.length}g)` },
         ],
       });
     }
