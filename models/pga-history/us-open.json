@@ -1,0 +1,5157 @@
+{
+  "_meta": {
+    "tournament": "U.S. Open",
+    "slug": "us-open",
+    "yearsCollected": [
+      "2019",
+      "2020",
+      "2021",
+      "2022",
+      "2023",
+      "2024",
+      "2025"
+    ],
+    "lastUpdated": "2026-04-07T13:51:37.370422",
+    "source": "ESPN API (free, no auth)"
+  },
+  "years": {
+    "2019": {
+      "year": 2019,
+      "eventId": "401056556",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2020": {
+      "year": 2020,
+      "eventId": "401219333",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2021": {
+      "year": 2021,
+      "eventId": "401243414",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2022": {
+      "year": 2022,
+      "eventId": "401353222",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2023": {
+      "year": 2023,
+      "eventId": "401465533",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2024": {
+      "year": 2024,
+      "eventId": "401580355",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    },
+    "2025": {
+      "year": 2025,
+      "eventId": "401703515",
+      "players": [
+        {
+          "playerName": "Haotong Li",
+          "playerId": "9221",
+          "position": 1,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Johnny Keefer",
+          "playerId": "5217048",
+          "position": 2,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Carlos Ortiz",
+          "playerId": "5532",
+          "position": 3,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Homa",
+          "playerId": "8973",
+          "position": 4,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Naoyuki Kataoka",
+          "playerId": "4837226",
+          "position": 5,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jos\u00e9 Mar\u00eda Olaz\u00e1bal",
+          "playerId": "329",
+          "position": 6,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus Neergaard-Petersen",
+          "playerId": "4858859",
+          "position": 7,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aldrich Potgieter",
+          "playerId": "5080439",
+          "position": 8,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "\u00c1ngel Cabrera",
+          "playerId": "65",
+          "position": 9,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sami V\u00e4lim\u00e4ki",
+          "playerId": "4585548",
+          "position": 10,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jackson Herrington",
+          "playerId": "5344766",
+          "position": 11,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Charl Schwartzel",
+          "playerId": "1097",
+          "position": 12,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Fox",
+          "playerId": "4251",
+          "position": 13,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Max Greyserman",
+          "playerId": "11101",
+          "position": 14,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Vijay Singh",
+          "playerId": "392",
+          "position": 15,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rasmus H\u00f8jgaard",
+          "playerId": "11253",
+          "position": 16,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt McCarty",
+          "playerId": "4901368",
+          "position": 17,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kurt Kitayama",
+          "playerId": "10364",
+          "position": 18,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Kristoffer Reitan",
+          "playerId": "4348470",
+          "position": 19,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Casey Jarvis",
+          "playerId": "4610056",
+          "position": 20,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bubba Watson",
+          "playerId": "780",
+          "position": 21,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brandon Holtz",
+          "playerId": "2201886",
+          "position": 22,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nico Echavarria",
+          "playerId": "4408316",
+          "position": 23,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Smith",
+          "playerId": "9131",
+          "position": 24,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jake Knapp",
+          "playerId": "9843",
+          "position": 25,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Burns",
+          "playerId": "9938",
+          "position": 26,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nick Taylor",
+          "playerId": "3792",
+          "position": 27,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Keegan Bradley",
+          "playerId": "4513",
+          "position": 28,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ryan Gerard",
+          "playerId": "5076021",
+          "position": 29,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jason Day",
+          "playerId": "1680",
+          "position": 30,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Dustin Johnson",
+          "playerId": "3448",
+          "position": 31,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Shane Lowry",
+          "playerId": "4587",
+          "position": 32,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tommy Fleetwood",
+          "playerId": "5539",
+          "position": 33,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Reed",
+          "playerId": "5579",
+          "position": 34,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Akshay Bhatia",
+          "playerId": "4419142",
+          "position": 35,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Matt Fitzpatrick",
+          "playerId": "9037",
+          "position": 36,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Bryson DeChambeau",
+          "playerId": "10046",
+          "position": 37,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Xander Schauffele",
+          "playerId": "10140",
+          "position": 38,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Russell Henley",
+          "playerId": "5409",
+          "position": 39,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Hideki Matsuyama",
+          "playerId": "5860",
+          "position": 40,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Collin Morikawa",
+          "playerId": "10592",
+          "position": 41,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Rory McIlroy",
+          "playerId": "3470",
+          "position": 42,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Cameron Young",
+          "playerId": "4425906",
+          "position": 43,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mason Howell",
+          "playerId": "5289811",
+          "position": 44,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Alex Noren",
+          "playerId": "3832",
+          "position": 45,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Patrick Cantlay",
+          "playerId": "6007",
+          "position": 46,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Viktor Hovland",
+          "playerId": "4364873",
+          "position": 47,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sungjae Im",
+          "playerId": "11382",
+          "position": 48,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sam Stevens",
+          "playerId": "4426181",
+          "position": 49,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Campbell",
+          "playerId": "9525",
+          "position": 50,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Andrew Novak",
+          "playerId": "11332",
+          "position": 51,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tom McKibbin",
+          "playerId": "4348444",
+          "position": 52,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mike Weir",
+          "playerId": "453",
+          "position": 53,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Wyndham Clark",
+          "playerId": "11119",
+          "position": 54,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Mateo Pulcini",
+          "playerId": "5344763",
+          "position": 55,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Zach Johnson",
+          "playerId": "686",
+          "position": 56,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Kim",
+          "playerId": "8974",
+          "position": 57,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Nicolai H\u00f8jgaard",
+          "playerId": "11250",
+          "position": 58,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Danny Willett",
+          "playerId": "4304",
+          "position": 59,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Davis Riley",
+          "playerId": "10058",
+          "position": 60,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ethan Fang",
+          "playerId": "5293232",
+          "position": 61,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Adam Scott",
+          "playerId": "388",
+          "position": 62,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brian Harman",
+          "playerId": "1225",
+          "position": 63,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Daniel Berger",
+          "playerId": "9025",
+          "position": 64,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fred Couples",
+          "playerId": "91",
+          "position": 65,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Min Woo Lee",
+          "playerId": "4410932",
+          "position": 66,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Fifa Laopakdee",
+          "playerId": "5327297",
+          "position": 67,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sergio Garc\u00eda",
+          "playerId": "158",
+          "position": 68,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Aaron Rai",
+          "playerId": "10906",
+          "position": 69,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jacob Bridgeman",
+          "playerId": "5054388",
+          "position": 70,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Corey Conners",
+          "playerId": "9126",
+          "position": 71,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harry Hall",
+          "playerId": "4589438",
+          "position": 72,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Michael Brennan",
+          "playerId": "4921329",
+          "position": 73,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Tyrrell Hatton",
+          "playerId": "5553",
+          "position": 74,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Maverick McNealy",
+          "playerId": "9530",
+          "position": 75,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "J.J. Spaun",
+          "playerId": "10166",
+          "position": 76,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jon Rahm",
+          "playerId": "9780",
+          "position": 77,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ludvig \u00c5berg",
+          "playerId": "4375972",
+          "position": 78,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Chris Gotterup",
+          "playerId": "4690755",
+          "position": 79,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Rose",
+          "playerId": "569",
+          "position": 80,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Jordan Spieth",
+          "playerId": "5467",
+          "position": 81,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Brooks Koepka",
+          "playerId": "6798",
+          "position": 82,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Justin Thomas",
+          "playerId": "4848",
+          "position": 83,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Sepp Straka",
+          "playerId": "8961",
+          "position": 84,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Ben Griffin",
+          "playerId": "4404992",
+          "position": 85,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Gary Woodland",
+          "playerId": "3550",
+          "position": 86,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Scottie Scheffler",
+          "playerId": "9478",
+          "position": 87,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Robert MacIntyre",
+          "playerId": "11378",
+          "position": 88,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Harris English",
+          "playerId": "5408",
+          "position": 89,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Si Woo Kim",
+          "playerId": "7081",
+          "position": 90,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        },
+        {
+          "playerName": "Marco Penge",
+          "playerId": "4585549",
+          "position": 91,
+          "scoreToPar": "E",
+          "totalStrokes": null,
+          "rounds": []
+        }
+      ]
+    }
+  }
+}
