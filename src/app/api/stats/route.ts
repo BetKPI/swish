@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
-import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring, getAugustaPars } from "@/lib/masters";
+import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring, getAugustaPars, analyzeHoleInOneHistory } from "@/lib/masters";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
 import { fetchNHLData } from "@/lib/nhlstats";
@@ -172,32 +172,74 @@ async function fetchSportData(
     const isMasters = sport === "THE MASTERS" || sport === "MASTERS" ||
       desc.includes("master") || desc.includes("augusta");
 
-    if (isMasters && extraction.players.length > 0) {
-      console.log(`[Stats] Fetching Masters hole-by-hole history`);
-      try {
-        // Timeout after 15s to not block the whole response
-        const mastersPromise = async () => {
-          const mastersData: Record<string, unknown> = {};
-          for (const player of extraction.players.slice(0, 2)) { // cap at 2 players
-            const history = await fetchMastersHistory(player);
-            if (history) {
-              const amenCorner = analyzeAmenCorner(history);
-              const sundays = analyzeSundayScoring(history);
-              const holeAnalysis = Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1));
-              mastersData[player] = { history, amenCorner, sundays, holeByHole: holeAnalysis, augustaPars: getAugustaPars() };
+    if (isMasters) {
+      // Detect if this is a hole-in-one bet
+      const exotic = detectExoticMarket(extraction.market || "", extraction.description || "", extraction.sport || "");
+      const isHoleInOne = exotic === "hole_in_one";
+
+      if (isHoleInOne) {
+        console.log(`[Stats] Fetching Masters hole-in-one history (aggregate)`);
+        try {
+          // Fetch top players' histories to build aggregate hole-in-one stats
+          // Use a well-known set of players who've played multiple Masters
+          const topPlayers = extraction.players.length > 0
+            ? extraction.players.slice(0, 3)
+            : ["Tiger Woods", "Phil Mickelson", "Rory McIlroy"];
+          const histories = await Promise.all(
+            topPlayers.map((p) => fetchMastersHistory(p).catch(() => null))
+          );
+          const validHistories = histories.filter((h): h is NonNullable<Awaited<ReturnType<typeof fetchMastersHistory>>> => h != null);
+          if (validHistories.length > 0) {
+            const hioData = analyzeHoleInOneHistory(validHistories);
+            (golfData as Record<string, unknown>)._holeInOne = hioData;
+            // Also add per-player data if players specified
+            if (extraction.players.length > 0) {
+              const mastersData: Record<string, unknown> = {};
+              for (let i = 0; i < extraction.players.length && i < 2; i++) {
+                const h = validHistories.find((vh) => vh.playerName.toLowerCase().includes(extraction.players[i].toLowerCase()));
+                if (h) {
+                  mastersData[extraction.players[i]] = {
+                    history: h, amenCorner: analyzeAmenCorner(h), sundays: analyzeSundayScoring(h),
+                    holeByHole: Array.from({ length: 18 }, (_, j) => analyzeHoleHistory(h, j + 1)),
+                    augustaPars: getAugustaPars(),
+                  };
+                }
+              }
+              if (Object.keys(mastersData).length > 0) {
+                (golfData as Record<string, unknown>)._masters = mastersData;
+              }
             }
           }
-          return mastersData;
-        };
-        const timeoutPromise = new Promise<Record<string, unknown>>((resolve) =>
-          setTimeout(() => { console.log("[Stats] Masters data timed out"); resolve({}); }, 15000)
-        );
-        const mastersData = await Promise.race([mastersPromise(), timeoutPromise]);
-        if (Object.keys(mastersData).length > 0) {
-          (golfData as Record<string, unknown>)._masters = mastersData;
+        } catch (e) {
+          console.error("[Stats] Hole-in-one history failed:", e);
         }
-      } catch (e) {
-        console.error("[Stats] Masters history failed:", e);
+      } else if (extraction.players.length > 0) {
+        console.log(`[Stats] Fetching Masters hole-by-hole history`);
+        try {
+          // Timeout after 15s to not block the whole response
+          const mastersPromise = async () => {
+            const mastersData: Record<string, unknown> = {};
+            for (const player of extraction.players.slice(0, 2)) { // cap at 2 players
+              const history = await fetchMastersHistory(player);
+              if (history) {
+                const amenCorner = analyzeAmenCorner(history);
+                const sundays = analyzeSundayScoring(history);
+                const holeAnalysis = Array.from({ length: 18 }, (_, i) => analyzeHoleHistory(history, i + 1));
+                mastersData[player] = { history, amenCorner, sundays, holeByHole: holeAnalysis, augustaPars: getAugustaPars() };
+              }
+            }
+            return mastersData;
+          };
+          const timeoutPromise = new Promise<Record<string, unknown>>((resolve) =>
+            setTimeout(() => { console.log("[Stats] Masters data timed out"); resolve({}); }, 15000)
+          );
+          const mastersData = await Promise.race([mastersPromise(), timeoutPromise]);
+          if (Object.keys(mastersData).length > 0) {
+            (golfData as Record<string, unknown>)._masters = mastersData;
+          }
+        } catch (e) {
+          console.error("[Stats] Masters history failed:", e);
+        }
       }
     }
 

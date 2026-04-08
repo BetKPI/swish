@@ -272,3 +272,53 @@ export function getAugustaPars() {
     name: AUGUSTA_NAMES[i + 1] || `Hole ${i + 1}`,
   }));
 }
+
+/**
+ * Analyze hole-in-one history at Augusta across all players/years in our data.
+ * Returns per-hole stats for the 4 par 3s (holes 4, 6, 12, 16).
+ */
+export function analyzeHoleInOneHistory(allHistories: MastersPlayerHistory[]) {
+  const par3Holes = [4, 6, 12, 16]; // Augusta par 3s
+  const holeStats = par3Holes.map((holeNum) => {
+    let totalRounds = 0;
+    let aces = 0;
+    const aceDetails: { player: string; year: number; round: number }[] = [];
+
+    for (const history of allHistories) {
+      for (const year of history.years) {
+        for (const round of year.rounds) {
+          const holeData = round.holes.find((h) => h.hole === holeNum);
+          if (holeData) {
+            totalRounds++;
+            if (holeData.strokes === 1) {
+              aces++;
+              aceDetails.push({ player: history.playerName, year: year.year, round: round.round });
+            }
+          }
+        }
+      }
+    }
+
+    return {
+      hole: holeNum,
+      holeName: AUGUSTA_NAMES[holeNum],
+      par: 3,
+      totalRounds,
+      aces,
+      aceRate: totalRounds > 0 ? Math.round((aces / totalRounds) * 10000) / 100 : 0, // percentage with 2 decimals
+      aceDetails,
+    };
+  });
+
+  // Overall stats
+  const totalPar3Rounds = holeStats.reduce((s, h) => s + h.totalRounds, 0);
+  const totalAces = holeStats.reduce((s, h) => s + h.aces, 0);
+
+  return {
+    holes: holeStats,
+    totalPar3Rounds,
+    totalAces,
+    overallAceRate: totalPar3Rounds > 0 ? Math.round((totalAces / totalPar3Rounds) * 10000) / 100 : 0,
+    yearsAnalyzed: Object.keys(MASTERS_EVENTS).length,
+  };
+}

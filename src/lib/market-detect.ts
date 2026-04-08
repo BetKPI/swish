@@ -14,6 +14,7 @@ export type ExoticMarket =
   | "double_double"
   | "combo_prop"
   | "anytime_td"
+  | "hole_in_one"
   | null;
 
 /**
@@ -86,6 +87,13 @@ export function detectExoticMarket(
     text.includes("points+shots")
   ) {
     return "combo_prop";
+  }
+
+  // Hole-in-one (Golf)
+  if (isGolfSport(s)) {
+    if (text.includes("hole in one") || text.includes("hole-in-one") || text.includes("holeinone") || text.includes("ace") || text.includes("hio")) {
+      return "hole_in_one";
+    }
   }
 
   // Anytime TD (NFL) — skeleton for when season starts

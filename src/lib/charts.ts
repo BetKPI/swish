@@ -35,7 +35,13 @@ export function buildCharts(
 
   // Golf — completely different data structure
   if (isGolfSport(sport)) {
-    charts = buildGolfCharts(extraction, rawData);
+    // Check for hole-in-one market first
+    const golfExotic = detectExoticMarket(marketStr, descStr, sport);
+    if (golfExotic === "hole_in_one" && raw?._holeInOne) {
+      charts = buildHoleInOneCharts(extraction, raw._holeInOne, raw._masters);
+    } else {
+      charts = buildGolfCharts(extraction, rawData);
+    }
   }
   // Exotic markets — detected by keyword presence, not exact substring
   else {
@@ -258,6 +264,116 @@ function buildGolfCharts(
         });
       }
     }
+  }
+
+  return charts;
+}
+
+// ── Hole-in-One charts ───────────────────────────────────────────
+
+function buildHoleInOneCharts(
+  extraction: { players: string[]; market?: string; description?: string },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  hioData: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  mastersData?: any
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const holes = hioData?.holes || [];
+
+  // 1. Par 3 hole-in-one rates at Augusta
+  if (holes.length > 0) {
+    const tableData = holes.map((h: { hole: number; holeName: string; totalRounds: number; aces: number; aceRate: number }) => ({
+      hole: `#${h.hole} — ${h.holeName}`,
+      totalRounds: h.totalRounds,
+      aces: h.aces,
+      aceRate: `${h.aceRate}%`,
+    }));
+    charts.push({
+      type: "table",
+      title: "Augusta Par 3s — Hole-in-One History (2019-2025)",
+      relevance: `${hioData.totalAces} aces across ${hioData.totalPar3Rounds} par-3 rounds (${hioData.overallAceRate}% rate) over ${hioData.yearsAnalyzed} Masters`,
+      data: tableData,
+      columns: [
+        { key: "hole", label: "Hole" },
+        { key: "totalRounds", label: "Rounds Played" },
+        { key: "aces", label: "Hole-in-Ones" },
+        { key: "aceRate", label: "Ace Rate" },
+      ],
+    });
+  }
+
+  // 2. Bar chart — ace rate by hole
+  if (holes.length > 0) {
+    const barData = holes.map((h: { hole: number; holeName: string; aceRate: number }) => ({
+      hole: `#${h.hole} ${h.holeName}`,
+      aceRate: h.aceRate,
+    }));
+    charts.push({
+      type: "bar",
+      title: "Hole-in-One Rate by Par 3",
+      relevance: `Which Augusta par 3 is most likely to produce an ace`,
+      data: barData,
+      xKey: "hole",
+      yKeys: ["aceRate"],
+    });
+  }
+
+  // 3. Par 3 scoring breakdown (birdies, pars, bogeys) for context
+  if (mastersData) {
+    const playerName = extraction.players[0] || "";
+    const pData = mastersData[playerName];
+    if (pData?.holeByHole) {
+      const par3Holes = [4, 6, 12, 16];
+      const par3Data = pData.holeByHole
+        .filter((h: { hole: number; totalRounds?: number }) => par3Holes.includes(h.hole) && (h.totalRounds ?? 0) > 0)
+        .map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; parRate: number; bogeyRate: number }) => ({
+          hole: `#${h.hole} ${h.holeName}`,
+          avgStrokes: h.avgStrokes,
+          birdieRate: `${h.birdieRate}%`,
+          parRate: `${h.parRate}%`,
+          bogeyRate: `${h.bogeyRate}%`,
+        }));
+      if (par3Data.length > 0) {
+        charts.push({
+          type: "table",
+          title: `${playerName} — Par 3 Scoring at Augusta`,
+          relevance: `How ${playerName} performs on the 4 par 3 holes — birdie rate is the closest proxy for ace likelihood`,
+          data: par3Data,
+          columns: [
+            { key: "hole", label: "Hole" },
+            { key: "avgStrokes", label: "Avg Strokes" },
+            { key: "birdieRate", label: "Birdie %" },
+            { key: "parRate", label: "Par %" },
+            { key: "bogeyRate", label: "Bogey %" },
+          ],
+        });
+      }
+    }
+  }
+
+  // 4. Ace details table (if any aces happened)
+  const allAces = holes.flatMap((h: { hole: number; holeName: string; aceDetails: { player: string; year: number; round: number }[] }) =>
+    h.aceDetails.map((a: { player: string; year: number; round: number }) => ({
+      hole: `#${h.hole} ${h.holeName}`,
+      player: a.player,
+      year: a.year,
+      round: `Round ${a.round}`,
+    }))
+  );
+  if (allAces.length > 0) {
+    charts.push({
+      type: "table",
+      title: "Masters Hole-in-Ones (2019-2025)",
+      relevance: `${allAces.length} aces recorded in our dataset`,
+      data: allAces,
+      columns: [
+        { key: "year", label: "Year" },
+        { key: "player", label: "Player" },
+        { key: "hole", label: "Hole" },
+        { key: "round", label: "Round" },
+      ],
+    });
   }
 
   return charts;
