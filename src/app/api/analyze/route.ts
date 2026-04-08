@@ -168,12 +168,32 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse JSON — handle markdown code blocks
+    // Parse JSON — handle markdown code blocks and truncation
     let jsonText = text.trim();
     if (jsonText.startsWith("```")) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     }
-    const extraction = JSON.parse(jsonText);
+
+    let extraction;
+    try {
+      extraction = JSON.parse(jsonText);
+    } catch (parseErr) {
+      console.error("JSON parse failed:", (parseErr as Error).message, "Raw text length:", text.length);
+      // Log truncated response to Discord for debugging
+      const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
+      if (webhookUrl) {
+        fetch(webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ embeds: [{ title: "Screenshot Analysis — JSON Parse Failed", color: 0xef4444, fields: [
+            { name: "Error", value: (parseErr as Error).message.slice(0, 200), inline: false },
+            { name: "Raw text (last 200 chars)", value: jsonText.slice(-200), inline: false },
+          ], timestamp: new Date().toISOString() }] }),
+        }).catch(() => {});
+      }
+      return NextResponse.json(
+        { error: "Couldn't read the bet from that image — try a clearer or closer screenshot" },
+        { status: 422 }
+      );
+    }
 
     // Normalize sport names so the UI badge is always correct
     // (Gemini sometimes returns "PGA", "The Masters", etc. instead of "Golf")

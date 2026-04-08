@@ -21,6 +21,39 @@ export const maxDuration = 60;
 // Common bet types that get deterministic charts
 const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop"];
 
+// ── In-memory data cache ─────────────────────────────────────────
+// Caches sport data for 10 minutes to avoid re-fetching the same
+// teams/players across multiple analyses in the same session.
+const dataCache = new Map<string, { data: Record<string, unknown>; source: string; ts: number }>();
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+function getCacheKey(extraction: BetExtraction): string {
+  const sport = (extraction.sport || "").toUpperCase();
+  const teams = [...(extraction.teams || [])].sort().join("|");
+  const players = [...(extraction.players || [])].sort().join("|");
+  const market = extraction.market || "";
+  return `${sport}:${teams}:${players}:${market}`;
+}
+
+function getCachedData(key: string): { data: Record<string, unknown>; source: string } | null {
+  const entry = dataCache.get(key);
+  if (!entry) return null;
+  if (Date.now() - entry.ts > CACHE_TTL) {
+    dataCache.delete(key);
+    return null;
+  }
+  return { data: entry.data, source: entry.source };
+}
+
+function setCachedData(key: string, data: Record<string, unknown>, source: string) {
+  // Cap cache size to prevent memory leaks
+  if (dataCache.size > 50) {
+    const oldest = [...dataCache.entries()].sort((a, b) => a[1].ts - b[1].ts)[0];
+    if (oldest) dataCache.delete(oldest[0]);
+  }
+  dataCache.set(key, { data, source, ts: Date.now() });
+}
+
 /**
  * Route data fetching to the best API for each sport.
  */
@@ -317,23 +350,44 @@ async function analyzeSingleBet(
   extraction: BetExtraction,
   apiKey: string
 ): Promise<Record<string, unknown>> {
-  let teamData: Record<string, unknown>;
-  let source: string;
-
-  try {
-    const result = await fetchSportData(extraction);
-    teamData = result.data;
-    source = result.source;
-  } catch (e) {
-    console.error("[Stats] fetchSportData failed:", e);
-    logToDiscord("error", extraction, `Data fetch failed: ${(e as Error).message}`);
-    // Return empty result instead of crashing
+  // Guard against null/undefined sport or betType from failed extraction
+  if (!extraction.sport) {
+    logToDiscord("error", extraction, "Extraction missing sport field");
     return {
-      summary: "We couldn't pull the data for this bet right now. Try again in a moment.",
+      summary: "We couldn't identify the sport from your bet. Try a clearer screenshot.",
       stats: [],
       charts: [],
       _computed: { source: "error" },
     };
+  }
+
+  let teamData: Record<string, unknown>;
+  let source: string;
+
+  const cacheKey = getCacheKey(extraction);
+  const cached = getCachedData(cacheKey);
+
+  if (cached) {
+    console.log(`[Stats] Cache hit for ${cacheKey.slice(0, 60)}`);
+    teamData = cached.data;
+    source = cached.source + "+cached";
+  } else {
+    try {
+      const result = await fetchSportData(extraction);
+      teamData = result.data;
+      source = result.source;
+      setCachedData(cacheKey, teamData, source);
+    } catch (e) {
+      console.error("[Stats] fetchSportData failed:", e);
+      logToDiscord("error", extraction, `Data fetch failed: ${(e as Error).message}`);
+      // Return empty result instead of crashing
+      return {
+        summary: "We couldn't pull the data for this bet right now. Try again in a moment.",
+        stats: [],
+        charts: [],
+        _computed: { source: "error" },
+      };
+    }
   }
 
   if (teamData._unsupported) {

@@ -71,9 +71,36 @@ export function buildCharts(
     }
   }
 
+  // Validate all charts — remove empty/invalid data before filtering
+  const validated = charts.filter((c) => validateChart(c));
+
   // Filter and reorder all charts through the relevance system
   // This learns from user ratings — irrelevant charts get hidden over time
-  return filterAndSortCharts(charts, sport, extraction.market || betType);
+  return filterAndSortCharts(validated, sport, extraction.market || betType);
+}
+
+/**
+ * Chart validation layer — catches bad data before it reaches the UI.
+ * Filters out charts with empty data, all-zero values, or mismatched stats.
+ */
+function validateChart(chart: ChartConfig): boolean {
+  // Must have data
+  if (!chart.data || !Array.isArray(chart.data) || chart.data.length === 0) return false;
+
+  // Tables just need rows
+  if (chart.type === "table") return chart.data.length > 0;
+
+  // For numeric charts, check that yKeys have at least some non-null, non-zero values
+  const yKeys = chart.yKeys || [];
+  if (yKeys.length === 0) return true; // no yKeys specified, let it through
+
+  const hasRealData = chart.data.some((row) =>
+    yKeys.some((k) => {
+      const v = row[k];
+      return v !== null && v !== undefined && v !== 0;
+    })
+  );
+  return hasRealData;
 }
 
 // ── Golf charts ───────────────────────────────────────────────────
@@ -175,13 +202,15 @@ function buildGolfCharts(
 
     // Full 18-hole performance at Augusta
     if (mData.holeByHole && Array.isArray(mData.holeByHole) && mData.holeByHole.length > 0) {
-      const data = mData.holeByHole.map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; bogeyRate: number }) => ({
-        hole: h.hole,
-        name: h.holeName,
-        par: h.par,
-        avg: h.avgStrokes,
-        vsPar: Math.round((h.avgStrokes - h.par) * 100) / 100,
-      }));
+      const data = mData.holeByHole
+        .filter((h: { totalRounds?: number }) => (h.totalRounds ?? 0) > 0)
+        .map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; bogeyRate: number }) => ({
+          hole: h.hole,
+          name: h.holeName,
+          par: h.par,
+          avg: h.avgStrokes,
+          vsPar: Math.round((h.avgStrokes - h.par) * 100) / 100,
+        }));
       charts.push({
         type: "line",
         title: `${playerName} — Augusta Hole-by-Hole Avg vs Par`,
@@ -334,18 +363,18 @@ function buildFirstBasketCharts(
     });
   }
 
-  // 3. Bar chart — both teams' top first basket scorers
-  if (pTeam?.firstScorers?.length > 0 || oTeam?.firstScorers?.length > 0) {
-    const barData: { player: string; rate: number }[] = [];
-    for (const p of (pTeam?.firstScorers || []).slice(0, 3)) {
-      barData.push({ player: `${lastName(p.name)}`, rate: p.rate });
+  // 3. Bar chart — both teams' top first basket scorers (only if BOTH teams have data)
+  if (pTeam?.firstScorers?.length > 0 && oTeam?.firstScorers?.length > 0) {
+    const barData: { player: string; rate: number; team: string }[] = [];
+    for (const p of (pTeam.firstScorers).slice(0, 3)) {
+      barData.push({ player: `${lastName(p.name)}`, rate: p.rate, team: pTeam.tricode || "?" });
     }
-    for (const p of (oTeam?.firstScorers || []).slice(0, 3)) {
-      barData.push({ player: `${lastName(p.name)}`, rate: p.rate });
+    for (const p of (oTeam.firstScorers).slice(0, 3)) {
+      barData.push({ player: `${lastName(p.name)}`, rate: p.rate, team: oTeam.tricode || "?" });
     }
     charts.push({
       type: "bar",
-      title: `First Basket Rate — ${pTeam?.tricode || "?"} vs ${oTeam?.tricode || "?"}`,
+      title: `First Basket Rate — ${pTeam.tricode} vs ${oTeam.tricode}`,
       relevance: `% of games each player scores first. ${shortPlayer} vs the field.`,
       data: barData,
       xKey: "player",
@@ -942,13 +971,26 @@ function buildSpreadCharts(
       };
     });
     if (closeGamesData.some((d) => d.closeGames >= 2)) {
+      // Table format avoids confusing side-by-side bars comparing different teams' W/L
+      const tableData = closeGamesData.map((d) => ({
+        team: d.team,
+        record: `${d.closeWins}-${d.closeLosses}`,
+        winPct: d.closeGames > 0 ? `${Math.round((d.closeWins / d.closeGames) * 100)}%` : "-",
+        avgMargin: d.avgCloseMargin > 0 ? `+${d.avgCloseMargin}` : `${d.avgCloseMargin}`,
+        games: `${d.closeGames}`,
+      }));
       charts.push({
-        type: "bar",
+        type: "table",
         title: "Close Games Record (decided by 6 or fewer)",
-        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${shortenName(d.team)} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
-        data: closeGamesData,
-        xKey: "team",
-        yKeys: ["closeWins", "closeLosses"],
+        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${d.team} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
+        data: tableData,
+        columns: [
+          { key: "team", label: "Team" },
+          { key: "record", label: "Record" },
+          { key: "winPct", label: "Win %" },
+          { key: "avgMargin", label: "Avg Margin" },
+          { key: "games", label: "Games" },
+        ],
       });
     }
   }

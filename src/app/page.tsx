@@ -250,34 +250,27 @@ export default function Home() {
           {/* Hero section */}
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
-              <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                What does the data say
-                <br />
-                <span className="text-accent">about your bet?</span>
-              </h2>
+              {/* Value prop — lead with what they GET */}
+              <div className="space-y-3">
+                <p className="text-accent text-sm font-semibold tracking-wide uppercase">Free. No sign-up. 20 seconds.</p>
+                <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
+                  See the data behind
+                  <br />
+                  <span className="text-accent">any bet, instantly.</span>
+                </h2>
+              </div>
 
-              <p className="text-muted text-base sm:text-lg max-w-md mx-auto leading-relaxed">
-                Screenshot your bet slip. Get instant charts,
-                <br className="hidden sm:block" />
-                hit rates, trends, and a Swish Score.
+              <p className="text-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
+                Upload a screenshot of your bet slip and get hit rates,
+                historical charts, and a confidence score — powered by
+                real stats, not vibes.
               </p>
 
-              {/* 3-step explainer */}
-              <div className="flex items-center justify-center gap-3 sm:gap-5 text-sm text-muted max-w-lg mx-auto">
-                <div className="flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">1</span>
-                  <span>Screenshot</span>
-                </div>
-                <span className="text-border">&#8594;</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">2</span>
-                  <span>Upload</span>
-                </div>
-                <span className="text-border">&#8594;</span>
-                <div className="flex items-center gap-1.5">
-                  <span className="w-5 h-5 rounded-full bg-accent/20 text-accent text-xs font-bold flex items-center justify-center">3</span>
-                  <span>Charts</span>
-                </div>
+              {/* Social proof / differentiator */}
+              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted">
+                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Props &amp; parlays</span>
+                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> NFL / NBA / MLB / NHL / Golf</span>
+                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Shareable charts</span>
               </div>
 
               {/* Masters Week Banner */}
@@ -378,12 +371,14 @@ export default function Home() {
           <div className="border-t border-border/30" />
           <div className="text-center px-4 py-12 sm:py-16">
             <div className="max-w-lg mx-auto space-y-4">
-              <p className="text-2xl sm:text-3xl font-bold leading-tight">
-                Your gut is good.
+              <p className="text-2xl sm:text-3xl font-black leading-tight">
+                Stop guessing.
                 <br />
-                Your gut + data is better.
+                <span className="text-accent">Start knowing.</span>
               </p>
-              <p className="text-muted text-base mt-2">Free. No sign-up. 20 seconds.</p>
+              <p className="text-muted text-base mt-2">
+                Every tool like this charges $10-200/mo. Swish is free.
+              </p>
               <button
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
                 className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"

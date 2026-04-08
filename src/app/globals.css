@@ -4,11 +4,11 @@
   --color-background: #0a0a0a;
   --color-foreground: #ededed;
   --color-surface: #141414;
-  --color-surface-light: #222222;
+  --color-surface-light: #1e1e1e;
   --color-border: #2a2a2a;
   --color-accent: #10b981;
   --color-accent-gold: #f59e0b;
-  --color-muted: #777777;
+  --color-muted: #888888;
   --font-sans: var(--font-inter);
 }
 
@@ -16,6 +16,8 @@ body {
   background: var(--color-background);
   color: var(--color-foreground);
   font-family: var(--font-sans), system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 .scrollbar-hide {
@@ -24,4 +26,14 @@ body {
 }
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Recharts tooltip override for consistency */
+.recharts-tooltip-wrapper {
+  outline: none !important;
+}
+
+/* Smoother transitions on interactive elements */
+button, a {
+  transition: all 0.15s ease;
 }

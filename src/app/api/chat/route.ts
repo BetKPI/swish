@@ -291,8 +291,14 @@ export async function POST(request: NextRequest) {
         ).join("\n")}\n`
       : "";
 
+    // Build explicit player context for pronoun resolution
+    const primaryPlayer = extraction.players?.[0] || "";
+    const playerContext = primaryPlayer
+      ? `\nPRIMARY PLAYER: "${primaryPlayer}" — when the user says "he", "his", "him", "their", "the player", or any pronoun, they mean ${primaryPlayer}. ALWAYS resolve pronouns to this player.`
+      : "";
+
     const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}).
-${extraction.players?.length ? `Players in this bet: ${players}` : ""}
+${extraction.players?.length ? `Players in this bet: ${players}` : ""}${playerContext}
 ${extraction.market ? `Market: ${extraction.market}` : ""}
 ${extraction.line != null ? `Line: ${extraction.line}` : ""}
 ${extraction.description ? `Bet description: ${extraction.description}` : ""}

@@ -18,12 +18,13 @@ import {
 import type { ChartConfig } from "@/types";
 import { captureWithWatermark, copyImageToClipboard, downloadBlob } from "@/lib/captureWithWatermark";
 
-const COLORS = ["#10b981", "#6366f1", "#3b82f6", "#ef4444", "#8b5cf6"];
+// Props.cash-inspired color palette — vibrant on dark backgrounds
+const COLORS = ["#22c55e", "#818cf8", "#38bdf8", "#f87171", "#a78bfa", "#fb923c"];
 
 // Special keys get specific styling
 const KEY_STYLES: Record<string, { color: string; dash?: string; width?: number; opacity?: number }> = {
-  rollingAvg: { color: "#6366f1", width: 2.5 },
-  rollingMargin: { color: "#6366f1", width: 2.5 },
+  rollingAvg: { color: "#818cf8", width: 2.5 },
+  rollingMargin: { color: "#818cf8", width: 2.5 },
   rollingTotal: { color: "#f59e0b", width: 2, dash: "4 2" },
 };
 
@@ -70,9 +71,9 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
   }, [title, extraction]);
 
   return (
-    <div ref={chartRef} className="bg-surface rounded-xl p-4 space-y-3 relative group">
+    <div ref={chartRef} className="bg-surface rounded-xl p-4 sm:p-5 space-y-3 relative group border border-border/50 hover:border-border transition-colors">
       {/* Action buttons — top-right, visible on hover */}
-      <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
+      <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
         {rated ? (
           <span className="p-1.5 text-xs text-muted">{rated === "up" ? "Thanks!" : "Noted"}</span>
         ) : (
@@ -159,9 +160,9 @@ function RechartsLine({
   const refLineValue = refLineKeys.length > 0 ? Number(data[0]?.[refLineKeys[0]]) : null;
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height={260}>
       <LineChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
         <XAxis
           dataKey={x}
           tick={{ fill: "#888", fontSize: 10 }}
@@ -173,10 +174,11 @@ function RechartsLine({
         <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
         <Tooltip
           contentStyle={{
-            background: "#1a1a1a",
+            background: "#111",
             border: "1px solid #333",
-            borderRadius: 8,
+            borderRadius: 10,
             fontSize: 12,
+            padding: "8px 12px",
           }}
         />
         <Legend wrapperStyle={{ fontSize: 11 }} />
@@ -220,9 +222,9 @@ function RechartsHitRate({
   const lineValue = typeof data[0]?.line === "number" ? (data[0].line as number) : null;
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
         <XAxis
           dataKey={x}
           tick={{ fill: "#888", fontSize: 10 }}
@@ -234,10 +236,11 @@ function RechartsHitRate({
         <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
         <Tooltip
           contentStyle={{
-            background: "#1a1a1a",
+            background: "#111",
             border: "1px solid #333",
-            borderRadius: 8,
+            borderRadius: 10,
             fontSize: 12,
+            padding: "8px 12px",
           }}
           formatter={(val, _name, props) => {
             const over = (props as unknown as { payload: Record<string, unknown> }).payload?.overLine;
@@ -253,11 +256,12 @@ function RechartsHitRate({
             label={{ value: `Line: ${lineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
           />
         )}
-        <Bar dataKey="value" radius={[4, 4, 0, 0]}>
+        <Bar dataKey="value" radius={[6, 6, 0, 0]}>
           {data.map((entry, index) => (
             <Cell
               key={index}
               fill={entry.overLine ? "#22c55e" : "#ef4444"}
+              fillOpacity={0.85}
             />
           ))}
         </Bar>
@@ -282,9 +286,9 @@ function RechartsBar({
     yKeys || Object.keys(data[0] || {}).filter((k) => k !== x);
 
   return (
-    <ResponsiveContainer width="100%" height={220}>
+    <ResponsiveContainer width="100%" height={260}>
       <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
         <XAxis
           dataKey={x}
           tick={{ fill: "#888", fontSize: 11 }}
@@ -293,10 +297,11 @@ function RechartsBar({
         <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
         <Tooltip
           contentStyle={{
-            background: "#1a1a1a",
+            background: "#111",
             border: "1px solid #333",
-            borderRadius: 8,
+            borderRadius: 10,
             fontSize: 12,
+            padding: "8px 12px",
           }}
         />
         {!isDistribution && <Legend wrapperStyle={{ fontSize: 11 }} />}
@@ -332,7 +337,7 @@ function TableChart({
             {cols.map((col) => (
               <th
                 key={col.key}
-                className="text-left py-2 px-2 text-muted font-medium text-xs whitespace-nowrap"
+                className="text-left py-2.5 px-3 text-muted font-semibold text-xs uppercase tracking-wider whitespace-nowrap"
               >
                 {col.label}
               </th>
@@ -341,9 +346,9 @@ function TableChart({
         </thead>
         <tbody>
           {data.map((row, i) => (
-            <tr key={i} className="border-b border-border/50">
-              {cols.map((col) => (
-                <td key={col.key} className="py-2 px-2 text-xs whitespace-nowrap">
+            <tr key={i} className="border-b border-border/30 hover:bg-surface-light/50 transition-colors">
+              {cols.map((col, j) => (
+                <td key={col.key} className={`py-2.5 px-3 text-xs whitespace-nowrap ${j === 0 ? "text-muted" : "font-medium"}`}>
                   {String(row[col.key] ?? "")}
                 </td>
               ))}

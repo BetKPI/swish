@@ -108,28 +108,29 @@ export default function AnalysisResults({
 
       {/* Swish Score */}
       {swishScore && (
-        <div className="flex flex-col items-center text-center py-4">
-          <div className="relative w-28 h-28">
-            <svg className="w-28 h-28 -rotate-90" viewBox="0 0 120 120">
-              <circle cx="60" cy="60" r="52" fill="none" strokeWidth="8" className="stroke-surface-light" />
+        <div className="flex flex-col items-center text-center py-6">
+          <div className="relative w-32 h-32">
+            <svg className="w-32 h-32 -rotate-90" viewBox="0 0 120 120">
+              <circle cx="60" cy="60" r="52" fill="none" strokeWidth="6" className="stroke-surface-light" />
               <circle
-                cx="60" cy="60" r="52" fill="none" strokeWidth="8"
+                cx="60" cy="60" r="52" fill="none" strokeWidth="6"
                 className={scoreRingColor(swishScore.score)}
                 strokeLinecap="round"
                 strokeDasharray={`${(swishScore.score / 10) * 327} 327`}
+                style={{ filter: "drop-shadow(0 0 6px currentColor)" }}
               />
             </svg>
             <div className="absolute inset-0 flex flex-col items-center justify-center">
-              <span className={`text-3xl font-black ${scoreColor(swishScore.score)}`}>
+              <span className={`text-4xl font-black ${scoreColor(swishScore.score)}`}>
                 {swishScore.score}
               </span>
               <span className="text-xs text-muted -mt-0.5">/ 10</span>
             </div>
           </div>
-          <p className={`text-sm font-bold mt-2 ${scoreColor(swishScore.score)}`}>
+          <p className={`text-sm font-bold mt-3 ${scoreColor(swishScore.score)}`}>
             {swishScore.label}
           </p>
-          <p className="text-xs text-muted mt-1 max-w-sm">
+          <p className="text-xs text-muted mt-1 max-w-sm leading-relaxed">
             {swishScore.detail}
           </p>
         </div>
@@ -169,7 +170,7 @@ export default function AnalysisResults({
                 {(extraction.betType || "player_prop").replace("_", "/")}
               </span>
               <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
-                {extraction.sport}
+                {normalizeSport(extraction.sport)}
               </span>
               {extraction.odds && (
                 <span className="text-xs bg-accent-gold/20 text-accent-gold px-2 py-0.5 rounded-full">
@@ -205,12 +206,12 @@ export default function AnalysisResults({
 
       {/* Hit Rate Hero — first stat gets full-width treatment */}
       {stats.length > 0 && stats[0].label?.toLowerCase().includes("rate") && (
-        <div className="bg-surface rounded-xl p-4 text-center border border-accent/20">
-          <p className="text-3xl font-black text-accent">
+        <div className="bg-gradient-to-br from-accent/10 to-surface rounded-xl p-5 text-center border border-accent/30">
+          <p className="text-4xl sm:text-5xl font-black text-accent tracking-tight">
             {String(stats[0].value)}
           </p>
-          <p className="text-sm font-semibold mt-1">{stats[0].label}</p>
-          <p className="text-xs text-muted mt-0.5">{stats[0].context}</p>
+          <p className="text-sm font-bold mt-2">{stats[0].label}</p>
+          <p className="text-xs text-muted mt-1">{stats[0].context}</p>
         </div>
       )}
 
@@ -220,12 +221,12 @@ export default function AnalysisResults({
           {stats.slice(stats[0].label?.toLowerCase().includes("rate") ? 1 : 0).map((stat, i) => (
             <div
               key={i}
-              className="bg-surface rounded-xl p-3 text-center"
+              className="bg-surface rounded-xl p-3 text-center border border-border/50"
             >
               <p className="text-xl font-bold text-accent">
                 {String(stat.value)}
               </p>
-              <p className="text-xs font-medium mt-1">{stat.label}</p>
+              <p className="text-xs font-semibold mt-1">{stat.label}</p>
               <p className="text-xs text-muted mt-0.5">{stat.context}</p>
             </div>
           ))}
@@ -267,13 +268,11 @@ export default function AnalysisResults({
       </button>
 
       {/* Interactive Chat */}
-      {computedData && (
-        <AnalysisChat
-          extraction={extraction}
-          computedData={computedData}
-          suggestions={suggestions}
-        />
-      )}
+      <AnalysisChat
+        extraction={extraction}
+        computedData={computedData || {}}
+        suggestions={suggestions}
+      />
 
       {/* Feedback + Share */}
       <FeedbackShare extraction={extraction} summary={summary} gameStatus={gameStatus} />
@@ -289,12 +288,23 @@ export default function AnalysisResults({
   );
 }
 
+function normalizeSport(sport: string): string {
+  const s = (sport || "").toUpperCase();
+  if (["GOLF", "PGA", "PGA TOUR", "THE MASTERS", "MASTERS"].includes(s)) return "Golf";
+  if (["BASKETBALL", "NCAAB"].includes(s)) return s === "BASKETBALL" ? "NBA" : "NCAAB";
+  if (["FOOTBALL", "NCAAF"].includes(s)) return s === "FOOTBALL" ? "NFL" : "NCAAF";
+  if (["BASEBALL"].includes(s)) return "MLB";
+  if (["HOCKEY"].includes(s)) return "NHL";
+  return sport;
+}
+
 function sportEmoji(sport: string): string {
   const map: Record<string, string> = {
     NBA: "\u{1F3C0}", NFL: "\u{1F3C8}", MLB: "\u26BE", NHL: "\u{1F3D2}",
     Soccer: "\u26BD", Tennis: "\u{1F3BE}", MMA: "\u{1F94A}", Golf: "\u26F3",
+    NCAAB: "\u{1F3C0}", NCAAF: "\u{1F3C8}",
   };
-  return map[sport] || "\u{1F3C6}";
+  return map[normalizeSport(sport)] || "\u{1F3C6}";
 }
 
 function sportColorClass(sport: string): string {
@@ -308,5 +318,5 @@ function sportColorClass(sport: string): string {
     NCAAB: "bg-blue-500/20 text-blue-400",
     NCAAF: "bg-amber-500/20 text-amber-400",
   };
-  return map[sport] || "bg-accent/20 text-accent";
+  return map[normalizeSport(sport)] || "bg-accent/20 text-accent";
 }
