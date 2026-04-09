@@ -12,7 +12,7 @@ import { computeSwishScore } from "@/lib/swishScore";
 import type { BetExtraction, ChartConfig } from "@/types";
 import { checkGameStatus } from "@/lib/gameStatus";
 import { getFirstBasketData } from "@/lib/nba-firstbasket";
-import { getFirstInningData } from "@/lib/mlb-nrfi";
+import { getFirstInningData, getTeamPitchers } from "@/lib/mlb-nrfi";
 import { getFirstGoalData } from "@/lib/nhl-firstgoal";
 import { detectExoticMarket, isNBASport, isMLBSport, isNHLSport } from "@/lib/market-detect";
 
@@ -449,18 +449,29 @@ async function analyzeSingleBet(
       console.error("[Stats] First basket enrichment failed:", e);
     }
   } else if (exotic === "nrfi" && isMLBSport(extraction.sport || "")) {
-    // NRFI can work with pitcher name OR just teams
-    const pitcherName = extraction.players.length > 0 ? extraction.players[0] : null;
-    if (pitcherName) {
-      try {
+    try {
+      const pitcherName = extraction.players.length > 0 ? extraction.players[0] : null;
+      if (pitcherName) {
+        // Specific pitcher named
         const nrfiData = await getFirstInningData(pitcherName);
         if (nrfiData) {
           (teamData as Record<string, unknown>)._nrfi = nrfiData;
           console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings`);
         }
-      } catch (e) {
-        console.error("[Stats] NRFI enrichment failed:", e);
       }
+      // Always build team-level NRFI data from our database
+      if (extraction.teams.length >= 2) {
+        const team1Pitchers = getTeamPitchers(extraction.teams[0]);
+        const team2Pitchers = getTeamPitchers(extraction.teams[1]);
+        const teamNrfi = {
+          team1: { name: extraction.teams[0], pitchers: team1Pitchers.slice(0, 5).map((p) => ({ name: p.name, nrfiRate: p.nrfiRate, gamesStarted: p.gamesStarted, cleanFirstInnings: p.cleanFirstInnings, recentGames: p.recentGames.slice(0, 5) })) },
+          team2: { name: extraction.teams[1], pitchers: team2Pitchers.slice(0, 5).map((p) => ({ name: p.name, nrfiRate: p.nrfiRate, gamesStarted: p.gamesStarted, cleanFirstInnings: p.cleanFirstInnings, recentGames: p.recentGames.slice(0, 5) })) },
+        };
+        (teamData as Record<string, unknown>)._teamNrfi = teamNrfi;
+        console.log(`[Stats] Team NRFI: ${team1Pitchers.length} pitchers for ${extraction.teams[0]}, ${team2Pitchers.length} for ${extraction.teams[1]}`);
+      }
+    } catch (e) {
+      console.error("[Stats] NRFI enrichment failed:", e);
     }
   } else if (exotic === "first_goal" && isNHLSport(extraction.sport || "") && extraction.players.length > 0) {
     try {

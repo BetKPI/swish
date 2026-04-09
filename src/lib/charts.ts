@@ -48,8 +48,8 @@ export function buildCharts(
     const exotic = detectExoticMarket(marketStr, descStr, sport);
     if (exotic === "first_basket" && raw?._firstBasket) {
       charts = buildFirstBasketCharts(extraction, raw._firstBasket);
-    } else if (exotic === "nrfi" && raw?._nrfi) {
-      charts = buildNRFICharts(extraction, raw._nrfi);
+    } else if (exotic === "nrfi" && (raw?._nrfi || raw?._teamNrfi)) {
+      charts = buildNRFICharts(extraction, raw._nrfi, raw._teamNrfi);
     } else if (exotic === "first_goal" && raw?._firstGoal) {
       charts = buildFirstGoalCharts(extraction, raw._firstGoal);
     } else if (exotic === "double_double" && betType === "player_prop") {
@@ -538,16 +538,18 @@ function buildFirstBasketCharts(
 // ── NRFI / First Inning charts ────────────────────────────────────
 
 function buildNRFICharts(
-  extraction: { players: string[]; market?: string; description?: string },
+  extraction: { players: string[]; teams: string[]; market?: string; description?: string },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  nrfiData: any
+  nrfiData: any,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  teamNrfi?: any
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
-  const pitcher = nrfiData.pitcher;
-  const recentGames = nrfiData.recentGames || [];
+  const pitcher = nrfiData?.pitcher;
+  const recentGames = nrfiData?.recentGames || [];
 
+  // 1. Specific pitcher data (if we have it)
   if (pitcher) {
-    // 1. NRFI/YRFI game-by-game results
     if (recentGames.length > 0) {
       const data = recentGames.map((g: { date: string; opponent: string; firstInningRuns: number; result: string }) => ({
         game: `vs ${g.opponent}`,
@@ -565,7 +567,6 @@ function buildNRFICharts(
       });
     }
 
-    // 2. Summary table
     charts.push({
       type: "table",
       title: `${pitcher.name} — First Inning Profile`,
@@ -583,6 +584,78 @@ function buildNRFICharts(
         { key: "value", label: "Value" },
       ],
     });
+  }
+
+  // 2. Team-level NRFI data — both teams' pitching staffs
+  if (teamNrfi) {
+    const team1 = teamNrfi.team1;
+    const team2 = teamNrfi.team2;
+
+    // Combined pitcher comparison table
+    const allPitchers: { pitcher: string; team: string; nrfiRate: number; games: number; clean: number }[] = [];
+    for (const p of (team1?.pitchers || [])) {
+      allPitchers.push({ pitcher: p.name, team: shortenName(team1.name), nrfiRate: Math.round(p.nrfiRate), games: p.gamesStarted, clean: p.cleanFirstInnings });
+    }
+    for (const p of (team2?.pitchers || [])) {
+      allPitchers.push({ pitcher: p.name, team: shortenName(team2.name), nrfiRate: Math.round(p.nrfiRate), games: p.gamesStarted, clean: p.cleanFirstInnings });
+    }
+
+    if (allPitchers.length > 0) {
+      // Sort by games started descending (likely starters first)
+      allPitchers.sort((a, b) => b.games - a.games);
+
+      charts.push({
+        type: "table",
+        title: `Pitching Staff — First Inning NRFI Rates`,
+        relevance: `Both teams' pitchers and how often they keep the 1st inning clean`,
+        data: allPitchers.map((p) => ({
+          pitcher: p.pitcher,
+          team: p.team,
+          nrfiRate: `${p.nrfiRate}%`,
+          record: `${p.clean}/${p.games}`,
+        })),
+        columns: [
+          { key: "pitcher", label: "Pitcher" },
+          { key: "team", label: "Team" },
+          { key: "nrfiRate", label: "NRFI %" },
+          { key: "record", label: "Clean/GS" },
+        ],
+      });
+
+      // Bar chart comparing NRFI rates — top pitchers from each team
+      const topPitchers = allPitchers.filter((p) => p.games >= 2).slice(0, 8);
+      if (topPitchers.length >= 2) {
+        charts.push({
+          type: "bar",
+          title: `NRFI Rate Comparison — Likely Starters`,
+          relevance: `Higher NRFI % = cleaner first innings. Look for the probable starter.`,
+          data: topPitchers.map((p) => ({ pitcher: `${p.pitcher.split(" ").pop()} (${p.team})`, nrfiRate: p.nrfiRate })),
+          xKey: "pitcher",
+          yKeys: ["nrfiRate"],
+        });
+      }
+    }
+
+    // Recent first inning results for each team's top pitcher
+    for (const team of [team1, team2]) {
+      if (!team?.pitchers?.length) continue;
+      const topP = team.pitchers.sort((a: { gamesStarted: number }, b: { gamesStarted: number }) => b.gamesStarted - a.gamesStarted)[0];
+      if (topP?.recentGames?.length > 0) {
+        const data = topP.recentGames.map((g: { opponent: string; firstInningRuns: number; result: string }) => ({
+          game: `vs ${g.opponent}`,
+          runs: g.firstInningRuns,
+          overLine: g.firstInningRuns > 0,
+        }));
+        charts.push({
+          type: "hitrate",
+          title: `${topP.name} (${shortenName(team.name)}) — Recent 1st Innings`,
+          relevance: `${topP.cleanFirstInnings}/${topP.gamesStarted} clean (${Math.round(topP.nrfiRate)}% NRFI)`,
+          data,
+          xKey: "game",
+          yKeys: ["runs"],
+        });
+      }
+    }
   }
 
   return charts;
