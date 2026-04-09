@@ -1595,11 +1595,17 @@ function buildPlayerPropCharts(
 
     // 1. Hit Rate visual — Props.Cash-style per-game bar chart (green/red)
     const gameValues = propAnalysis?.gameValues;
-    if (gameValues && gameValues.length > 0 && line > 0) {
-      const hitRateRecent = gameValues.slice(-20); // Show up to 20 games for readability
+    const totalGamesAvailable = gameValues?.length || 0;
+    if (gameValues && totalGamesAvailable > 0 && line > 0) {
+      const CHART_LIMIT = 20;
+      const hitRateRecent = gameValues.slice(-CHART_LIMIT);
       const hitRateN = hitRateRecent.length;
       const hitRateOverCount = hitRateRecent.filter((g: { hit: boolean }) => g.hit).length;
       const hitRatePct = Math.round((hitRateOverCount / hitRateN) * 100);
+      // Season-wide hit rate (uses ALL data, not just displayed games)
+      const seasonHitCount = propAnalysis?.hitCount || hitRateOverCount;
+      const seasonTotal = propAnalysis?.totalGames || hitRateN;
+      const seasonHitPct = Math.round((seasonHitCount / seasonTotal) * 100);
       const hitRateData = hitRateRecent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => ({
         game: g.opponent ? shortenName(g.opponent) : `G${i + 1}`,
         value: g.value,
@@ -1607,10 +1613,13 @@ function buildPlayerPropCharts(
         hitRate: hitRatePct,
         line,
       }));
+      const showingSubset = totalGamesAvailable > CHART_LIMIT;
       charts.push({
         type: "hitrate" as ChartConfig["type"],
-        title: `${playerName} — Last ${hitRateN} Games vs ${line} ${statLabel} Line`,
-        relevance: `${hitRateOverCount}/${hitRateN} over the line (${hitRatePct}%)`,
+        title: `${playerName} — ${showingSubset ? `Last ${hitRateN} of ${totalGamesAvailable}` : `${hitRateN}`} Games vs ${line} ${statLabel}`,
+        relevance: showingSubset
+          ? `Showing ${hitRateN} most recent — season: ${seasonHitCount}/${seasonTotal} over (${seasonHitPct}%)`
+          : `${hitRateOverCount}/${hitRateN} over the line (${hitRatePct}%)`,
         data: hitRateData,
         xKey: "game",
         yKeys: ["value"],
@@ -1619,7 +1628,8 @@ function buildPlayerPropCharts(
 
     // 2. Game log trend with rolling average — THE key chart
     if (gameValues && gameValues.length > 0) {
-      const recent = gameValues.slice(-20); // Show up to 20 for readability
+      const CHART_LIMIT = 20;
+      const recent = gameValues.slice(-CHART_LIMIT);
       const data = recent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => {
         // 5-game rolling average
         const window = recent.slice(Math.max(0, i - 4), i + 1);
@@ -1641,7 +1651,7 @@ function buildPlayerPropCharts(
       const trendDirection = last5TrendAvg > seasonAvg * 1.05 ? "Trending up" : last5TrendAvg < seasonAvg * 0.95 ? "Trending down" : "Trending flat";
       charts.push({
         type: "line",
-        title: `${playerName} — ${statLabel} Trend (Last ${recent.length})`,
+        title: `${playerName} — ${statLabel} Trend (${totalGamesAvailable > recent.length ? `Last ${recent.length} of ${totalGamesAvailable}` : `Last ${recent.length}`})`,
         relevance: `${trendDirection} — last 5 avg ${last5TrendAvg} vs season avg ${seasonAvg} | ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%), on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
         data,
         xKey: "game",

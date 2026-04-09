@@ -81,10 +81,18 @@ Return a JSON object with these fields:
 - description: A human-readable one-sentence summary of the bet
 - confidence: Your confidence in the extraction from 0 to 1 (1 = very confident)
 
-For parlays, set betType to "parlay" and include a "legs" array where each leg has the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). CRITICAL for each parlay leg:
+CRITICAL — PARLAY DETECTION:
+If the screenshot shows MORE THAN ONE bet selection (multiple lines/rows of bets, a bet slip with 2+ picks, or any indication of a multi-leg bet), you MUST set betType to "parlay" and include ALL legs. Signs of a parlay:
+- Multiple bet lines visible in the screenshot
+- "Parlay", "SGP", "Same Game Parlay", "Multi", "Accumulator", "Combo" in the UI
+- Multiple odds/selections stacked in a bet slip
+- A total/combined odds line at the bottom
+
+For parlays, set betType to "parlay" and include a "legs" array where EVERY VISIBLE BET is its own leg with the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). Do NOT skip any legs. Do NOT extract just one leg from a multi-leg slip. CRITICAL for each parlay leg:
 - "teams" array MUST include the team names involved — even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
 - "market" MUST be specific and accurate — for player props, state the exact stat: "Shots on Goal", "Points", "Assists", "Rebounds", "Strikeouts", "Hits", "Total Bases", "Goals", "Saves", etc. Do NOT default to "Points" for non-points props. For shots bets, use "Shots on Goal". For goals, use "Goals". This is critical for showing the correct charts.
 - "players" array MUST include any player names in the leg.
+- Even if bets span different sports, include them ALL as legs.
 
 For golf bets, set sport to "Golf". For tournament winner/matchup bets, use the golfer names as "players" and tournament name as team (e.g., teams: ["The Masters"]). For golf, market might be "Tournament Winner", "Top 5", "Top 10", "Top 20", "Make/Miss Cut", "Head-to-Head", "Round Score", etc.
 

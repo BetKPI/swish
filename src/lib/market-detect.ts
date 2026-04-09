@@ -47,9 +47,11 @@ export function detectExoticMarket(
     }
   }
 
-  // NRFI / YRFI (MLB)
+  // NRFI / YRFI / 1st Inning (MLB)
   if (s === "MLB" || s === "BASEBALL" || !s) {
-    if (text.includes("nrfi") || text.includes("yrfi") || (text.includes("first inning") && (text.includes("run") || text.includes("no run")))) {
+    if (text.includes("nrfi") || text.includes("yrfi") ||
+        (text.includes("first inning") && (text.includes("run") || text.includes("no run"))) ||
+        (text.includes("1st inning") && (text.includes("run") || text.includes("over") || text.includes("under") || text.includes("total")))) {
       return "nrfi";
     }
   }
