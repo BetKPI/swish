@@ -142,6 +142,20 @@ export default function ParlayResults({
       {/* Active Leg Content */}
       {activeLeg && (
         <div className="space-y-4">
+          {/* HIT/MISS banner for graded legs */}
+          {activeLeg.gameStatus?.state === "post" && activeLeg.gameStatus?.grade?.result && activeLeg.gameStatus.grade.result !== "pending" && (
+            <div className={`rounded-xl p-4 text-center border ${
+              activeLeg.gameStatus.grade.result === "hit" ? "bg-emerald-500/15 border-emerald-500/40" : "bg-red-500/15 border-red-500/40"
+            }`}>
+              <p className={`text-2xl font-black ${activeLeg.gameStatus.grade.result === "hit" ? "text-emerald-400" : "text-red-400"}`}>
+                {activeLeg.gameStatus.grade.result === "hit" ? "HIT" : "MISS"}
+              </p>
+              <p className={`text-xs mt-0.5 ${activeLeg.gameStatus.grade.result === "hit" ? "text-emerald-400/80" : "text-red-400/80"}`}>
+                {activeLeg.gameStatus.grade?.detail || ""}
+              </p>
+            </div>
+          )}
+
           {/* Leg Header */}
           <div className="bg-surface rounded-xl p-3">
             <div className="flex items-center gap-2 mb-1">

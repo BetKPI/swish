@@ -91,8 +91,28 @@ export default function AnalysisResults({
     ? teamVisuals[extraction.teams[0]]?.color
     : undefined;
 
+  const isFinal = gameStatus?.state === "post";
+  const gradeResult = gameStatus?.grade?.result;
+  const isHit = gradeResult === "hit";
+  const isMiss = gradeResult === "miss";
+  const isGraded = isFinal && (isHit || isMiss);
+
   return (
     <div className="space-y-6" id="analysis-content">
+      {/* Big HIT/MISS banner when game is final */}
+      {isGraded && (
+        <div className={`rounded-xl p-5 text-center border-2 ${
+          isHit ? "bg-emerald-500/15 border-emerald-500/40" : "bg-red-500/15 border-red-500/40"
+        }`}>
+          <p className={`text-3xl sm:text-4xl font-black ${isHit ? "text-emerald-400" : "text-red-400"}`}>
+            {isHit ? "HIT" : "MISS"}
+          </p>
+          <p className={`text-sm mt-1 ${isHit ? "text-emerald-400/80" : "text-red-400/80"}`}>
+            {gameStatus?.grade?.detail || (isHit ? "Your bet cashed!" : "Didn't hit this time.")}
+          </p>
+        </div>
+      )}
+
       {/* Live Score / Final Result */}
       {gameStatus && (gameStatus.state === "in" || gameStatus.state === "post") && (
         <GameStatusBanner

@@ -367,6 +367,14 @@ RULES:
   • Combined: "home games in the playoffs" → apply multiple filters
   When the data has these fields (home, opponent, seasonType, date), filter from existing data (FORMAT 1). When you need richer data, re-fetch with the appropriate action (FORMAT 2).
 - BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to — that's what you're here for.
+- COMMON CHART REQUESTS: Users often ask for these using casual language. ALWAYS produce a chart (FORMAT 1) from existing data:
+  • "game margin" / "margin chart" / "point diff" → bar chart of game-by-game margin from recentGames
+  • "scoring trend" / "season chart" → line chart of scoring across ALL available games
+  • "full season" / "all games" / "season stats" → use ALL data in existing recentGames, not a subset
+  • "head to head" / "matchup" → table comparing teams from existing data
+  • "last season" / "previous season" → re-fetch with prior season year (FORMAT 2)
+  • "how it looks now" / "game over" / "did it hit" → check gameStatus and recent scores in data, build a result summary chart
+  If the data exists in computedData.teamMetrics or recentGames, build the chart. Do NOT say no_data for requests that can be answered from existing team/player data.
 - IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
 - PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
 - If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
