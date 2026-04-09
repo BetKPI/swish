@@ -19,7 +19,7 @@ import { detectExoticMarket, isNBASport, isMLBSport, isNHLSport } from "@/lib/ma
 export const maxDuration = 60;
 
 // Common bet types that get deterministic charts
-const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop"];
+const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop", "game_prop"];
 
 // ── In-memory data cache ─────────────────────────────────────────
 // Caches sport data for 10 minutes to avoid re-fetching the same
