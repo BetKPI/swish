@@ -48,19 +48,16 @@ interface PlayerEntry {
 }
 
 interface TeamEntry {
-  abbrev: string;
-  gamesPlayed: number;
-  firstGoalFor: number;
-  firstGoalAgainst: number;
-  firstGoalForRate: number;
-  firstGoalScorers: { name: string; count: number; rate: number; games: { date: string; vs: string; time: string; period: number }[] }[];
+  tricode: string;
+  totalGames: number;
+  firstScorers: { name: string; count: number; rate: number; games?: { date: string; vs: string; time: string; period: number }[] }[];
 }
 
 interface FirstGoalDB {
-  _meta: { gamesProcessed: number; totalGames: number; lastUpdated: string; season: string };
+  _meta: { gamesProcessed: number; totalGames?: number; lastUpdated: string; season: string };
   teams: Record<string, TeamEntry>;
-  players: Record<string, PlayerEntry>;
-  topFirstScorers: { name: string; team: string; count: number; rate: number }[];
+  players?: Record<string, PlayerEntry>;
+  topFirstScorers: { name: string; team?: string; count: number; rate: number }[];
 }
 
 // ── Singleton loader ─────────────────────────────────────────────
@@ -100,86 +97,38 @@ export async function getFirstGoalData(
     rate: s.rate,
   }));
 
-  // Find the requested player in our data
-  let playerEntry: PlayerEntry | null = null;
-  for (const [, entry] of Object.entries(db.players)) {
-    const entryLower = entry.name.toLowerCase();
-    if (
-      entryLower === nameLower ||
-      entryLower.includes(nameLower) ||
-      nameLower.includes(entryLower)
-    ) {
-      playerEntry = entry;
-      break;
-    }
-  }
+  // Find the requested player — search through team firstScorers lists
+  let playerProfile: FirstGoalPlayerProfile | null = null;
 
-  // Try partial last-name match
-  if (!playerEntry) {
-    const parts = nameLower.split(/\s+/);
-    const lastName = parts[parts.length - 1];
-    if (lastName.length >= 3) {
-      for (const [, entry] of Object.entries(db.players)) {
-        if (entry.name.toLowerCase().includes(lastName)) {
-          playerEntry = entry;
-          break;
-        }
+  // First: search players object if it exists
+  if (db.players) {
+    for (const [, entry] of Object.entries(db.players)) {
+      const entryLower = entry.name.toLowerCase();
+      if (entryLower === nameLower || entryLower.includes(nameLower) || nameLower.includes(entryLower)) {
+        const totalGames = db._meta.gamesProcessed || 1;
+        playerProfile = {
+          name: entry.name, firstGoalCount: entry.firstGoalCount,
+          firstGoalRate: totalGames > 0 ? Math.round((entry.firstGoalCount / totalGames) * 1000) / 10 : 0,
+          goalsPerGame: 0, shootingPct: 0,
+          recentGames: entry.recentGames.map((g) => ({ gameId: 0, date: g.date, opponent: g.vs, goals: 1, wasFirstGoalScorer: true })),
+        };
+        break;
       }
     }
   }
 
-  // Build profile if player found
-  let playerProfile: FirstGoalPlayerProfile | null = null;
-  if (playerEntry) {
-    const totalGames = db._meta.gamesProcessed || 1;
-    playerProfile = {
-      name: playerEntry.name,
-      firstGoalCount: playerEntry.firstGoalCount,
-      firstGoalRate:
-        totalGames > 0
-          ? Math.round((playerEntry.firstGoalCount / totalGames) * 1000) / 10
-          : 0,
-      goalsPerGame: 0, // Not available from static data
-      shootingPct: 0, // Not available from static data
-      recentGames: playerEntry.recentGames.map((g) => ({
-        gameId: 0,
-        date: g.date,
-        opponent: g.vs,
-        goals: 1,
-        wasFirstGoalScorer: true,
-      })),
-    };
-  }
-
-  // If we have team context, also look for team-specific scorers
-  if (!playerProfile && teamNames.length > 0) {
-    for (const teamName of teamNames) {
-      if (!teamName) continue;
-      const upper = teamName.toUpperCase().trim();
-      const teamEntry = db.teams[upper];
-      if (!teamEntry) continue;
-
-      // Look through team's first goal scorers
-      for (const scorer of teamEntry.firstGoalScorers) {
+  // Second: search team firstScorers lists (handles name fuzzy matching)
+  if (!playerProfile) {
+    const lastName = nameLower.split(/\s+/).pop() || "";
+    for (const [, teamEntry] of Object.entries(db.teams)) {
+      for (const scorer of (teamEntry.firstScorers || [])) {
         const scorerLower = scorer.name.toLowerCase();
-        if (
-          scorerLower === nameLower ||
-          scorerLower.includes(nameLower) ||
-          nameLower.includes(scorerLower)
-        ) {
+        if (scorerLower === nameLower || scorerLower.includes(nameLower) || nameLower.includes(scorerLower) ||
+            (lastName.length >= 3 && scorerLower.includes(lastName))) {
           playerProfile = {
-            name: scorer.name,
-            firstGoalCount: scorer.count,
-            firstGoalRate: scorer.rate,
-            goalsPerGame: 0,
-            shootingPct: 0,
-            recentGames: scorer.games.map((g) => ({
-              gameId: 0,
-              date: g.date,
-              opponent: g.vs,
-              goals: 1,
-              wasFirstGoalScorer: true,
-            })),
+            name: scorer.name, firstGoalCount: scorer.count, firstGoalRate: scorer.rate,
+            goalsPerGame: 0, shootingPct: 0,
+            recentGames: (scorer.games || []).map((g) => ({ gameId: 0, date: g.date, opponent: g.vs, goals: 1, wasFirstGoalScorer: true })),
           };
           break;
         }

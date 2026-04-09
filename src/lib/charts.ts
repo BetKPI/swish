@@ -1447,7 +1447,7 @@ function buildPlayerPropCharts(
       const nhlStatMap: Record<string, string> = {
         shots: "shots", goals: "goals", assists: "assists", points: "points",
         saves: "saves", goalsAgainst: "goalsAgainst", powerPlayGoals: "powerPlayGoals",
-        plusMinus: "plusMinus",
+        powerPlayPoints: "powerPlayPoints", plusMinus: "plusMinus",
         // Combo stats map to themselves — handled below
         "goals+assists": "goals+assists", "shots+goals": "shots+goals", "points+shots": "points+shots",
       };
@@ -1462,6 +1462,8 @@ function buildPlayerPropCharts(
           val = (Number(g.shots) || 0) + (Number(g.goals) || 0);
         } else if (statKey === "points+shots") {
           val = (Number(g.goals) || 0) + (Number(g.assists) || 0) + (Number(g.shots) || 0);
+        } else if (statKey === "powerPlayPoints") {
+          val = (Number(g.powerPlayGoals) || 0) + (Number(g.powerPlayAssists) || 0);
         } else {
           val = Number(g[nhlKey]) || 0;
         }
@@ -2136,6 +2138,7 @@ function mapMarketToStatKey(market: string): string {
   if (m.includes("save")) return "saves";
   if (m.includes("goals against")) return "goalsAgainst";
   if (m.includes("goal") && !m.includes("against")) return "goals";
+  if ((m.includes("power play") || m.includes("pp")) && (m.includes("point") || m.includes("pts"))) return "powerPlayPoints";
   if (m.includes("power play") || m.includes("pp goal")) return "powerPlayGoals";
   // NBA singles
   if (m.includes("three") || m.includes("3p") || m.includes("3pt")) return "fg3m";
@@ -2223,6 +2226,7 @@ function formatStatLabel(stat: string): string {
     saves: "Saves",
     goalsAgainst: "Goals Against",
     powerPlayGoals: "PP Goals",
+    powerPlayPoints: "PP Points",
     // NBA
     pts: "Points",
     reb: "Rebounds",
