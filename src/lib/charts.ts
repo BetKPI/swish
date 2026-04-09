@@ -1235,7 +1235,7 @@ function buildOverUnderCharts(
 
   // 1. Combined scoring trend with O/U line
   if (teams.length === 2) {
-    const maxLen = Math.min(teams[0].recentGames.length, teams[1].recentGames.length, 15);
+    const maxLen = Math.min(teams[0].recentGames.length, teams[1].recentGames.length, 20);
     if (maxLen >= 3) {
       const data = [];
       for (let i = 0; i < maxLen; i++) {
@@ -1253,8 +1253,8 @@ function buildOverUnderCharts(
       const t1Overs = teams[1].recentGames.slice(-maxLen).filter((g) => g.totalPoints > line).length;
       charts.push({
         type: "line",
-        title: "Game Totals vs O/U Line",
-        relevance: `${shortenName(teams[0].name)} games went over ${line} in ${t0Overs}/${maxLen}, ${shortenName(teams[1].name)} in ${t1Overs}/${maxLen}`,
+        title: `Game Totals vs O/U Line (Last ${maxLen} Games)`,
+        relevance: `${shortenName(teams[0].name)} went over ${line} in ${t0Overs}/${maxLen}, ${shortenName(teams[1].name)} in ${t1Overs}/${maxLen}`,
         data,
         xKey: "game",
         yKeys: [
@@ -1816,8 +1816,11 @@ function buildPlayerPropCharts(
       }
     }
 
-    // 7. Opponent defensive context — how much does the other team allow?
-    if (extraction.teams && extraction.teams.length >= 2 && Object.keys(computed.teamMetrics).length >= 2) {
+    // 7. Opponent defensive context — only for scoring-related props
+    // Team "points allowed" is meaningless for TB, SB, K, saves, etc.
+    const scoringStats = ["pts", "points", "goals", "reb", "ast", "fg3m", "pra", "pts+reb", "pts+ast", "reb+ast", "shots"];
+    const isScoringStat = scoringStats.includes(statKey) || statKey.includes("pts") || statKey.includes("points");
+    if (isScoringStat && extraction.teams && extraction.teams.length >= 2 && Object.keys(computed.teamMetrics).length >= 2) {
       // Find the opponent team: check which team the player is NOT on
       // by seeing which team shows up in the game log opponents
       const opponentTeamName = gameValues ? (() => {
