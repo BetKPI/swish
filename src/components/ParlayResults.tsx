@@ -29,6 +29,9 @@ export default function ParlayResults({
   const [activeTab, setActiveTab] = useState(0);
   const activeLeg = legs[activeTab];
 
+  // Persist chat visibility per leg — once opened on any leg, stays open on all
+  const [chatOpen, setChatOpen] = useState(true);
+
   const analyzedLegs = legs.filter((l) => !l.error && !l.unsupported);
   const summaryText = analyzedLegs.length > 0
     ? analyzedLegs.map((l) => l.summary).filter(Boolean).join(" ")
@@ -227,27 +230,32 @@ export default function ParlayResults({
             <ChartDisplay key={i} config={chart} extraction={{ sport: activeLeg.sport, betType: activeLeg.betType, market: activeLeg.market, description: activeLeg.description }} />
           ))}
 
-          {/* Chat — available for analyzed legs */}
-          {!activeLeg.error && !activeLeg.unsupported && (
-            <AnalysisChat
-              key={`chat-${activeTab}`}
-              extraction={{
-                sport: activeLeg.sport,
-                betType: activeLeg.betType as BetExtraction["betType"],
-                teams: activeLeg.teams,
-                players: activeLeg.players || [],
-                market: activeLeg.market,
-                line: activeLeg.line,
-                odds: activeLeg.odds,
-                description: activeLeg.description,
-                confidence: 1,
-              }}
-              computedData={activeLeg.computedData || {}}
-              suggestions={activeLeg.suggestions}
-            />
-          )}
         </div>
       )}
+
+      {/* Chat — rendered for ALL analyzed legs, hidden when not active tab */}
+      {/* This preserves conversation history when switching between legs */}
+      {legs.map((leg, i) => (
+        !leg.error && !leg.unsupported && (
+          <div key={`chat-${i}`} style={{ display: i === activeTab ? undefined : "none" }}>
+            <AnalysisChat
+              extraction={{
+                sport: leg.sport,
+                betType: leg.betType as BetExtraction["betType"],
+                teams: leg.teams,
+                players: leg.players || [],
+                market: leg.market,
+                line: leg.line,
+                odds: leg.odds,
+                description: leg.description,
+                confidence: 1,
+              }}
+              computedData={leg.computedData || {}}
+              suggestions={leg.suggestions}
+            />
+          </div>
+        )
+      ))}
 
       {/* Feedback + Share */}
       <FeedbackShare extraction={extraction} summary={summaryText} />

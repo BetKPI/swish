@@ -1073,7 +1073,7 @@ function buildSpreadCharts(
   // 1. Margin of victory trend with spread line + rolling avg
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const recent = team.recentGames.slice(-15);
+    const recent = team.recentGames.slice(-20); // Show up to 20 games
     const coversInWindow = recent.filter((g) => g.margin + line > 0).length;
     const data = recent.map((g, i) => {
       const window = recent.slice(Math.max(0, i - 2), i + 1);
@@ -1089,8 +1089,8 @@ function buildSpreadCharts(
     const trending = recent.slice(-3).reduce((s, g) => s + g.margin, 0) / 3 > avgMargin ? "trending up" : "trending down";
     charts.push({
       type: "line",
-      title: `${team.name} — Margin of Victory vs Spread`,
-      relevance: `Covered ${line > 0 ? "+" : ""}${line} in ${coversInWindow} of last ${recent.length} (avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}, ${trending})`,
+      title: `${team.name} — Margin vs Spread (Last ${recent.length} Games)`,
+      relevance: `Covered ${line > 0 ? "+" : ""}${line} in ${coversInWindow}/${recent.length} (avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}, ${trending})`,
       data,
       xKey: "game",
       yKeys: ["margin", "rollingMargin", "spreadLine"],
@@ -1335,7 +1335,7 @@ function buildMoneylineCharts(
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     let runningDiff = 0;
-    const data = team.recentGames.slice(-15).map((g, i) => {
+    const data = team.recentGames.slice(-20).map((g, i) => {
       runningDiff += g.margin;
       return {
         game: `G${i + 1}`,
@@ -1596,7 +1596,7 @@ function buildPlayerPropCharts(
     // 1. Hit Rate visual — Props.Cash-style per-game bar chart (green/red)
     const gameValues = propAnalysis?.gameValues;
     if (gameValues && gameValues.length > 0 && line > 0) {
-      const hitRateRecent = gameValues.slice(-15);
+      const hitRateRecent = gameValues.slice(-20); // Show up to 20 games for readability
       const hitRateN = hitRateRecent.length;
       const hitRateOverCount = hitRateRecent.filter((g: { hit: boolean }) => g.hit).length;
       const hitRatePct = Math.round((hitRateOverCount / hitRateN) * 100);
@@ -1619,7 +1619,7 @@ function buildPlayerPropCharts(
 
     // 2. Game log trend with rolling average — THE key chart
     if (gameValues && gameValues.length > 0) {
-      const recent = gameValues.slice(-15);
+      const recent = gameValues.slice(-20); // Show up to 20 for readability
       const data = recent.map((g: { date: string; value: number; hit: boolean; opponent?: string }, i: number) => {
         // 5-game rolling average
         const window = recent.slice(Math.max(0, i - 4), i + 1);
@@ -1880,17 +1880,18 @@ function buildPlayerPropCharts(
         const minAvg = Math.min(...avgs);
         const diffPct = minAvg > 0 ? Math.round(((maxAvg - minAvg) / minAvg) * 100) : 0;
         const bestBucket = activeBuckets[avgs.indexOf(maxAvg)].name;
-        const meaningful = diffPct >= 10;
+        const meaningful = diffPct >= 15;
+        // Only show rest days if impact is significant — avoids noise charts
+        if (meaningful) {
         charts.push({
           type: "table" as ChartConfig["type"],
           title: `${playerName} — ${statLabel} by Rest Days`,
-          relevance: meaningful
-            ? `Meaningful rest impact: best with ${bestBucket} (${diffPct}% higher avg) — consider schedule context`
-            : `Minimal rest impact (${diffPct}% difference between buckets) — rest days not a major factor`,
+          relevance: `Rest matters: best with ${bestBucket} (${diffPct}% higher avg) — consider schedule context`,
           data,
           xKey: "bucket",
           yKeys: ["games", "avgValue", "hitRate"],
         });
+        }
       }
     }
 
