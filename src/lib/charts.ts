@@ -754,11 +754,13 @@ function buildDoubleDoubleCharts(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const games = gameLog.slice(-15).map((g: any) => {
-    const pts = Number(g.PTS || g.points || g.pts || 0);
-    const reb = Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0);
-    const ast = Number(g.AST || g.assists || g.ast || 0);
-    const blk = Number(g.BLK || g.blocks || g.blk || 0);
-    const stl = Number(g.STL || g.steals || g.stl || 0);
+    // Handle ESPN format (g.stats.PTS), BDL format (g.pts), and generic
+    const s = g.stats || {};
+    const pts = Number(s.PTS || g.PTS || g.points || g.pts || 0);
+    const reb = Number(s.REB || g.REB || g.totalRebounds || g.reb || g.rebounds || 0);
+    const ast = Number(s.AST || g.AST || g.assists || g.ast || 0);
+    const blk = Number(s.BLK || g.BLK || g.blocks || g.blk || 0);
+    const stl = Number(s.STL || g.STL || g.steals || g.stl || 0);
     const cats = [pts >= 10, reb >= 10, ast >= 10, blk >= 10, stl >= 10].filter(Boolean).length;
     return {
       game: g.opponent ? `vs ${shortenName(String(g.opponent))}` : `G${gameLog.indexOf(g) + 1}`,
@@ -1763,24 +1765,27 @@ function buildPlayerPropCharts(
 
     // 6. vs Opponent if we have enough data
     if (gameValues && extraction.teams && extraction.teams.length >= 2) {
-      // Figure out which team is the opponent (not the player's team)
-      // The player's team will NOT appear in their game log opponents
-      // The opponent team WILL appear if they've played against them
-      const teamMatchCounts = extraction.teams.map((t) => ({
-        name: t,
-        matches: gameValues.filter((g: { opponent?: string }) => {
-          const opp = g.opponent?.toLowerCase() || "";
-          return opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp);
-        }).length,
-      }));
-      // The team with MORE matches in the opponent column is the actual opponent
-      // (the player's own team should have 0 matches since you don't play against yourself)
-      const sorted = [...teamMatchCounts].sort((a, b) => b.matches - a.matches);
-      const opponentName = sorted[0].matches > 0 ? sorted[0].name : sorted[1]?.name || extraction.teams[1];
+      // Figure out which team is the opponent
+      // Simple approach: check which team's franchise name appears in the game log opponents
+      // The player's own team will never appear as an opponent
+      const findOpponent = () => {
+        for (const t of extraction.teams!) {
+          const franchise = shortenName(t).toLowerCase();
+          const hasMatch = gameValues.some((g: { opponent?: string }) => {
+            const opp = (g.opponent || "").toLowerCase();
+            return opp === franchise || opp.includes(franchise) || franchise.includes(opp);
+          });
+          if (hasMatch) return t;
+        }
+        // Fallback: the second team listed is usually the opponent
+        return extraction.teams![1];
+      };
+      const opponentName = findOpponent();
+      const oppFranchise = shortenName(opponentName).toLowerCase();
 
       const vsOpponent = gameValues.filter((g: { opponent?: string }) => {
-        const opp = g.opponent?.toLowerCase() || "";
-        return opp.includes(opponentName.toLowerCase()) || opponentName.toLowerCase().includes(opp);
+        const opp = (g.opponent || "").toLowerCase();
+        return opp === oppFranchise || opp.includes(oppFranchise) || oppFranchise.includes(opp);
       });
 
       if (vsOpponent.length > 0) {
@@ -1806,15 +1811,15 @@ function buildPlayerPropCharts(
       // Find the opponent team: check which team the player is NOT on
       // by seeing which team shows up in the game log opponents
       const opponentTeamName = gameValues ? (() => {
-        const counts = extraction.teams!.map((t) => ({
-          name: t,
-          matches: gameValues.filter((g: { opponent?: string }) => {
-            const opp = g.opponent?.toLowerCase() || "";
-            return opp.includes(t.toLowerCase()) || t.toLowerCase().includes(opp);
-          }).length,
-        }));
-        const sorted = [...counts].sort((a, b) => b.matches - a.matches);
-        return sorted[0]?.matches > 0 ? sorted[0].name : extraction.teams![1];
+        for (const t of extraction.teams!) {
+          const franchise = shortenName(t).toLowerCase();
+          const hasMatch = gameValues.some((g: { opponent?: string }) => {
+            const opp = (g.opponent || "").toLowerCase();
+            return opp === franchise || opp.includes(franchise) || franchise.includes(opp);
+          });
+          if (hasMatch) return t;
+        }
+        return extraction.teams![1];
       })() : extraction.teams[1];
       const opponentMetrics = computed.teamMetrics[opponentTeamName] || Object.values(computed.teamMetrics)[1] || Object.values(computed.teamMetrics)[0];
       if (opponentMetrics) {
