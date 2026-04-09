@@ -448,15 +448,19 @@ async function analyzeSingleBet(
     } catch (e) {
       console.error("[Stats] First basket enrichment failed:", e);
     }
-  } else if (exotic === "nrfi" && isMLBSport(extraction.sport || "") && extraction.players.length > 0) {
-    try {
-      const nrfiData = await getFirstInningData(extraction.players[0]);
-      if (nrfiData) {
-        (teamData as Record<string, unknown>)._nrfi = nrfiData;
-        console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings`);
+  } else if (exotic === "nrfi" && isMLBSport(extraction.sport || "")) {
+    // NRFI can work with pitcher name OR just teams
+    const pitcherName = extraction.players.length > 0 ? extraction.players[0] : null;
+    if (pitcherName) {
+      try {
+        const nrfiData = await getFirstInningData(pitcherName);
+        if (nrfiData) {
+          (teamData as Record<string, unknown>)._nrfi = nrfiData;
+          console.log(`[Stats] NRFI data: ${nrfiData.pitcher?.cleanFirstInnings || 0} clean 1st innings`);
+        }
+      } catch (e) {
+        console.error("[Stats] NRFI enrichment failed:", e);
       }
-    } catch (e) {
-      console.error("[Stats] NRFI enrichment failed:", e);
     }
   } else if (exotic === "first_goal" && isNHLSport(extraction.sport || "") && extraction.players.length > 0) {
     try {

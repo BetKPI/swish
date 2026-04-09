@@ -2078,7 +2078,10 @@ function mapMarketToStatKey(market: string): string {
   if (m.includes("rbi") || m.includes("runs batted")) return "rbi";
   if (m.includes("stolen base") || m.includes("sb")) return "stolenBases";
   if (m.includes("total bases") || m.includes("tb")) return "totalBases";
+  if (m.includes("run") && !m.includes("home run")) return "runs";
   if (m.includes("hit")) return "hits";
+  // NHL points (distinct from NBA pts — "points" in NHL context = goals+assists)
+  if (m.includes("point") || m.includes("pts")) return "pts";
   return "pts";
 }
 
