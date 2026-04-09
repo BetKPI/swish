@@ -387,6 +387,7 @@ RULES:
 
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {
+      await logChatToDiscord(message, extraction, "no_data", "Gemini returned empty");
       return NextResponse.json({ type: "no_data", message: "Couldn't process that — try rephrasing." });
     }
 
@@ -394,7 +395,7 @@ RULES:
 
     // Case 1: Can answer from existing data
     if (!triage.need_fetch && !triage.no_data && triage.chart) {
-      logChatToDiscord(message, extraction, "chart", triage.message as string);
+      await logChatToDiscord(message, extraction, "chart", triage.message as string);
       return NextResponse.json({
         type: "chart",
         message: triage.message || "Here you go.",
@@ -404,7 +405,7 @@ RULES:
 
     // Case 3: Data doesn't exist
     if (triage.no_data) {
-      logChatToDiscord(message, extraction, "no_data", triage.message as string);
+      await logChatToDiscord(message, extraction, "no_data", triage.message as string);
       return NextResponse.json({
         type: "no_data",
         message: triage.message || "We don't have the data for that.",
@@ -466,12 +467,12 @@ RULES:
       }
 
       const chartResult = parseJSON(chartText);
-      logChatToDiscord(message, extraction, "fetched", `Action: ${(triage.fetch as Record<string,unknown>).action}`);
+      await logChatToDiscord(message, extraction, "fetched", `Action: ${(triage.fetch as Record<string,unknown>).action}`);
       return NextResponse.json(chartResult);
     }
 
     // Fallback
-    logChatToDiscord(message, extraction, "no_data", "Fell through to fallback");
+    await logChatToDiscord(message, extraction, "no_data", "Fell through to fallback");
     return NextResponse.json({
       type: "no_data",
       message: triage.message || "Not sure how to handle that — try a different question.",
