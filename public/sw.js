@@ -1,6 +1,7 @@
 // Swish Service Worker — lightweight, cache-first for static assets
-const CACHE_NAME = 'swish-v1';
-const STATIC_ASSETS = ['/', '/manifest.json', '/logo.svg'];
+const CACHE_NAME = 'swish-v4';
+// Only cache truly static assets — NOT the HTML page
+const STATIC_ASSETS = ['/manifest.json', '/logo.svg'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -10,6 +11,7 @@ self.addEventListener('install', (e) => {
 });
 
 self.addEventListener('activate', (e) => {
+  // Delete ALL old caches on activate to bust stale pages
   e.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
@@ -24,8 +26,11 @@ self.addEventListener('fetch', (e) => {
   // API calls — always network
   if (url.pathname.startsWith('/api/')) return;
 
-  // Static assets — cache first, network fallback
-  if (e.request.method === 'GET') {
+  // HTML pages — always network first (never serve stale pages)
+  if (e.request.mode === 'navigate') return;
+
+  // Static assets only — cache first, network fallback
+  if (e.request.method === 'GET' && (url.pathname.startsWith('/_next/') || STATIC_ASSETS.includes(url.pathname))) {
     e.respondWith(
       caches.match(e.request).then((cached) => {
         const fetched = fetch(e.request).then((res) => {

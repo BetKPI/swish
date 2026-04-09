@@ -135,8 +135,8 @@ export default function Home() {
   }, [fetchStats]);
 
   const handleFile = useCallback((file: File) => {
-    if (!file.type.match(/^image\/(png|jpeg|webp)$/)) {
-      setError("Please upload a PNG, JPG, or WEBP image.");
+    if (!file.type.startsWith("image/")) {
+      setError("Please upload an image file.");
       setState("error");
       return;
     }
@@ -305,7 +305,7 @@ export default function Home() {
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/png,image/jpeg,image/webp"
+                    accept="image/*"
                     onChange={handleFileInput}
                     className="hidden"
                   />
