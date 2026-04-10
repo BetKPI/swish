@@ -19,7 +19,7 @@ import { detectExoticMarket, isNBASport, isMLBSport, isNHLSport } from "@/lib/ma
 export const maxDuration = 60;
 
 // Common bet types that get deterministic charts
-const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop", "game_prop"];
+const DETERMINISTIC_BET_TYPES = ["spread", "over_under", "moneyline", "player_prop", "game_prop", "futures"];
 
 // ── In-memory data cache ─────────────────────────────────────────
 // Caches sport data for 10 minutes to avoid re-fetching the same
@@ -448,7 +448,7 @@ async function analyzeSingleBet(
     } catch (e) {
       console.error("[Stats] First basket enrichment failed:", e);
     }
-  } else if (exotic === "nrfi" && isMLBSport(extraction.sport || "")) {
+  } else if ((exotic === "nrfi" || exotic === "first_5_innings") && isMLBSport(extraction.sport || "")) {
     try {
       const pitcherName = extraction.players.length > 0 ? extraction.players[0] : null;
       if (pitcherName) {
@@ -482,6 +482,54 @@ async function analyzeSingleBet(
       }
     } catch (e) {
       console.error("[Stats] First goal enrichment failed:", e);
+    }
+  }
+
+  // Auto-enrich with prior season data when current season has thin player data
+  if (extraction.betType === "player_prop" && extraction.players.length > 0) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const players = (teamData as any)?._players;
+    const playerName = extraction.players[0];
+    const pData = players?.[playerName];
+    const gameLog = pData?.gameLog || pData?.gameLogs || [];
+    const currentGames = Array.isArray(gameLog) ? gameLog.length : 0;
+
+    if (currentGames < 10 && currentGames > 0) {
+      console.log(`[Stats] Thin data (${currentGames} games) for ${playerName} — fetching prior season`);
+      const priorYear = new Date().getFullYear() - 1;
+      try {
+        const sport = (extraction.sport || "").toUpperCase();
+        if (sport === "MLB" || sport === "BASEBALL") {
+          const player = await (await import("@/lib/mlbstats")).searchPlayer(playerName);
+          if (player) {
+            const priorLog = await (await import("@/lib/mlbstats")).getPlayerGameLog(player.id, priorYear);
+            if (priorLog && Array.isArray(priorLog) && priorLog.length > 0) {
+              // Merge: prior season first, then current season
+              if (pData && players) {
+                pData.gameLog = [...priorLog, ...gameLog];
+                pData.propAnalysis = null; // Force recompute with merged data
+                console.log(`[Stats] Merged ${priorLog.length} prior season games (${currentGames} → ${pData.gameLog.length})`);
+              }
+            }
+          }
+        } else if (sport === "NHL" || sport === "HOCKEY") {
+          const player = await (await import("@/lib/nhlstats")).searchPlayer(playerName);
+          if (player) {
+            const priorSeason = `${priorYear - 1}${priorYear}`;
+            const priorLog = await (await import("@/lib/nhlstats")).getPlayerGameLog(player.playerId, priorSeason);
+            if (priorLog && Array.isArray(priorLog) && priorLog.length > 0) {
+              if (pData && players) {
+                pData.gameLog = [...priorLog, ...gameLog];
+                pData.propAnalysis = null;
+                console.log(`[Stats] Merged ${priorLog.length} prior season games (${currentGames} → ${pData.gameLog.length})`);
+              }
+            }
+          }
+        }
+        // NBA: ESPN game logs are already full season, BDL is disabled — skip
+      } catch (e) {
+        console.error("[Stats] Prior season enrichment failed:", e);
+      }
     }
   }
 

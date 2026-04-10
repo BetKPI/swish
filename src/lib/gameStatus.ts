@@ -70,6 +70,15 @@ export async function checkGameStatus(
   // Golf doesn't have head-to-head games — skip game status
   if (mapping.sport === "golf") return null;
 
+  // Futures/season-long bets can't be graded from a single game
+  const desc = (market || "").toLowerCase();
+  const isFutures = desc.includes("winner") || desc.includes("win total") || desc.includes("division") ||
+    desc.includes("conference") || desc.includes("championship") || desc.includes("mvp") ||
+    desc.includes("futures") || desc.includes("season") || desc.includes("pennant") ||
+    desc.includes("world series") || desc.includes("super bowl") || desc.includes("stanley cup") ||
+    (line != null && line >= 50); // Win totals are typically 50+ (e.g., 90+ games)
+  if (isFutures) return null;
+
   try {
     // Fetch today's scoreboard
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

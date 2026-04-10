@@ -15,6 +15,8 @@ export type ExoticMarket =
   | "combo_prop"
   | "anytime_td"
   | "hole_in_one"
+  | "futures"
+  | "first_5_innings"
   | null;
 
 /**
@@ -95,6 +97,24 @@ export function detectExoticMarket(
   if (isGolfSport(s)) {
     if (text.includes("hole in one") || text.includes("hole-in-one") || text.includes("holeinone") || text.includes("ace") || text.includes("hio")) {
       return "hole_in_one";
+    }
+  }
+
+  // Futures — season-long bets (division, conference, win totals, MVP, etc.)
+  if (text.includes("division") || text.includes("pennant") || text.includes("conference") ||
+      text.includes("win total") || text.includes("season wins") || text.includes("world series") ||
+      text.includes("super bowl") || text.includes("stanley cup") || text.includes("nba champion") ||
+      text.includes("mvp") || text.includes("cy young") || text.includes("rookie of the year") ||
+      text.includes("al east") || text.includes("al west") || text.includes("al central") ||
+      text.includes("nl east") || text.includes("nl west") || text.includes("nl central") ||
+      (text.includes("win") && (text.includes("east") || text.includes("west") || text.includes("central") || text.includes("atlantic") || text.includes("pacific")))) {
+    return "futures";
+  }
+
+  // First 5 Innings (MLB) — distinct from NRFI, focuses on starters
+  if (s === "MLB" || s === "BASEBALL" || !s) {
+    if ((text.includes("first 5") || text.includes("f5") || text.includes("1st 5")) && text.includes("inning")) {
+      return "first_5_innings";
     }
   }
 

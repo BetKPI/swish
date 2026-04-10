@@ -56,6 +56,10 @@ export function buildCharts(
       charts = buildDoubleDoubleCharts(extraction, rawData);
     } else if (exotic === "combo_prop" && betType === "player_prop") {
       charts = buildComboCharts(extraction, rawData);
+    } else if (exotic === "futures") {
+      charts = buildFuturesCharts(computed, extraction);
+    } else if (exotic === "first_5_innings") {
+      charts = buildFirst5InningsCharts(computed, extraction, rawData);
     }
   }
 
@@ -2005,6 +2009,184 @@ function buildPlayerPropCharts(
 }
 
 // ── Player prop fallback (no player data available) ────────────────
+
+// ── Futures charts (season-long bets) ────────────────────────────
+
+function buildFuturesCharts(
+  computed: ComputedAnalysis,
+  extraction: { teams: string[]; line?: number; market?: string; description?: string }
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const teams = Object.values(computed.teamMetrics);
+
+  // For each team in the bet, show current season record + pace
+  for (const team of teams) {
+    if (!team.record) continue;
+    const { wins, losses } = team.record;
+    const totalPlayed = wins + losses;
+    if (totalPlayed === 0) continue;
+
+    const winPct = team.record.pct;
+    const projectedWins = Math.round(winPct * 162); // MLB = 162, NBA = 82 — use MLB default
+    const sport = (extraction.description || "").toUpperCase();
+    const totalGames = sport.includes("NBA") || sport.includes("BASKETBALL") ? 82 : sport.includes("NHL") || sport.includes("HOCKEY") ? 82 : 162;
+    const paceWins = Math.round(winPct * totalGames);
+
+    const data = [
+      { stat: "Current Record", value: `${wins}-${losses}` },
+      { stat: "Win %", value: `${Math.round(winPct * 100)}%` },
+      { stat: "Projected Wins (${totalGames}g)", value: `${paceWins}` },
+      { stat: "Games Played", value: `${totalPlayed}` },
+      { stat: "Games Remaining", value: `${totalGames - totalPlayed}` },
+      { stat: "Avg Points For", value: `${team.scoring.avgPointsFor}` },
+      { stat: "Avg Points Against", value: `${team.scoring.avgPointsAgainst}` },
+      { stat: "Streak", value: `${team.streak.type}${team.streak.count}` },
+    ];
+
+    // If there's a win total line, show how they're tracking
+    const line = extraction.line;
+    if (line && line >= 50) {
+      const paceVsLine = paceWins - line;
+      data.push({ stat: `Pace vs ${line} Line`, value: paceVsLine > 0 ? `+${paceVsLine} (over pace)` : `${paceVsLine} (under pace)` });
+    }
+
+    charts.push({
+      type: "table",
+      title: `${team.name} — Season Pace & Projection`,
+      relevance: `${wins}-${losses} through ${totalPlayed} games — on pace for ${paceWins} wins`,
+      data,
+      columns: [{ key: "stat", label: "Stat" }, { key: "value", label: "Value" }],
+    });
+
+    // Recent form chart
+    if (team.recentGames.length >= 5) {
+      const recent = team.recentGames.slice(-20);
+      let runningWins = 0;
+      const formData = recent.map((g, i) => {
+        if (g.won) runningWins++;
+        return {
+          game: `G${i + 1}`,
+          margin: g.margin,
+          winPct: Math.round((runningWins / (i + 1)) * 100),
+        };
+      });
+      charts.push({
+        type: "line",
+        title: `${team.name} — Recent Form (Last ${recent.length} Games)`,
+        relevance: `Win margins and running win % — shows if team is trending up or down`,
+        data: formData,
+        xKey: "game",
+        yKeys: ["margin"],
+      });
+    }
+  }
+
+  // If 2 teams, add comparison
+  if (teams.length >= 2) {
+    const compData = teams.map((t) => ({
+      team: shortenName(t.name),
+      wins: t.record.wins,
+      losses: t.record.losses,
+      winPct: Math.round(t.record.pct * 100),
+      avgMargin: Math.round((t.scoring.avgPointsFor - t.scoring.avgPointsAgainst) * 10) / 10,
+    }));
+    charts.push({
+      type: "table",
+      title: "Season Comparison",
+      relevance: "Head-to-head season performance",
+      data: compData,
+      columns: [
+        { key: "team", label: "Team" },
+        { key: "wins", label: "W" },
+        { key: "losses", label: "L" },
+        { key: "winPct", label: "Win %" },
+        { key: "avgMargin", label: "Avg Margin" },
+      ],
+    });
+  }
+
+  return charts;
+}
+
+// ── First 5 Innings charts ──────────────────────────────────────
+
+function buildFirst5InningsCharts(
+  computed: ComputedAnalysis,
+  extraction: { teams: string[]; line?: number; market?: string; description?: string },
+  rawData: Record<string, unknown>
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  const teams = Object.values(computed.teamMetrics);
+
+  // F5 bets are about starting pitchers — show team scoring in early innings context
+  if (teams.length >= 2) {
+    const data = [
+      { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
+      { stat: "Avg Pts For", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsFor}` },
+      { stat: "Avg Pts Against", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsAgainst}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsAgainst}` },
+      { stat: "Last 5 Avg For", [shortenName(teams[0].name)]: `${teams[0].scoring.last5AvgFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.last5AvgFor}` },
+    ];
+    charts.push({
+      type: "table",
+      title: "Team Comparison — First 5 Innings Context",
+      relevance: "F5 bets depend on starting pitchers. Lower scoring teams favor F5 unders.",
+      data,
+      columns: [
+        { key: "stat", label: "" },
+        { key: shortenName(teams[0].name), label: teams[0].name },
+        { key: shortenName(teams[1].name), label: teams[1].name },
+      ],
+    });
+  }
+
+  // Also include NRFI-style pitcher data if available
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const teamNrfi = (rawData as any)?._teamNrfi;
+  if (teamNrfi) {
+    const allPitchers: { pitcher: string; team: string; nrfiRate: number; games: number }[] = [];
+    for (const team of [teamNrfi.team1, teamNrfi.team2]) {
+      if (!team?.pitchers?.length) continue;
+      for (const p of team.pitchers) {
+        allPitchers.push({ pitcher: p.name, team: shortenName(team.name), nrfiRate: Math.round(p.nrfiRate), games: p.gamesStarted });
+      }
+    }
+    if (allPitchers.length > 0) {
+      allPitchers.sort((a, b) => b.games - a.games);
+      charts.push({
+        type: "table",
+        title: "Starting Pitchers — First Inning Clean Rate",
+        relevance: "F5 result depends heavily on the starter. Higher clean rate = better for unders.",
+        data: allPitchers.map((p) => ({ pitcher: p.pitcher, team: p.team, cleanRate: `${p.nrfiRate}%`, starts: p.games })),
+        columns: [
+          { key: "pitcher", label: "Pitcher" },
+          { key: "team", label: "Team" },
+          { key: "cleanRate", label: "Clean 1st %" },
+          { key: "starts", label: "Starts" },
+        ],
+      });
+    }
+  }
+
+  // Game margin trend — early-game performance correlates with F5
+  for (const team of teams) {
+    if (team.recentGames.length < 5) continue;
+    const recent = team.recentGames.slice(-15);
+    const data = recent.map((g, i) => ({
+      game: `G${i + 1}`,
+      margin: g.margin,
+    }));
+    charts.push({
+      type: "bar",
+      title: `${team.name} — Game Margins (Last ${recent.length})`,
+      relevance: "Teams winning by large margins tend to lead early — relevant for F5 bets",
+      data,
+      xKey: "game",
+      yKeys: ["margin"],
+    });
+  }
+
+  return charts;
+}
 
 function buildPlayerPropFallbackCharts(
   computed: ComputedAnalysis,
