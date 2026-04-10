@@ -246,18 +246,46 @@ async function fetchSportData(
     return { data: golfData, source: isMasters ? "espn-golf+masters" : "espn-golf" };
   }
 
-  // Tennis: fetch rankings + player context
+  // Tennis: fetch rankings + match history + H2H
   const isTennis = sport === "TENNIS" || sport === "ATP" || sport === "WTA";
   if (isTennis) {
     console.log(`[Stats] Using ESPN tennis data`);
     const { fetchTennisRankings } = await import("@/lib/espn");
-    const league = sport === "WTA" ? "wta" : "atp";
-    const rankings = await fetchTennisRankings(league as "atp" | "wta");
+    const { getPlayerMatchHistory, getH2H } = await import("@/lib/tennis");
+    const league = (sport === "WTA" ? "wta" : "atp") as "atp" | "wta";
+    const rankings = await fetchTennisRankings(league);
     const tennisData: Record<string, unknown> = { _rankings: rankings, _league: league };
 
+    const allPlayers = [...extraction.players, ...extraction.teams].filter(Boolean);
+    // Filter out tournament names from player list
+    const tournamentKeywords = ["open", "masters", "wimbledon", "roland", "championship", "finals", "cup"];
+    const realPlayers = allPlayers.filter(p => !tournamentKeywords.some(k => p.toLowerCase().includes(k)));
+
+    // Fetch match history for each player (limit to 2 to stay within time budget)
+    const playerProfiles: Record<string, unknown> = {};
+    const fetchPromises = realPlayers.slice(0, 2).map(async (name) => {
+      try {
+        const profile = await getPlayerMatchHistory(name, league, [2026, 2025]);
+        if (profile) playerProfiles[name] = profile;
+      } catch (e) {
+        console.error(`[Tennis] Match history failed for ${name}:`, e);
+      }
+    });
+    await Promise.all(fetchPromises);
+    tennisData._players = playerProfiles;
+
+    // H2H if two players
+    if (realPlayers.length >= 2) {
+      try {
+        const h2h = await getH2H(realPlayers[0], realPlayers[1], league, [2026, 2025, 2024]);
+        if (h2h) tennisData._h2h = h2h;
+      } catch (e) {
+        console.error("[Tennis] H2H failed:", e);
+      }
+    }
+
     // Find bet players in rankings
-    const allPlayers = [...extraction.players, ...extraction.teams];
-    for (const name of allPlayers) {
+    for (const name of realPlayers) {
       const nameLower = name.toLowerCase();
       const match = rankings.find(r =>
         r.name.toLowerCase() === nameLower ||
@@ -265,7 +293,8 @@ async function fetchSportData(
         nameLower.includes(r.name.toLowerCase())
       );
       if (match) {
-        tennisData[name] = { ranking: match };
+        const existing = (tennisData[name] || {}) as Record<string, unknown>;
+        tennisData[name] = { ...existing, ranking: match };
       }
     }
     return { data: tennisData, source: "espn-tennis" };

@@ -127,9 +127,46 @@ function buildTennisCharts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = rawData as any;
   const rankings: { rank: number; prevRank: number; name: string; points: number; trend: string }[] = raw._rankings || [];
-  const allPlayers = [...extraction.players, ...extraction.teams].filter(Boolean);
+  const tournamentKeywords = ["open", "masters", "wimbledon", "roland", "championship", "finals", "cup"];
+  const allPlayersRaw = [...extraction.players, ...extraction.teams]
+    .filter(p => p && !tournamentKeywords.some(k => p.toLowerCase().includes(k)));
+  // Deduplicate players (teams and players arrays often overlap for tennis)
+  const seen = new Set<string>();
+  const allPlayers = allPlayersRaw.filter(p => {
+    const key = p.toLowerCase();
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+  const playerProfiles = raw._players || {};
+  const h2h = raw._h2h as { player1: string; player2: string; player1Wins: number; player2Wins: number; matches: { date: string; tournament: string; round: string; opponent: string; won: boolean; score: string; surface: string }[] } | undefined;
 
-  // 1. Player ranking comparison — the key context for any tennis bet
+  // 1. H2H record — the most important chart for match bets
+  if (h2h && h2h.matches.length > 0) {
+    charts.push({
+      type: "table",
+      title: `H2H Record — ${h2h.player1} vs ${h2h.player2} (${h2h.player1Wins}-${h2h.player2Wins})`,
+      relevance: `${h2h.matches.length} career meetings — ${h2h.player1Wins > h2h.player2Wins ? h2h.player1 : h2h.player2} leads the H2H`,
+      data: h2h.matches.map(m => ({
+        date: m.date,
+        tournament: m.tournament.length > 25 ? m.tournament.slice(0, 22) + "..." : m.tournament,
+        round: m.round,
+        surface: m.surface,
+        winner: m.won ? h2h.player1 : h2h.player2,
+        score: m.score.length > 20 ? m.score.slice(0, 18) + "..." : m.score,
+      })),
+      columns: [
+        { key: "date", label: "Date" },
+        { key: "tournament", label: "Tournament" },
+        { key: "round", label: "Round" },
+        { key: "surface", label: "Surface" },
+        { key: "winner", label: "Winner" },
+        { key: "score", label: "Score" },
+      ],
+    });
+  }
+
+  // 2. Player ranking comparison
   if (allPlayers.length >= 1 && rankings.length > 0) {
     const playerRankings: { player: string; rank: string; points: number; trend: string; prevRank: string }[] = [];
     for (const name of allPlayers) {
@@ -150,12 +187,15 @@ function buildTennisCharts(
       }
     }
 
-    if (playerRankings.length >= 2) {
-      // H2H ranking comparison
+    if (playerRankings.length >= 1) {
       charts.push({
         type: "table",
-        title: "Player Rankings — Head to Head",
-        relevance: `${playerRankings[0].player} (${playerRankings[0].rank}) vs ${playerRankings[1].player} (${playerRankings[1].rank}) — ranking gap matters on tour`,
+        title: playerRankings.length >= 2
+          ? "Player Rankings — Head to Head"
+          : `${playerRankings[0].player} — Ranking`,
+        relevance: playerRankings.length >= 2
+          ? `${playerRankings[0].player} (${playerRankings[0].rank}) vs ${playerRankings[1].player} (${playerRankings[1].rank})`
+          : `Currently ranked ${playerRankings[0].rank} with ${playerRankings[0].points} points`,
         data: playerRankings,
         columns: [
           { key: "player", label: "Player" },
@@ -165,23 +205,93 @@ function buildTennisCharts(
           { key: "trend", label: "Trend" },
         ],
       });
-    } else if (playerRankings.length === 1) {
+    }
+  }
+
+  // 3. Per-player match history + surface records
+  for (const name of allPlayers) {
+    const profile = playerProfiles[name] as {
+      name: string; matches: { date: string; tournament: string; round: string; opponent: string; won: boolean; score: string; surface: string; roundType: number }[];
+      record: { wins: number; losses: number };
+      surfaceRecords: Record<string, { wins: number; losses: number }>;
+    } | undefined;
+    if (!profile || !profile.matches?.length) continue;
+
+    // Recent results table (last 15 matches)
+    const recentMatches = profile.matches.slice(0, 15);
+    charts.push({
+      type: "table",
+      title: `${profile.name} — Recent Results (${profile.record.wins}-${profile.record.losses})`,
+      relevance: `Last ${recentMatches.length} matches across 2025-2026 season`,
+      data: recentMatches.map(m => ({
+        date: m.date,
+        tournament: m.tournament.length > 20 ? m.tournament.slice(0, 18) + "..." : m.tournament,
+        round: m.round,
+        opponent: m.opponent,
+        result: m.won ? "W" : "L",
+        score: m.score.length > 15 ? m.score.slice(0, 13) + "..." : m.score,
+      })),
+      columns: [
+        { key: "date", label: "Date" },
+        { key: "tournament", label: "Tournament" },
+        { key: "round", label: "Rd" },
+        { key: "opponent", label: "Opponent" },
+        { key: "result", label: "W/L" },
+        { key: "score", label: "Score" },
+      ],
+    });
+
+    // Surface record breakdown
+    const surfaces = Object.entries(profile.surfaceRecords);
+    if (surfaces.length >= 2) {
+      const surfaceData = surfaces.map(([surface, rec]) => ({
+        surface,
+        record: `${rec.wins}-${rec.losses}`,
+        winPct: rec.wins + rec.losses > 0 ? Math.round((rec.wins / (rec.wins + rec.losses)) * 100) : 0,
+        matches: rec.wins + rec.losses,
+      }));
+      surfaceData.sort((a, b) => b.matches - a.matches);
       charts.push({
-        type: "table",
-        title: `${playerRankings[0].player} — ATP/WTA Ranking`,
-        relevance: `Currently ranked ${playerRankings[0].rank} with ${playerRankings[0].points} points`,
-        data: playerRankings,
-        columns: [
-          { key: "player", label: "Player" },
-          { key: "rank", label: "Rank" },
-          { key: "points", label: "Points" },
-          { key: "prevRank", label: "Prev" },
-        ],
+        type: "bar",
+        title: `${profile.name} — Win Rate by Surface`,
+        relevance: `Surface matters in tennis — ${surfaceData[0]?.surface} is their most played`,
+        data: surfaceData,
+        xKey: "surface",
+        yKeys: ["winPct"],
+      });
+    }
+
+    // Tournament depth chart — how far they go (bar chart of round reached)
+    const roundCounts: Record<string, number> = {};
+    for (const m of profile.matches) {
+      // Track deepest round per tournament
+      const key = m.tournament + "|" + m.date.slice(0, 7);
+      if (!roundCounts[m.round] || !m.won) {
+        // The round they LOST in is their exit round
+        if (!m.won) roundCounts[m.round] = (roundCounts[m.round] || 0) + 1;
+      }
+    }
+    // Also count wins in finals as "Champion"
+    const finals = profile.matches.filter(m => m.roundType >= 7 && m.won);
+    if (finals.length > 0) roundCounts["W"] = finals.length;
+
+    const roundOrder = ["R1", "R2", "R3", "R4", "QF", "SF", "F", "W"];
+    const depthData = roundOrder
+      .filter(r => roundCounts[r])
+      .map(r => ({ round: r, exits: roundCounts[r] }));
+    if (depthData.length >= 2) {
+      charts.push({
+        type: "bar",
+        title: `${profile.name} — Tournament Exits`,
+        relevance: `Where they typically get knocked out — deeper exits = stronger form`,
+        data: depthData,
+        xKey: "round",
+        yKeys: ["exits"],
       });
     }
   }
 
-  // 2. Top 20 rankings context — shows where bet players sit in the field
+  // 4. Top 20 rankings context
   if (rankings.length > 0) {
     const top20 = rankings.slice(0, 20).map(r => {
       const isBetPlayer = allPlayers.some(p =>
