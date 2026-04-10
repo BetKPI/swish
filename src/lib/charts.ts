@@ -33,8 +33,12 @@ export function buildCharts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = rawData as any;
 
+  // Tennis — player vs player with rankings
+  if (sport === "TENNIS" || sport === "ATP" || sport === "WTA") {
+    charts = buildTennisCharts(extraction, rawData);
+  }
   // Golf — completely different data structure
-  if (isGolfSport(sport)) {
+  else if (isGolfSport(sport)) {
     // Check for hole-in-one market first
     const golfExotic = detectExoticMarket(marketStr, descStr, sport);
     if (golfExotic === "hole_in_one" && raw?._holeInOne) {
@@ -111,6 +115,100 @@ function validateChart(chart: ChartConfig): boolean {
     })
   );
   return hasRealData;
+}
+
+// ── Tennis charts ─────────────────────────────────────────────────
+
+function buildTennisCharts(
+  extraction: { players: string[]; teams: string[]; line?: number; market?: string; description?: string },
+  rawData: Record<string, unknown>
+): ChartConfig[] {
+  const charts: ChartConfig[] = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const raw = rawData as any;
+  const rankings: { rank: number; prevRank: number; name: string; points: number; trend: string }[] = raw._rankings || [];
+  const allPlayers = [...extraction.players, ...extraction.teams].filter(Boolean);
+
+  // 1. Player ranking comparison — the key context for any tennis bet
+  if (allPlayers.length >= 1 && rankings.length > 0) {
+    const playerRankings: { player: string; rank: string; points: number; trend: string; prevRank: string }[] = [];
+    for (const name of allPlayers) {
+      const nameLower = name.toLowerCase();
+      const match = rankings.find(r =>
+        r.name.toLowerCase() === nameLower ||
+        r.name.toLowerCase().includes(nameLower) ||
+        nameLower.includes(r.name.toLowerCase())
+      );
+      if (match) {
+        playerRankings.push({
+          player: match.name,
+          rank: `#${match.rank}`,
+          points: match.points,
+          trend: match.trend === "-" ? "=" : match.trend,
+          prevRank: `#${match.prevRank}`,
+        });
+      }
+    }
+
+    if (playerRankings.length >= 2) {
+      // H2H ranking comparison
+      charts.push({
+        type: "table",
+        title: "Player Rankings — Head to Head",
+        relevance: `${playerRankings[0].player} (${playerRankings[0].rank}) vs ${playerRankings[1].player} (${playerRankings[1].rank}) — ranking gap matters on tour`,
+        data: playerRankings,
+        columns: [
+          { key: "player", label: "Player" },
+          { key: "rank", label: "Rank" },
+          { key: "points", label: "Points" },
+          { key: "prevRank", label: "Prev" },
+          { key: "trend", label: "Trend" },
+        ],
+      });
+    } else if (playerRankings.length === 1) {
+      charts.push({
+        type: "table",
+        title: `${playerRankings[0].player} — ATP/WTA Ranking`,
+        relevance: `Currently ranked ${playerRankings[0].rank} with ${playerRankings[0].points} points`,
+        data: playerRankings,
+        columns: [
+          { key: "player", label: "Player" },
+          { key: "rank", label: "Rank" },
+          { key: "points", label: "Points" },
+          { key: "prevRank", label: "Prev" },
+        ],
+      });
+    }
+  }
+
+  // 2. Top 20 rankings context — shows where bet players sit in the field
+  if (rankings.length > 0) {
+    const top20 = rankings.slice(0, 20).map(r => {
+      const isBetPlayer = allPlayers.some(p =>
+        r.name.toLowerCase().includes(p.toLowerCase()) || p.toLowerCase().includes(r.name.toLowerCase())
+      );
+      return {
+        rank: r.rank,
+        player: isBetPlayer ? `** ${r.name} **` : r.name,
+        points: r.points,
+        trend: r.trend === "-" ? "=" : r.trend,
+      };
+    });
+    charts.push({
+      type: "table",
+      title: `${(raw._league || "ATP").toUpperCase()} Rankings — Top 20`,
+      relevance: "Current tour rankings — higher-ranked players win more often on tour",
+      data: top20,
+      columns: [
+        { key: "rank", label: "#" },
+        { key: "player", label: "Player" },
+        { key: "points", label: "Points" },
+        { key: "trend", label: "Trend" },
+      ],
+    });
+  }
+
+  return charts;
 }
 
 // ── Golf charts ───────────────────────────────────────────────────

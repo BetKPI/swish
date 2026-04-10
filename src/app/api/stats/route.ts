@@ -246,6 +246,31 @@ async function fetchSportData(
     return { data: golfData, source: isMasters ? "espn-golf+masters" : "espn-golf" };
   }
 
+  // Tennis: fetch rankings + player context
+  const isTennis = sport === "TENNIS" || sport === "ATP" || sport === "WTA";
+  if (isTennis) {
+    console.log(`[Stats] Using ESPN tennis data`);
+    const { fetchTennisRankings } = await import("@/lib/espn");
+    const league = sport === "WTA" ? "wta" : "atp";
+    const rankings = await fetchTennisRankings(league as "atp" | "wta");
+    const tennisData: Record<string, unknown> = { _rankings: rankings, _league: league };
+
+    // Find bet players in rankings
+    const allPlayers = [...extraction.players, ...extraction.teams];
+    for (const name of allPlayers) {
+      const nameLower = name.toLowerCase();
+      const match = rankings.find(r =>
+        r.name.toLowerCase() === nameLower ||
+        r.name.toLowerCase().includes(nameLower) ||
+        nameLower.includes(r.name.toLowerCase())
+      );
+      if (match) {
+        tennisData[name] = { ranking: match };
+      }
+    }
+    return { data: tennisData, source: "espn-tennis" };
+  }
+
   // Default: ESPN for NFL, college, soccer, etc.
   console.log(`[Stats] Using ESPN for ${extraction.sport}`);
   const espnData = await fetchAllTeamData(

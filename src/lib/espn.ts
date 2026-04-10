@@ -32,6 +32,10 @@ const SPORT_MAP: Record<string, { sport: string; league: string }> = {
   MASTERS: { sport: "golf", league: "pga" },
   LIV: { sport: "golf", league: "liv" },
   LPGA: { sport: "golf", league: "lpga" },
+  // Tennis
+  TENNIS: { sport: "tennis", league: "atp" },
+  ATP: { sport: "tennis", league: "atp" },
+  WTA: { sport: "tennis", league: "wta" },
 };
 
 function getLeagueInfo(sport: string): { sport: string; league: string } | null {
@@ -309,6 +313,37 @@ export async function fetchStandings(
   }
 
   return { current, prior, season: currentYear };
+}
+
+/**
+ * Fetch ATP/WTA tennis rankings.
+ */
+export async function fetchTennisRankings(
+  league: "atp" | "wta" = "atp"
+): Promise<TennisRanking[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data: any = await cachedFetch(
+    `${BASE}/tennis/${league}/rankings`,
+    TTL.MEDIUM
+  );
+  const ranks = data?.rankings?.[0]?.ranks || [];
+  return ranks.map((r: { current: number; previous: number; points: number; trend: string; athlete: { id: string; displayName: string } }) => ({
+    rank: r.current,
+    prevRank: r.previous,
+    name: r.athlete?.displayName || "?",
+    id: r.athlete?.id || "",
+    points: r.points,
+    trend: r.trend,
+  }));
+}
+
+export interface TennisRanking {
+  rank: number;
+  prevRank: number;
+  name: string;
+  id: string;
+  points: number;
+  trend: string;
 }
 
 export interface StandingsEntry {
