@@ -67,13 +67,13 @@ export function buildCharts(
   if (charts.length === 0 && !isGolfSport(sport)) {
     switch (betType) {
       case "spread":
-        charts = buildSpreadCharts(computed, extraction);
+        charts = buildSpreadCharts(computed, extraction, rawData);
         break;
       case "over_under":
-        charts = buildOverUnderCharts(computed, extraction);
+        charts = buildOverUnderCharts(computed, extraction, rawData);
         break;
       case "moneyline":
-        charts = buildMoneylineCharts(computed, extraction);
+        charts = buildMoneylineCharts(computed, extraction, rawData);
         break;
       case "player_prop":
         charts = buildPlayerPropCharts(computed, extraction, rawData);
@@ -1079,11 +1079,73 @@ function mlbComboExtractors(
   }));
 }
 
+// ── Probable pitcher matchup (shared across spread/ML/O-U) ────────
+
+function buildPitcherMatchupChart(
+  rawData: Record<string, unknown> | undefined,
+  teamNames: string[]
+): ChartConfig | null {
+  if (!rawData || teamNames.length < 2) return null;
+
+  // Look for pitcher data in each team's raw data
+  const pitcherRows: { pitcher: string; team: string; era: string; record: string; whip: string; k: string }[] = [];
+
+  for (const teamName of teamNames) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const teamData = (rawData as any)[teamName];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pp = teamData?.probablePitchers as any;
+    if (!pp) continue;
+
+    for (const key of ["homePitcher", "awayPitcher"] as const) {
+      const pitcher = pp[key];
+      if (!pitcher?.fullName) continue;
+      const stats = pitcher.seasonStats || pitcher.stats || {};
+      pitcherRows.push({
+        pitcher: pitcher.fullName,
+        team: shortenName(teamName),
+        era: stats.era || stats.earnedRunAverage || "-",
+        record: stats.wins != null && stats.losses != null ? `${stats.wins}-${stats.losses}` : "-",
+        whip: stats.whip || "-",
+        k: stats.strikeOuts || stats.strikeouts || stats.k || "-",
+      });
+    }
+  }
+
+  // Deduplicate — same pitcher might appear in both home/away
+  const seen = new Set<string>();
+  const unique = pitcherRows.filter((p) => {
+    if (seen.has(p.pitcher)) return false;
+    seen.add(p.pitcher);
+    return true;
+  });
+
+  if (unique.length < 1) return null;
+
+  return {
+    type: "table",
+    title: "Probable Pitcher Matchup",
+    relevance: unique.length >= 2
+      ? `${unique[0].pitcher} vs ${unique[1].pitcher} — starting pitchers drive the outcome`
+      : `${unique[0].pitcher} on the mound`,
+    data: unique,
+    columns: [
+      { key: "pitcher", label: "Pitcher" },
+      { key: "team", label: "Team" },
+      { key: "record", label: "W-L" },
+      { key: "era", label: "ERA" },
+      { key: "whip", label: "WHIP" },
+      { key: "k", label: "K" },
+    ],
+  };
+}
+
 // ── Spread charts ──────────────────────────────────────────────────
 
 function buildSpreadCharts(
   computed: ComputedAnalysis,
-  extraction: { teams: string[]; line?: number }
+  extraction: { teams: string[]; line?: number },
+  rawData?: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
@@ -1239,6 +1301,10 @@ function buildSpreadCharts(
     }
   }
 
+  // Pitcher matchup — critical for MLB bets
+  const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
+  if (pitcherChart) charts.push(pitcherChart);
+
   return charts;
 }
 
@@ -1246,7 +1312,8 @@ function buildSpreadCharts(
 
 function buildOverUnderCharts(
   computed: ComputedAnalysis,
-  extraction: { teams: string[]; line?: number }
+  extraction: { teams: string[]; line?: number },
+  rawData?: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
@@ -1314,6 +1381,10 @@ function buildOverUnderCharts(
   // Scoring & Defense Trend removed — backtesting shows scoring trend
   // has near-zero predictive power for O/U (0.02–0.07 effect size).
 
+  // Pitcher matchup — critical for MLB totals
+  const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
+  if (pitcherChart) charts.push(pitcherChart);
+
   return charts;
 }
 
@@ -1321,7 +1392,8 @@ function buildOverUnderCharts(
 
 function buildMoneylineCharts(
   computed: ComputedAnalysis,
-  extraction: { teams: string[]; odds: string }
+  extraction: { teams: string[]; odds: string },
+  rawData?: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
@@ -1413,6 +1485,10 @@ function buildMoneylineCharts(
   if (computed.headToHead && computed.headToHead.games.length > 0) {
     charts.push(buildH2HTable(computed, extraction.teams));
   }
+
+  // Pitcher matchup — critical for MLB moneyline
+  const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
+  if (pitcherChart) charts.push(pitcherChart);
 
   return charts;
 }

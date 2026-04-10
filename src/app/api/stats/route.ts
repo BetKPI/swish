@@ -542,6 +542,31 @@ async function analyzeSingleBet(
     }
   }
 
+  // Auto-enrich team data with prior season games for spread/ML/O-U when data is thin
+  if (["spread", "over_under", "moneyline"].includes(extraction.betType) && extraction.teams.length >= 2) {
+    for (const teamName of extraction.teams) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const td = (teamData as any)[teamName];
+      const games = td?.recentGames;
+      if (Array.isArray(games) && games.length < 25 && games.length > 0) {
+        console.log(`[Stats] ${teamName} has ${games.length} games — fetching prior season`);
+        try {
+          const priorData = await fetchAllTeamData(extraction.sport, [teamName]);
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const priorTeam = (priorData as any)[teamName];
+          if (priorTeam?.recentGames?.length) {
+            // Tag prior season games so charts can label them
+            const priorGames = priorTeam.recentGames.map((g: Record<string, unknown>) => ({ ...g, priorSeason: true }));
+            td.recentGames = [...priorGames, ...games];
+            console.log(`[Stats] Merged ${priorGames.length} prior season games for ${teamName} (${games.length} → ${td.recentGames.length})`);
+          }
+        } catch (e) {
+          console.error(`[Stats] Prior season team enrichment failed for ${teamName}:`, e);
+        }
+      }
+    }
+  }
+
   let computed;
   try {
     computed = computeAnalysis(teamData, extraction);
