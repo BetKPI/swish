@@ -324,19 +324,21 @@ export interface StandingsEntry {
 
 export async function getTeamSchedule(
   sport: string,
-  teamId: string
+  teamId: string,
+  season?: number
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
+  const seasonParam = season ? `&season=${season}` : "";
 
   // Fetch regular season (type 2) and postseason (type 3) in parallel
   const [regular, postseason] = await Promise.all([
     cachedFetch<Record<string, unknown>>(
-      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=2`,
-      TTL.SHORT
+      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=2${seasonParam}`,
+      season ? TTL.LONG : TTL.SHORT
     ),
     cachedFetch<Record<string, unknown>>(
-      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=3`,
-      TTL.SHORT
+      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=3${seasonParam}`,
+      season ? TTL.LONG : TTL.SHORT
     ),
   ]);
 
