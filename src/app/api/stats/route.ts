@@ -494,8 +494,9 @@ async function analyzeSingleBet(
     const gameLog = pData?.gameLog || pData?.gameLogs || [];
     const currentGames = Array.isArray(gameLog) ? gameLog.length : 0;
 
-    if (currentGames < 10 && currentGames > 0) {
-      console.log(`[Stats] Thin data (${currentGames} games) for ${playerName} — fetching prior season`);
+    // Always include prior season for richer data (early in season most players have few games)
+    if (currentGames < 30) {
+      console.log(`[Stats] ${currentGames} games for ${playerName} — enriching with prior season`);
       const priorYear = new Date().getFullYear() - 1;
       try {
         const sport = (extraction.sport || "").toUpperCase();

@@ -259,21 +259,36 @@ function buildGolfCharts(
       });
     }
 
-    // Year-over-year total scores
+    // Year-over-year Masters history — show scores AND to-par as a table (more useful than bar chart of raw scores)
     if (mData.history?.years && Array.isArray(mData.history.years) && mData.history.years.length > 0) {
-      const data = mData.history.years.map((y: { year: number; totalScore?: number; totalToPar?: string }) => ({
-        year: String(y.year),
-        totalScore: y.totalScore || 0,
-        toPar: y.totalToPar || "E",
-      }));
-      if (data.length >= 2) {
+      const data = mData.history.years.map((y: { year: number; totalScore?: number; totalToPar?: string; rounds?: { round: number; totalStrokes: number; toPar: string }[] }) => {
+        const rounds = y.rounds || [];
+        return {
+          year: String(y.year),
+          total: y.totalScore || 0,
+          toPar: y.totalToPar || "E",
+          rounds: rounds.length,
+          r1: rounds.find((r: { round: number }) => r.round === 1)?.totalStrokes || "-",
+          r2: rounds.find((r: { round: number }) => r.round === 2)?.totalStrokes || "-",
+          r3: rounds.find((r: { round: number }) => r.round === 3)?.totalStrokes || "-",
+          r4: rounds.find((r: { round: number }) => r.round === 4)?.totalStrokes || "-",
+        };
+      });
+      if (data.length >= 1) {
         charts.push({
-          type: "bar",
-          title: `${playerName} — Masters History`,
-          relevance: `Total scores across ${data.length} Masters appearances`,
+          type: "table",
+          title: `${playerName} — Masters History (${data.length} Appearances)`,
+          relevance: `Year-by-year performance at Augusta — scores, rounds, and to-par`,
           data,
-          xKey: "year",
-          yKeys: ["totalScore"],
+          columns: [
+            { key: "year", label: "Year" },
+            { key: "toPar", label: "To Par" },
+            { key: "total", label: "Total" },
+            { key: "r1", label: "R1" },
+            { key: "r2", label: "R2" },
+            { key: "r3", label: "R3" },
+            { key: "r4", label: "R4" },
+          ],
         });
       }
     }
