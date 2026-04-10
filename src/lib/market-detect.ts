@@ -111,9 +111,10 @@ export function detectExoticMarket(
     return "futures";
   }
 
-  // First 5 Innings (MLB) — distinct from NRFI, focuses on starters
+  // First N Innings (MLB) — "first 5 innings", "first 3 innings", "f5", "1st 7 innings", etc.
   if (s === "MLB" || s === "BASEBALL" || !s) {
-    if ((text.includes("first 5") || text.includes("f5") || text.includes("1st 5")) && text.includes("inning")) {
+    if (/(?:first|1st|f)\s*\d+\s*(?:inning|inn)/i.test(text) ||
+        /\bf[357]\b/.test(text)) {
       return "first_5_innings";
     }
   }

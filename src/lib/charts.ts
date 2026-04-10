@@ -2123,7 +2123,7 @@ function buildFuturesCharts(
   return charts;
 }
 
-// ── First 5 Innings charts ──────────────────────────────────────
+// ── First N Innings charts ──────────────────────────────────────
 
 function buildFirst5InningsCharts(
   computed: ComputedAnalysis,
@@ -2133,18 +2133,23 @@ function buildFirst5InningsCharts(
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
 
-  // F5 bets are about starting pitchers — show team scoring in early innings context
+  // Extract the actual N from the market/description (default 5)
+  const desc = (extraction.market || extraction.description || "").toLowerCase();
+  const nMatch = desc.match(/(?:first|1st|f)\s*(\d+)/i);
+  const inningsN = nMatch ? Number(nMatch[1]) : 5;
+
+  // Team comparison — relevant for any first-N bet
   if (teams.length >= 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
-      { stat: "Avg Pts For", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsFor}` },
-      { stat: "Avg Pts Against", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsAgainst}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsAgainst}` },
+      { stat: "Avg Runs For", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsFor}` },
+      { stat: "Avg Runs Against", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsAgainst}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsAgainst}` },
       { stat: "Last 5 Avg For", [shortenName(teams[0].name)]: `${teams[0].scoring.last5AvgFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.last5AvgFor}` },
     ];
     charts.push({
       type: "table",
-      title: "Team Comparison — First 5 Innings Context",
-      relevance: "F5 bets depend on starting pitchers. Lower scoring teams favor F5 unders.",
+      title: `Team Comparison — First ${inningsN} Innings Context`,
+      relevance: `First ${inningsN} bets depend on starting pitchers. Lower scoring teams favor unders.`,
       data,
       columns: [
         { key: "stat", label: "" },
@@ -2170,7 +2175,7 @@ function buildFirst5InningsCharts(
       charts.push({
         type: "table",
         title: "Starting Pitchers — First Inning Clean Rate",
-        relevance: "F5 result depends heavily on the starter. Higher clean rate = better for unders.",
+        relevance: `First ${inningsN} result depends heavily on the starter. Higher clean rate = better for unders.`,
         data: allPitchers.map((p) => ({ pitcher: p.pitcher, team: p.team, cleanRate: `${p.nrfiRate}%`, starts: p.games })),
         columns: [
           { key: "pitcher", label: "Pitcher" },
@@ -2193,7 +2198,7 @@ function buildFirst5InningsCharts(
     charts.push({
       type: "bar",
       title: `${team.name} — Game Margins (Last ${recent.length})`,
-      relevance: "Teams winning by large margins tend to lead early — relevant for F5 bets",
+      relevance: `Teams winning by large margins tend to lead early — relevant for first ${inningsN} bets`,
       data,
       xKey: "game",
       yKeys: ["margin"],
