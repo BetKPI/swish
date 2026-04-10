@@ -100,11 +100,13 @@ export function detectExoticMarket(
     }
   }
 
-  // Futures — season-long bets (division, conference, win totals, MVP, etc.)
+  // Futures — season-long bets (division, conference, win totals, MVP, playoffs, etc.)
   if (text.includes("division") || text.includes("pennant") || text.includes("conference") ||
       text.includes("win total") || text.includes("season wins") || text.includes("world series") ||
       text.includes("super bowl") || text.includes("stanley cup") || text.includes("nba champion") ||
       text.includes("mvp") || text.includes("cy young") || text.includes("rookie of the year") ||
+      text.includes("playoffs") || text.includes("make the playoffs") || text.includes("postseason") ||
+      text.includes("national league") || text.includes("american league") ||
       text.includes("al east") || text.includes("al west") || text.includes("al central") ||
       text.includes("nl east") || text.includes("nl west") || text.includes("nl central") ||
       (text.includes("win") && (text.includes("east") || text.includes("west") || text.includes("central") || text.includes("atlantic") || text.includes("pacific")))) {

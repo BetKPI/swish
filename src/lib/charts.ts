@@ -57,7 +57,7 @@ export function buildCharts(
     } else if (exotic === "combo_prop" && betType === "player_prop") {
       charts = buildComboCharts(extraction, rawData);
     } else if (exotic === "futures") {
-      charts = buildFuturesCharts(computed, extraction);
+      charts = buildFuturesCharts(computed, extraction, rawData);
     } else if (exotic === "first_5_innings") {
       charts = buildFirst5InningsCharts(computed, extraction, rawData);
     }
@@ -2029,10 +2029,85 @@ function buildPlayerPropCharts(
 
 function buildFuturesCharts(
   computed: ComputedAnalysis,
-  extraction: { teams: string[]; line?: number; market?: string; description?: string }
+  extraction: { teams: string[]; line?: number; market?: string; description?: string },
+  rawData?: Record<string, unknown>
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const standings = (rawData as any)?._standings as { current: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[]; prior: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[] } | undefined;
+
+  // 1. Current league standings — THE most important chart for futures
+  if (standings?.current?.length) {
+    // Find which league the bet teams are in
+    const betTeamNames = extraction.teams.map(t => t.toLowerCase());
+    const teamLeague = standings.current.find(s => betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase())))?.league || "";
+
+    // Filter to same league if we can identify it, otherwise show all
+    const leagueTeams = teamLeague
+      ? standings.current.filter(s => s.league === teamLeague)
+      : standings.current;
+
+    const standingsData = leagueTeams.slice(0, 15).map((s, i) => {
+      const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
+      return {
+        rank: i + 1,
+        team: isBetTeam ? `** ${s.shortName} **` : s.shortName,
+        record: `${s.wins}-${s.losses}`,
+        winPct: `${Math.round(s.winPct * 1000) / 10}%`,
+        gb: s.gamesBehind,
+        streak: s.streak,
+      };
+    });
+
+    charts.push({
+      type: "table",
+      title: `${teamLeague || "League"} Standings — Current`,
+      relevance: `Where your team sits right now in the ${teamLeague || "league"} standings`,
+      data: standingsData,
+      columns: [
+        { key: "rank", label: "#" },
+        { key: "team", label: "Team" },
+        { key: "record", label: "Record" },
+        { key: "winPct", label: "Win %" },
+        { key: "gb", label: "GB" },
+        { key: "streak", label: "Streak" },
+      ],
+    });
+  }
+
+  // 2. Last season standings — for historical context
+  if (standings?.prior?.length) {
+    const betTeamNames = extraction.teams.map(t => t.toLowerCase());
+    const teamLeague = standings.prior.find(s => betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase())))?.league || "";
+
+    const priorTeams = teamLeague
+      ? standings.prior.filter(s => s.league === teamLeague)
+      : standings.prior;
+
+    const priorData = priorTeams.slice(0, 15).map((s, i) => {
+      const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
+      return {
+        rank: i + 1,
+        team: isBetTeam ? `** ${s.shortName} **` : s.shortName,
+        record: `${s.wins}-${s.losses}`,
+        winPct: `${Math.round(s.winPct * 1000) / 10}%`,
+      };
+    });
+
+    charts.push({
+      type: "table",
+      title: `${teamLeague || "League"} Standings — Last Season`,
+      relevance: `How teams finished last year — historical context for your futures bet`,
+      data: priorData,
+      columns: [
+        { key: "rank", label: "#" },
+        { key: "team", label: "Team" },
+        { key: "record", label: "Record" },
+        { key: "winPct", label: "Win %" },
+      ],
+    });
+  }
 
   // For each team in the bet, show current season record + pace
   for (const team of teams) {

@@ -250,6 +250,78 @@ export async function getScoreboard(
   return cachedFetch(`${BASE}/${s}/${league}/scoreboard`, TTL.SHORT);
 }
 
+/**
+ * Fetch league standings for current and optionally prior season.
+ * Returns { current: [...], prior: [...] } with team records sorted by league/division.
+ */
+export async function fetchStandings(
+  sport: string,
+  includePriorSeason: boolean = true
+): Promise<{ current: StandingsEntry[]; prior: StandingsEntry[]; season: number }> {
+  const info = getLeagueInfo(sport);
+  if (!info) return { current: [], prior: [], season: new Date().getFullYear() };
+  const { sport: s, league } = info;
+  const currentYear = new Date().getFullYear();
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const parseStandings = (data: any): StandingsEntry[] => {
+    const results: StandingsEntry[] = [];
+    const groups = data?.children || [];
+    for (const group of groups) {
+      const leagueName = group.name || "";
+      // Standings can be directly on the group or in sub-children (divisions)
+      const entries = group.standings?.entries || [];
+      for (const entry of entries) {
+        const stats: Record<string, number | string> = {};
+        for (const s of (entry.stats || [])) {
+          stats[s.name] = s.displayValue ?? s.value;
+        }
+        results.push({
+          team: entry.team?.displayName || "?",
+          shortName: entry.team?.shortDisplayName || entry.team?.abbreviation || "?",
+          league: leagueName,
+          wins: Number(stats.wins) || 0,
+          losses: Number(stats.losses) || 0,
+          winPct: parseFloat(String(stats.winPercent)) || 0,
+          gamesBehind: String(stats.gamesBehind || "-"),
+          streak: String(stats.streak || "-"),
+        });
+      }
+    }
+    return results.sort((a, b) => b.winPct - a.winPct);
+  };
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const currentData: any = await cachedFetch(
+    `https://site.api.espn.com/apis/v2/sports/${s}/${league}/standings`,
+    TTL.SHORT
+  );
+  const current = parseStandings(currentData);
+
+  let prior: StandingsEntry[] = [];
+  if (includePriorSeason) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const priorData: any = await cachedFetch(
+      `https://site.api.espn.com/apis/v2/sports/${s}/${league}/standings?season=${currentYear - 1}`,
+      TTL.LONG
+    );
+    prior = parseStandings(priorData);
+  }
+
+  return { current, prior, season: currentYear };
+}
+
+export interface StandingsEntry {
+  team: string;
+  shortName: string;
+  league: string;
+  wins: number;
+  losses: number;
+  winPct: number;
+  gamesBehind: string;
+  streak: string;
+}
+
 export async function getTeamSchedule(
   sport: string,
   teamId: string

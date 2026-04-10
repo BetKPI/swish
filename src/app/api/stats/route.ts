@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
+import { fetchAllTeamData, fetchGolfLeaderboard, fetchStandings } from "@/lib/espn";
 import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring, getAugustaPars, analyzeHoleInOneHistory } from "@/lib/masters";
 import { fetchNBAData } from "@/lib/balldontlie";
 import { fetchMLBData } from "@/lib/mlbstats";
@@ -472,6 +472,14 @@ async function analyzeSingleBet(
       }
     } catch (e) {
       console.error("[Stats] NRFI enrichment failed:", e);
+    }
+  } else if (exotic === "futures") {
+    try {
+      const standings = await fetchStandings(extraction.sport || "", true);
+      (teamData as Record<string, unknown>)._standings = standings;
+      console.log(`[Stats] Standings: ${standings.current.length} current, ${standings.prior.length} prior season`);
+    } catch (e) {
+      console.error("[Stats] Standings fetch failed:", e);
     }
   } else if (exotic === "first_goal" && isNHLSport(extraction.sport || "") && extraction.players.length > 0) {
     try {
