@@ -15,6 +15,9 @@ const SPORT_ANIMATIONS: Record<string, { emoji: string; label: string }> = {
   NHL: { emoji: "\u{1F3D2}", label: "hockey" },
   Golf: { emoji: "\u26F3", label: "golf" },
   Soccer: { emoji: "\u26BD", label: "soccer" },
+  Tennis: { emoji: "\u{1F3BE}", label: "tennis" },
+  MMA: { emoji: "\u{1F94A}", label: "mma" },
+  Boxing: { emoji: "\u{1F94A}", label: "boxing" },
   NCAAB: { emoji: "\u{1F3C0}", label: "basketball" },
   NCAAF: { emoji: "\u{1F3C8}", label: "football" },
 };

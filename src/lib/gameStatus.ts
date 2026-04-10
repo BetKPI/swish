@@ -51,6 +51,9 @@ const SPORT_MAP: Record<string, { sport: string; league: string }> = {
   HOCKEY: { sport: "hockey", league: "nhl" },
   GOLF: { sport: "golf", league: "pga" },
   PGA: { sport: "golf", league: "pga" },
+  TENNIS: { sport: "tennis", league: "atp" },
+  ATP: { sport: "tennis", league: "atp" },
+  WTA: { sport: "tennis", league: "wta" },
 };
 
 // ── Main function ─────────────────────────────────────────────────
@@ -67,8 +70,8 @@ export async function checkGameStatus(
   const mapping = SPORT_MAP[key];
   if (!mapping) return null;
 
-  // Golf doesn't have head-to-head games — skip game status
-  if (mapping.sport === "golf") return null;
+  // Golf and Tennis don't use traditional team-based scoreboards
+  if (mapping.sport === "golf" || mapping.sport === "tennis") return null;
 
   // Futures/season-long bets can't be graded from a single game
   const desc = (market || "").toLowerCase();

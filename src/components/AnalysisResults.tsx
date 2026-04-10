@@ -315,6 +315,8 @@ function normalizeSport(sport: string): string {
   if (["FOOTBALL", "NCAAF"].includes(s)) return s === "FOOTBALL" ? "NFL" : "NCAAF";
   if (["BASEBALL"].includes(s)) return "MLB";
   if (["HOCKEY"].includes(s)) return "NHL";
+  if (["ATP", "WTA"].includes(s)) return "Tennis";
+  if (["UFC"].includes(s)) return "MMA";
   return sport;
 }
 
@@ -335,6 +337,9 @@ function sportColorClass(sport: string): string {
     NHL: "bg-blue-500/20 text-blue-400",
     Soccer: "bg-emerald-500/20 text-emerald-400",
     Golf: "bg-lime-500/20 text-lime-400",
+    Tennis: "bg-yellow-500/20 text-yellow-400",
+    MMA: "bg-red-500/20 text-red-400",
+    Boxing: "bg-red-500/20 text-red-400",
     NCAAB: "bg-blue-500/20 text-blue-400",
     NCAAF: "bg-amber-500/20 text-amber-400",
   };

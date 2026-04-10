@@ -42,6 +42,12 @@ const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
     "Show round-by-round scoring trend",
     "Compare recent form between these golfers",
   ],
+  TENNIS: [
+    "Show their head-to-head record",
+    "How do they perform on this surface?",
+    "Show recent match results",
+    "Compare their rankings and form",
+  ],
   DEFAULT: [
     "Show home vs away splits",
     "Show recent scoring trends",

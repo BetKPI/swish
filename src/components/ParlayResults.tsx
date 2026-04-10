@@ -16,7 +16,8 @@ interface ParlayResultsProps {
 function sportEmoji(sport: string): string {
   const map: Record<string, string> = {
     NBA: "🏀", NFL: "🏈", MLB: "⚾", NHL: "🏒",
-    Soccer: "⚽", Tennis: "🎾", MMA: "🥊", Golf: "⛳",
+    Soccer: "⚽", Tennis: "🎾", MMA: "🥊", Boxing: "🥊",
+    Golf: "⛳", NCAAB: "🏀", NCAAF: "🏈",
   };
   return map[sport] || "🏆";
 }

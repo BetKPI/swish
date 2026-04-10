@@ -269,7 +269,7 @@ export default function Home() {
               {/* Social proof / differentiator */}
               <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted">
                 <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Props &amp; parlays</span>
-                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> NFL / NBA / MLB / NHL / Golf</span>
+                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> NFL / NBA / MLB / NHL / Golf / Tennis</span>
                 <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Shareable charts</span>
               </div>
 
