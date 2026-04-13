@@ -2,7 +2,22 @@ import { NextRequest, NextResponse } from "next/server";
 import { fetchAllTeamData, fetchGolfLeaderboard, fetchStandings } from "@/lib/espn";
 import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring, getAugustaPars, analyzeHoleInOneHistory } from "@/lib/masters";
 import { fetchNBAData } from "@/lib/balldontlie";
-import { fetchMLBData } from "@/lib/mlbstats";
+import { fetchMLBData, searchPlayer, searchTeam } from "@/lib/mlbstats";
+import {
+  getTeamTwoSeasonResults,
+  getPitcherTwoSeasonLog,
+  getPitcherCareerVsOpponent,
+  getBatterTwoSeasonLog,
+  getBatterVsPitcher,
+  getMLBStandingsForSeasons,
+  tryFetchBatterExitVelocity,
+  getLastAndCurrentSeasons,
+  type MLBTeamTwoSeason,
+  type MLBPitcherTwoSeason,
+  type MLBPitcherGame,
+  type MLBBatterTwoSeason,
+  type MLBBatterVsPitcher,
+} from "@/lib/mlb-history";
 import { fetchNHLData } from "@/lib/nhlstats";
 import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
@@ -52,6 +67,196 @@ function setCachedData(key: string, data: Record<string, unknown>, source: strin
     if (oldest) dataCache.delete(oldest[0]);
   }
   dataCache.set(key, { data, source, ts: Date.now() });
+}
+
+// ── MLB history enrichment ────────────────────────────────────────
+
+interface MLBHistoryContextShape {
+  teams: Record<string, MLBTeamTwoSeason>;
+  probablePitchers: Record<string, MLBPitcherTwoSeason>;
+  pitchersByName: Record<string, MLBPitcherTwoSeason>;
+  batters: Record<string, MLBBatterTwoSeason>;
+  batterVsPitcher: Record<string, MLBBatterVsPitcher>;
+  standings: Awaited<ReturnType<typeof getMLBStandingsForSeasons>>;
+  exitVelo: Record<string, Awaited<ReturnType<typeof tryFetchBatterExitVelocity>>>;
+  pitcherCareerVsOpponent: Record<string, MLBPitcherGame[]>;
+}
+
+async function buildMLBHistoryContext(
+  extraction: BetExtraction,
+  mlbData: Record<string, unknown>,
+): Promise<MLBHistoryContextShape> {
+  const ctx: MLBHistoryContextShape = {
+    teams: {},
+    probablePitchers: {},
+    pitchersByName: {},
+    batters: {},
+    batterVsPitcher: {},
+    standings: [],
+    exitVelo: {},
+    pitcherCareerVsOpponent: {},
+  };
+
+  // 1) Teams: fetch two-season results in parallel
+  const teamFetches = extraction.teams.map(async (name) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const slot = (mlbData as any)[name];
+    let teamId: number | undefined = slot?.team?.id;
+    let teamName: string = slot?.team?.name || name;
+    if (!teamId) {
+      const found = await searchTeam(name);
+      if (found) {
+        teamId = found.id;
+        teamName = found.name;
+      }
+    }
+    if (teamId) {
+      const ts = await getTeamTwoSeasonResults(teamId, teamName);
+      ctx.teams[name] = ts;
+    }
+  });
+
+  // 2) Probable pitchers per team: already have IDs on mlbData[team].probablePitchers
+  const pitcherFetches: Promise<void>[] = [];
+  for (const teamName of extraction.teams) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const slot = (mlbData as any)[teamName];
+    const pp = slot?.probablePitchers;
+    if (!pp) continue;
+    // Identify which pitcher belongs to this team (homePitcher vs awayPitcher)
+    const teamObjName: string = slot?.team?.name || teamName;
+    const homeTeamName: string | undefined = pp.homeTeam;
+    const isHome = homeTeamName && typeof homeTeamName === "string" && homeTeamName.toLowerCase().includes(teamObjName.toLowerCase());
+    const ownPitcher = isHome ? pp.homePitcher : pp.awayPitcher;
+    if (ownPitcher?.id && ownPitcher?.fullName) {
+      pitcherFetches.push(
+        (async () => {
+          const log = await getPitcherTwoSeasonLog(ownPitcher.id, ownPitcher.fullName);
+          ctx.probablePitchers[teamName] = log;
+          ctx.pitchersByName[ownPitcher.fullName] = log;
+        })(),
+      );
+    }
+  }
+
+  // 3) Players (player props): batter or pitcher two-season logs
+  // Track each batter's current team so we can pick the correct opposing probable pitcher.
+  const batterTeamIds: Record<string, number | undefined> = {};
+  const playerFetches: Promise<void>[] = [];
+  for (const playerName of extraction.players) {
+    playerFetches.push(
+      (async () => {
+        const player = await searchPlayer(playerName);
+        if (!player) return;
+        const isPitcher = player.primaryPosition?.abbreviation === "P";
+        if (isPitcher) {
+          const log = await getPitcherTwoSeasonLog(player.id, player.fullName);
+          ctx.pitchersByName[playerName] = log;
+          return;
+        }
+        const log = await getBatterTwoSeasonLog(player.id, player.fullName);
+        ctx.batters[playerName] = log;
+        batterTeamIds[playerName] = player.currentTeam?.id;
+        ctx.exitVelo[playerName] = await tryFetchBatterExitVelocity(player.id);
+      })(),
+    );
+  }
+
+  await Promise.all([...teamFetches, ...pitcherFetches, ...playerFetches]);
+
+  // 4) Batter-vs-pitcher: resolve opposing probable pitcher by team id, then query career split.
+  // Also collect per-team probable pitcher id/name so we can query career vs opponent depth later.
+  const bvpFetches: Promise<void>[] = [];
+  interface ProbablePitcherInfo { id: number; name: string; teamId: number | undefined }
+  const probablePitchersByTeam: Record<string, ProbablePitcherInfo | null> = {};
+  for (const teamName of extraction.teams) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const slot = (mlbData as any)[teamName];
+    const pp = slot?.probablePitchers;
+    if (!pp) { probablePitchersByTeam[teamName] = null; continue; }
+    const teamObjName: string = slot?.team?.name || teamName;
+    const teamId: number | undefined = slot?.team?.id;
+    const homeTeamName: string | undefined = pp.homeTeam;
+    const isHome = homeTeamName && typeof homeTeamName === "string" && homeTeamName.toLowerCase().includes(teamObjName.toLowerCase());
+    const ownPitcher = isHome ? pp.homePitcher : pp.awayPitcher;
+    probablePitchersByTeam[teamName] = ownPitcher?.id
+      ? { id: ownPitcher.id, name: ownPitcher.fullName, teamId }
+      : null;
+  }
+
+  for (const playerName of extraction.players) {
+    const batter = ctx.batters[playerName];
+    if (!batter) continue;
+    const myTeamId = batterTeamIds[playerName];
+    let opponentPP: ProbablePitcherInfo | null = null;
+    for (const info of Object.values(probablePitchersByTeam)) {
+      if (!info) continue;
+      if (myTeamId && info.teamId && info.teamId === myTeamId) continue;
+      opponentPP = info;
+      break;
+    }
+    if (!opponentPP) continue;
+    bvpFetches.push(
+      (async () => {
+        const bvp = await getBatterVsPitcher(batter.batterId, batter.batterName, opponentPP!.id, opponentPP!.name);
+        if (bvp && bvp.pa > 0) {
+          ctx.batterVsPitcher[playerName] = bvp;
+        }
+      })(),
+    );
+  }
+
+  // 4b) Probable pitcher's career vs opposing team — pulls 6 seasons for a deeper track record.
+  for (const teamName of extraction.teams) {
+    const pp = probablePitchersByTeam[teamName];
+    if (!pp) continue;
+    const opponentTeamName = extraction.teams.find((t) => t !== teamName);
+    if (!opponentTeamName) continue;
+    const opp = ctx.teams[opponentTeamName];
+    if (!opp) continue;
+    bvpFetches.push(
+      (async () => {
+        const career = await getPitcherCareerVsOpponent(pp.id, opp.teamId, 6);
+        if (career.length > 0) {
+          ctx.pitcherCareerVsOpponent[teamName] = career;
+        }
+      })(),
+    );
+  }
+
+  // 4c) If bet is a pitcher prop, also pull the prop pitcher's career vs the other team.
+  for (const playerName of extraction.players) {
+    const pitcherTS = ctx.pitchersByName[playerName];
+    if (!pitcherTS) continue;
+    if (ctx.batters[playerName]) continue;
+    const anyTeam = extraction.teams.map((t) => ctx.teams[t]).find((t) => !!t);
+    if (!anyTeam) continue;
+    bvpFetches.push(
+      (async () => {
+        const career = await getPitcherCareerVsOpponent(pitcherTS.pitcherId, anyTeam.teamId, 6);
+        if (career.length > 0) {
+          ctx.pitcherCareerVsOpponent[playerName] = career;
+        }
+      })(),
+    );
+  }
+
+  // 5) Standings (futures only)
+  const marketLower = `${extraction.market || ""} ${extraction.description || ""}`.toLowerCase();
+  const isFuturesBet =
+    (extraction.betType as string) === "futures" ||
+    marketLower.includes("division") ||
+    marketLower.includes("pennant") ||
+    marketLower.includes("league champ") ||
+    marketLower.includes("world series");
+  if (isFuturesBet) {
+    const { last, current } = getLastAndCurrentSeasons();
+    const seasons = [last - 2, last - 1, last, current];
+    ctx.standings = await getMLBStandingsForSeasons(seasons);
+  }
+
+  await Promise.all(bvpFetches);
+  return ctx;
 }
 
 /**
@@ -123,6 +328,15 @@ async function fetchSportData(
           mlbData[team] = espnTeam;
         }
       }
+
+      // ── MLB history enrichment (two-season deterministic charts) ──
+      try {
+        const history = await buildMLBHistoryContext(extraction, mlbData);
+        (mlbData as Record<string, unknown>)._mlbHistory = history;
+      } catch (e) {
+        console.error("[MLB History] enrichment failed:", e);
+      }
+
       return { data: mlbData, source: "mlbstats+espn" };
     }
   }

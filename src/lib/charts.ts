@@ -6,7 +6,8 @@
 import type { ChartConfig } from "@/types";
 import type { ComputedAnalysis, TeamMetrics, GameResult } from "./analytics";
 import { filterAndSortCharts } from "./chart-relevance";
-import { detectExoticMarket, isGolfSport } from "./market-detect";
+import { detectExoticMarket, isGolfSport, isMLBSport } from "./market-detect";
+import { buildMLBDefaultCharts, type MLBHistoryContext } from "./mlb-history-charts";
 
 // ── Main router ────────────────────────────────────────────────────
 
@@ -67,7 +68,24 @@ export function buildCharts(
     }
   }
 
-  // Standard bet types (only if no exotic match)
+  // MLB deterministic history charts (default for MLB when history is loaded)
+  if (charts.length === 0 && isMLBSport(sport) && raw?._mlbHistory) {
+    const mlbHistory = raw._mlbHistory as MLBHistoryContext;
+    const mlbCharts = buildMLBDefaultCharts(
+      betType,
+      extraction.market,
+      extraction.description,
+      extraction.teams,
+      extraction.players,
+      extraction.line,
+      mlbHistory,
+    );
+    if (mlbCharts.length > 0) {
+      charts = mlbCharts;
+    }
+  }
+
+  // Standard bet types (only if no exotic / MLB-history match)
   if (charts.length === 0 && !isGolfSport(sport)) {
     switch (betType) {
       case "spread":
