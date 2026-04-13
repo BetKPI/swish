@@ -273,17 +273,6 @@ export default function Home() {
                 <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Shareable charts</span>
               </div>
 
-              {/* Masters Week Banner */}
-              <div className="max-w-lg mx-auto bg-emerald-900/30 border border-emerald-500/30 rounded-xl px-4 py-3">
-                <div className="flex items-center gap-2 justify-center">
-                  <span className="text-lg">&#9971;</span>
-                  <div className="text-left">
-                    <p className="text-sm font-semibold text-emerald-400">The Masters — April 7-13</p>
-                    <p className="text-xs text-emerald-400/70">Hole-by-hole history at Augusta. Upload any Masters bet.</p>
-                  </div>
-                </div>
-              </div>
-
               {/* Upload CTA */}
               <div className="max-w-lg mx-auto pt-2">
                 <div

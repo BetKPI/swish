@@ -18,6 +18,27 @@ import {
   type MLBBatterTwoSeason,
   type MLBBatterVsPitcher,
 } from "@/lib/mlb-history";
+import {
+  resolveNBATeam,
+  resolveNBAPlayer,
+  getTeamTwoSeason as getNBATeamTwoSeason,
+  getPlayerTwoSeason as getNBAPlayerTwoSeason,
+  getNBAStandingsForSeasons,
+  getCurrentAndLastNBASeasons,
+  enrichRecentQuarterScores,
+  type NBATeamTwoSeason,
+  type NBAPlayerTwoSeason,
+} from "@/lib/nba-history";
+import type { NBAHistoryContext } from "@/lib/nba-history-charts";
+import {
+  resolveNHLTeam,
+  resolveNHLPlayer,
+  getNHLTeamTwoSeason,
+  getNHLPlayerTwoSeason,
+  getNHLStandingsForRecentYears,
+  enrichNHLRecentPeriodScores,
+} from "@/lib/nhl-history";
+import type { NHLHistoryContext } from "@/lib/nhl-history-charts";
 import { fetchNHLData } from "@/lib/nhlstats";
 import { computeAnalysis } from "@/lib/analytics";
 import { buildCharts } from "@/lib/charts";
@@ -259,6 +280,108 @@ async function buildMLBHistoryContext(
   return ctx;
 }
 
+// ── NBA history enrichment ────────────────────────────────────────
+
+async function buildNBAHistoryContext(
+  extraction: BetExtraction,
+): Promise<NBAHistoryContext> {
+  const ctx: NBAHistoryContext = {
+    teams: {},
+    players: {},
+    standings: [],
+  };
+
+  const teamFetches = extraction.teams.map(async (name) => {
+    const resolved = await resolveNBATeam(name);
+    if (!resolved) return;
+    const ts = await getNBATeamTwoSeason(resolved.id, resolved.name, resolved.abbreviation);
+    ctx.teams[name] = ts;
+  });
+
+  const playerFetches = extraction.players.map(async (name) => {
+    const resolved = await resolveNBAPlayer(name);
+    if (!resolved) return;
+    const log = await getNBAPlayerTwoSeason(resolved.id, resolved.displayName);
+    ctx.players[name] = log;
+  });
+
+  await Promise.all([...teamFetches, ...playerFetches]);
+
+  // Standings only for futures bets
+  const marketLower = `${extraction.market || ""} ${extraction.description || ""}`.toLowerCase();
+  const isFuturesBet =
+    (extraction.betType as string) === "futures" ||
+    marketLower.includes("division") ||
+    marketLower.includes("conference") ||
+    marketLower.includes("champion") ||
+    marketLower.includes("finals");
+  if (isFuturesBet) {
+    const { current, last } = getCurrentAndLastNBASeasons();
+    ctx.standings = await getNBAStandingsForSeasons([last - 2, last - 1, last, current]);
+  }
+
+  // Quarter-score enrichment only for 1H / 3Q bets — expensive, so gated.
+  const isQuarterBet =
+    /\b(1h|first half|1st half|3q|3rd quarter|third quarter|first 3 quarter|1st 3 quarter)\b/.test(marketLower) ||
+    marketLower.includes("through 3");
+  if (isQuarterBet) {
+    await Promise.all(
+      Object.values(ctx.teams).map((t) => enrichRecentQuarterScores(t, 40)),
+    );
+  }
+
+  return ctx;
+}
+
+// ── NHL history enrichment ────────────────────────────────────────
+
+async function buildNHLHistoryContext(
+  extraction: BetExtraction,
+): Promise<NHLHistoryContext> {
+  const ctx: NHLHistoryContext = { teams: {}, players: {}, standings: [] };
+
+  const teamFetches = extraction.teams.map(async (name) => {
+    const resolved = resolveNHLTeam(name);
+    if (!resolved) return;
+    const ts = await getNHLTeamTwoSeason(resolved.abbrev, resolved.name);
+    ctx.teams[name] = ts;
+  });
+
+  const playerFetches = extraction.players.map(async (name) => {
+    const resolved = await resolveNHLPlayer(name);
+    if (!resolved) return;
+    const log = await getNHLPlayerTwoSeason(resolved.id, resolved.name, resolved.position);
+    ctx.players[name] = log;
+  });
+
+  await Promise.all([...teamFetches, ...playerFetches]);
+
+  const marketLower = `${extraction.market || ""} ${extraction.description || ""}`.toLowerCase();
+  const isFuturesBet =
+    (extraction.betType as string) === "futures" ||
+    marketLower.includes("division") ||
+    marketLower.includes("conference") ||
+    marketLower.includes("stanley cup") ||
+    marketLower.includes("champion") ||
+    marketLower.includes("presidents");
+  if (isFuturesBet) {
+    ctx.standings = await getNHLStandingsForRecentYears();
+  }
+
+  const isFirstPeriod =
+    marketLower.includes("1st period") ||
+    marketLower.includes("first period") ||
+    /\b1p\b/.test(marketLower) ||
+    marketLower.includes("period 1");
+  if (isFirstPeriod) {
+    await Promise.all(
+      Object.values(ctx.teams).map((t) => enrichNHLRecentPeriodScores(t, 30)),
+    );
+  }
+
+  return ctx;
+}
+
 /**
  * Route data fetching to the best API for each sport.
  */
@@ -371,6 +494,15 @@ async function fetchSportData(
           nhlData[team] = espnTeam;
         }
       }
+
+      // ── NHL history enrichment (two-season deterministic charts) ──
+      try {
+        const history = await buildNHLHistoryContext(extraction);
+        (nhlData as Record<string, unknown>)._nhlHistory = history;
+      } catch (e) {
+        console.error("[NHL History] enrichment failed:", e);
+      }
+
       return { data: nhlData, source: "nhlstats+espn" };
     }
   }
@@ -512,6 +644,23 @@ async function fetchSportData(
       }
     }
     return { data: tennisData, source: "espn-tennis" };
+  }
+
+  // NBA: ESPN team/player data + two-season history enrichment
+  if (sport === "NBA" || sport === "BASKETBALL") {
+    console.log("[Stats] Using ESPN for NBA + history enrichment");
+    const nbaEspn = await fetchAllTeamData(
+      extraction.sport,
+      extraction.teams,
+      extraction.betType === "player_prop" ? extraction.players : undefined,
+    );
+    try {
+      const history = await buildNBAHistoryContext(extraction);
+      (nbaEspn as Record<string, unknown>)._nbaHistory = history;
+    } catch (e) {
+      console.error("[NBA History] enrichment failed:", e);
+    }
+    return { data: nbaEspn, source: "espn+nba-history" };
   }
 
   // Default: ESPN for NFL, college, soccer, etc.

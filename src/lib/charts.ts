@@ -6,8 +6,10 @@
 import type { ChartConfig } from "@/types";
 import type { ComputedAnalysis, TeamMetrics, GameResult } from "./analytics";
 import { filterAndSortCharts } from "./chart-relevance";
-import { detectExoticMarket, isGolfSport, isMLBSport } from "./market-detect";
+import { detectExoticMarket, isGolfSport, isMLBSport, isNBASport, isNHLSport } from "./market-detect";
 import { buildMLBDefaultCharts, type MLBHistoryContext } from "./mlb-history-charts";
+import { buildNBADefaultCharts, type NBAHistoryContext } from "./nba-history-charts";
+import { buildNHLDefaultCharts, type NHLHistoryContext } from "./nhl-history-charts";
 
 // ── Main router ────────────────────────────────────────────────────
 
@@ -85,7 +87,41 @@ export function buildCharts(
     }
   }
 
-  // Standard bet types (only if no exotic / MLB-history match)
+  // NBA deterministic history charts (default for NBA when history is loaded)
+  if (charts.length === 0 && isNBASport(sport) && raw?._nbaHistory) {
+    const nbaHistory = raw._nbaHistory as NBAHistoryContext;
+    const nbaCharts = buildNBADefaultCharts(
+      betType,
+      extraction.market,
+      extraction.description,
+      extraction.teams,
+      extraction.players,
+      extraction.line,
+      nbaHistory,
+    );
+    if (nbaCharts.length > 0) {
+      charts = nbaCharts;
+    }
+  }
+
+  // NHL deterministic history charts (default for NHL when history is loaded)
+  if (charts.length === 0 && isNHLSport(sport) && raw?._nhlHistory) {
+    const nhlHistory = raw._nhlHistory as NHLHistoryContext;
+    const nhlCharts = buildNHLDefaultCharts(
+      betType,
+      extraction.market,
+      extraction.description,
+      extraction.teams,
+      extraction.players,
+      extraction.line,
+      nhlHistory,
+    );
+    if (nhlCharts.length > 0) {
+      charts = nhlCharts;
+    }
+  }
+
+  // Standard bet types (only if no exotic / MLB / NBA history match)
   if (charts.length === 0 && !isGolfSport(sport)) {
     switch (betType) {
       case "spread":
@@ -137,6 +173,20 @@ function validateChart(chart: ChartConfig): boolean {
 
 // ── Tennis charts ─────────────────────────────────────────────────
 
+function detectTennisContext(market: string, description: string): { surface: string | null; slam: string | null } {
+  const m = `${market} ${description}`.toLowerCase();
+  let surface: string | null = null;
+  if (m.includes("clay") || m.includes("roland") || m.includes("french open")) surface = "Clay";
+  else if (m.includes("grass") || m.includes("wimbledon")) surface = "Grass";
+  else if (m.includes("hard") || m.includes("us open") || m.includes("australian open") || m.includes("aus open")) surface = "Hard";
+  let slam: string | null = null;
+  if (m.includes("wimbledon")) slam = "Wimbledon";
+  else if (m.includes("roland") || m.includes("french open")) slam = "Roland Garros";
+  else if (m.includes("us open")) slam = "US Open";
+  else if (m.includes("australian open") || m.includes("aus open")) slam = "Australian Open";
+  return { surface, slam };
+}
+
 function buildTennisCharts(
   extraction: { players: string[]; teams: string[]; line?: number; market?: string; description?: string },
   rawData: Record<string, unknown>
@@ -146,6 +196,7 @@ function buildTennisCharts(
   const raw = rawData as any;
   const rankings: { rank: number; prevRank: number; name: string; points: number; trend: string }[] = raw._rankings || [];
   const tournamentKeywords = ["open", "masters", "wimbledon", "roland", "championship", "finals", "cup"];
+  const { surface: ctxSurface, slam: ctxSlam } = detectTennisContext(extraction.market || "", extraction.description || "");
   const allPlayersRaw = [...extraction.players, ...extraction.teams]
     .filter(p => p && !tournamentKeywords.some(k => p.toLowerCase().includes(k)));
   // Deduplicate players (teams and players arrays often overlap for tennis)
@@ -158,6 +209,50 @@ function buildTennisCharts(
   });
   const playerProfiles = raw._players || {};
   const h2h = raw._h2h as { player1: string; player2: string; player1Wins: number; player2Wins: number; matches: { date: string; tournament: string; round: string; opponent: string; won: boolean; score: string; surface: string }[] } | undefined;
+
+  // 0. Two-year win% per player (split by season)
+  {
+    const yearSummary: { player: string; season: string; record: string; winPct: number }[] = [];
+    for (const name of allPlayers) {
+      const profile = playerProfiles[name] as {
+        name: string;
+        matches: { date: string; won: boolean; surface: string; tournament: string }[];
+      } | undefined;
+      if (!profile || !profile.matches?.length) continue;
+      const by: Record<string, { w: number; l: number }> = {};
+      for (const m of profile.matches) {
+        const yr = (m.date || "").slice(0, 4) || "?";
+        if (!by[yr]) by[yr] = { w: 0, l: 0 };
+        if (m.won) by[yr].w++;
+        else by[yr].l++;
+      }
+      Object.entries(by)
+        .sort(([a], [b]) => a.localeCompare(b))
+        .forEach(([yr, rec]) => {
+          const total = rec.w + rec.l;
+          yearSummary.push({
+            player: profile.name,
+            season: yr,
+            record: `${rec.w}-${rec.l}`,
+            winPct: total > 0 ? Math.round((rec.w / total) * 100) : 0,
+          });
+        });
+    }
+    if (yearSummary.length > 0) {
+      charts.push({
+        type: "table",
+        title: "Win % by season — both players",
+        relevance: "Year-by-year win rate across the last two seasons for each player.",
+        data: yearSummary,
+        columns: [
+          { key: "player", label: "Player" },
+          { key: "season", label: "Season" },
+          { key: "record", label: "Record" },
+          { key: "winPct", label: "Win %" },
+        ],
+      });
+    }
+  }
 
   // 1. H2H record — the most important chart for match bets
   if (h2h && h2h.matches.length > 0) {
@@ -182,6 +277,95 @@ function buildTennisCharts(
         { key: "score", label: "Score" },
       ],
     });
+  }
+
+  // 1b. H2H filtered to current surface
+  if (h2h && h2h.matches.length > 0 && ctxSurface) {
+    const sameSurface = h2h.matches.filter((m) => (m.surface || "").startsWith(ctxSurface));
+    if (sameSurface.length > 0) {
+      const p1Wins = sameSurface.filter((m) => m.won).length;
+      const p2Wins = sameSurface.length - p1Wins;
+      charts.push({
+        type: "table",
+        title: `H2H on ${ctxSurface} — ${h2h.player1} vs ${h2h.player2} (${p1Wins}-${p2Wins})`,
+        relevance: `Only their meetings on ${ctxSurface} — surface-specific track record matters.`,
+        data: sameSurface.map((m) => ({
+          date: m.date,
+          tournament: m.tournament.length > 25 ? m.tournament.slice(0, 22) + "..." : m.tournament,
+          round: m.round,
+          winner: m.won ? h2h.player1 : h2h.player2,
+          score: m.score.length > 20 ? m.score.slice(0, 18) + "..." : m.score,
+        })),
+        columns: [
+          { key: "date", label: "Date" },
+          { key: "tournament", label: "Tournament" },
+          { key: "round", label: "Round" },
+          { key: "winner", label: "Winner" },
+          { key: "score", label: "Score" },
+        ],
+      });
+    }
+  }
+
+  // 1c. Grand Slam specific view — H2H and individual records at this slam
+  if (ctxSlam) {
+    const slamLower = ctxSlam.toLowerCase();
+    // H2H at this slam
+    if (h2h && h2h.matches.length > 0) {
+      const slamH2H = h2h.matches.filter((m) => m.tournament.toLowerCase().includes(slamLower));
+      if (slamH2H.length > 0) {
+        const p1 = slamH2H.filter((m) => m.won).length;
+        const p2 = slamH2H.length - p1;
+        charts.push({
+          type: "table",
+          title: `${ctxSlam} H2H — ${h2h.player1} vs ${h2h.player2} (${p1}-${p2})`,
+          relevance: `Head-to-head meetings at ${ctxSlam}.`,
+          data: slamH2H.map((m) => ({
+            date: m.date,
+            round: m.round,
+            winner: m.won ? h2h.player1 : h2h.player2,
+            score: m.score.length > 20 ? m.score.slice(0, 18) + "..." : m.score,
+          })),
+          columns: [
+            { key: "date", label: "Date" },
+            { key: "round", label: "Round" },
+            { key: "winner", label: "Winner" },
+            { key: "score", label: "Score" },
+          ],
+        });
+      }
+    }
+    // Per-player record at this slam
+    for (const name of allPlayers) {
+      const profile = playerProfiles[name] as {
+        name: string;
+        matches: { date: string; won: boolean; tournament: string; round: string; opponent: string; score: string }[];
+      } | undefined;
+      if (!profile || !profile.matches?.length) continue;
+      const slamMatches = profile.matches.filter((m) => m.tournament.toLowerCase().includes(slamLower));
+      if (slamMatches.length === 0) continue;
+      const w = slamMatches.filter((m) => m.won).length;
+      const l = slamMatches.length - w;
+      charts.push({
+        type: "table",
+        title: `${profile.name} at ${ctxSlam} (${w}-${l})`,
+        relevance: `Every match ${profile.name} has played at ${ctxSlam} in the last two seasons.`,
+        data: slamMatches.map((m) => ({
+          date: m.date,
+          round: m.round,
+          opponent: m.opponent,
+          result: m.won ? "W" : "L",
+          score: m.score.length > 15 ? m.score.slice(0, 13) + "..." : m.score,
+        })),
+        columns: [
+          { key: "date", label: "Date" },
+          { key: "round", label: "Rd" },
+          { key: "opponent", label: "Opponent" },
+          { key: "result", label: "W/L" },
+          { key: "score", label: "Score" },
+        ],
+      });
+    }
   }
 
   // 2. Player ranking comparison
