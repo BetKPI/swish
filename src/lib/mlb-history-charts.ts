@@ -212,6 +212,172 @@ export function buildMLBPitcherHistoryChart(
   };
 }
 
+// ── Pitcher season summary (W-L, ERA, K/9) ────────────────────────
+
+export function buildMLBPitcherSeasonRecord(
+  home: MLBPitcherTwoSeason | undefined,
+  away: MLBPitcherTwoSeason | undefined,
+): ChartConfig | null {
+  const pitchers = [home, away].filter((p): p is MLBPitcherTwoSeason => !!p);
+  if (pitchers.length === 0) return null;
+
+  type Row = { pitcher: string; season: string; gs: number; record: string; era: string; kPer9: string };
+  const rows: Row[] = [];
+  for (const p of pitchers) {
+    const seasons: Array<{ label: string; games: MLBPitcherGame[] }> = [
+      { label: `${p.lastSeasonYear}`, games: p.lastSeason },
+      { label: `${p.currentSeasonYear}`, games: p.currentSeason },
+    ];
+    for (const s of seasons) {
+      if (s.games.length === 0) continue;
+      const w = s.games.filter((g) => g.win).length;
+      const l = s.games.filter((g) => g.loss).length;
+      let ip = 0;
+      let er = 0;
+      let k = 0;
+      for (const g of s.games) {
+        ip += g.ip;
+        er += g.er;
+        k += g.k;
+      }
+      const era = ip > 0 ? ((er / ip) * 9).toFixed(2) : "—";
+      const kPer9 = ip > 0 ? ((k / ip) * 9).toFixed(1) : "—";
+      rows.push({
+        pitcher: p.pitcherName,
+        season: s.label,
+        gs: s.games.length,
+        record: `${w}-${l}`,
+        era,
+        kPer9,
+      });
+    }
+  }
+  if (rows.length === 0) return null;
+
+  const heading =
+    pitchers.length === 2
+      ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} — Season W-L, ERA, K/9`
+      : `${pitchers[0].pitcherName} — Season W-L, ERA, K/9`;
+
+  return {
+    type: "table",
+    title: heading,
+    relevance:
+      pitchers.length === 2
+        ? "Both probable pitchers' season records side by side — wins/losses, ERA, and strikeouts per nine."
+        : "Probable pitcher's season record, ERA, and strikeouts per nine.",
+    data: rows,
+    columns: [
+      { key: "pitcher", label: "Pitcher" },
+      { key: "season", label: "Season" },
+      { key: "gs", label: "GS" },
+      { key: "record", label: "W-L" },
+      { key: "era", label: "ERA" },
+      { key: "kPer9", label: "K/9" },
+    ],
+  };
+}
+
+// ── Pitcher matchup — recent starts side by side ──────────────────
+
+export function buildMLBPitcherComparisonTable(
+  home: MLBPitcherTwoSeason | undefined,
+  away: MLBPitcherTwoSeason | undefined,
+  perPitcher: number = 6,
+): ChartConfig | null {
+  const pitchers = [home, away].filter((p): p is MLBPitcherTwoSeason => !!p);
+  if (pitchers.length === 0) return null;
+
+  const data: Record<string, unknown>[] = [];
+  for (const p of pitchers) {
+    // Most recent `perPitcher` starts across both seasons.
+    const all = [...p.lastSeason, ...p.currentSeason]
+      .sort((a, b) => b.date.localeCompare(a.date))
+      .slice(0, perPitcher)
+      .sort((a, b) => a.date.localeCompare(b.date));
+    for (const g of all) {
+      const result = g.win ? "W" : g.loss ? "L" : "ND";
+      data.push({
+        pitcher: p.pitcherName,
+        date: g.date.slice(5, 10),
+        opp: shortName(g.opponent),
+        ip: round1(g.ip),
+        h: g.h,
+        er: g.er,
+        k: g.k,
+        bb: g.bb,
+        result,
+      });
+    }
+  }
+  if (data.length === 0) return null;
+
+  return {
+    type: "table",
+    title:
+      pitchers.length === 2
+        ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} — Recent Starts`
+        : `${pitchers[0].pitcherName} — Recent Starts`,
+    relevance:
+      pitchers.length === 2
+        ? `Side-by-side last ${perPitcher} starts for both probable pitchers. Decision column: W, L, or ND (no decision).`
+        : `Last ${perPitcher} starts. Decision column: W, L, or ND (no decision).`,
+    data,
+    columns: [
+      { key: "pitcher", label: "Pitcher" },
+      { key: "date", label: "Date" },
+      { key: "opp", label: "Opp" },
+      { key: "ip", label: "IP" },
+      { key: "h", label: "H" },
+      { key: "er", label: "ER" },
+      { key: "k", label: "K" },
+      { key: "bb", label: "BB" },
+      { key: "result", label: "Dec" },
+    ],
+  };
+}
+
+// ── Team season record summary ───────────────────────────────────
+
+export function buildMLBTeamRecordTable(team: MLBTeamTwoSeason): ChartConfig | null {
+  const last = team.lastSeason;
+  const current = team.currentSeason;
+  if (last.length + current.length === 0) return null;
+
+  function summarize(games: MLBTeamGame[], label: string) {
+    const w = games.filter((g) => g.won).length;
+    const l = games.length - w;
+    const winPct = games.length > 0 ? ((w / games.length) * 100).toFixed(1) : "—";
+    const runDiff =
+      games.length > 0
+        ? round1(
+            games.reduce((s, g) => s + g.margin, 0) / games.length,
+          )
+        : 0;
+    return { period: label, record: `${w}-${l}`, winPct: `${winPct}%`, runDiff };
+  }
+
+  const rows: Record<string, unknown>[] = [];
+  if (last.length > 0) rows.push(summarize(last, `${team.lastSeasonYear}`));
+  if (current.length > 0) {
+    rows.push(summarize(current, `${team.currentSeasonYear} YTD`));
+    rows.push(summarize(current.slice(-10), "Last 10"));
+  }
+
+  return {
+    type: "table",
+    title: `${team.teamName} — Record & Win %`,
+    relevance: "Season and recent win percentage alongside the run-differential chart.",
+    data: rows,
+    columns: [
+      { key: "period", label: "Period" },
+      { key: "record", label: "Record" },
+      { key: "winPct", label: "Win %" },
+      { key: "runDiff", label: "Run Diff/G" },
+    ],
+  };
+}
+
 // ── Pitcher vs opponent ────────────────────────────────────────────
 
 export function buildMLBPitcherVsOpponentTable(
@@ -672,23 +838,22 @@ export function buildMLBDefaultCharts(
     if (!team) continue;
     const chart = buildMLBTeamHistoryChart(team, marketType, line);
     if (chart) out.push(chart);
+    const rec = buildMLBTeamRecordTable(team);
+    if (rec) out.push(rec);
   }
 
-  for (const teamName of teams) {
-    const p = history.probablePitchers[teamName];
-    if (!p) continue;
-    const focus: "era" | "strikeouts" | "innings" = marketType === "total" ? "era" : "era";
-    const c = buildMLBPitcherHistoryChart(p, focus);
-    if (c) out.push(c);
-    const opponentName = teams.find((t) => t !== teamName);
-    if (opponentName) {
-      const opp = history.teams[opponentName];
-      if (opp) {
-        const career = history.pitcherCareerVsOpponent[teamName];
-        const vs = buildMLBPitcherVsOpponentTable(p, opp.teamId, opp.teamName, career);
-        if (vs) out.push(vs);
-      }
-    }
+  // Both probable pitchers compared side by side — replaces the old per-team
+  // ERA chart and pitcher-vs-opponent-team table which users said felt wrong
+  // ("Yamamoto vs Mets" when they really wanted pitcher-vs-pitcher).
+  const homeTeamName = teams[0];
+  const awayTeamName = teams[1];
+  const homePitcher = homeTeamName ? history.probablePitchers[homeTeamName] : undefined;
+  const awayPitcher = awayTeamName ? history.probablePitchers[awayTeamName] : undefined;
+  if (homePitcher || awayPitcher) {
+    const record = buildMLBPitcherSeasonRecord(homePitcher, awayPitcher);
+    if (record) out.push(record);
+    const comparison = buildMLBPitcherComparisonTable(homePitcher, awayPitcher, 6);
+    if (comparison) out.push(comparison);
   }
 
   return out;
