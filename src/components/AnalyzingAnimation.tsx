@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 
 interface AnalyzingAnimationProps {
   sport?: string;
+  // For parlays spanning multiple sports, pass the full list and the icon will cycle.
+  sports?: string[];
   statusMsg: string;
   isParlay?: boolean;
 }
@@ -32,10 +34,37 @@ const TIPS = [
   "We check opponent defensive stats for matchup context",
 ];
 
-export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: AnalyzingAnimationProps) {
+export default function AnalyzingAnimation({ sport, sports, statusMsg, isParlay }: AnalyzingAnimationProps) {
   const [tipIndex, setTipIndex] = useState(0);
   const [dots, setDots] = useState(0);
   const [step, setStep] = useState(0);
+  const [sportIdx, setSportIdx] = useState(0);
+
+  // Build the list of unique sports to cycle through. Falls back to single
+  // `sport` if `sports` isn't provided or is empty.
+  const sportList = (() => {
+    const raw = (sports && sports.length > 0 ? sports : sport ? [sport] : [])
+      .map((s) => s || "")
+      .filter((s) => s.length > 0);
+    const seen = new Set<string>();
+    const out: string[] = [];
+    for (const s of raw) {
+      const key = s.toUpperCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      out.push(s);
+    }
+    return out;
+  })();
+
+  // Cycle the sport emoji every 1.2s when more than one sport is present.
+  useEffect(() => {
+    if (sportList.length <= 1) return;
+    const interval = setInterval(() => {
+      setSportIdx((prev) => (prev + 1) % sportList.length);
+    }, 1200);
+    return () => clearInterval(interval);
+  }, [sportList.length]);
 
   // Progress steps on a timer — gives real feeling of progression
   useEffect(() => {
@@ -75,7 +104,8 @@ export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: Analy
     return () => clearInterval(interval);
   }, []);
 
-  const anim = sport ? SPORT_ANIMATIONS[sport] || SPORT_ANIMATIONS.NBA : null;
+  const activeSport = sportList[sportIdx] || sport;
+  const anim = activeSport ? SPORT_ANIMATIONS[activeSport] || SPORT_ANIMATIONS.NBA : null;
 
   return (
     <div className="max-w-md mx-auto px-4 pt-16 sm:pt-24 text-center space-y-8">
@@ -84,9 +114,14 @@ export default function AnalyzingAnimation({ sport, statusMsg, isParlay }: Analy
         {/* Outer ring — spinning */}
         <div className="absolute inset-0 rounded-full border-4 border-accent/20 border-t-accent animate-spin" style={{ animationDuration: "1.5s" }} />
 
-        {/* Inner content — bouncing emoji */}
+        {/* Inner content — bouncing emoji (remounts on sport swap so the
+             bounce restarts, giving a clear visual for each cycle) */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-5xl animate-bounce" style={{ animationDuration: "1s" }}>
+          <span
+            key={activeSport || "default"}
+            className="text-5xl animate-bounce"
+            style={{ animationDuration: "1s" }}
+          >
             {anim?.emoji || "\u{1F3C6}"}
           </span>
         </div>

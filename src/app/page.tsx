@@ -382,6 +382,11 @@ export default function Home() {
       {state === "analyzing" && (
         <AnalyzingAnimation
           sport={extraction?.sport}
+          sports={
+            extraction?.betType === "parlay" && extraction?.legs && extraction.legs.length > 0
+              ? extraction.legs.map((l) => l.sport).filter((s): s is string => !!s)
+              : undefined
+          }
           statusMsg={statusMsg}
           isParlay={extraction?.betType === "parlay"}
         />
