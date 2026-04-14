@@ -605,7 +605,18 @@ async function fetchSportData(
     const allPlayers = [...extraction.players, ...extraction.teams].filter(Boolean);
     // Filter out tournament names from player list
     const tournamentKeywords = ["open", "masters", "wimbledon", "roland", "championship", "finals", "cup"];
-    const realPlayers = allPlayers.filter(p => !tournamentKeywords.some(k => p.toLowerCase().includes(k)));
+    // Dedupe case-insensitively so parlay legs that inherit parent teams don't
+    // end up with the same player twice (which made H2H queries resolve to
+    // a player vs himself).
+    const seenPlayerKeys = new Set<string>();
+    const realPlayers = allPlayers
+      .filter((p) => !tournamentKeywords.some((k) => p.toLowerCase().includes(k)))
+      .filter((p) => {
+        const key = p.toLowerCase().trim();
+        if (!key || seenPlayerKeys.has(key)) return false;
+        seenPlayerKeys.add(key);
+        return true;
+      });
 
     // Fetch match history for each player (limit to 2 to stay within time budget)
     const playerProfiles: Record<string, unknown> = {};

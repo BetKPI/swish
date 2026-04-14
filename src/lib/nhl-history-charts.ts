@@ -27,6 +27,24 @@ function splitBySeason<T extends { season: string }>(arr: T[], last: string, cur
   };
 }
 
+function round1(n: number): number {
+  return Math.round(n * 10) / 10;
+}
+
+function rollingMean(values: number[], window: number): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < values.length; i++) {
+    const start = Math.max(0, i - window + 1);
+    const slice = values.slice(start, i + 1);
+    out.push(round1(slice.reduce((a, b) => a + b, 0) / slice.length));
+  }
+  return out;
+}
+
+function seasonLabelFromCode(code: string): string {
+  return `${code.slice(2, 4)}-${code.slice(6)}`;
+}
+
 // ── Team history (spread / moneyline / total) ────────────────────
 
 export function buildNHLTeamHistoryChart(
@@ -36,39 +54,67 @@ export function buildNHLTeamHistoryChart(
 ): ChartConfig | null {
   if (team.games.length === 0) return null;
   const { last, current } = splitBySeason(team.games, team.lastSeason, team.currentSeason);
+
+  const pick = (g: NHLTeamGame): number => (marketType === "total" ? g.total : g.margin);
+  const lastRaw = last.map(pick);
+  const currRaw = current.map(pick);
+  const lastAvg = rollingMean(lastRaw, 10);
+  const currAvg = rollingMean(currRaw, 10);
+
+  const maxLen = Math.max(lastAvg.length, currAvg.length);
   const rows: Record<string, unknown>[] = [];
-  const push = (g: NHLTeamGame, key: "last" | "current") => {
-    const row: Record<string, unknown> = {
-      date: shortDate(g.date),
-      opponent: g.opponent,
-      home: g.home ? "vs" : "@",
-      result: g.won ? "W" : "L",
-      score: `${g.teamScore}-${g.opponentScore}`,
-    };
-    if (marketType === "total") {
-      row[key === "last" ? "lastSeasonGoals" : "currentSeasonGoals"] = g.total;
-      if (line != null) row.line = line;
-    } else {
-      row[key === "last" ? "lastSeasonMargin" : "currentSeasonMargin"] = g.margin;
-      if (line != null) row.line = -line;
-    }
+  for (let i = 0; i < maxLen; i++) {
+    const row: Record<string, unknown> = { game: `G${i + 1}` };
+    if (i < lastAvg.length) row.lastSeason = lastAvg[i];
+    if (i < currAvg.length) row.currentSeason = currAvg[i];
+    if (line != null) row.line = marketType === "spread" ? -line : line;
     rows.push(row);
-  };
-  for (const g of last) push(g, "last");
-  for (const g of current) push(g, "current");
+  }
+  const yKeys = line != null ? ["lastSeason", "currentSeason", "line"] : ["lastSeason", "currentSeason"];
 
-  const yKeys =
-    marketType === "total"
-      ? ["lastSeasonGoals", "currentSeasonGoals", ...(line != null ? ["line"] : [])]
-      : ["lastSeasonMargin", "currentSeasonMargin", ...(line != null ? ["line"] : [])];
+  const lastLabel = seasonLabelFromCode(team.lastSeason);
+  const currLabel = seasonLabelFromCode(team.currentSeason);
 
-  const label = marketType === "total" ? "total goals" : "goal differential";
+  if (marketType === "total") {
+    const threshold = line ?? 0;
+    const overs = [...lastRaw, ...currRaw].filter((v) => v > threshold).length;
+    const curOvers = currRaw.filter((v) => v > threshold).length;
+    return {
+      type: "line",
+      title: `${team.teamName} — Total Goals (10-game rolling avg)`,
+      relevance:
+        line != null
+          ? `Over ${line} in ${overs} of ${lastRaw.length + currRaw.length} games (${curOvers} of ${currRaw.length} this season). Smoothed across ${lastLabel} and ${currLabel}.`
+          : `Smoothed total-goals trend across ${lastLabel} and ${currLabel}.`,
+      data: rows,
+      xKey: "game",
+      yKeys,
+    };
+  }
+  if (marketType === "moneyline") {
+    const lastW = last.filter((g) => g.won).length;
+    const curW = current.filter((g) => g.won).length;
+    return {
+      type: "line",
+      title: `${team.teamName} — Goal Differential (10-game rolling avg)`,
+      relevance: `Last season ${lastW}-${last.length - lastW}, this season ${curW}-${current.length - curW}. Above zero = winning more than losing.`,
+      data: rows,
+      xKey: "game",
+      yKeys: ["lastSeason", "currentSeason"],
+    };
+  }
+  const threshold = line ?? 0;
+  const covers = [...lastRaw, ...currRaw].filter((v) => v > -threshold).length;
+  const thisCovers = currRaw.filter((v) => v > -threshold).length;
   return {
     type: "line",
-    title: `${team.teamName} — ${label} (${team.lastSeason.slice(2, 4)}-${team.lastSeason.slice(6)} & ${team.currentSeason.slice(2, 4)}-${team.currentSeason.slice(6)})`,
-    relevance: `Game-by-game ${label} across both seasons${line != null ? ` vs the ${line} line` : ""}.`,
+    title: `${team.teamName} — Margin vs Spread (10-game rolling avg)`,
+    relevance:
+      line != null
+        ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${lastRaw.length + currRaw.length} games (${thisCovers} of ${currRaw.length} this season).`
+        : `Smoothed margin trend across ${lastLabel} and ${currLabel}.`,
     data: rows,
-    xKey: "date",
+    xKey: "game",
     yKeys,
   };
 }

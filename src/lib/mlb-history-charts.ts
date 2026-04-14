@@ -48,6 +48,22 @@ function pct(n: number, d: number): number {
   return Math.round((n / d) * 100);
 }
 
+/**
+ * Centered-ish rolling mean. Uses a trailing window so each point reflects
+ * "last N games up to here" — the shape people expect from a smoothed
+ * performance line. Window shrinks at the start so early points aren't empty.
+ */
+function rollingMean(values: number[], window: number): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < values.length; i++) {
+    const start = Math.max(0, i - window + 1);
+    const slice = values.slice(start, i + 1);
+    const sum = slice.reduce((a, b) => a + b, 0);
+    out.push(round1(sum / slice.length));
+  }
+  return out;
+}
+
 // ── Team history ───────────────────────────────────────────────────
 
 export function buildMLBTeamHistoryChart(
@@ -58,82 +74,80 @@ export function buildMLBTeamHistoryChart(
   const total = team.lastSeason.length + team.currentSeason.length;
   if (total < 10) return null;
 
+  // Pull per-game values per season, then smooth with a 10-game rolling mean
+  // so users see a trend instead of a sawtooth of single-game results.
+  const pick = (g: MLBTeamGame): number =>
+    marketType === "total" ? g.totalRuns : g.margin;
+  const lastRaw = team.lastSeason.map(pick);
+  const currRaw = team.currentSeason.map(pick);
+  const lastAvg = rollingMean(lastRaw, 10);
+  const currAvg = rollingMean(currRaw, 10);
+
+  // Align both seasons on a shared "game number within season" x-axis so
+  // the two overlay cleanly instead of being strung end-to-end.
+  const maxLen = Math.max(lastAvg.length, currAvg.length);
   const rows: Record<string, unknown>[] = [];
-  const addRow = (g: MLBTeamGame, isCurrent: boolean) => {
-    const label = fmtGame(g.date, g.opponent, g.isHome);
-    const row: Record<string, unknown> = { game: label };
-    if (marketType === "total") {
-      row.lastSeasonTotal = isCurrent ? null : g.totalRuns;
-      row.currentSeasonTotal = isCurrent ? g.totalRuns : null;
-      if (line !== undefined) row.line = line;
-    } else {
-      row.lastSeasonMargin = isCurrent ? null : g.margin;
-      row.currentSeasonMargin = isCurrent ? g.margin : null;
-      if (marketType === "spread" && line !== undefined) row.line = -line;
+  for (let i = 0; i < maxLen; i++) {
+    const row: Record<string, unknown> = { game: `G${i + 1}` };
+    if (i < lastAvg.length) row.lastSeason = lastAvg[i];
+    if (i < currAvg.length) row.currentSeason = currAvg[i];
+    if (line !== undefined) {
+      row.line = marketType === "spread" ? -line : line;
     }
     rows.push(row);
-  };
+  }
 
-  for (const g of team.lastSeason) addRow(g, false);
-  for (const g of team.currentSeason) addRow(g, true);
+  const yKeys =
+    line !== undefined
+      ? ["lastSeason", "currentSeason", "line"]
+      : ["lastSeason", "currentSeason"];
 
   if (marketType === "total") {
     const threshold = line ?? 0;
-    const overs = [...team.lastSeason, ...team.currentSeason].filter(
-      (g) => g.totalRuns > threshold,
-    ).length;
-    const curOvers = team.currentSeason.filter((g) => g.totalRuns > threshold).length;
+    const overs = [...lastRaw, ...currRaw].filter((v) => v > threshold).length;
+    const curOvers = currRaw.filter((v) => v > threshold).length;
     return {
       type: "line",
-      title: `${team.teamName} — Game Totals History`,
+      title: `${team.teamName} — Total Runs (10-game rolling avg)`,
       relevance:
         line !== undefined
-          ? `Over ${line} in ${overs}/${total} games (${curOvers}/${team.currentSeason.length} this season)`
-          : `${total} games across ${team.lastSeasonYear}-${team.currentSeasonYear}`,
+          ? `Over ${line} in ${overs} of ${total} games (${curOvers} of ${currRaw.length} this season). Smoothed so you can see the trend — each point is the last 10 games.`
+          : `Smoothed total-runs trend across ${team.lastSeasonYear} and ${team.currentSeasonYear}.`,
       data: rows,
       xKey: "game",
-      yKeys:
-        line !== undefined
-          ? ["lastSeasonTotal", "currentSeasonTotal", "line"]
-          : ["lastSeasonTotal", "currentSeasonTotal"],
+      yKeys,
     };
   }
 
   if (marketType === "moneyline") {
-    const wins = team.lastSeason.filter((g) => g.won).length;
-    const losses = team.lastSeason.length - wins;
-    const curWins = team.currentSeason.filter((g) => g.won).length;
-    const curLosses = team.currentSeason.length - curWins;
+    const lastW = team.lastSeason.filter((g) => g.won).length;
+    const lastL = team.lastSeason.length - lastW;
+    const curW = team.currentSeason.filter((g) => g.won).length;
+    const curL = team.currentSeason.length - curW;
     return {
       type: "line",
-      title: `${team.teamName} — Win/Loss Margin History`,
-      relevance: `${wins}-${losses} last season, ${curWins}-${curLosses} this season`,
+      title: `${team.teamName} — Run Differential (10-game rolling avg)`,
+      relevance: `Last season ${lastW}-${lastL}, this season ${curW}-${curL}. The line is their rolling 10-game run differential — above zero = winning more than losing.`,
       data: rows,
       xKey: "game",
-      yKeys: ["lastSeasonMargin", "currentSeasonMargin"],
+      yKeys: ["lastSeason", "currentSeason"],
     };
   }
 
+  // Spread
   const threshold = line ?? 0;
-  const covers = [...team.lastSeason, ...team.currentSeason].filter(
-    (g) => g.margin > -threshold,
-  ).length;
-  const thisSeasonCovers = team.currentSeason.filter(
-    (g) => g.margin > -threshold,
-  ).length;
+  const covers = [...lastRaw, ...currRaw].filter((v) => v > -threshold).length;
+  const thisSeasonCovers = currRaw.filter((v) => v > -threshold).length;
   return {
     type: "line",
-    title: `${team.teamName} — Margin History`,
+    title: `${team.teamName} — Margin vs Spread (10-game rolling avg)`,
     relevance:
       line !== undefined
-        ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers}/${total} games across last season and YTD (${thisSeasonCovers}/${team.currentSeason.length} this year)`
-        : `${total} games across ${team.lastSeasonYear}-${team.currentSeasonYear}`,
+        ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${total} games (${thisSeasonCovers} of ${currRaw.length} this season). The reference line is the spread — when the rolling margin is above it, they've been covering.`
+        : `Smoothed run-differential trend across ${team.lastSeasonYear} and ${team.currentSeasonYear}.`,
     data: rows,
     xKey: "game",
-    yKeys:
-      line !== undefined
-        ? ["lastSeasonMargin", "currentSeasonMargin", "line"]
-        : ["lastSeasonMargin", "currentSeasonMargin"],
+    yKeys,
   };
 }
 
