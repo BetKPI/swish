@@ -68,6 +68,68 @@ function normalizeExtraction(extraction: Record<string, unknown>): void {
   }
 }
 
+/**
+ * Detect home/away teams from "@" in the description or team order.
+ * Bet slips commonly use "Team A @ Team B" meaning A is away, B is home.
+ * Also handles "at" (e.g. "Tigers at Red Sox").
+ */
+function detectHomeAway(extraction: Record<string, unknown>): void {
+  const desc = (extraction.description as string || "").toLowerCase();
+  const teams = extraction.teams as string[] || [];
+
+  if (teams.length === 2) {
+    // Look for "@ " or " at " pattern in description
+    const atMatch = desc.match(/(.+?)\s+(?:@|at)\s+(.+)/i);
+    if (atMatch) {
+      const awayPart = atMatch[1].trim().toLowerCase();
+      const homePart = atMatch[2].trim().toLowerCase();
+
+      // Match against team names (partial match — "tigers" matches "Detroit Tigers")
+      const t0Lower = teams[0].toLowerCase();
+      const t1Lower = teams[1].toLowerCase();
+
+      // Check which team name appears in the away vs home part
+      const t0IsAway = awayPart.includes(t0Lower) || t0Lower.includes(awayPart.split(/\s+/).pop() || "");
+      const t1IsAway = awayPart.includes(t1Lower) || t1Lower.includes(awayPart.split(/\s+/).pop() || "");
+      const t0IsHome = homePart.includes(t0Lower) || t0Lower.includes(homePart.split(/\s+/).pop() || "");
+      const t1IsHome = homePart.includes(t1Lower) || t1Lower.includes(homePart.split(/\s+/).pop() || "");
+
+      if (t0IsAway && t1IsHome) {
+        extraction.awayTeam = teams[0];
+        extraction.homeTeam = teams[1];
+      } else if (t1IsAway && t0IsHome) {
+        extraction.awayTeam = teams[1];
+        extraction.homeTeam = teams[0];
+      }
+    }
+
+    // Fallback: in most US sports, the first team listed is the away team
+    // (on bet slips the format is typically "AWAY @ HOME" or "AWAY vs HOME")
+    if (!extraction.homeTeam && !extraction.awayTeam) {
+      // Check for "vs" pattern — first team is typically listed first (away)
+      const vsMatch = desc.match(/(.+?)\s+(?:vs\.?|versus)\s+(.+)/i);
+      if (vsMatch) {
+        const firstPart = vsMatch[1].trim().toLowerCase();
+        const t0Lower = teams[0].toLowerCase();
+        // If first team in description matches teams[0], standard order
+        if (firstPart.includes(t0Lower.split(/\s+/).pop() || "")) {
+          extraction.awayTeam = teams[0];
+          extraction.homeTeam = teams[1];
+        }
+      }
+    }
+  }
+
+  // Also process parlay legs
+  if (Array.isArray(extraction.legs)) {
+    for (const leg of extraction.legs) {
+      if (leg && typeof leg === "object") {
+        detectHomeAway(leg as Record<string, unknown>);
+      }
+    }
+  }
+}
+
 const EXTRACTION_PROMPT = `You are an expert sports betting analyst. Analyze this screenshot of a sports bet and extract structured information.
 
 Return a JSON object with these fields:
@@ -78,7 +140,7 @@ Return a JSON object with these fields:
 - line: The line/number (spread value, total, prop line) as a number, or null if not applicable
 - odds: The odds as a string (e.g., "-110", "+150", "1.95")
 - market: The specific market name (e.g., "First Basket Scorer", "Anytime TD Scorer", "Points Spread")
-- description: A human-readable one-sentence summary of the bet
+- description: A human-readable one-sentence summary of the bet. IMPORTANT: If the bet slip shows "Team A @ Team B" or "Team A at Team B", preserve the "@" or "at" in the description — this tells us which team is away (before @) and which is home (after @).
 - confidence: Your confidence in the extraction from 0 to 1 (1 = very confident)
 
 CRITICAL — PARLAY DETECTION:
@@ -206,6 +268,9 @@ export async function POST(request: NextRequest) {
     // Normalize sport names so the UI badge is always correct
     // (Gemini sometimes returns "PGA", "The Masters", etc. instead of "Golf")
     normalizeExtraction(extraction);
+
+    // Detect home/away from "@" in description — "Tigers @ Red Sox" means Tigers away, Red Sox home
+    detectHomeAway(extraction);
 
     // Log parlay extractions to Discord for debugging
     if (extraction.betType === "parlay") {

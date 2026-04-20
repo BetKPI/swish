@@ -947,8 +947,7 @@ export function buildMLBDefaultCharts(
   if (homePitcher || awayPitcher) {
     const record = buildMLBPitcherSeasonRecord(homePitcher, awayPitcher);
     if (record) out.push(record);
-    const comparison = buildMLBPitcherComparisonTable(homePitcher, awayPitcher, 6);
-    if (comparison) out.push(comparison);
+    // Recent starts table removed — redundant with the full season record above
   }
 
   return out;

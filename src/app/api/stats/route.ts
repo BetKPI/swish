@@ -1182,7 +1182,15 @@ function computeKeyInsight(
       if (team) {
         const winPct = Math.round(team.record.pct * 100);
         const streak = `${team.streak.type}${team.streak.count}`;
-        return `${team.name} ${winPct}% win rate, on a ${streak} streak`;
+        // Add venue-specific context when we know home/away
+        const isAway = extraction.awayTeam && team.name.toLowerCase().includes(extraction.awayTeam.toLowerCase().split(/\s+/).pop() || "");
+        const isHome = extraction.homeTeam && team.name.toLowerCase().includes(extraction.homeTeam.toLowerCase().split(/\s+/).pop() || "");
+        const venuePct = isAway && team.awayRecord
+          ? `, ${Math.round(team.awayRecord.pct * 100)}% on the road`
+          : isHome && team.homeRecord
+          ? `, ${Math.round(team.homeRecord.pct * 100)}% at home`
+          : "";
+        return `${team.name} ${winPct}% win rate${venuePct}, on a ${streak} streak`;
       }
       return "Limited moneyline data available";
     }
