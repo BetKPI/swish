@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/test-bets",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/autoresearch",
+      "schedule": "0 6 * * *"
     }
   ]
 }

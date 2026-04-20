@@ -4,9 +4,16 @@ import { useState, useRef } from "react";
 import type { BetExtraction, ChartConfig } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 
+interface SwishScore {
+  score: number;
+  label: string;
+  detail: string;
+}
+
 interface AnalysisChatProps {
   extraction: BetExtraction;
   computedData: Record<string, unknown>;
+  swishScore?: SwishScore;
   suggestions?: string[];
 }
 
@@ -59,6 +66,7 @@ const SUGGESTIONS_BY_SPORT: Record<string, string[]> = {
 export default function AnalysisChat({
   extraction,
   computedData,
+  swishScore,
   suggestions: serverSuggestions,
 }: AnalysisChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -89,6 +97,7 @@ export default function AnalysisChat({
           message: msg,
           extraction,
           computedData,
+          swishScore,
           history,
         }),
       });

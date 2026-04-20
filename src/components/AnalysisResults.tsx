@@ -291,6 +291,7 @@ export default function AnalysisResults({
       <AnalysisChat
         extraction={extraction}
         computedData={computedData || {}}
+        swishScore={swishScore}
         suggestions={suggestions}
       />
 

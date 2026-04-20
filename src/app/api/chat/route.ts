@@ -6,6 +6,7 @@ import { fetchAllTeamData, fetchGolfLeaderboard } from "@/lib/espn";
 import { getMarketContext } from "@/lib/markets";
 import { fetchWithRetry } from "@/lib/fetch";
 import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSundayScoring } from "@/lib/masters";
+import { computeHitRate, computeTrend, computeConsistency } from "@/lib/stat-tools";
 
 /**
  * Chat endpoint — two-step flow:
@@ -262,7 +263,7 @@ async function logChatToDiscord(
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, extraction, computedData, history } = await request.json();
+    const { message, extraction, computedData, swishScore, history } = await request.json();
     const chatHistory = Array.isArray(history) ? history : [];
 
     if (!message || !extraction) {
@@ -281,6 +282,59 @@ export async function POST(request: NextRequest) {
     const players = extraction.players?.length ? extraction.players.join(", ") : "none";
     const isGolf = ["GOLF", "PGA", "PGA TOUR", "THE MASTERS", "MASTERS"].includes(sport);
     const isMasters = sport === "THE MASTERS" || sport === "MASTERS" || (extraction.description || "").toLowerCase().includes("master");
+
+    // Pre-compute stat model results from existing data so the AI
+    // references deterministic calculations instead of doing its own math.
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cd = computedData as any;
+    let statToolsContext = "";
+    if (cd) {
+      const toolResults: string[] = [];
+      // Player prop data — compute hit rate, trend, consistency
+      const playerData = cd._players || cd.playerData;
+      if (playerData) {
+        for (const [name, pData] of Object.entries(playerData)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const p = pData as any;
+          const gameLogs = p?.gameLogs || p?.gameLog;
+          if (Array.isArray(gameLogs) && gameLogs.length > 0) {
+            const pa = p?.propAnalysis;
+            const stat = pa?.stat;
+            if (stat) {
+              const values = gameLogs.map((g: Record<string, number>) => g[stat]).filter((v: unknown) => typeof v === "number");
+              if (values.length > 0) {
+                const line = pa?.line ?? extraction.line;
+                if (line != null) {
+                  const hr = computeHitRate(values, line);
+                  toolResults.push(`${name} hit rate at ${line}: ${JSON.stringify(hr.result)}`);
+                }
+                const trend = computeTrend(values);
+                toolResults.push(`${name} trend: ${JSON.stringify(trend.result)}`);
+                const cons = computeConsistency(values);
+                toolResults.push(`${name} consistency: ${JSON.stringify(cons.result)}`);
+              }
+            }
+          }
+        }
+      }
+      // Team metrics — trends from recent games
+      const teamMetrics = cd.teamMetrics;
+      if (teamMetrics) {
+        for (const [name, tm] of Object.entries(teamMetrics)) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const t = tm as any;
+          if (Array.isArray(t?.recentGames) && t.recentGames.length >= 3) {
+            const totals = t.recentGames.map((g: { totalPoints: number }) => g.totalPoints);
+            const margins = t.recentGames.map((g: { margin: number }) => g.margin);
+            toolResults.push(`${name} total-points trend: ${JSON.stringify(computeTrend(totals).result)}`);
+            toolResults.push(`${name} margin trend: ${JSON.stringify(computeTrend(margins).result)}`);
+          }
+        }
+      }
+      if (toolResults.length > 0) {
+        statToolsContext = `\nDETERMINISTIC STAT MODEL RESULTS (pre-computed — reference these exact numbers, do NOT re-calculate):\n${toolResults.join("\n")}\n`;
+      }
+    }
 
     // Build conversation context string for drill-down
     const conversationContext = chatHistory.length > 0
@@ -307,6 +361,9 @@ ${isMasters ? `This is a MASTERS bet at Augusta National. You have access to ric
 
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 ${conversationContext}
+SWISH SCORE (our data-strength rating for this bet):
+${swishScore ? `Score: ${swishScore.score}/10 (${swishScore.label}) — ${swishScore.detail}` : "Not computed"}
+${statToolsContext}
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
 
@@ -391,7 +448,8 @@ RULES:
 - SEASON/YEAR INFERENCE: "last year"/"last season" → ${currentYear - 1}. For NHL, format is "20242025". If user says a year number, re-fetch with that season.
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests.
 - Data keys must be camelCase.
-- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.`;
+- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.
+- SWISH SCORE: If the user asks "what's the score", "is this a good bet", "what do you think", or mentions the Swish Score — reference the score above and explain what's driving it (hit rate, trend, consistency, etc). The score is computed deterministically from real data, not from AI judgment. Explain the data factors.`;
 
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {
