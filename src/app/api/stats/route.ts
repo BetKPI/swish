@@ -1268,7 +1268,6 @@ function computeHitRate(
     }
     case "over_under": {
       if (line <= 0 || teams.length < 2) return null;
-      // Check each team's games against the line
       const t0Games = teams[0].recentGames;
       const t1Games = teams[1].recentGames;
       const t0Overs = t0Games.filter((g) => g.totalPoints > line).length;
@@ -1279,18 +1278,24 @@ function computeHitRate(
       const pct = Math.round((totalOvers / totalGames) * 100);
       const isOver = (extraction.description || "").toLowerCase().includes("over");
       const isUnder = (extraction.description || "").toLowerCase().includes("under");
+      // Show per-team breakdown so the user knows exactly where the number comes from
+      const t0Name = teams[0].name;
+      const t1Name = teams[1].name;
+      const perTeam = `${t0Name}: ${t0Overs}/${t0Games.length} over, ${t1Name}: ${t1Overs}/${t1Games.length} over`;
       if (isUnder) {
         const underPct = 100 - pct;
+        const t0Unders = t0Games.length - t0Overs;
+        const t1Unders = t1Games.length - t1Overs;
         return {
           label: "Under Hit Rate",
           value: `${underPct}%`,
-          context: `Under ${line} in ${totalGames - totalOvers} of ${totalGames} combined games`,
+          context: `Under ${line} in ${totalGames - totalOvers}/${totalGames} games (${t0Name}: ${t0Unders}/${t0Games.length}, ${t1Name}: ${t1Unders}/${t1Games.length})`,
         };
       }
       return {
         label: isOver ? "Over Hit Rate" : "O/U Hit Rate",
         value: `${pct}%`,
-        context: `Over ${line} in ${totalOvers} of ${totalGames} combined games`,
+        context: `Over ${line} in ${totalOvers}/${totalGames} games (${perTeam})`,
       };
     }
     case "moneyline": {

@@ -168,14 +168,48 @@ export function buildNHLTeamBetTypeTable(
 export function buildNHLHomeAwaySplits(
   team: NHLTeamTwoSeason,
   line?: number,
+  venueHint?: "home" | "away",
 ): ChartConfig | null {
   const currentGames = team.games.filter((g) => g.season === team.currentSeason);
   const home = currentGames.filter((g) => g.home);
   const away = currentGames.filter((g) => !g.home);
-  if (home.length < 2 || away.length < 2) return null;
 
   const avg = (arr: NHLTeamGame[], fn: (g: NHLTeamGame) => number) =>
     arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+
+  // Single-venue column when venueHint is known
+  if (venueHint) {
+    const vGames = venueHint === "home" ? home : away;
+    if (vGames.length < 2) return null;
+    const wins = vGames.filter((g) => g.won).length;
+    const label = venueHint === "home" ? "At Home" : "On Road";
+
+    const data: Record<string, string>[] = [
+      { stat: "Record", Value: `${wins}-${vGames.length - wins}` },
+      { stat: "Win %", Value: `${Math.round((wins / vGames.length) * 100)}%` },
+      { stat: "Avg Goals For", Value: `${avg(vGames, (g) => g.teamScore)}` },
+      { stat: "Avg Goals Against", Value: `${avg(vGames, (g) => g.opponentScore)}` },
+      { stat: "Avg Total", Value: `${avg(vGames, (g) => g.total)}` },
+    ];
+
+    if (line != null) {
+      const covers = vGames.filter((g) => g.margin + line > 0).length;
+      data.push({ stat: "Puckline Cover Rate", Value: `${Math.round((covers / vGames.length) * 100)}%` });
+    }
+
+    return {
+      type: "table",
+      title: `${team.teamName} — ${label} (${vGames.length}g)`,
+      relevance: `${label} ${wins}-${vGames.length - wins} (${Math.round((wins / vGames.length) * 100)}%)`,
+      data,
+      columns: [
+        { key: "stat", label: "" },
+        { key: "Value", label: `${label} (${vGames.length}g)` },
+      ],
+    };
+  }
+
+  if (home.length < 2 || away.length < 2) return null;
 
   const homeWins = home.filter((g) => g.won).length;
   const awayWins = away.filter((g) => g.won).length;
@@ -479,6 +513,21 @@ function isFuturesBet(market: string, description: string, betType: string): boo
   );
 }
 
+function getVenueHint(teamName: string, homeTeam?: string, awayTeam?: string): "home" | "away" | undefined {
+  if (!homeTeam && !awayTeam) return undefined;
+  const lower = teamName.toLowerCase();
+  const lastWord = lower.split(/\s+/).pop() || "";
+  if (homeTeam) {
+    const hl = homeTeam.toLowerCase();
+    if (lower.includes(hl) || hl.includes(lastWord)) return "home";
+  }
+  if (awayTeam) {
+    const al = awayTeam.toLowerCase();
+    if (lower.includes(al) || al.includes(lastWord)) return "away";
+  }
+  return undefined;
+}
+
 export function buildNHLDefaultCharts(
   betType: string,
   market: string | undefined,
@@ -487,6 +536,8 @@ export function buildNHLDefaultCharts(
   players: string[],
   line: number | undefined,
   history: NHLHistoryContext,
+  homeTeam?: string,
+  awayTeam?: string,
 ): ChartConfig[] {
   const out: ChartConfig[] = [];
   const marketStr = market || "";
@@ -549,7 +600,8 @@ export function buildNHLDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildNHLTeamBetTypeTable(team, marketType, line);
     if (rec) out.push(rec);
-    const splits = buildNHLHomeAwaySplits(team, line);
+    const venueHint = getVenueHint(teamName, homeTeam, awayTeam);
+    const splits = buildNHLHomeAwaySplits(team, line, venueHint);
     if (splits) out.push(splits);
     const opponent = teams.find((t) => t !== teamName);
     if (opponent) {

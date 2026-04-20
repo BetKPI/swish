@@ -745,14 +745,48 @@ function detectInningsBet(market: string, description: string): 1 | 3 | 5 | null
 export function buildMLBHomeAwaySplits(
   team: MLBTeamTwoSeason,
   line?: number,
+  venueHint?: "home" | "away",
 ): ChartConfig | null {
   const games = team.currentSeason;
   const home = games.filter((g) => g.isHome);
   const away = games.filter((g) => !g.isHome);
-  if (home.length < 2 || away.length < 2) return null;
 
   const avg = (arr: MLBTeamGame[], fn: (g: MLBTeamGame) => number) =>
     arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+
+  // Single-venue column when venueHint is known
+  if (venueHint) {
+    const vGames = venueHint === "home" ? home : away;
+    if (vGames.length < 2) return null;
+    const wins = vGames.filter((g) => g.won).length;
+    const label = venueHint === "home" ? "At Home" : "On Road";
+
+    const data: Record<string, string>[] = [
+      { stat: "Record", Value: `${wins}-${vGames.length - wins}` },
+      { stat: "Win %", Value: `${Math.round((wins / vGames.length) * 100)}%` },
+      { stat: "Avg Runs For", Value: `${avg(vGames, (g) => g.teamScore)}` },
+      { stat: "Avg Runs Against", Value: `${avg(vGames, (g) => g.oppScore)}` },
+      { stat: "Avg Total Runs", Value: `${avg(vGames, (g) => g.totalRuns)}` },
+    ];
+
+    if (line != null) {
+      const covers = vGames.filter((g) => g.margin + line > 0).length;
+      data.push({ stat: "Run Line Cover Rate", Value: `${Math.round((covers / vGames.length) * 100)}%` });
+    }
+
+    return {
+      type: "table",
+      title: `${team.teamName} — ${label} (${vGames.length}g)`,
+      relevance: `${label} ${wins}-${vGames.length - wins} (${Math.round((wins / vGames.length) * 100)}%)`,
+      data,
+      columns: [
+        { key: "stat", label: "" },
+        { key: "Value", label: `${label} (${vGames.length}g)` },
+      ],
+    };
+  }
+
+  if (home.length < 2 || away.length < 2) return null;
 
   const homeWins = home.filter((g) => g.won).length;
   const awayWins = away.filter((g) => g.won).length;
@@ -828,6 +862,21 @@ export function buildMLBTeamH2HTable(
   };
 }
 
+function getVenueHint(teamName: string, homeTeam?: string, awayTeam?: string): "home" | "away" | undefined {
+  if (!homeTeam && !awayTeam) return undefined;
+  const lower = teamName.toLowerCase();
+  const lastWord = lower.split(/\s+/).pop() || "";
+  if (homeTeam) {
+    const hl = homeTeam.toLowerCase();
+    if (lower.includes(hl) || hl.includes(lastWord)) return "home";
+  }
+  if (awayTeam) {
+    const al = awayTeam.toLowerCase();
+    if (lower.includes(al) || al.includes(lastWord)) return "away";
+  }
+  return undefined;
+}
+
 export function buildMLBDefaultCharts(
   betType: string,
   market: string | undefined,
@@ -836,6 +885,8 @@ export function buildMLBDefaultCharts(
   players: string[],
   line: number | undefined,
   history: MLBHistoryContext,
+  homeTeam?: string,
+  awayTeam?: string,
 ): ChartConfig[] {
   const out: ChartConfig[] = [];
   const marketStr = market || "";
@@ -928,7 +979,8 @@ export function buildMLBDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildMLBTeamRecordTable(team);
     if (rec) out.push(rec);
-    const splits = buildMLBHomeAwaySplits(team, line);
+    const venueHint = getVenueHint(teamName, homeTeam, awayTeam);
+    const splits = buildMLBHomeAwaySplits(team, line, venueHint);
     if (splits) out.push(splits);
     const opponent = teams.find((t) => t !== teamName);
     if (opponent) {
