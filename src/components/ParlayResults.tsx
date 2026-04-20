@@ -273,8 +273,19 @@ export default function ParlayResults({
         )
       ))}
 
-      {/* Feedback + Share */}
-      <FeedbackShare extraction={extraction} summary={summaryText} />
+      {/* Per-leg Feedback */}
+      {activeLeg && !activeLeg.error && !activeLeg.unsupported && (
+        <FeedbackShare
+          extraction={{
+            ...extraction,
+            description: `Leg ${activeTab + 1}: ${activeLeg.description}`,
+            sport: activeLeg.sport,
+            betType: activeLeg.betType as BetExtraction["betType"],
+            teams: activeLeg.teams,
+          }}
+          summary={activeLeg.summary || ""}
+        />
+      )}
 
       {/* Start Over */}
       <button

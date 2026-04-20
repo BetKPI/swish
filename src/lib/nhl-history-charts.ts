@@ -58,8 +58,8 @@ export function buildNHLTeamHistoryChart(
   const pick = (g: NHLTeamGame): number => (marketType === "total" ? g.total : g.margin);
   const lastRaw = last.map(pick);
   const currRaw = current.map(pick);
-  const lastAvg = rollingMean(lastRaw, 10);
-  const currAvg = rollingMean(currRaw, 10);
+  const lastAvg = rollingMean(lastRaw, 12);
+  const currAvg = rollingMean(currRaw, 12);
 
   const maxLen = Math.max(lastAvg.length, currAvg.length);
   const rows: Record<string, unknown>[] = [];
@@ -81,7 +81,7 @@ export function buildNHLTeamHistoryChart(
     const curOvers = currRaw.filter((v) => v > threshold).length;
     return {
       type: "line",
-      title: `${team.teamName} — Total Goals (10-game rolling avg)`,
+      title: `${team.teamName} — Total Goals (12-game rolling avg)`,
       relevance:
         line != null
           ? `Over ${line} in ${overs} of ${lastRaw.length + currRaw.length} games (${curOvers} of ${currRaw.length} this season). Smoothed across ${lastLabel} and ${currLabel}.`
@@ -96,7 +96,7 @@ export function buildNHLTeamHistoryChart(
     const curW = current.filter((g) => g.won).length;
     return {
       type: "line",
-      title: `${team.teamName} — Goal Differential (10-game rolling avg)`,
+      title: `${team.teamName} — Goal Differential (12-game rolling avg)`,
       relevance: `Last season ${lastW}-${last.length - lastW}, this season ${curW}-${current.length - curW}. Above zero = winning more than losing.`,
       data: rows,
       xKey: "game",
@@ -108,7 +108,7 @@ export function buildNHLTeamHistoryChart(
   const thisCovers = currRaw.filter((v) => v > -threshold).length;
   return {
     type: "line",
-    title: `${team.teamName} — Margin vs Spread (10-game rolling avg)`,
+    title: `${team.teamName} — Margin vs Spread (12-game rolling avg)`,
     relevance:
       line != null
         ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${lastRaw.length + currRaw.length} games (${thisCovers} of ${currRaw.length} this season).`

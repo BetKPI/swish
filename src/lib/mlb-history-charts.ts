@@ -74,14 +74,14 @@ export function buildMLBTeamHistoryChart(
   const total = team.lastSeason.length + team.currentSeason.length;
   if (total < 10) return null;
 
-  // Pull per-game values per season, then smooth with a 10-game rolling mean
+  // Pull per-game values per season, then smooth with a 15-game rolling mean
   // so users see a trend instead of a sawtooth of single-game results.
   const pick = (g: MLBTeamGame): number =>
     marketType === "total" ? g.totalRuns : g.margin;
   const lastRaw = team.lastSeason.map(pick);
   const currRaw = team.currentSeason.map(pick);
-  const lastAvg = rollingMean(lastRaw, 10);
-  const currAvg = rollingMean(currRaw, 10);
+  const lastAvg = rollingMean(lastRaw, 15);
+  const currAvg = rollingMean(currRaw, 15);
 
   // Align both seasons on a shared "game number within season" x-axis so
   // the two overlay cleanly instead of being strung end-to-end.
@@ -108,10 +108,10 @@ export function buildMLBTeamHistoryChart(
     const curOvers = currRaw.filter((v) => v > threshold).length;
     return {
       type: "line",
-      title: `${team.teamName} — Total Runs (10-game rolling avg)`,
+      title: `${team.teamName} — Total Runs (15-game rolling avg)`,
       relevance:
         line !== undefined
-          ? `Over ${line} in ${overs} of ${total} games (${curOvers} of ${currRaw.length} this season). Smoothed so you can see the trend — each point is the last 10 games.`
+          ? `Over ${line} in ${overs} of ${total} games (${curOvers} of ${currRaw.length} this season). Smoothed so you can see the trend — each point is the last 15 games.`
           : `Smoothed total-runs trend across ${team.lastSeasonYear} and ${team.currentSeasonYear}.`,
       data: rows,
       xKey: "game",
@@ -126,8 +126,8 @@ export function buildMLBTeamHistoryChart(
     const curL = team.currentSeason.length - curW;
     return {
       type: "line",
-      title: `${team.teamName} — Run Differential (10-game rolling avg)`,
-      relevance: `Last season ${lastW}-${lastL}, this season ${curW}-${curL}. The line is their rolling 10-game run differential — above zero = winning more than losing.`,
+      title: `${team.teamName} — Run Differential (15-game rolling avg)`,
+      relevance: `Last season ${lastW}-${lastL}, this season ${curW}-${curL}. The line is their rolling 15-game run differential — above zero = winning more than losing.`,
       data: rows,
       xKey: "game",
       yKeys: ["lastSeason", "currentSeason"],
@@ -140,7 +140,7 @@ export function buildMLBTeamHistoryChart(
   const thisSeasonCovers = currRaw.filter((v) => v > -threshold).length;
   return {
     type: "line",
-    title: `${team.teamName} — Margin vs Spread (10-game rolling avg)`,
+    title: `${team.teamName} — Margin vs Spread (15-game rolling avg)`,
     relevance:
       line !== undefined
         ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${total} games (${thisSeasonCovers} of ${currRaw.length} this season). The reference line is the spread — when the rolling margin is above it, they've been covering.`
