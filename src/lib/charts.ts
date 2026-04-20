@@ -1866,54 +1866,56 @@ function buildOverUnderCharts(
   // Scoring & Defense Trend removed — backtesting shows scoring trend
   // has near-zero predictive power for O/U (0.02–0.07 effect size).
 
-  // 3. Venue-aware scoring splits for O/U context
-  if (teams.length === 2) {
+  // 3. Venue scoring splits — combined when both venues known
+  if (teams.length === 2 && extraction.homeTeam && extraction.awayTeam) {
+    const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+      arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+    const awayTeam = teams.find((t) => getTeamVenue(t.name, extraction) === "away");
+    const homeTeam = teams.find((t) => getTeamVenue(t.name, extraction) === "home");
+    if (awayTeam && homeTeam) {
+      const awayGames = awayTeam.recentGames.filter((g) => !g.home);
+      const homeGames = homeTeam.recentGames.filter((g) => g.home);
+      if (awayGames.length >= 2 && homeGames.length >= 2) {
+        const awayOvers = awayGames.filter((g) => g.totalPoints > line).length;
+        const homeOvers = homeGames.filter((g) => g.totalPoints > line).length;
+        const awayCol = `${shortenName(awayTeam.name)} (Road)`;
+        const homeCol = `${shortenName(homeTeam.name)} (Home)`;
+        const data = [
+          { stat: "Avg Game Total", [awayCol]: `${avgG(awayGames, (g) => g.totalPoints)}`, [homeCol]: `${avgG(homeGames, (g) => g.totalPoints)}` },
+          { stat: "Avg Pts For", [awayCol]: `${avgG(awayGames, (g) => g.teamScore)}`, [homeCol]: `${avgG(homeGames, (g) => g.teamScore)}` },
+          { stat: "Avg Pts Against", [awayCol]: `${avgG(awayGames, (g) => g.opponentScore)}`, [homeCol]: `${avgG(homeGames, (g) => g.opponentScore)}` },
+          { stat: `Over ${line} Rate`, [awayCol]: `${Math.round((awayOvers / awayGames.length) * 100)}% (${awayOvers}/${awayGames.length})`, [homeCol]: `${Math.round((homeOvers / homeGames.length) * 100)}% (${homeOvers}/${homeGames.length})` },
+        ];
+        charts.push({
+          type: "table",
+          title: "Venue Scoring — Road vs Home",
+          relevance: `${awayTeam.name} over ${line} in ${awayOvers}/${awayGames.length} road, ${homeTeam.name} in ${homeOvers}/${homeGames.length} home`,
+          data,
+          columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
+        });
+      }
+    }
+  } else if (teams.length === 2) {
     for (const team of teams) {
       const homeGames = team.recentGames.filter((g) => g.home);
       const awayGames = team.recentGames.filter((g) => !g.home);
       if (homeGames.length >= 2 && awayGames.length >= 2) {
         const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
           arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
-        const venue = getTeamVenue(team.name, extraction);
-        if (venue) {
-          const games = venue === "home" ? homeGames : awayGames;
-          const overs = games.filter((g) => g.totalPoints > line).length;
-          const label = venue === "home" ? "At Home" : "On Road";
-          const data = [
-            { stat: "Avg Game Total", Value: `${avgG(games, (g) => g.totalPoints)}` },
-            { stat: "Avg Points For", Value: `${avgG(games, (g) => g.teamScore)}` },
-            { stat: "Avg Points Against", Value: `${avgG(games, (g) => g.opponentScore)}` },
-            { stat: `Over ${line} Rate`, Value: `${Math.round((overs / games.length) * 100)}% (${overs}/${games.length})` },
-          ];
-          charts.push({
-            type: "table",
-            title: `${team.name} — Scoring ${label} (${games.length}g)`,
-            relevance: `Over ${line} in ${overs} of ${games.length} games ${label.toLowerCase()}`,
-            data,
-            columns: [{ key: "stat", label: "" }, { key: "Value", label: label }],
-          });
-        } else {
-          const homeOvers = homeGames.filter((g) => g.totalPoints > line).length;
-          const awayOvers = awayGames.filter((g) => g.totalPoints > line).length;
-          const data = [
-            { stat: "Avg Game Total", Home: `${avgG(homeGames, (g) => g.totalPoints)}`, Away: `${avgG(awayGames, (g) => g.totalPoints)}` },
-            { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
-            { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
-            { stat: `Over ${line} Rate`, Home: `${Math.round((homeOvers / homeGames.length) * 100)}%`, Away: `${Math.round((awayOvers / awayGames.length) * 100)}%` },
-            { stat: "Games", Home: `${homeGames.length}`, Away: `${awayGames.length}` },
-          ];
-          charts.push({
-            type: "table",
-            title: `${team.name} — Home vs Away Scoring`,
-            relevance: `Home over rate ${Math.round((homeOvers / homeGames.length) * 100)}% vs away ${Math.round((awayOvers / awayGames.length) * 100)}%`,
-            data,
-            columns: [
-              { key: "stat", label: "" },
-              { key: "Home", label: `Home (${homeGames.length}g)` },
-              { key: "Away", label: `Away (${awayGames.length}g)` },
-            ],
-          });
-        }
+        const homeOvers = homeGames.filter((g) => g.totalPoints > line).length;
+        const awayOvers = awayGames.filter((g) => g.totalPoints > line).length;
+        const data = [
+          { stat: "Avg Game Total", Home: `${avgG(homeGames, (g) => g.totalPoints)}`, Away: `${avgG(awayGames, (g) => g.totalPoints)}` },
+          { stat: `Over ${line} Rate`, Home: `${Math.round((homeOvers / homeGames.length) * 100)}%`, Away: `${Math.round((awayOvers / awayGames.length) * 100)}%` },
+          { stat: "Games", Home: `${homeGames.length}`, Away: `${awayGames.length}` },
+        ];
+        charts.push({
+          type: "table",
+          title: `${team.name} — Home vs Away Scoring`,
+          relevance: `Home over rate ${Math.round((homeOvers / homeGames.length) * 100)}% vs away ${Math.round((awayOvers / awayGames.length) * 100)}%`,
+          data,
+          columns: [{ key: "stat", label: "" }, { key: "Home", label: "Home" }, { key: "Away", label: "Away" }],
+        });
       }
     }
   }
@@ -1993,57 +1995,58 @@ function buildMoneylineCharts(
   // Scoring Trend removed — raw scoring numbers are noise for ML
   // (0.02 effect size). Point differential (above) is what matters.
 
-  // 3. Venue-aware splits — full season
-  for (const team of teams) {
-    const homeGames = team.recentGames.filter((g) => g.home);
-    const awayGames = team.recentGames.filter((g) => !g.home);
-    if (homeGames.length >= 2 && awayGames.length >= 2) {
-      const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
-        arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
-      const venue = getTeamVenue(team.name, extraction);
-      if (venue) {
-        const games = venue === "home" ? homeGames : awayGames;
-        const wins = games.filter((g) => g.won).length;
-        const avgMargin = avgG(games, (g) => g.margin);
-        const label = venue === "home" ? "At Home" : "On Road";
+  // 3. Venue splits — combined when both venues known
+  if (teams.length === 2 && extraction.homeTeam && extraction.awayTeam) {
+    const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+      arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+    const awayTeam = teams.find((t) => getTeamVenue(t.name, extraction) === "away");
+    const homeTeam = teams.find((t) => getTeamVenue(t.name, extraction) === "home");
+    if (awayTeam && homeTeam) {
+      const awayGames = awayTeam.recentGames.filter((g) => !g.home);
+      const homeGames = homeTeam.recentGames.filter((g) => g.home);
+      if (awayGames.length >= 2 && homeGames.length >= 2) {
+        const awayWins = awayGames.filter((g) => g.won).length;
+        const homeWins = homeGames.filter((g) => g.won).length;
+        const awayCol = `${shortenName(awayTeam.name)} (Road)`;
+        const homeCol = `${shortenName(homeTeam.name)} (Home)`;
         const data = [
-          { stat: "Record", Value: `${wins}-${games.length - wins}` },
-          { stat: "Win %", Value: `${Math.round((wins / games.length) * 100)}%` },
-          { stat: "Avg Margin", Value: `${avgMargin > 0 ? "+" : ""}${avgMargin}` },
-          { stat: "Avg Points For", Value: `${avgG(games, (g) => g.teamScore)}` },
-          { stat: "Avg Points Against", Value: `${avgG(games, (g) => g.opponentScore)}` },
-          { stat: "Games", Value: `${games.length}` },
+          { stat: "Record", [awayCol]: `${awayWins}-${awayGames.length - awayWins}`, [homeCol]: `${homeWins}-${homeGames.length - homeWins}` },
+          { stat: "Win %", [awayCol]: `${Math.round((awayWins / awayGames.length) * 100)}%`, [homeCol]: `${Math.round((homeWins / homeGames.length) * 100)}%` },
+          { stat: "Avg Margin", [awayCol]: `${avgG(awayGames, (g) => g.margin) > 0 ? "+" : ""}${avgG(awayGames, (g) => g.margin)}`, [homeCol]: `${avgG(homeGames, (g) => g.margin) > 0 ? "+" : ""}${avgG(homeGames, (g) => g.margin)}` },
+          { stat: "Avg Pts For", [awayCol]: `${avgG(awayGames, (g) => g.teamScore)}`, [homeCol]: `${avgG(homeGames, (g) => g.teamScore)}` },
+          { stat: "Avg Pts Against", [awayCol]: `${avgG(awayGames, (g) => g.opponentScore)}`, [homeCol]: `${avgG(homeGames, (g) => g.opponentScore)}` },
+          { stat: "Games", [awayCol]: `${awayGames.length}`, [homeCol]: `${homeGames.length}` },
         ];
         charts.push({
           type: "table",
-          title: `${team.name} — ${label} (${games.length}g)`,
-          relevance: `${wins}-${games.length - wins} ${label.toLowerCase()} (${Math.round((wins / games.length) * 100)}% W)`,
+          title: "Venue Matchup — Road vs Home",
+          relevance: `${awayTeam.name} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeam.name} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
-          columns: [{ key: "stat", label: "" }, { key: "Value", label: label }],
+          columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
         });
-      } else {
+      }
+    }
+  } else {
+    for (const team of teams) {
+      const homeGames = team.recentGames.filter((g) => g.home);
+      const awayGames = team.recentGames.filter((g) => !g.home);
+      if (homeGames.length >= 2 && awayGames.length >= 2) {
+        const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+          arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
         const homeWins = homeGames.filter((g) => g.won).length;
         const awayWins = awayGames.filter((g) => g.won).length;
-        const homeAvgMargin = avgG(homeGames, (g) => g.margin);
-        const awayAvgMargin = avgG(awayGames, (g) => g.margin);
         const data = [
           { stat: "Record", Home: `${homeWins}-${homeGames.length - homeWins}`, Away: `${awayWins}-${awayGames.length - awayWins}` },
           { stat: "Win %", Home: `${Math.round((homeWins / homeGames.length) * 100)}%`, Away: `${Math.round((awayWins / awayGames.length) * 100)}%` },
-          { stat: "Avg Margin", Home: `${homeAvgMargin > 0 ? "+" : ""}${homeAvgMargin}`, Away: `${awayAvgMargin > 0 ? "+" : ""}${awayAvgMargin}` },
           { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
           { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
-          { stat: "Games", Home: `${homeGames.length}`, Away: `${awayGames.length}` },
         ];
         charts.push({
           type: "table",
-          title: `${team.name} — Home vs Away (Full Season)`,
-          relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeWins / homeGames.length) * 100)}% W), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayWins / awayGames.length) * 100)}% W)`,
+          title: `${team.name} — Home vs Away`,
+          relevance: `Home ${homeWins}-${homeGames.length - homeWins}, Away ${awayWins}-${awayGames.length - awayWins}`,
           data,
-          columns: [
-            { key: "stat", label: "" },
-            { key: "Home", label: `Home (${homeGames.length}g)` },
-            { key: "Away", label: `Away (${awayGames.length}g)` },
-          ],
+          columns: [{ key: "stat", label: "" }, { key: "Home", label: "Home" }, { key: "Away", label: "Away" }],
         });
       }
     }
