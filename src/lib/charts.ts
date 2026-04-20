@@ -1768,6 +1768,9 @@ function buildOverUnderCharts(
     const combinedAvg = Math.round((t0.scoring.avgPointsFor + t1.scoring.avgPointsFor) * 10) / 10;
     const combinedL5 = Math.round((t0.scoring.last5AvgFor + t1.scoring.last5AvgFor) * 10) / 10;
     const data = [
+      { stat: "Record", [shortenName(t0.name)]: `${t0.record.wins}-${t0.record.losses}`, [shortenName(t1.name)]: `${t1.record.wins}-${t1.record.losses}` },
+      { stat: "Home Win %", [shortenName(t0.name)]: `${Math.round((t0.homeRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.homeRecord?.pct ?? 0) * 100)}%` },
+      { stat: "Away Win %", [shortenName(t0.name)]: `${Math.round((t0.awayRecord?.pct ?? 0) * 100)}%`, [shortenName(t1.name)]: `${Math.round((t1.awayRecord?.pct ?? 0) * 100)}%` },
       { stat: "Avg Points For", [shortenName(t0.name)]: `${t0.scoring.avgPointsFor}`, [shortenName(t1.name)]: `${t1.scoring.avgPointsFor}` },
       { stat: "Avg Points Against", [shortenName(t0.name)]: `${t0.scoring.avgPointsAgainst}`, [shortenName(t1.name)]: `${t1.scoring.avgPointsAgainst}` },
       { stat: "Avg Game Total", [shortenName(t0.name)]: `${t0.scoring.avgTotalPoints}`, [shortenName(t1.name)]: `${t1.scoring.avgTotalPoints}` },
@@ -1791,6 +1794,43 @@ function buildOverUnderCharts(
   // Scoring & Defense Trend removed — backtesting shows scoring trend
   // has near-zero predictive power for O/U (0.02–0.07 effect size).
 
+  // 3. Home vs Away scoring splits for O/U context
+  if (teams.length === 2) {
+    for (const team of teams) {
+      const homeGames = team.recentGames.filter((g) => g.home);
+      const awayGames = team.recentGames.filter((g) => !g.home);
+      if (homeGames.length >= 2 && awayGames.length >= 2) {
+        const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
+          arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+        const homeOvers = homeGames.filter((g) => g.totalPoints > line).length;
+        const awayOvers = awayGames.filter((g) => g.totalPoints > line).length;
+        const data = [
+          { stat: "Avg Game Total", Home: `${avgG(homeGames, (g) => g.totalPoints)}`, Away: `${avgG(awayGames, (g) => g.totalPoints)}` },
+          { stat: "Avg Points For", Home: `${avgG(homeGames, (g) => g.teamScore)}`, Away: `${avgG(awayGames, (g) => g.teamScore)}` },
+          { stat: "Avg Points Against", Home: `${avgG(homeGames, (g) => g.opponentScore)}`, Away: `${avgG(awayGames, (g) => g.opponentScore)}` },
+          { stat: `Over ${line} Rate`, Home: `${Math.round((homeOvers / homeGames.length) * 100)}%`, Away: `${Math.round((awayOvers / awayGames.length) * 100)}%` },
+          { stat: "Games", Home: `${homeGames.length}`, Away: `${awayGames.length}` },
+        ];
+        charts.push({
+          type: "table",
+          title: `${team.name} — Home vs Away Scoring`,
+          relevance: `Home over rate ${Math.round((homeOvers / homeGames.length) * 100)}% vs away ${Math.round((awayOvers / awayGames.length) * 100)}%`,
+          data,
+          columns: [
+            { key: "stat", label: "" },
+            { key: "Home", label: `Home (${homeGames.length}g)` },
+            { key: "Away", label: `Away (${awayGames.length}g)` },
+          ],
+        });
+      }
+    }
+  }
+
+  // 4. H2H if available
+  if (computed.headToHead && computed.headToHead.games.length > 0) {
+    charts.push(buildH2HTable(computed, extraction.teams));
+  }
+
   // Pitcher matchup — critical for MLB totals
   const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
   if (pitcherChart) charts.push(pitcherChart);
@@ -1813,16 +1853,19 @@ function buildMoneylineCharts(
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
       { stat: "Win %", [shortenName(teams[0].name)]: `${Math.round(teams[0].record.pct * 100)}%`, [shortenName(teams[1].name)]: `${Math.round(teams[1].record.pct * 100)}%` },
+      { stat: "Home Win %", [shortenName(teams[0].name)]: `${Math.round((teams[0].homeRecord?.pct ?? 0) * 100)}%`, [shortenName(teams[1].name)]: `${Math.round((teams[1].homeRecord?.pct ?? 0) * 100)}%` },
+      { stat: "Away Win %", [shortenName(teams[0].name)]: `${Math.round((teams[0].awayRecord?.pct ?? 0) * 100)}%`, [shortenName(teams[1].name)]: `${Math.round((teams[1].awayRecord?.pct ?? 0) * 100)}%` },
       { stat: "Streak", [shortenName(teams[0].name)]: `${teams[0].streak.type}${teams[0].streak.count}`, [shortenName(teams[1].name)]: `${teams[1].streak.type}${teams[1].streak.count}` },
       { stat: "Last 5", [shortenName(teams[0].name)]: teams[0].recentForm.last5.join("-"), [shortenName(teams[1].name)]: teams[1].recentForm.last5.join("-") },
       { stat: "Avg Pts For", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsFor}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsFor}` },
       { stat: "Avg Pts Against", [shortenName(teams[0].name)]: `${teams[0].scoring.avgPointsAgainst}`, [shortenName(teams[1].name)]: `${teams[1].scoring.avgPointsAgainst}` },
       { stat: "Pt Differential", [shortenName(teams[0].name)]: `${(teams[0].scoring.avgPointsFor - teams[0].scoring.avgPointsAgainst).toFixed(1)}`, [shortenName(teams[1].name)]: `${(teams[1].scoring.avgPointsFor - teams[1].scoring.avgPointsAgainst).toFixed(1)}` },
+      { stat: "Rest Days", [shortenName(teams[0].name)]: teams[0].restDays !== undefined ? `${teams[0].restDays}d` : "?", [shortenName(teams[1].name)]: teams[1].restDays !== undefined ? `${teams[1].restDays}d` : "?" },
     ];
     charts.push({
       type: "table",
       title: "Head-to-Head Comparison",
-      relevance: "Side-by-side team fundamentals",
+      relevance: "Side-by-side team fundamentals including home/away splits",
       data,
       columns: [
         { key: "stat", label: "Stat" },

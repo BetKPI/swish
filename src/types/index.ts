@@ -57,6 +57,7 @@ export interface ParlayLegResult {
   unsupported: boolean;
   computedData?: Record<string, unknown>;
   gameStatus?: GameStatusData;
+  swishScore?: { score: number; label: string; detail: string };
   suggestions?: string[];
 }
 

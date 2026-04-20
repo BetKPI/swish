@@ -413,6 +413,13 @@ FORMAT 3 — The data simply doesn't exist in any free sports API:
   "message": "Brief explanation of why we can't get this (1-2 sentences)"
 }
 
+FORMAT 4 — The user is asking a non-data question (about the app, feedback, how things work, or general conversation):
+{
+  "need_fetch": false,
+  "no_data": true,
+  "message": "Helpful response to their question (1-2 sentences). If it's about this bet, redirect them to ask a data question."
+}
+
 RULES:
 - DRILL-DOWN / ITERATIVE FILTERING: The user may ask follow-up questions that NARROW or FILTER previous results. ALWAYS produce a new chart that reflects the narrowed view, not just text. Recognized filters include:
   • Home/away: "just home games", "road only", "at home" → filter by home/away flag in game data
@@ -454,10 +461,17 @@ RULES:
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {
       await logChatToDiscord(message, extraction, "no_data", "Gemini returned empty");
-      return NextResponse.json({ type: "no_data", message: "Couldn't process that — try rephrasing." });
+      return NextResponse.json({ type: "no_data", message: "I didn't catch that — try asking about the stats, trends, or matchup for this bet." });
     }
 
-    const triage = parseJSON(triageText);
+    let triage: Record<string, unknown>;
+    try {
+      triage = parseJSON(triageText);
+    } catch {
+      // Gemini returned non-JSON — treat as a text answer
+      await logChatToDiscord(message, extraction, "no_data", "Gemini returned non-JSON");
+      return NextResponse.json({ type: "no_data", message: triageText.slice(0, 300) });
+    }
 
     // Case 1: Can answer from existing data
     if (!triage.need_fetch && !triage.no_data && triage.chart) {

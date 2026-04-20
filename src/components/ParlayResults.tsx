@@ -266,6 +266,7 @@ export default function ParlayResults({
                 confidence: 1,
               }}
               computedData={leg.computedData || {}}
+              swishScore={leg.swishScore}
               suggestions={leg.suggestions}
             />
           </div>

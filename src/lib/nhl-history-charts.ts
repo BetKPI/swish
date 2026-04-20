@@ -165,6 +165,52 @@ export function buildNHLTeamBetTypeTable(
   };
 }
 
+export function buildNHLHomeAwaySplits(
+  team: NHLTeamTwoSeason,
+  line?: number,
+): ChartConfig | null {
+  const currentGames = team.games.filter((g) => g.season === team.currentSeason);
+  const home = currentGames.filter((g) => g.home);
+  const away = currentGames.filter((g) => !g.home);
+  if (home.length < 2 || away.length < 2) return null;
+
+  const avg = (arr: NHLTeamGame[], fn: (g: NHLTeamGame) => number) =>
+    arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+
+  const homeWins = home.filter((g) => g.won).length;
+  const awayWins = away.filter((g) => g.won).length;
+
+  const data: Record<string, string>[] = [
+    { stat: "Record", Home: `${homeWins}-${home.length - homeWins}`, Away: `${awayWins}-${away.length - awayWins}` },
+    { stat: "Win %", Home: `${Math.round((homeWins / home.length) * 100)}%`, Away: `${Math.round((awayWins / away.length) * 100)}%` },
+    { stat: "Avg Goals For", Home: `${avg(home, (g) => g.teamScore)}`, Away: `${avg(away, (g) => g.teamScore)}` },
+    { stat: "Avg Goals Against", Home: `${avg(home, (g) => g.opponentScore)}`, Away: `${avg(away, (g) => g.opponentScore)}` },
+    { stat: "Avg Total", Home: `${avg(home, (g) => g.total)}`, Away: `${avg(away, (g) => g.total)}` },
+  ];
+
+  if (line != null) {
+    const homeCovers = home.filter((g) => g.margin + line > 0).length;
+    const awayCovers = away.filter((g) => g.margin + line > 0).length;
+    data.push({ stat: "Puckline Cover Rate", Home: `${Math.round((homeCovers / home.length) * 100)}%`, Away: `${Math.round((awayCovers / away.length) * 100)}%` });
+  }
+
+  const seasonLabel = team.currentSeason.length >= 8
+    ? `${team.currentSeason.slice(2, 4)}-${team.currentSeason.slice(6, 8)}`
+    : team.currentSeason;
+
+  return {
+    type: "table",
+    title: `${team.teamName} — Home vs Away (${seasonLabel})`,
+    relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
+    data,
+    columns: [
+      { key: "stat", label: "" },
+      { key: "Home", label: `Home (${home.length}g)` },
+      { key: "Away", label: `Away (${away.length}g)` },
+    ],
+  };
+}
+
 export function buildNHLTeamH2HTable(
   team: NHLTeamTwoSeason,
   opponentName: string,
@@ -503,6 +549,8 @@ export function buildNHLDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildNHLTeamBetTypeTable(team, marketType, line);
     if (rec) out.push(rec);
+    const splits = buildNHLHomeAwaySplits(team, line);
+    if (splits) out.push(splits);
     const opponent = teams.find((t) => t !== teamName);
     if (opponent) {
       const h2h = buildNHLTeamH2HTable(team, opponent);

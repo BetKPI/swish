@@ -182,6 +182,51 @@ export function buildNBATeamBetTypeTable(
   };
 }
 
+// ── Home vs Away Splits ──────────────────────────────────────────
+
+export function buildNBAHomeAwaySplits(
+  team: NBATeamTwoSeason,
+  line?: number,
+): ChartConfig | null {
+  const currentGames = team.games.filter((g) => g.season === team.currentSeason);
+  const home = currentGames.filter((g) => g.home);
+  const away = currentGames.filter((g) => !g.home);
+  if (home.length < 2 || away.length < 2) return null;
+
+  const avg = (arr: NBATeamGame[], fn: (g: NBATeamGame) => number) =>
+    arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+
+  const homeWins = home.filter((g) => g.won).length;
+  const awayWins = away.filter((g) => g.won).length;
+
+  const data: Record<string, string>[] = [
+    { stat: "Record", Home: `${homeWins}-${home.length - homeWins}`, Away: `${awayWins}-${away.length - awayWins}` },
+    { stat: "Win %", Home: `${Math.round((homeWins / home.length) * 100)}%`, Away: `${Math.round((awayWins / away.length) * 100)}%` },
+    { stat: "Avg Points For", Home: `${avg(home, (g) => g.teamScore)}`, Away: `${avg(away, (g) => g.teamScore)}` },
+    { stat: "Avg Points Against", Home: `${avg(home, (g) => g.opponentScore)}`, Away: `${avg(away, (g) => g.opponentScore)}` },
+    { stat: "Avg Margin", Home: `${avg(home, (g) => g.margin) > 0 ? "+" : ""}${avg(home, (g) => g.margin)}`, Away: `${avg(away, (g) => g.margin) > 0 ? "+" : ""}${avg(away, (g) => g.margin)}` },
+    { stat: "Avg Total", Home: `${avg(home, (g) => g.total)}`, Away: `${avg(away, (g) => g.total)}` },
+  ];
+
+  if (line != null) {
+    const homeCovers = home.filter((g) => g.margin + line > 0).length;
+    const awayCovers = away.filter((g) => g.margin + line > 0).length;
+    data.push({ stat: "ATS Cover Rate", Home: `${Math.round((homeCovers / home.length) * 100)}%`, Away: `${Math.round((awayCovers / away.length) * 100)}%` });
+  }
+
+  return {
+    type: "table",
+    title: `${team.teamName} — Home vs Away (${team.currentSeason - 1}-${String(team.currentSeason).slice(2)})`,
+    relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
+    data,
+    columns: [
+      { key: "stat", label: "" },
+      { key: "Home", label: `Home (${home.length}g)` },
+      { key: "Away", label: `Away (${away.length}g)` },
+    ],
+  };
+}
+
 // ── Head-to-head vs opponent table ─────────────────────────────────
 
 export function buildNBATeamH2HTable(
@@ -596,6 +641,8 @@ export function buildNBADefaultCharts(
     if (chart) out.push(chart);
     const rec = buildNBATeamBetTypeTable(team, marketType, line);
     if (rec) out.push(rec);
+    const splits = buildNBAHomeAwaySplits(team, line);
+    if (splits) out.push(splits);
     const opponent = teams.find((t) => t !== teamName);
     if (opponent) {
       const h2h = buildNBATeamH2HTable(team, opponent);

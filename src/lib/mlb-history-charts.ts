@@ -740,6 +740,94 @@ function detectInningsBet(market: string, description: string): 1 | 3 | 5 | null
   return null;
 }
 
+// ── Home vs Away Splits ──────────────────────────────────────────
+
+export function buildMLBHomeAwaySplits(
+  team: MLBTeamTwoSeason,
+  line?: number,
+): ChartConfig | null {
+  const games = team.currentSeason;
+  const home = games.filter((g) => g.isHome);
+  const away = games.filter((g) => !g.isHome);
+  if (home.length < 2 || away.length < 2) return null;
+
+  const avg = (arr: MLBTeamGame[], fn: (g: MLBTeamGame) => number) =>
+    arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+
+  const homeWins = home.filter((g) => g.won).length;
+  const awayWins = away.filter((g) => g.won).length;
+
+  const data: Record<string, string>[] = [
+    { stat: "Record", Home: `${homeWins}-${home.length - homeWins}`, Away: `${awayWins}-${away.length - awayWins}` },
+    { stat: "Win %", Home: `${Math.round((homeWins / home.length) * 100)}%`, Away: `${Math.round((awayWins / away.length) * 100)}%` },
+    { stat: "Avg Runs For", Home: `${avg(home, (g) => g.teamScore)}`, Away: `${avg(away, (g) => g.teamScore)}` },
+    { stat: "Avg Runs Against", Home: `${avg(home, (g) => g.oppScore)}`, Away: `${avg(away, (g) => g.oppScore)}` },
+    { stat: "Avg Total Runs", Home: `${avg(home, (g) => g.totalRuns)}`, Away: `${avg(away, (g) => g.totalRuns)}` },
+  ];
+
+  if (line != null) {
+    const homeCovers = home.filter((g) => g.margin + line > 0).length;
+    const awayCovers = away.filter((g) => g.margin + line > 0).length;
+    data.push({ stat: "Run Line Cover Rate", Home: `${Math.round((homeCovers / home.length) * 100)}%`, Away: `${Math.round((awayCovers / away.length) * 100)}%` });
+  }
+
+  return {
+    type: "table",
+    title: `${team.teamName} — Home vs Away (${team.currentSeasonYear})`,
+    relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
+    data,
+    columns: [
+      { key: "stat", label: "" },
+      { key: "Home", label: `Home (${home.length}g)` },
+      { key: "Away", label: `Away (${away.length}g)` },
+    ],
+  };
+}
+
+// ── Head-to-head vs opponent ─────────────────────────────────────
+
+function shortDateMLB(d: string): string {
+  try {
+    const dt = new Date(d);
+    return `${dt.getUTCMonth() + 1}/${dt.getUTCDate()}`;
+  } catch {
+    return d.slice(5, 10);
+  }
+}
+
+export function buildMLBTeamH2HTable(
+  team: MLBTeamTwoSeason,
+  opponentName: string,
+): ChartConfig | null {
+  const oppLower = opponentName.toLowerCase();
+  const allGames = [...team.lastSeason, ...team.currentSeason];
+  const h2h = allGames.filter((g) => g.opponent.toLowerCase().includes(oppLower));
+  if (h2h.length === 0) return null;
+
+  const wins = h2h.filter((g) => g.won).length;
+  return {
+    type: "table",
+    title: `${team.teamName} vs ${opponentName} — head-to-head (${wins}-${h2h.length - wins})`,
+    relevance: `${h2h.length} matchups across ${team.lastSeasonYear}-${team.currentSeasonYear}`,
+    data: h2h.map((g) => ({
+      date: shortDateMLB(g.date),
+      season: `${g.season}`,
+      site: g.isHome ? "Home" : "Away",
+      result: g.won ? "W" : "L",
+      score: `${g.teamScore}-${g.oppScore}`,
+      total: g.totalRuns,
+    })),
+    columns: [
+      { key: "date", label: "Date" },
+      { key: "season", label: "Year" },
+      { key: "site", label: "Site" },
+      { key: "result", label: "Result" },
+      { key: "score", label: "Score" },
+      { key: "total", label: "Runs" },
+    ],
+  };
+}
+
 export function buildMLBDefaultCharts(
   betType: string,
   market: string | undefined,
@@ -840,6 +928,13 @@ export function buildMLBDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildMLBTeamRecordTable(team);
     if (rec) out.push(rec);
+    const splits = buildMLBHomeAwaySplits(team, line);
+    if (splits) out.push(splits);
+    const opponent = teams.find((t) => t !== teamName);
+    if (opponent) {
+      const h2h = buildMLBTeamH2HTable(team, opponent);
+      if (h2h) out.push(h2h);
+    }
   }
 
   // Both probable pitchers compared side by side — replaces the old per-team
