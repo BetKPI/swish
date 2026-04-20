@@ -979,13 +979,63 @@ export function buildMLBDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildMLBTeamRecordTable(team);
     if (rec) out.push(rec);
-    const venueHint = getVenueHint(teamName, homeTeam, awayTeam);
-    const splits = buildMLBHomeAwaySplits(team, line, venueHint);
-    if (splits) out.push(splits);
+  }
+
+  // Venue splits — combined into one table when both teams' venues known
+  if (teams.length === 2 && homeTeam && awayTeam) {
+    const awayTeamData = history.teams[teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "away") || ""];
+    const homeTeamData = history.teams[teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "home") || ""];
+    if (awayTeamData && homeTeamData) {
+      const awayGames = awayTeamData.currentSeason.filter((g) => !g.isHome);
+      const homeGames = homeTeamData.currentSeason.filter((g) => g.isHome);
+      if (awayGames.length >= 2 && homeGames.length >= 2) {
+        const avg = (arr: MLBTeamGame[], fn: (g: MLBTeamGame) => number) =>
+          arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+        const awayWins = awayGames.filter((g) => g.won).length;
+        const homeWins = homeGames.filter((g) => g.won).length;
+        const awayCol = `${shortName(awayTeamData.teamName)} (Road)`;
+        const homeCol = `${shortName(homeTeamData.teamName)} (Home)`;
+        const data: Record<string, string>[] = [
+          { stat: "Record", [awayCol]: `${awayWins}-${awayGames.length - awayWins}`, [homeCol]: `${homeWins}-${homeGames.length - homeWins}` },
+          { stat: "Win %", [awayCol]: `${pct(awayWins, awayGames.length)}%`, [homeCol]: `${pct(homeWins, homeGames.length)}%` },
+          { stat: "Avg Runs For", [awayCol]: `${avg(awayGames, (g) => g.teamScore)}`, [homeCol]: `${avg(homeGames, (g) => g.teamScore)}` },
+          { stat: "Avg Runs Against", [awayCol]: `${avg(awayGames, (g) => g.oppScore)}`, [homeCol]: `${avg(homeGames, (g) => g.oppScore)}` },
+          { stat: "Avg Total", [awayCol]: `${avg(awayGames, (g) => g.totalRuns)}`, [homeCol]: `${avg(homeGames, (g) => g.totalRuns)}` },
+        ];
+        if (line != null) {
+          const awayCovers = awayGames.filter((g) => g.margin + line > 0).length;
+          const homeCovers = homeGames.filter((g) => g.margin + line > 0).length;
+          data.push({ stat: "Cover Rate", [awayCol]: `${pct(awayCovers, awayGames.length)}%`, [homeCol]: `${pct(homeCovers, homeGames.length)}%` });
+        }
+        data.push({ stat: "Games", [awayCol]: `${awayGames.length}`, [homeCol]: `${homeGames.length}` });
+        out.push({
+          type: "table",
+          title: "Venue Matchup — Road vs Home",
+          relevance: `${awayTeamData.teamName} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeamData.teamName} ${homeWins}-${homeGames.length - homeWins} at home`,
+          data,
+          columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
+        });
+      }
+    }
+  } else {
+    // Fallback: per-team splits when venue unknown
+    for (const teamName of teams) {
+      const team = history.teams[teamName];
+      if (!team) continue;
+      const splits = buildMLBHomeAwaySplits(team, line);
+      if (splits) out.push(splits);
+    }
+  }
+
+  // H2H
+  for (const teamName of teams) {
+    const team = history.teams[teamName];
+    if (!team) continue;
     const opponent = teams.find((t) => t !== teamName);
     if (opponent) {
       const h2h = buildMLBTeamH2HTable(team, opponent);
       if (h2h) out.push(h2h);
+      break; // Only need one H2H table, not two
     }
   }
 

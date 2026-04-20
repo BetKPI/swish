@@ -600,14 +600,58 @@ export function buildNHLDefaultCharts(
     if (chart) out.push(chart);
     const rec = buildNHLTeamBetTypeTable(team, marketType, line);
     if (rec) out.push(rec);
-    const venueHint = getVenueHint(teamName, homeTeam, awayTeam);
-    const splits = buildNHLHomeAwaySplits(team, line, venueHint);
-    if (splits) out.push(splits);
-    const opponent = teams.find((t) => t !== teamName);
-    if (opponent) {
-      const h2h = buildNHLTeamH2HTable(team, opponent);
+  }
+
+  // Venue splits — combined when both venues known
+  if (teams.length === 2 && homeTeam && awayTeam) {
+    const awayName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "away");
+    const homeName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "home");
+    const awayTeamData = awayName ? history.teams[awayName] : undefined;
+    const homeTeamData = homeName ? history.teams[homeName] : undefined;
+    if (awayTeamData && homeTeamData) {
+      const awayGames = awayTeamData.games.filter((g) => g.season === awayTeamData.currentSeason && !g.home);
+      const homeGames = homeTeamData.games.filter((g) => g.season === homeTeamData.currentSeason && g.home);
+      if (awayGames.length >= 2 && homeGames.length >= 2) {
+        const avg = (arr: NHLTeamGame[], fn: (g: NHLTeamGame) => number) =>
+          arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
+        const awayWins = awayGames.filter((g) => g.won).length;
+        const homeWins = homeGames.filter((g) => g.won).length;
+        const awayCol = `${awayTeamData.teamAbbrev} (Road)`;
+        const homeCol = `${homeTeamData.teamAbbrev} (Home)`;
+        const data: Record<string, string>[] = [
+          { stat: "Record", [awayCol]: `${awayWins}-${awayGames.length - awayWins}`, [homeCol]: `${homeWins}-${homeGames.length - homeWins}` },
+          { stat: "Win %", [awayCol]: `${Math.round((awayWins / awayGames.length) * 100)}%`, [homeCol]: `${Math.round((homeWins / homeGames.length) * 100)}%` },
+          { stat: "Avg Goals For", [awayCol]: `${avg(awayGames, (g) => g.teamScore)}`, [homeCol]: `${avg(homeGames, (g) => g.teamScore)}` },
+          { stat: "Avg Goals Against", [awayCol]: `${avg(awayGames, (g) => g.opponentScore)}`, [homeCol]: `${avg(homeGames, (g) => g.opponentScore)}` },
+          { stat: "Avg Total", [awayCol]: `${avg(awayGames, (g) => g.total)}`, [homeCol]: `${avg(homeGames, (g) => g.total)}` },
+          { stat: "Games", [awayCol]: `${awayGames.length}`, [homeCol]: `${homeGames.length}` },
+        ];
+        out.push({
+          type: "table",
+          title: "Venue Matchup — Road vs Home",
+          relevance: `${awayTeamData.teamName} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeamData.teamName} ${homeWins}-${homeGames.length - homeWins} at home`,
+          data,
+          columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
+        });
+      }
+    }
+  } else {
+    for (const teamName of teams) {
+      const team = history.teams[teamName];
+      if (!team) continue;
+      const splits = buildNHLHomeAwaySplits(team, line);
+      if (splits) out.push(splits);
+    }
+  }
+
+  // H2H
+  if (teams.length >= 2) {
+    const team = history.teams[teams[0]];
+    if (team) {
+      const h2h = buildNHLTeamH2HTable(team, teams[1]);
       if (h2h) out.push(h2h);
     }
   }
+
   return out;
 }
