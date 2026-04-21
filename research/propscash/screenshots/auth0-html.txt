@@ -1,0 +1,80 @@
+<!DOCTYPE html><html><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Sign In to Props.Cash</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
+  <script>(function(w,r){w._rwq=r;w[r]=w[r]||function(){(w[r].q=w[r].q||[]).push(arguments)}})(window,'rewardful');</script>
+  <script async="" data-domains="safe-brook-07915.herokuapp.com, props-helper.us.auth0.com, props.cash" src="https://r.wdfl.co/rw.js" data-rewardful="91d075"></script>
+  </head>
+<body>
+
+  <!--[if IE 8]>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/ie8/0.2.5/ie8.js"></script>
+  <![endif]-->
+
+  <!--[if lte IE 9]>
+  <script src="https://cdn.auth0.com/js/base64.js"></script>
+  <script src="https://cdn.auth0.com/js/es5-shim.min.js"></script>
+  <![endif]-->
+
+  <script src="https://cdn.auth0.com/js/lock/11.30/lock.min.js"></script>
+  <script>
+    // Decode utf8 characters properly
+    var config = JSON.parse(decodeURIComponent(escape(window.atob('eyJpY29uIjoiaHR0cHM6Ly9wcm9wcy5jYXNoL3Byb3BzLWFwcC1pY29uLmpwZyIsImFzc2V0c1VybCI6IiIsImF1dGgwRG9tYWluIjoicHJvcHMtaGVscGVyLnVzLmF1dGgwLmNvbSIsImF1dGgwVGVuYW50IjoicHJvcHMtaGVscGVyIiwiY2xpZW50Q29uZmlndXJhdGlvbkJhc2VVcmwiOiJodHRwczovL3Byb3BzLWhlbHBlci51cy5hdXRoMC5jb20vIiwiY2FsbGJhY2tPbkxvY2F0aW9uSGFzaCI6ZmFsc2UsImNhbGxiYWNrVVJMIjoiaHR0cHM6Ly9wcm9wcy5jYXNoIiwiY2RuIjoiaHR0cHM6Ly9jZG4uYXV0aDAuY29tLyIsImNsaWVudElEIjoia0k3NlBZazlBM2c3eVV0eWhZM0FoS21yOW92aUhBenciLCJkaWN0Ijp7InNpZ25pbiI6eyJ0aXRsZSI6IlByb3BzLkNhc2gifX0sImV4dHJhUGFyYW1zIjp7InByb3RvY29sIjoib2F1dGgyIiwiYXVkaWVuY2UiOiJodHRwczovL3Byb3BzLWRvdC1jYXNoL2FwaSIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgb2ZmbGluZV9hY2Nlc3MiLCJyZXNwb25zZV90eXBlIjoiY29kZSIsInJlc3BvbnNlX21vZGUiOiJxdWVyeSIsIm5vbmNlIjoiWkhWVWNDMVJiVkpVZFY4MFdrcE1kRXRPY1hScFpITm9aamhVVUhjMkxWaFlTVForYkZkRlF6TmtVZz09IiwiY29kZV9jaGFsbGVuZ2UiOiJYOUFMdmZzUkxWS3A4a09yTXZRSHo0R2tZMXhYaU5MakFsNG9sQ3Q4MUh3IiwiY29kZV9jaGFsbGVuZ2VfbWV0aG9kIjoiUzI1NiIsImF1dGgwQ2xpZW50IjoiZXlKdVlXMWxJam9pWVhWMGFEQXRjbVZoWTNRaUxDSjJaWEp6YVc5dUlqb2lNUzR4TWk0eEluMD0iLCJfY3NyZiI6IjNVMUZnbjhlLWRodEw1ak92NEdUUUxkMzlQZ1dhVnVaSmpiQSIsIl9pbnRzdGF0ZSI6ImRlcHJlY2F0ZWQiLCJzdGF0ZSI6ImhLRm8yU0JQVkdvNFRVTnJUbXhGTVZGMmVFaGhUVnBMTUdOcVl6SldWMTgwUWtOQ1VhRnVwV3h2WjJsdW8zUnBaTmtnYVRkb1J6TndOVnBXUldSNmVsODJWMGRSUzFoRmJHbGpRbVJ3UlhoS1UwbWpZMmxrMlNCclNUYzJVRmxyT1VFelp6ZDVWWFI1YUZrelFXaExiWEk1YjNacFNFRjZkdyJ9LCJpbnRlcm5hbE9wdGlvbnMiOnsicHJvdG9jb2wiOiJvYXV0aDIiLCJhdWRpZW5jZSI6Imh0dHBzOi8vcHJvcHMtZG90LWNhc2gvYXBpIiwic2NvcGUiOiJvcGVuaWQgcHJvZmlsZSBlbWFpbCBvZmZsaW5lX2FjY2VzcyIsInJlc3BvbnNlX3R5cGUiOiJjb2RlIiwicmVzcG9uc2VfbW9kZSI6InF1ZXJ5Iiwibm9uY2UiOiJaSFZVY0MxUmJWSlVkVjgwV2twTWRFdE9jWFJwWkhOb1pqaFVVSGMyTFZoWVNUWitiRmRGUXpOa1VnPT0iLCJjb2RlX2NoYWxsZW5nZSI6Ilg5QUx2ZnNSTFZLcDhrT3JNdlFIejRHa1kxeFhpTkxqQWw0b2xDdDgxSHciLCJjb2RlX2NoYWxsZW5nZV9tZXRob2QiOiJTMjU2IiwiYXV0aDBDbGllbnQiOiJleUp1WVcxbElqb2lZWFYwYURBdGNtVmhZM1FpTENKMlpYSnphVzl1SWpvaU1TNHhNaTR4SW4wPSIsIl9jc3JmIjoiM1UxRmduOGUtZGh0TDVqT3Y0R1RRTGQzOVBnV2FWdVpKamJBIiwiX2ludHN0YXRlIjoiZGVwcmVjYXRlZCIsInN0YXRlIjoiaEtGbzJTQlBWR280VFVOclRteEZNVkYyZUVoaFRWcExNR05xWXpKV1YxODBRa05DVWFGdXBXeHZaMmx1bzNScFpOa2dhVGRvUnpOd05WcFdSV1I2ZWw4MlYwZFJTMWhGYkdsalFtUndSWGhLVTBtalkybGsyU0JyU1RjMlVGbHJPVUV6WnpkNVZYUjVhRmt6UVdoTGJYSTViM1pwU0VGNmR3In0sIndpZGdldFVybCI6Imh0dHBzOi8vY2RuLmF1dGgwLmNvbS93Mi9hdXRoMC13aWRnZXQtNS4yLm1pbi5qcyIsImlzVGhpcmRQYXJ0eUNsaWVudCI6ZmFsc2UsImF1dGhvcml6YXRpb25TZXJ2ZXIiOnsidXJsIjoiaHR0cHM6Ly9wcm9wcy1oZWxwZXIudXMuYXV0aDAuY29tIiwiaXNzdWVyIjoiaHR0cHM6Ly9wcm9wcy1oZWxwZXIudXMuYXV0aDAuY29tLyJ9LCJjb2xvcnMiOnsicGFnZV9iYWNrZ3JvdW5kIjoiI2ZmZiIsInByaW1hcnkiOiIjMUVCMDc0In19'))));
+    config.extraParams = config.extraParams || {};
+    var connection = config.connection;
+    var prompt = config.prompt;
+    var languageDictionary;
+    var language;
+
+    if (config.dict && config.dict.signin && config.dict.signin.title) {
+      languageDictionary = { title: config.dict.signin.title };
+    } else if (typeof config.dict === 'string') {
+      language = config.dict;
+    }
+    var loginHint = config.extraParams.login_hint;
+    var colors = config.colors || {};
+
+    // Available Lock configuration options: https://auth0.com/docs/libraries/lock/v11/configuration
+    var lock = new Auth0Lock(config.clientID, config.auth0Domain, {
+      auth: {
+        redirectUrl: config.callbackURL,
+        responseType: (config.internalOptions || {}).response_type ||
+          (config.callbackOnLocationHash ? 'token' : 'code'),
+        params: config.internalOptions
+      },
+      configurationBaseUrl: config.clientConfigurationBaseUrl,
+      overrides: {
+        __tenant: config.auth0Tenant,
+        __token_issuer: config.authorizationServer.issuer
+      },
+      assetsUrl:  config.assetsUrl,
+      allowedConnections: connection ? [connection] : null,
+      rememberLastLogin: !prompt,
+      language: language,
+      languageBaseUrl: config.languageBaseUrl,
+      languageDictionary: languageDictionary,
+      theme: {
+        logo:            'https://props.cash/props-app-icon.jpg',
+        primaryColor:    colors.primary ? colors.primary : 'green'
+      },
+      prefill: loginHint ? { email: loginHint, username: loginHint } : null,
+      closable: false,
+      defaultADUsernameFromEmailPrefix: false
+    });
+
+    if(colors.page_background) {
+      var css = '.auth0-lock.auth0-lock .auth0-lock-overlay { background: ' +
+                  colors.page_background +
+                ' }';
+      var style = document.createElement('style');
+
+      style.appendChild(document.createTextNode(css));
+
+      document.body.appendChild(style);
+    }
+
+    lock.show();
+  </script>
+
+</body></html>

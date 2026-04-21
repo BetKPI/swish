@@ -63,7 +63,7 @@ export function buildNHLTeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponentAbbrev}`,
       value: g.total,
       line,
-      overLine: g.total > line,
+      overLine: g.total > line, home: g.home,
     }));
     const allOvers = current.filter((g) => g.total > line).length;
     const last10 = current.slice(-10);
@@ -83,7 +83,7 @@ export function buildNHLTeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponentAbbrev}`,
       value: g.margin,
       line: 0,
-      overLine: g.won,
+      overLine: g.won, home: g.home,
     }));
     const wins = current.filter((g) => g.won).length;
     const last10 = current.slice(-10);
@@ -103,7 +103,7 @@ export function buildNHLTeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponentAbbrev}`,
       value: g.margin,
       line: -line,
-      overLine: g.margin + line > 0,
+      overLine: g.margin + line > 0, home: g.home,
     }));
     const covers = current.filter((g) => g.margin + line > 0).length;
     const last10 = current.slice(-10);
@@ -122,7 +122,7 @@ export function buildNHLTeamHistoryChart(
     game: `${shortDate(g.date)} ${g.opponentAbbrev}`,
     value: g.margin,
     line: 0,
-    overLine: g.won,
+    overLine: g.won, home: g.home,
   }));
   return {
     type: "hitrate" as ChartConfig["type"],
@@ -316,7 +316,7 @@ export function buildNHLPlayerHistoryChart(
       game: `${shortDate(g.date)} ${g.opponent}`,
       value: getStat(g, stat),
       line,
-      overLine: getStat(g, stat) > line,
+      overLine: getStat(g, stat) > line, home: g.home,
     }));
     if (rows.length === 0) return null;
 

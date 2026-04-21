@@ -14,6 +14,7 @@ import {
   ResponsiveContainer,
   Legend,
   ReferenceLine,
+  LabelList,
 } from "recharts";
 import type { ChartConfig } from "@/types";
 import { captureWithWatermark, copyImageToClipboard, downloadBlob } from "@/lib/captureWithWatermark";
@@ -252,53 +253,122 @@ function RechartsHitRate({
 }) {
   const x = xKey || "game";
   const lineValue = typeof data[0]?.line === "number" ? (data[0].line as number) : null;
+  const [splitFilter, setSplitFilter] = useState<string | null>(null);
+
+  // Compute hit rates for summary row
+  const hitRatePct = (arr: Record<string, unknown>[]) => {
+    if (arr.length === 0) return null;
+    const hits = arr.filter((d) => d.overLine).length;
+    return Math.round((hits / arr.length) * 100);
+  };
+
+  const allRate = hitRatePct(data);
+  const l5Rate = hitRatePct(data.slice(-5));
+  const l10Rate = hitRatePct(data.slice(-10));
+  const l20Rate = hitRatePct(data.slice(-20));
+
+  // Split filters — only show if data has home/away info
+  const hasHomeAway = data.some((d) => typeof d.home === "boolean");
+  const splitOptions = hasHomeAway
+    ? [
+        { label: "All", value: null },
+        { label: "Home", value: "home" },
+        { label: "Away", value: "away" },
+      ]
+    : [];
+
+  const displayData = splitFilter
+    ? data.filter((d) => (splitFilter === "home" ? d.home : !d.home))
+    : data;
+
+  const rateColor = (pct: number | null) =>
+    pct == null ? "text-muted" : pct >= 60 ? "text-emerald-400" : pct <= 40 ? "text-red-400" : "text-foreground";
 
   return (
-    <ResponsiveContainer width="100%" height={260}>
-      <BarChart data={data}>
-        <CartesianGrid strokeDasharray="3 3" stroke="#222" />
-        <XAxis
-          dataKey={x}
-          tick={{ fill: "#888", fontSize: 10 }}
-          stroke="#333"
-          angle={-30}
-          textAnchor="end"
-          height={50}
-        />
-        <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
-        <Tooltip
-          contentStyle={{
-            background: "#111",
-            border: "1px solid #333",
-            borderRadius: 10,
-            fontSize: 12,
-            padding: "8px 12px",
-          }}
-          formatter={(val, _name, props) => {
-            const over = (props as unknown as { payload: Record<string, unknown> }).payload?.overLine;
-            return [String(val), over ? "OVER" : "UNDER"];
-          }}
-        />
-        {lineValue != null && (
-          <ReferenceLine
-            y={lineValue}
-            stroke="#f59e0b"
-            strokeDasharray="6 4"
-            strokeWidth={2}
-            label={{ value: `Line: ${lineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
+    <div className="space-y-2">
+      {/* Hit rate summary row — props.cash style */}
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs justify-center">
+        {[
+          { label: "Season", pct: allRate },
+          { label: "L5", pct: l5Rate },
+          { label: "L10", pct: l10Rate },
+          { label: "L20", pct: l20Rate },
+        ].map((item) => (
+          <span key={item.label} className="flex items-center gap-1">
+            <span className="text-muted">{item.label}</span>
+            <span className={`font-bold ${rateColor(item.pct)}`}>
+              {item.pct != null ? `${item.pct}%` : "—"}
+            </span>
+          </span>
+        ))}
+      </div>
+
+      <ResponsiveContainer width="100%" height={260}>
+        <BarChart data={displayData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#222" />
+          <XAxis
+            dataKey={x}
+            tick={{ fill: "#888", fontSize: 10 }}
+            stroke="#333"
+            angle={-30}
+            textAnchor="end"
+            height={50}
           />
-        )}
-        <Bar dataKey="value" radius={[6, 6, 0, 0]}>
-          {data.map((entry, index) => (
-            <Cell
-              key={index}
-              fill={entry.overLine ? "#22c55e" : "#ef4444"}
-              fillOpacity={0.85}
+          <YAxis tick={{ fill: "#888", fontSize: 11 }} stroke="#333" />
+          <Tooltip
+            contentStyle={{
+              background: "#111",
+              border: "1px solid #333",
+              borderRadius: 10,
+              fontSize: 12,
+              padding: "8px 12px",
+            }}
+            formatter={(val, _name, props) => {
+              const over = (props as unknown as { payload: Record<string, unknown> }).payload?.overLine;
+              return [String(val), over ? "OVER" : "UNDER"];
+            }}
+          />
+          {lineValue != null && (
+            <ReferenceLine
+              y={lineValue}
+              stroke="#f59e0b"
+              strokeDasharray="6 4"
+              strokeWidth={2}
+              label={{ value: `${lineValue}`, fill: "#f59e0b", fontSize: 11, position: "right" }}
             />
+          )}
+          <Bar dataKey="value" radius={[6, 6, 0, 0]}>
+            <LabelList dataKey="value" position="top" fill="#ccc" fontSize={11} fontWeight={700} />
+            {displayData.map((entry, index) => (
+              <Cell
+                key={index}
+                fill={entry.overLine ? "#22c55e" : "#ef4444"}
+                fillOpacity={0.85}
+              />
+            ))}
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+
+      {/* Split filter pills — HOME / AWAY */}
+      {splitOptions.length > 0 && (
+        <div className="flex gap-1.5 justify-center pt-1">
+          {splitOptions.map((opt) => (
+            <button
+              key={opt.label}
+              onClick={() => setSplitFilter(opt.value)}
+              className={`px-3 py-1 text-[10px] font-bold uppercase rounded-full transition-colors cursor-pointer ${
+                splitFilter === opt.value
+                  ? "bg-accent text-black"
+                  : "bg-surface-light text-muted hover:text-foreground"
+              }`}
+            >
+              {opt.label}
+            </button>
           ))}
-        </Bar>
-      </BarChart>
-    </ResponsiveContainer>
+        </div>
+      )}
+    </div>
   );
 }
 

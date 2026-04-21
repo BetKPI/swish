@@ -1,0 +1,55 @@
+Dismiss
+Open main menu
+Hits
+HRR
+TB
+HR
+1B
+2B
+3B
+RBI
+RUNS
+K
+BB
+SB
+HFS
+2026
+H2H
+L5
+L10
+L20
+L30
+2025
+Increase line
+Decrease line
+home
+away
+LHP
+RHP
+Day
+Night
+Reg Season
+Playoffs
+0 Days Rest
+2026
+2025
+L15
+L30
+BvP
+RHP
+All Pitchers
+RHP
+LHP
+vs Dustin May
+ISOBABIPBAwOBA0000
+2026
+2025
+All
+IF
+OF
+C
+l5
+l10
+l20
+szn
+h2h

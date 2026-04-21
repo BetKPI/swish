@@ -1,0 +1,283 @@
+Props Labs is live! Check out new features and experiments on our beta site.
+
+Try it out
+Dismiss
+NBA
+NFL
+NCAAM
+NCAAF
+MLB
+NHL
+CSGO
+Upgrade
+Open side content menu
+Sections
+Hit Rates
+Games
+All Games
+Upgrade to unlock game filtering
+Props
+Shots on Goal
+Points
+Goals
+PP PTS
+Assists
+Blocked Shots
+Saves
+Goals Allowed
+Hits
+Faceoff Wins
+Upgrade to Unlock All Players
+•
+
+Subscribe to access the complete player database and advanced analytics
+
+PLAYER
+	
+L
+	
+O
+	
+U
+	
+STK
+	
+25/26
+	
+H2H
+	
+L5
+	
+L10
+	
+L20
+	
+24/25
+	
+PROJ
+	
+DIFF
+	
+DVP
+
+
+Artturi Lehkonen
+COL | LW
+	1.5	-155	130	3	69%	64%	80%	60%	50%	61%	1.9	0.35	16th
+
+Tyson Foerster
+PHI | RW
+	1.5	-160	137	0	68%	62%	60%	80%	75%	51%	1.9	0.40	15th
+
+Travis Konecny
+PHI | RW
+	1.5	-155	146	1	66%	69%	40%	50%	60%	61%	1.9	0.44	15th
+
+Shane Pinto
+OTT | C
+	1.5	-137	120	4	66%	75%	80%	80%	70%	54%	1.8	0.27	3rd
+
+Sean Walker
+CAR | D
+GTD
+	1.5	-108	-120	0	66%	54%	40%	60%	65%	49%	1.5	-0.04	5th
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%	0.0	0.0	1st
+
+Player Name
+Team | Position
+	0.0	-110	-110	0	50%	50%	50%	50%	50%	50%

@@ -66,7 +66,7 @@ export function buildNBATeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponent}`,
       value: g.total,
       line,
-      overLine: g.total > line,
+      overLine: g.total > line, home: g.home,
     }));
     const allOvers = current.filter((g) => g.total > line).length;
     const last10 = current.slice(-10);
@@ -86,7 +86,7 @@ export function buildNBATeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponent}`,
       value: g.margin,
       line: 0,
-      overLine: g.won,
+      overLine: g.won, home: g.home,
     }));
     const wins = current.filter((g) => g.won).length;
     const last10 = current.slice(-10);
@@ -107,7 +107,7 @@ export function buildNBATeamHistoryChart(
       game: `${shortDate(g.date)} ${g.opponent}`,
       value: g.margin,
       line: -line,
-      overLine: g.margin + line > 0,
+      overLine: g.margin + line > 0, home: g.home,
     }));
     const covers = current.filter((g) => g.margin + line > 0).length;
     const last10 = current.slice(-10);
@@ -127,7 +127,7 @@ export function buildNBATeamHistoryChart(
     game: `${shortDate(g.date)} ${g.opponent}`,
     value: g.margin,
     line: 0,
-    overLine: g.won,
+    overLine: g.won, home: g.home,
   }));
   return {
     type: "hitrate" as ChartConfig["type"],
@@ -351,7 +351,7 @@ export function buildNBAPlayerHistoryChart(
         game: `${shortDate(g.date)} ${g.opponent}`,
         value: v,
         line,
-        overLine: v > line,
+        overLine: v > line, home: g.home,
       });
     }
     if (rows.length === 0) return null;

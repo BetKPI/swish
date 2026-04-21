@@ -83,7 +83,7 @@ export function buildMLBTeamHistoryChart(
       game: fmtGame(g.date, g.opponent, g.isHome),
       value: g.totalRuns,
       line,
-      overLine: g.totalRuns > line,
+      overLine: g.totalRuns > line, home: g.isHome,
     }));
     const allOvers = games.filter((g) => g.totalRuns > line).length;
     const last10 = games.slice(-10);
@@ -104,7 +104,7 @@ export function buildMLBTeamHistoryChart(
       game: fmtGame(g.date, g.opponent, g.isHome),
       value: g.margin,
       line: 0,
-      overLine: g.won,
+      overLine: g.won, home: g.isHome,
     }));
     const wins = games.filter((g) => g.won).length;
     const last10 = games.slice(-10);
@@ -125,7 +125,7 @@ export function buildMLBTeamHistoryChart(
       game: fmtGame(g.date, g.opponent, g.isHome),
       value: g.margin,
       line: -line,
-      overLine: g.margin + line > 0,
+      overLine: g.margin + line > 0, home: g.isHome,
     }));
     const covers = games.filter((g) => g.margin + line > 0).length;
     const last10 = games.slice(-10);
@@ -145,7 +145,7 @@ export function buildMLBTeamHistoryChart(
     game: fmtGame(g.date, g.opponent, g.isHome),
     value: g.margin,
     line: 0,
-    overLine: g.won,
+    overLine: g.won, home: g.isHome,
   }));
   return {
     type: "hitrate" as ChartConfig["type"],

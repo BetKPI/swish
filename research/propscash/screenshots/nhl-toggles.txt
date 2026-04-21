@@ -1,0 +1,40 @@
+Dismiss
+Open main menu
+SOG
+GOALS
+PTS
+AST
+PP PTS
+BLK SHOTS
+HITS
+25/26
+H2H
+L5
+L10
+L20
+L30
+24/25
+Full
+1P
+2P
+3P
+Increase line
+Decrease line
+home
+away
+Reg Season
+Playoffs
+Win
+Loss
+1 Days Rest
+RanksValues
+All
+LW
+D
+C
+RW
+l5
+l10
+l20
+szn
+h2h
