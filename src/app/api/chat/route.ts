@@ -370,6 +370,7 @@ ${JSON.stringify(computedData, null, 2)}
 USER QUESTION: "${message}"
 
 Decide: can you answer this from the existing data, or do you need to fetch more?
+NOTE: Futures bets may have only ONE team and no opponent — this is normal. Use standings, win%, and team record from existing data to answer.
 
 Respond with ONLY valid JSON in one of these formats:
 
@@ -456,7 +457,8 @@ RULES:
 - We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests.
 - Data keys must be camelCase.
 - Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.
-- SWISH SCORE: If the user asks "what's the score", "is this a good bet", "what do you think", or mentions the Swish Score — reference the score above and explain what's driving it (hit rate, trend, consistency, etc). The score is computed deterministically from real data, not from AI judgment. Explain the data factors.`;
+- SWISH SCORE: If the user asks "what's the score", "is this a good bet", "what do you think", or mentions the Swish Score — reference the score above and explain what's driving it (hit rate, trend, consistency, etc). The score is computed deterministically from real data, not from AI judgment. Explain the data factors.
+- FUTURES BETS: For bets like "win the World Series", "win the AL", "win the division", the existing data will have standings snapshots and team records. Build a table or chart from that data showing current standings position, win%, and recent trajectory. There may be only ONE team (no opponent) — that's normal for futures. Use existing data to show their path to the title. If the user asks about championship history, use "team_schedule" to fetch more data.`;
 
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {

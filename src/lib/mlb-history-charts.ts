@@ -14,6 +14,7 @@ import type {
   MLBBatterVsPitcher,
   MLBStandingsSnapshot,
 } from "./mlb-history";
+import { getChampionshipHistory, formatChampionshipSummary } from "./championship-history";
 
 // ── Local helpers ──────────────────────────────────────────────────
 
@@ -901,6 +902,32 @@ export function buildMLBDefaultCharts(
     for (const teamName of teams) {
       const chart = buildMLBFuturesChart(teamName, history.standings, kind);
       if (chart) out.push(chart);
+      // Championship history table
+      const record = getChampionshipHistory(teamName, "MLB");
+      if (record) {
+        const futuresType = kind === "world_series" ? "title" : kind === "league" ? "league" : "division";
+        const titleYears = record.title;
+        const leagueYears = record.league;
+        const divYears = record.division;
+        const data: Record<string, string>[] = [];
+        if (titleYears.length > 0) data.push({ stat: "World Series Titles", Value: `${titleYears.length}x — last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "World Series Titles", Value: "Never", Years: "—" });
+        if (leagueYears.length > 0) data.push({ stat: "Pennants (AL/NL)", Value: `${leagueYears.length}x — last: ${leagueYears[0]}`, Years: leagueYears.slice(0, 6).join(", ") + (leagueYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Pennants (AL/NL)", Value: "Never", Years: "—" });
+        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x — last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Division Titles", Value: "Never", Years: "—" });
+        out.push({
+          type: "table",
+          title: `${teamName} — Championship History`,
+          relevance: formatChampionshipSummary(teamName, record, futuresType),
+          data,
+          columns: [
+            { key: "stat", label: "" },
+            { key: "Value", label: "Record" },
+            { key: "Years", label: "Recent Years" },
+          ],
+        });
+      }
     }
     return out;
   }

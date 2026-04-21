@@ -10,6 +10,7 @@ import type {
   NHLPlayerGame,
   NHLStandingsSnapshot,
 } from "./nhl-history";
+import { getChampionshipHistory, formatChampionshipSummary } from "./championship-history";
 
 function shortDate(d: string): string {
   try {
@@ -563,6 +564,26 @@ export function buildNHLDefaultCharts(
     for (const teamName of teams) {
       const chart = buildNHLFuturesChart(teamName, history.standings);
       if (chart) out.push(chart);
+      const record = getChampionshipHistory(teamName, "NHL");
+      if (record) {
+        const titleYears = record.title;
+        const confYears = record.league;
+        const divYears = record.division;
+        const data: Record<string, string>[] = [];
+        if (titleYears.length > 0) data.push({ stat: "Stanley Cup", Value: `${titleYears.length}x — last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Stanley Cup", Value: "Never", Years: "—" });
+        if (confYears.length > 0) data.push({ stat: "Conference Finals", Value: `${confYears.length}x — last: ${confYears[0]}`, Years: confYears.slice(0, 6).join(", ") + (confYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Conference Finals", Value: "Never", Years: "—" });
+        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x — last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Division Titles", Value: "Never", Years: "—" });
+        out.push({
+          type: "table",
+          title: `${teamName} — Championship History`,
+          relevance: formatChampionshipSummary(teamName, record, "title"),
+          data,
+          columns: [{ key: "stat", label: "" }, { key: "Value", label: "Record" }, { key: "Years", label: "Recent Years" }],
+        });
+      }
     }
     if (out.length > 0) return out;
   }
