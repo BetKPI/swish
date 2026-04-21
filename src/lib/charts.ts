@@ -1593,30 +1593,27 @@ function buildSpreadCharts(
   const teams = Object.values(computed.teamMetrics);
   const line = extraction.line ?? 0;
 
-  // 1. Margin of victory trend with spread line + rolling avg
+  // 1. Green/red cover chart — green = covered spread, red = didn't
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    const recent = team.recentGames.slice(-20); // Show up to 20 games
-    const coversInWindow = recent.filter((g) => g.margin + line > 0).length;
-    const data = recent.map((g, i) => {
-      const window = recent.slice(Math.max(0, i - 2), i + 1);
-      const rollingMargin = Math.round((window.reduce((s, w) => s + w.margin, 0) / window.length) * 10) / 10;
-      return {
-        game: shortenName(g.opponent),
-        margin: g.margin,
-        rollingMargin: i >= 2 ? rollingMargin : undefined,
-        spreadLine: -line,
-      };
-    });
-    const avgMargin = Math.round((recent.reduce((s, g) => s + g.margin, 0) / recent.length) * 10) / 10;
-    const trending = recent.slice(-3).reduce((s, g) => s + g.margin, 0) / 3 > avgMargin ? "trending up" : "trending down";
+    const recent = team.recentGames.slice(-20);
+    const allGames = team.recentGames;
+    const data = recent.map((g) => ({
+      game: shortenName(g.opponent),
+      value: g.margin,
+      line: -line,
+      overLine: g.margin + line > 0,
+    }));
+    const covers = allGames.filter((g) => g.margin + line > 0).length;
+    const last10 = allGames.slice(-10);
+    const l10Covers = last10.filter((g) => g.margin + line > 0).length;
     charts.push({
-      type: "line",
-      title: `${team.name} — Margin vs Spread (Last ${recent.length} Games)`,
-      relevance: `Covered ${line > 0 ? "+" : ""}${line} in ${coversInWindow}/${recent.length} (avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}, ${trending})`,
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.name} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      relevance: `Covered in ${covers}/${allGames.length} (${Math.round((covers / allGames.length) * 100)}%). Last 10: ${l10Covers}/${last10.length}`,
       data,
       xKey: "game",
-      yKeys: ["margin", "rollingMargin", "spreadLine"],
+      yKeys: ["value"],
     });
   }
 
@@ -1801,37 +1798,34 @@ function buildOverUnderCharts(
   const teams = Object.values(computed.teamMetrics);
   const line = extraction.line ?? 0;
 
-  // 1. Combined scoring trend with O/U line
-  if (teams.length === 2) {
-    const maxLen = Math.min(teams[0].recentGames.length, teams[1].recentGames.length, 20);
-    if (maxLen >= 3) {
-      const data = [];
-      for (let i = 0; i < maxLen; i++) {
-        const g1 = teams[0].recentGames[teams[0].recentGames.length - maxLen + i];
-        const g2 = teams[1].recentGames[teams[1].recentGames.length - maxLen + i];
-        data.push({
-          game: `G${i + 1}`,
-          [`${shortenName(teams[0].name)}Total`]: g1.totalPoints,
-          [`${shortenName(teams[1].name)}Total`]: g2.totalPoints,
-          ouLine: line,
-        });
-      }
-      // Count how many would go over
-      const t0Overs = teams[0].recentGames.slice(-maxLen).filter((g) => g.totalPoints > line).length;
-      const t1Overs = teams[1].recentGames.slice(-maxLen).filter((g) => g.totalPoints > line).length;
-      charts.push({
-        type: "line",
-        title: `Game Totals vs O/U Line (Last ${maxLen} Games)`,
-        relevance: `${shortenName(teams[0].name)} went over ${line} in ${t0Overs}/${maxLen}, ${shortenName(teams[1].name)} in ${t1Overs}/${maxLen}`,
-        data,
-        xKey: "game",
-        yKeys: [
-          `${shortenName(teams[0].name)}Total`,
-          `${shortenName(teams[1].name)}Total`,
-          "ouLine",
-        ],
-      });
-    }
+  // 1. Green/red over/under bars per team
+  for (const team of teams) {
+    if (team.recentGames.length < 3 || line <= 0) continue;
+    const recent = team.recentGames.slice(-20);
+    const isUnder = (extraction.description || "").toLowerCase().includes("under");
+    const data = recent.map((g) => ({
+      game: shortenName(g.opponent),
+      value: g.totalPoints,
+      line,
+      overLine: isUnder ? g.totalPoints < line : g.totalPoints > line,
+    }));
+    const allGames = team.recentGames;
+    const hits = isUnder
+      ? allGames.filter((g) => g.totalPoints < line).length
+      : allGames.filter((g) => g.totalPoints > line).length;
+    const last10 = allGames.slice(-10);
+    const l10Hits = isUnder
+      ? last10.filter((g) => g.totalPoints < line).length
+      : last10.filter((g) => g.totalPoints > line).length;
+    const label = isUnder ? "Under" : "Over";
+    charts.push({
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.name} — Game Totals vs ${line} (${label})`,
+      relevance: `${label} ${line} in ${hits}/${allGames.length} (${Math.round((hits / allGames.length) * 100)}%). Last 10: ${l10Hits}/${last10.length}`,
+      data,
+      xKey: "game",
+      yKeys: ["value"],
+    });
   }
 
   // 2. Pace & scoring context table
@@ -1969,26 +1963,26 @@ function buildMoneylineCharts(
     });
   }
 
-  // 2. Point differential trend — best ML predictor
+  // 2. Win/loss green/red bars — best ML predictor
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
-    let runningDiff = 0;
-    const data = team.recentGames.slice(-20).map((g, i) => {
-      runningDiff += g.margin;
-      return {
-        game: `G${i + 1}`,
-        margin: g.margin,
-        cumulativeDiff: runningDiff,
-        opponent: shortenName(g.opponent),
-      };
-    });
+    const recent = team.recentGames.slice(-20);
+    const data = recent.map((g) => ({
+      game: shortenName(g.opponent),
+      value: g.margin,
+      line: 0,
+      overLine: g.won,
+    }));
+    const wins = team.recentGames.filter((g) => g.won).length;
+    const last10 = team.recentGames.slice(-10);
+    const l10Wins = last10.filter((g) => g.won).length;
     charts.push({
-      type: "bar",
-      title: `${team.name} — Game-by-Game Margin`,
-      relevance: "Shows if the team is winning comfortably or squeaking by",
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.name} — Win/Loss Margin`,
+      relevance: `${wins}-${team.recentGames.length - wins} overall (${Math.round((wins / team.recentGames.length) * 100)}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data,
       xKey: "game",
-      yKeys: ["margin"],
+      yKeys: ["value"],
     });
   }
 

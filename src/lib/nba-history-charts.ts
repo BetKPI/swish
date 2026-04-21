@@ -56,75 +56,86 @@ export function buildNBATeamHistoryChart(
   marketType: "spread" | "moneyline" | "total",
   line: number | undefined,
 ): ChartConfig | null {
-  if (team.games.length === 0) return null;
-  const { last, current } = splitBySeason(team.games, team.lastSeason, team.currentSeason);
-  if (last.length === 0 && current.length === 0) return null;
+  const current = team.games.filter((g) => g.season === team.currentSeason);
+  if (current.length < 5) return null;
 
-  const pick = (g: NBATeamGame): number =>
-    marketType === "total" ? g.total : g.margin;
-  const lastRaw = last.map(pick);
-  const currRaw = current.map(pick);
-  const lastAvg = rollingMean(lastRaw, 12);
-  const currAvg = rollingMean(currRaw, 12);
+  const recent = current.slice(-20);
 
-  const maxLen = Math.max(lastAvg.length, currAvg.length);
-  const rows: Record<string, unknown>[] = [];
-  for (let i = 0; i < maxLen; i++) {
-    const row: Record<string, unknown> = { game: `G${i + 1}` };
-    if (i < lastAvg.length) row.lastSeason = lastAvg[i];
-    if (i < currAvg.length) row.currentSeason = currAvg[i];
-    if (line != null) row.line = marketType === "spread" ? -line : line;
-    rows.push(row);
-  }
-
-  const yKeys = line != null ? ["lastSeason", "currentSeason", "line"] : ["lastSeason", "currentSeason"];
-
-  const lastLabel = seasonLabel(team.lastSeason);
-  const currLabel = seasonLabel(team.currentSeason);
-
-  if (marketType === "total") {
-    const threshold = line ?? 0;
-    const overs = [...lastRaw, ...currRaw].filter((v) => v > threshold).length;
-    const curOvers = currRaw.filter((v) => v > threshold).length;
+  if (marketType === "total" && line != null) {
+    const rows = recent.map((g) => ({
+      game: `${shortDate(g.date)} ${g.opponent}`,
+      value: g.total,
+      line,
+      overLine: g.total > line,
+    }));
+    const allOvers = current.filter((g) => g.total > line).length;
+    const last10 = current.slice(-10);
+    const l10Overs = last10.filter((g) => g.total > line).length;
     return {
-      type: "line",
-      title: `${team.teamName} — Total Points (12-game rolling avg)`,
-      relevance:
-        line != null
-          ? `Over ${line} in ${overs} of ${lastRaw.length + currRaw.length} games (${curOvers} of ${currRaw.length} this season). Smoothed across ${lastLabel} and ${currLabel}.`
-          : `Smoothed game-total trend across ${lastLabel} and ${currLabel}.`,
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Game Totals vs ${line} Line`,
+      relevance: `Over ${line} in ${allOvers}/${current.length} this season (${current.length > 0 ? Math.round((allOvers / current.length) * 100) : 0}%). Last 10: ${l10Overs}/${last10.length}`,
       data: rows,
       xKey: "game",
-      yKeys,
+      yKeys: ["value"],
     };
   }
 
   if (marketType === "moneyline") {
-    const lastW = last.filter((g) => g.won).length;
-    const curW = current.filter((g) => g.won).length;
+    const rows = recent.map((g) => ({
+      game: `${shortDate(g.date)} ${g.opponent}`,
+      value: g.margin,
+      line: 0,
+      overLine: g.won,
+    }));
+    const wins = current.filter((g) => g.won).length;
+    const last10 = current.slice(-10);
+    const l10Wins = last10.filter((g) => g.won).length;
     return {
-      type: "line",
-      title: `${team.teamName} — Point Differential (12-game rolling avg)`,
-      relevance: `Last season ${lastW}-${last.length - lastW}, this season ${curW}-${current.length - curW}. Above zero = winning more than losing.`,
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Win/Loss Margin`,
+      relevance: `${wins}-${current.length - wins} this season (${current.length > 0 ? Math.round((wins / current.length) * 100) : 0}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data: rows,
       xKey: "game",
-      yKeys: ["lastSeason", "currentSeason"],
+      yKeys: ["value"],
     };
   }
 
-  const threshold = line ?? 0;
-  const covers = [...lastRaw, ...currRaw].filter((v) => v > -threshold).length;
-  const thisCovers = currRaw.filter((v) => v > -threshold).length;
+  // Spread
+  if (line != null) {
+    const rows = recent.map((g) => ({
+      game: `${shortDate(g.date)} ${g.opponent}`,
+      value: g.margin,
+      line: -line,
+      overLine: g.margin + line > 0,
+    }));
+    const covers = current.filter((g) => g.margin + line > 0).length;
+    const last10 = current.slice(-10);
+    const l10Covers = last10.filter((g) => g.margin + line > 0).length;
+    return {
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      relevance: `Covered in ${covers}/${current.length} this season (${current.length > 0 ? Math.round((covers / current.length) * 100) : 0}%). Last 10: ${l10Covers}/${last10.length}`,
+      data: rows,
+      xKey: "game",
+      yKeys: ["value"],
+    };
+  }
+
+  // No line — margin bars
+  const rows = recent.map((g) => ({
+    game: `${shortDate(g.date)} ${g.opponent}`,
+    value: g.margin,
+    line: 0,
+    overLine: g.won,
+  }));
   return {
-    type: "line",
-    title: `${team.teamName} — Margin vs Spread (12-game rolling avg)`,
-    relevance:
-      line != null
-        ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${lastRaw.length + currRaw.length} games (${thisCovers} of ${currRaw.length} this season). When the line sits above the spread reference, they've been covering.`
-        : `Smoothed margin trend across ${lastLabel} and ${currLabel}.`,
+    type: "hitrate" as ChartConfig["type"],
+    title: `${team.teamName} — Game Margins`,
+    relevance: `Point margin per game — green = win, red = loss`,
     data: rows,
     xKey: "game",
-    yKeys,
+    yKeys: ["value"],
   };
 }
 

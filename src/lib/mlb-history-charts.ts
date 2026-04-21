@@ -72,83 +72,88 @@ export function buildMLBTeamHistoryChart(
   marketType: "spread" | "moneyline" | "total",
   line: number | undefined,
 ): ChartConfig | null {
-  const total = team.lastSeason.length + team.currentSeason.length;
-  if (total < 10) return null;
+  const games = team.currentSeason;
+  if (games.length < 5) return null;
 
-  // Pull per-game values per season, then smooth with a 15-game rolling mean
-  // so users see a trend instead of a sawtooth of single-game results.
-  const pick = (g: MLBTeamGame): number =>
-    marketType === "total" ? g.totalRuns : g.margin;
-  const lastRaw = team.lastSeason.map(pick);
-  const currRaw = team.currentSeason.map(pick);
-  const lastAvg = rollingMean(lastRaw, 15);
-  const currAvg = rollingMean(currRaw, 15);
+  const recent = games.slice(-20);
 
-  // Align both seasons on a shared "game number within season" x-axis so
-  // the two overlay cleanly instead of being strung end-to-end.
-  const maxLen = Math.max(lastAvg.length, currAvg.length);
-  const rows: Record<string, unknown>[] = [];
-  for (let i = 0; i < maxLen; i++) {
-    const row: Record<string, unknown> = { game: `G${i + 1}` };
-    if (i < lastAvg.length) row.lastSeason = lastAvg[i];
-    if (i < currAvg.length) row.currentSeason = currAvg[i];
-    if (line !== undefined) {
-      row.line = marketType === "spread" ? -line : line;
-    }
-    rows.push(row);
-  }
-
-  const yKeys =
-    line !== undefined
-      ? ["lastSeason", "currentSeason", "line"]
-      : ["lastSeason", "currentSeason"];
-
-  if (marketType === "total") {
-    const threshold = line ?? 0;
-    const overs = [...lastRaw, ...currRaw].filter((v) => v > threshold).length;
-    const curOvers = currRaw.filter((v) => v > threshold).length;
+  if (marketType === "total" && line != null) {
+    // Green/red bars: green = over, red = under
+    const rows = recent.map((g) => ({
+      game: fmtGame(g.date, g.opponent, g.isHome),
+      value: g.totalRuns,
+      line,
+      overLine: g.totalRuns > line,
+    }));
+    const allOvers = games.filter((g) => g.totalRuns > line).length;
+    const last10 = games.slice(-10);
+    const l10Overs = last10.filter((g) => g.totalRuns > line).length;
     return {
-      type: "line",
-      title: `${team.teamName} — Total Runs (15-game rolling avg)`,
-      relevance:
-        line !== undefined
-          ? `Over ${line} in ${overs} of ${total} games (${curOvers} of ${currRaw.length} this season). Smoothed so you can see the trend — each point is the last 15 games.`
-          : `Smoothed total-runs trend across ${team.lastSeasonYear} and ${team.currentSeasonYear}.`,
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Game Totals vs ${line} Line`,
+      relevance: `Over ${line} in ${allOvers}/${games.length} this season (${pct(allOvers, games.length)}%). Last 10: ${l10Overs}/${last10.length}`,
       data: rows,
       xKey: "game",
-      yKeys,
+      yKeys: ["value"],
     };
   }
 
   if (marketType === "moneyline") {
-    const lastW = team.lastSeason.filter((g) => g.won).length;
-    const lastL = team.lastSeason.length - lastW;
-    const curW = team.currentSeason.filter((g) => g.won).length;
-    const curL = team.currentSeason.length - curW;
+    // Green/red bars: green = win, red = loss
+    const rows = recent.map((g) => ({
+      game: fmtGame(g.date, g.opponent, g.isHome),
+      value: g.margin,
+      line: 0,
+      overLine: g.won,
+    }));
+    const wins = games.filter((g) => g.won).length;
+    const last10 = games.slice(-10);
+    const l10Wins = last10.filter((g) => g.won).length;
     return {
-      type: "line",
-      title: `${team.teamName} — Run Differential (15-game rolling avg)`,
-      relevance: `Last season ${lastW}-${lastL}, this season ${curW}-${curL}. The line is their rolling 15-game run differential — above zero = winning more than losing.`,
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Win/Loss Margin`,
+      relevance: `${wins}-${games.length - wins} this season (${pct(wins, games.length)}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data: rows,
       xKey: "game",
-      yKeys: ["lastSeason", "currentSeason"],
+      yKeys: ["value"],
     };
   }
 
-  // Spread
-  const threshold = line ?? 0;
-  const covers = [...lastRaw, ...currRaw].filter((v) => v > -threshold).length;
-  const thisSeasonCovers = currRaw.filter((v) => v > -threshold).length;
+  // Spread: green = covered, red = didn't
+  if (line != null) {
+    const rows = recent.map((g) => ({
+      game: fmtGame(g.date, g.opponent, g.isHome),
+      value: g.margin,
+      line: -line,
+      overLine: g.margin + line > 0,
+    }));
+    const covers = games.filter((g) => g.margin + line > 0).length;
+    const last10 = games.slice(-10);
+    const l10Covers = last10.filter((g) => g.margin + line > 0).length;
+    return {
+      type: "hitrate" as ChartConfig["type"],
+      title: `${team.teamName} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      relevance: `Covered in ${covers}/${games.length} this season (${pct(covers, games.length)}%). Last 10: ${l10Covers}/${last10.length}`,
+      data: rows,
+      xKey: "game",
+      yKeys: ["value"],
+    };
+  }
+
+  // No line — show margin bars with win/loss coloring
+  const rows = recent.map((g) => ({
+    game: fmtGame(g.date, g.opponent, g.isHome),
+    value: g.margin,
+    line: 0,
+    overLine: g.won,
+  }));
   return {
-    type: "line",
-    title: `${team.teamName} — Margin vs Spread (15-game rolling avg)`,
-    relevance:
-      line !== undefined
-        ? `Covered ${line > 0 ? "+" : ""}${line} in ${covers} of ${total} games (${thisSeasonCovers} of ${currRaw.length} this season). The reference line is the spread — when the rolling margin is above it, they've been covering.`
-        : `Smoothed run-differential trend across ${team.lastSeasonYear} and ${team.currentSeasonYear}.`,
+    type: "hitrate" as ChartConfig["type"],
+    title: `${team.teamName} — Game Margins`,
+    relevance: `Run margin per game — green = win, red = loss`,
     data: rows,
     xKey: "game",
-    yKeys,
+    yKeys: ["value"],
   };
 }
 
