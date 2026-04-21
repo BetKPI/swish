@@ -328,6 +328,39 @@ export function buildNBAPlayerHistoryChart(
 ): ChartConfig | null {
   if (player.games.length === 0) return null;
 
+  // When we have a line, show green/red hitrate bars (props.cash style)
+  if (line != null) {
+    const currentGames = player.games.filter((g) => g.season === player.currentSeason);
+    const recent = currentGames.slice(-20);
+    const rows: Record<string, unknown>[] = [];
+    for (const g of recent) {
+      const v = findStat(g, stat);
+      if (v == null) continue;
+      rows.push({
+        game: `${shortDate(g.date)} ${g.opponent}`,
+        value: v,
+        line,
+        overLine: v > line,
+      });
+    }
+    if (rows.length === 0) return null;
+
+    const allVals = currentGames.map((g) => findStat(g, stat)).filter((v): v is number => v != null);
+    const hits = allVals.filter((v) => v > line).length;
+    const last10 = allVals.slice(-10);
+    const last10Hits = last10.filter((v) => v > line).length;
+
+    return {
+      type: "hitrate" as ChartConfig["type"],
+      title: `${player.playerName} — ${stat} vs ${line} Line`,
+      relevance: `Over ${line} in ${hits}/${allVals.length} this season (${allVals.length > 0 ? Math.round((hits / allVals.length) * 100) : 0}%). Last 10: ${last10Hits}/${last10.length}`,
+      data: rows,
+      xKey: "game",
+      yKeys: ["value"],
+    };
+  }
+
+  // No line — fall back to line chart across both seasons
   const rows: Record<string, unknown>[] = [];
   let hasAny = false;
   for (const g of player.games) {
@@ -339,7 +372,6 @@ export function buildNBAPlayerHistoryChart(
       date: shortDate(g.date),
       opponent: g.opponent,
       [isCurrent ? "currentSeason" : "lastSeason"]: v,
-      ...(line != null ? { line } : {}),
     });
   }
   if (!hasAny) return null;
@@ -347,10 +379,10 @@ export function buildNBAPlayerHistoryChart(
   return {
     type: "line",
     title: `${player.playerName} — ${stat} (${player.lastSeason - 1}-${String(player.lastSeason).slice(2)} & ${player.currentSeason - 1}-${String(player.currentSeason).slice(2)})`,
-    relevance: `Game-by-game ${stat} across both seasons${line != null ? ` vs the ${line} line` : ""}.`,
+    relevance: `Game-by-game ${stat} across both seasons.`,
     data: rows,
     xKey: "date",
-    yKeys: ["lastSeason", "currentSeason", ...(line != null ? ["line"] : [])],
+    yKeys: ["lastSeason", "currentSeason"],
   };
 }
 

@@ -460,23 +460,23 @@ export function buildMLBBatterHistoryChart(
     }
   };
 
-  const rows: Record<string, unknown>[] = [];
-  const addRow = (g: MLBBatterGame, isCurrent: boolean) => {
+  // Green/red hit rate bar chart — props.cash style
+  const allGames = [...batter.currentSeason];
+  const recentGames = allGames.slice(-20); // Show last 20 games for readability
+  const rows: Record<string, unknown>[] = recentGames.map((g) => {
     const v = pick(g);
-    rows.push({
+    return {
       game: fmtPitcherGame(g.date, g.opponent),
-      lastSeasonValue: isCurrent ? null : v,
-      currentSeasonValue: isCurrent ? v : null,
+      value: v,
       line,
-    });
-  };
-  for (const g of batter.lastSeason) addRow(g, false);
-  for (const g of batter.currentSeason) addRow(g, true);
+      overLine: v >= line,
+    };
+  });
 
-  const hits = [...batter.lastSeason, ...batter.currentSeason].filter(
-    (g) => pick(g) >= line,
-  ).length;
-  const curHits = batter.currentSeason.filter((g) => pick(g) >= line).length;
+  const hits = allGames.filter((g) => pick(g) >= line).length;
+  const curTotal = allGames.length;
+  const last10 = allGames.slice(-10);
+  const last10Hits = last10.filter((g) => pick(g) >= line).length;
 
   const label =
     stat === "homeRuns"
@@ -492,12 +492,12 @@ export function buildMLBBatterHistoryChart(
               : stat.charAt(0).toUpperCase() + stat.slice(1);
 
   return {
-    type: "line",
-    title: `${batter.batterName} — ${label} History`,
-    relevance: `Hit ${line}+ in ${hits}/${total} games (${pct(hits, total)}% — ${pct(curHits, batter.currentSeason.length)}% this season)`,
+    type: "hitrate" as ChartConfig["type"],
+    title: `${batter.batterName} — ${label} vs ${line} Line`,
+    relevance: `Over ${line} in ${hits}/${curTotal} this season (${pct(hits, curTotal)}%). Last 10: ${last10Hits}/${last10.length} (${pct(last10Hits, last10.length)}%)`,
     data: rows,
     xKey: "game",
-    yKeys: ["lastSeasonValue", "currentSeasonValue", "line"],
+    yKeys: ["value"],
   };
 }
 

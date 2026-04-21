@@ -33,6 +33,17 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
   const chartRef = useRef<HTMLDivElement>(null);
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
   const [rated, setRated] = useState<"up" | "down" | null>(null);
+  const [window, setWindow] = useState<number | null>(null); // null = all data
+
+  // Time window filter — applies to hitrate, line, and bar charts (not tables)
+  const showToggle = type !== "table" && data.length > 10;
+  const windowOptions = [
+    { label: "L5", value: 5 },
+    { label: "L10", value: 10 },
+    { label: "L20", value: 20 },
+    { label: "All", value: null },
+  ];
+  const filteredData = window != null ? data.slice(-window) : data;
 
   const handleShare = useCallback(async () => {
     if (!chartRef.current) return;
@@ -116,19 +127,40 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
       </div>
 
       <div>
-        <h3 className="font-semibold text-sm">{title}</h3>
-        <p className="text-muted text-xs leading-relaxed">{relevance}</p>
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-sm">{title}</h3>
+            <p className="text-muted text-xs leading-relaxed">{relevance}</p>
+          </div>
+          {showToggle && (
+            <div className="flex gap-1 flex-shrink-0">
+              {windowOptions.map((opt) => (
+                <button
+                  key={opt.label}
+                  onClick={() => setWindow(opt.value)}
+                  className={`px-2 py-0.5 text-[10px] font-bold rounded-md transition-colors cursor-pointer ${
+                    window === opt.value
+                      ? "bg-accent text-black"
+                      : "bg-surface-light text-muted hover:text-foreground"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {type === "table" ? (
         <TableChart data={data} columns={columns} />
       ) : type === "line" ? (
-        <RechartsLine data={data} xKey={xKey} yKeys={yKeys} />
+        <RechartsLine data={filteredData} xKey={xKey} yKeys={yKeys} />
       ) : type === "hitrate" ? (
-        <RechartsHitRate data={data} xKey={xKey} />
+        <RechartsHitRate data={filteredData} xKey={xKey} />
       ) : (
         <RechartsBar
-          data={data}
+          data={filteredData}
           xKey={xKey}
           yKeys={yKeys}
           isDistribution={type === "distribution"}
