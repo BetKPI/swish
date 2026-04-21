@@ -1602,7 +1602,7 @@ ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: MAX 2 short sentences. Lead with the KEY number (hit rate, avg, trend direction), then add opponent/matchup context. Example: "Brunson has cleared 26.5 points in 9 of his last 12 and is averaging 28.4 over that stretch. The Bulls rank 27th in opponent points allowed per game." No fluff, no "this looks good" — just the data story.
+1. **summary**: 2-3 punchy sentences. Lead with the KEY number (hit rate, avg, trend direction). Then weave in opponent/matchup context and a situational factor (home/away, rest, streak, pitcher matchup). Example: "Brunson has cleared 26.5 points in 9 of his last 12, averaging 28.4 over that stretch. The Bulls rank 27th in opponent points allowed — and Brunson averages 31.2 on the road this season." Combine multiple data points into one flowing narrative, don't just list stats. No fluff, no "this looks good" — data story with context.
 
 2. **stats**: Array of 3-4 stats (NOT 5). Each has:
    - label: short and punchy (4 words max). Use action words: "Hit Rate L10", "Season Avg", "Opp Allows", "Last 5 Trend"
@@ -1672,8 +1672,8 @@ function buildParlayBatchPrompt(
   return `${context}
 
 Return JSON with ONE key "legs" — an array with ${legData.length} objects (one per leg, same order). Each object has:
-- summary: MAX 1-2 sentences, data story only — no "bet" or "pass" recommendations
-- stats: array of 2-3 stats, each with label (4 words max), value, context (1 sentence)
+- summary: 2-3 sentences weaving key numbers with matchup/venue context into one flowing narrative. Don't just list stats — tell the data story. No "bet" or "pass" recommendations.
+- stats: array of 2-3 stats, each with label (4 words max), value, context (1 sentence with opponent or venue context)
 
 Example: {"legs":[{"summary":"...","stats":[...]},{"summary":"...","stats":[...]}]}
 

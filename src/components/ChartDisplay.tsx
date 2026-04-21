@@ -117,7 +117,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
 
       <div>
         <h3 className="font-semibold text-sm">{title}</h3>
-        <p className="text-muted text-xs">{relevance}</p>
+        <p className="text-muted text-xs leading-relaxed">{relevance}</p>
       </div>
 
       {type === "table" ? (

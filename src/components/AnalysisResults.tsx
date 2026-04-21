@@ -214,11 +214,11 @@ export default function AnalysisResults({
 
       {/* AI Summary */}
       {summary && (
-        <div className="bg-surface rounded-xl p-4">
-          <h3 className="font-semibold text-sm mb-2 text-accent">
+        <div className="bg-surface rounded-xl p-5 border border-border/50">
+          <h3 className="font-semibold text-sm mb-3 text-accent uppercase tracking-wide">
             The Breakdown
           </h3>
-          <p className="text-sm text-foreground/90 leading-relaxed">
+          <p className="text-sm text-foreground/90 leading-[1.7]">
             {summary}
           </p>
         </div>
