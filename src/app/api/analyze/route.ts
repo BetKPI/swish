@@ -203,8 +203,8 @@ export async function POST(request: NextRequest) {
           },
         }),
       },
-      2, // 2 retries for Gemini extraction (critical path)
-      3000
+      3, // 3 retries for Gemini extraction (critical path — handles 503 spikes)
+      4000
     );
 
     if (!response.ok) {
@@ -216,9 +216,13 @@ export async function POST(request: NextRequest) {
           body: JSON.stringify({ embeds: [{ title: "Gemini API Error", color: 0xef4444, fields: [{ name: "Status", value: `${response.status}`, inline: true }, { name: "Error", value: err.slice(0, 500), inline: false }], timestamp: new Date().toISOString() }] }),
         }).catch(() => {});
       }
+      // User-friendly error for server overload vs actual failures
+      const isOverloaded = response.status === 503 || response.status === 429;
       return NextResponse.json(
-        { error: "Failed to analyze image" },
-        { status: 500 }
+        { error: isOverloaded
+          ? "Our AI is temporarily overloaded — wait a few seconds and try again"
+          : "Failed to analyze image" },
+        { status: isOverloaded ? 503 : 500 }
       );
     }
 

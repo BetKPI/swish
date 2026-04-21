@@ -192,7 +192,10 @@ export default function Home() {
         }),
         timeout(30000),
       ]);
-      if (!analyzeRes.ok) throw new Error("Couldn't read that image — try a clearer screenshot");
+      if (!analyzeRes.ok) {
+        const errData = await analyzeRes.json().catch(() => null);
+        throw new Error(errData?.error || "Couldn't read that image — try a clearer screenshot");
+      }
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
 
