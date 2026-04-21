@@ -15,22 +15,31 @@ import { computeHitRate, computeTrend, computeConsistency } from "@/lib/stat-too
  */
 
 async function callGemini(prompt: string, apiKey: string): Promise<string | null> {
-  const response = await fetchWithRetry(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: { temperature: 0.2, maxOutputTokens: 3000 },
-      }),
-    },
-    2,
-    3000
-  );
-  if (!response.ok) return null;
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.2, maxOutputTokens: 3000 },
+  });
+  const headers = { "Content-Type": "application/json" };
+  const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+
+  for (const model of MODELS) {
+    const response = await fetchWithRetry(
+      `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+      { method: "POST", headers, body },
+      1,
+      2000
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    }
+    if (response.status === 503 || response.status === 429) {
+      console.log(`[Chat] ${model} returned ${response.status}, trying fallback...`);
+      continue;
+    }
+    return null;
+  }
+  return null;
 }
 
 function parseJSON(text: string): Record<string, unknown> {

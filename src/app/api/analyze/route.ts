@@ -176,48 +176,60 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const response = await fetchWithRetry(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
+    const geminiBody = JSON.stringify({
+      contents: [
+        {
+          parts: [
             {
-              parts: [
-                {
-                  inlineData: {
-                    mimeType: "image/png",
-                    data: image,
-                  },
-                },
-                {
-                  text: EXTRACTION_PROMPT,
-                },
-              ],
+              inlineData: {
+                mimeType: "image/png",
+                data: image,
+              },
+            },
+            {
+              text: EXTRACTION_PROMPT,
             },
           ],
-          generationConfig: {
-            temperature: 0.1,
-            maxOutputTokens: 4096,
-          },
-        }),
+        },
+      ],
+      generationConfig: {
+        temperature: 0.1,
+        maxOutputTokens: 4096,
       },
-      3, // 3 retries for Gemini extraction (critical path — handles 503 spikes)
-      4000
-    );
+    });
 
-    if (!response.ok) {
-      const err = await response.text();
-      console.error("Gemini API error:", response.status, err);
+    const geminiHeaders = { "Content-Type": "application/json" };
+    const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+
+    let response: Response | null = null;
+    for (const model of MODELS) {
+      response = await fetchWithRetry(
+        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
+        { method: "POST", headers: geminiHeaders, body: geminiBody },
+        2,
+        3000
+      );
+      if (response.ok) break;
+      // If 503/429, try the next model
+      if (response.status === 503 || response.status === 429) {
+        console.log(`[Analyze] ${model} returned ${response.status}, trying fallback...`);
+        continue;
+      }
+      break; // Other errors — don't retry with different model
+    }
+
+    if (!response || !response.ok) {
+      const err = response ? await response.text() : "All models unavailable";
+      const status = response?.status ?? 503;
+      console.error("Gemini API error:", status, err);
       const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
       if (webhookUrl) {
         fetch(webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ embeds: [{ title: "Gemini API Error", color: 0xef4444, fields: [{ name: "Status", value: `${response.status}`, inline: true }, { name: "Error", value: err.slice(0, 500), inline: false }], timestamp: new Date().toISOString() }] }),
+          body: JSON.stringify({ embeds: [{ title: "Gemini API Error", color: 0xef4444, fields: [{ name: "Status", value: `${status}`, inline: true }, { name: "Error", value: err.slice(0, 500), inline: false }], timestamp: new Date().toISOString() }] }),
         }).catch(() => {});
       }
       // User-friendly error for server overload vs actual failures
-      const isOverloaded = response.status === 503 || response.status === 429;
+      const isOverloaded = status === 503 || status === 429;
       return NextResponse.json(
         { error: isOverloaded
           ? "Our AI is temporarily overloaded — wait a few seconds and try again"

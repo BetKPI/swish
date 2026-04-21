@@ -694,30 +694,36 @@ async function callGemini(
   model: string = "gemini-2.5-flash",
   maxOutputTokens: number = 4096
 ): Promise<string | null> {
-  const response = await fetchWithRetry(
-    `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{ parts: [{ text: prompt }] }],
-        generationConfig: {
-          temperature: 0.3,
-          maxOutputTokens,
-        },
-      }),
-    },
-    2, // 2 retries for Gemini (most critical dependency)
-    3000
-  );
+  const body = JSON.stringify({
+    contents: [{ parts: [{ text: prompt }] }],
+    generationConfig: { temperature: 0.3, maxOutputTokens },
+  });
+  const headers = { "Content-Type": "application/json" };
 
-  if (!response.ok) {
+  // Try primary model, fall back to gemini-2.0-flash on 503/429
+  const models = model === "gemini-2.0-flash-lite"
+    ? [model] // Don't fall back from lite
+    : [model, "gemini-2.0-flash"];
+
+  for (const m of models) {
+    const response = await fetchWithRetry(
+      `https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${apiKey}`,
+      { method: "POST", headers, body },
+      1,
+      2000
+    );
+    if (response.ok) {
+      const data = await response.json();
+      return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+    }
+    if (response.status === 503 || response.status === 429) {
+      console.log(`[Stats] ${m} returned ${response.status}, trying fallback...`);
+      continue;
+    }
     console.error("Gemini API error:", await response.text());
     return null;
   }
-
-  const data = await response.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
+  return null;
 }
 
 /**
