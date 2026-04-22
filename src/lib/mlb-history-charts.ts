@@ -907,6 +907,40 @@ export function buildMLBDefaultCharts(
     for (const teamName of teams) {
       const chart = buildMLBFuturesChart(teamName, history.standings, kind);
       if (chart) out.push(chart);
+
+      // Recent season records from standings snapshots
+      if (history.standings.length > 0) {
+        const tn = teamName.toLowerCase();
+        const seasonRecords: Record<string, string>[] = [];
+        for (const snap of [...history.standings].sort((a, b) => b.season - a.season)) {
+          const row = snap.rows.find((r) => r.teamName.toLowerCase().includes(tn) || tn.includes(r.teamName.toLowerCase().split(/\s+/).pop() || ""));
+          if (row) {
+            seasonRecords.push({
+              season: `${snap.season}`,
+              record: `${row.wins}-${row.losses}`,
+              winPct: `${pct(row.wins, row.wins + row.losses)}%`,
+              divRank: `#${row.divisionRank}`,
+              lgRank: `#${row.leagueRank}`,
+            });
+          }
+        }
+        if (seasonRecords.length > 0) {
+          out.push({
+            type: "table",
+            title: `${teamName} — Season-by-Season`,
+            relevance: `Recent final records and rankings`,
+            data: seasonRecords,
+            columns: [
+              { key: "season", label: "Year" },
+              { key: "record", label: "Record" },
+              { key: "winPct", label: "Win %" },
+              { key: "divRank", label: "Div" },
+              { key: "lgRank", label: "League" },
+            ],
+          });
+        }
+      }
+
       // Championship history table
       const record = getChampionshipHistory(teamName, "MLB");
       if (record) {

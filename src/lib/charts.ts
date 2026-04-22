@@ -2780,14 +2780,26 @@ function buildFuturesCharts(
     const totalGames = sport.includes("NBA") || sport.includes("BASKETBALL") ? 82 : sport.includes("NHL") || sport.includes("HOCKEY") ? 82 : 162;
     const paceWins = Math.round(winPct * totalGames);
 
+    // Look up prior season records from standings data
+    const priorSeasons: { year: string; record: string }[] = [];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const standingsData = (rawData as any)?._standings || (rawData as any)?._mlbHistory?.standings;
+    if (standingsData?.prior) {
+      const tn = team.name.toLowerCase();
+      const priorTeam = standingsData.prior.find((s: { team: string }) => s.team.toLowerCase().includes(tn) || tn.includes(s.team.toLowerCase().split(/\s+/).pop() || ""));
+      if (priorTeam) {
+        priorSeasons.push({ year: "Last Season", record: `${priorTeam.wins}-${priorTeam.losses}` });
+      }
+    }
+
     const data = [
-      { stat: "Current Record", value: `${wins}-${losses}` },
+      ...priorSeasons.map((p) => ({ stat: p.year, value: p.record })),
+      { stat: `${new Date().getFullYear()} Record`, value: `${wins}-${losses}` },
       { stat: "Win %", value: `${Math.round(winPct * 100)}%` },
       { stat: `Projected Wins (${totalGames}g)`, value: `${paceWins}` },
-      { stat: "Games Played", value: `${totalPlayed}` },
       { stat: "Games Remaining", value: `${totalGames - totalPlayed}` },
-      { stat: "Avg Points For", value: `${team.scoring.avgPointsFor}` },
-      { stat: "Avg Points Against", value: `${team.scoring.avgPointsAgainst}` },
+      { stat: "Avg Runs/Pts For", value: `${team.scoring.avgPointsFor}` },
+      { stat: "Avg Runs/Pts Against", value: `${team.scoring.avgPointsAgainst}` },
       { stat: "Streak", value: `${team.streak.type}${team.streak.count}` },
     ];
 

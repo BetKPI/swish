@@ -1063,13 +1063,17 @@ async function analyzeSingleBet(
       isSummaryOnly ? "gemini-1.5-flash" : "gemini-2.5-flash",
       isSummaryOnly ? 2048 : 4096
     ),
-    checkGameStatus(
-      extraction.sport,
-      extraction.teams,
-      extraction.betType,
-      extraction.players,
-      extraction.market,
-      extraction.line
+    // Skip game status for futures — no specific game to track
+    (((extraction.betType as string) === "futures")
+      ? Promise.resolve(null)
+      : checkGameStatus(
+          extraction.sport,
+          extraction.teams,
+          extraction.betType,
+          extraction.players,
+          extraction.market,
+          extraction.line
+        )
     ).catch((e) => {
       console.error("[Stats] Game status check failed:", e);
       return null;
@@ -1489,9 +1493,10 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // Step 4: Check game statuses for all legs in parallel
+      // Step 4: Check game statuses for all legs in parallel (skip futures)
       const legGameStatuses = await Promise.all(
         fixedLegs.map(async (leg) => {
+          if (((leg.betType as string) === "futures")) return null;
           try {
             return await checkGameStatus(
               leg.sport, leg.teams, leg.betType,
