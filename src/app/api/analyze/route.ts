@@ -199,7 +199,7 @@ export async function POST(request: NextRequest) {
     });
 
     const geminiHeaders = { "Content-Type": "application/json" };
-    const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+    const MODELS = ["gemini-2.5-flash", "gemini-1.5-flash"];
 
     let response: Response | null = null;
     for (const model of MODELS) {
@@ -211,7 +211,7 @@ export async function POST(request: NextRequest) {
       );
       if (response.ok) break;
       // If 503/429, try the next model
-      if (response.status === 503 || response.status === 429) {
+      if (response.status === 503 || response.status === 429 || response.status === 404) {
         console.log(`[Analyze] ${model} returned ${response.status}, trying fallback...`);
         continue;
       }
@@ -229,7 +229,7 @@ export async function POST(request: NextRequest) {
         }).catch(() => {});
       }
       // User-friendly error for server overload vs actual failures
-      const isOverloaded = status === 503 || status === 429;
+      const isOverloaded = status === 503 || status === 429 || status === 404;
       return NextResponse.json(
         { error: isOverloaded
           ? "Our AI is temporarily overloaded — wait a few seconds and try again"

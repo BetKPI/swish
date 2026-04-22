@@ -700,10 +700,10 @@ async function callGemini(
   });
   const headers = { "Content-Type": "application/json" };
 
-  // Try primary model, fall back to gemini-2.0-flash on 503/429
-  const models = model === "gemini-2.0-flash-lite"
+  // Try primary model, fall back to gemini-1.5-flash on 503/429/404
+  const models = model === "gemini-1.5-flash"
     ? [model] // Don't fall back from lite
-    : [model, "gemini-2.0-flash"];
+    : [model, "gemini-1.5-flash"];
 
   for (const m of models) {
     const response = await fetchWithRetry(
@@ -716,7 +716,7 @@ async function callGemini(
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
     }
-    if (response.status === 503 || response.status === 429) {
+    if (response.status === 503 || response.status === 429 || response.status === 404) {
       console.log(`[Stats] ${m} returned ${response.status}, trying fallback...`);
       continue;
     }
@@ -1060,7 +1060,7 @@ async function analyzeSingleBet(
     callGemini(
       prompt,
       apiKey,
-      isSummaryOnly ? "gemini-2.0-flash-lite" : "gemini-2.5-flash",
+      isSummaryOnly ? "gemini-1.5-flash" : "gemini-2.5-flash",
       isSummaryOnly ? 2048 : 4096
     ),
     checkGameStatus(

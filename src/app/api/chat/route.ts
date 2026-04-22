@@ -20,7 +20,7 @@ async function callGemini(prompt: string, apiKey: string): Promise<string | null
     generationConfig: { temperature: 0.2, maxOutputTokens: 3000 },
   });
   const headers = { "Content-Type": "application/json" };
-  const MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
+  const MODELS = ["gemini-2.5-flash", "gemini-1.5-flash"];
 
   for (const model of MODELS) {
     const response = await fetchWithRetry(
@@ -33,7 +33,7 @@ async function callGemini(prompt: string, apiKey: string): Promise<string | null
       const data = await response.json();
       return data.candidates?.[0]?.content?.parts?.[0]?.text || null;
     }
-    if (response.status === 503 || response.status === 429) {
+    if (response.status === 503 || response.status === 429 || response.status === 404) {
       console.log(`[Chat] ${model} returned ${response.status}, trying fallback...`);
       continue;
     }
