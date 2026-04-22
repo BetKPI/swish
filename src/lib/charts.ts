@@ -2678,76 +2678,93 @@ function buildFuturesCharts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const standings = (rawData as any)?._standings as { current: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[]; prior: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[] } | undefined;
 
-  // 1. Current league standings — THE most important chart for futures
+  // 1. Standings — focused on the bet team's playoff position
+  const descLower = (extraction.description || "").toLowerCase();
+  const isPlayoffBet = descLower.includes("playoff") || descLower.includes("make") || descLower.includes("miss");
+
   if (standings?.current?.length) {
-    // Find which league the bet teams are in
     const betTeamNames = extraction.teams.map(t => t.toLowerCase());
     const teamLeague = standings.current.find(s => betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase())))?.league || "";
-
-    // Filter to same league if we can identify it, otherwise show all
     const leagueTeams = teamLeague
       ? standings.current.filter(s => s.league === teamLeague)
       : standings.current;
 
-    const standingsData = leagueTeams.slice(0, 15).map((s, i) => {
-      const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
-      return {
-        rank: i + 1,
-        team: isBetTeam ? `** ${s.shortName} **` : s.shortName,
-        record: `${s.wins}-${s.losses}`,
-        winPct: `${Math.round(s.winPct * 1000) / 10}%`,
-        gb: s.gamesBehind,
-        streak: s.streak,
-      };
-    });
+    // Find the team's rank
+    const teamIdx = leagueTeams.findIndex(s => betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase())));
+    const teamRank = teamIdx >= 0 ? teamIdx + 1 : null;
+    const playoffCutoff = 6; // MLB: 3 division winners + 3 wild cards per league
 
-    charts.push({
-      type: "table",
-      title: `${teamLeague || "League"} Standings — Current`,
-      relevance: `Where your team sits right now in the ${teamLeague || "league"} standings`,
-      data: standingsData,
-      columns: [
-        { key: "rank", label: "#" },
-        { key: "team", label: "Team" },
-        { key: "record", label: "Record" },
-        { key: "winPct", label: "Win %" },
-        { key: "gb", label: "GB" },
-        { key: "streak", label: "Streak" },
-      ],
-    });
-  }
+    if (isPlayoffBet && teamRank != null) {
+      // Show focused view: team + teams around the cutoff (5 above/below cutoff)
+      const showStart = Math.max(0, playoffCutoff - 3);
+      const showEnd = Math.min(leagueTeams.length, playoffCutoff + 4);
+      // Also always include the bet team
+      const indicesToShow = new Set<number>();
+      for (let i = showStart; i < showEnd; i++) indicesToShow.add(i);
+      if (teamIdx >= 0) indicesToShow.add(teamIdx);
+      // Add neighbors of bet team
+      if (teamIdx > 0) indicesToShow.add(teamIdx - 1);
+      if (teamIdx < leagueTeams.length - 1) indicesToShow.add(teamIdx + 1);
 
-  // 2. Last season standings — for historical context
-  if (standings?.prior?.length) {
-    const betTeamNames = extraction.teams.map(t => t.toLowerCase());
-    const teamLeague = standings.prior.find(s => betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase())))?.league || "";
+      const sorted = [...indicesToShow].sort((a, b) => a - b);
+      const standingsData = sorted.map((i) => {
+        const s = leagueTeams[i];
+        const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
+        const isAboveCutoff = i < playoffCutoff;
+        return {
+          rank: i + 1,
+          team: isBetTeam ? `>> ${s.shortName} <<` : s.shortName,
+          record: `${s.wins}-${s.losses}`,
+          winPct: `${Math.round(s.winPct * 1000) / 10}%`,
+          gb: s.gamesBehind,
+          status: isAboveCutoff ? "IN" : "OUT",
+        };
+      });
 
-    const priorTeams = teamLeague
-      ? standings.prior.filter(s => s.league === teamLeague)
-      : standings.prior;
-
-    const priorData = priorTeams.slice(0, 15).map((s, i) => {
-      const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
-      return {
-        rank: i + 1,
-        team: isBetTeam ? `** ${s.shortName} **` : s.shortName,
-        record: `${s.wins}-${s.losses}`,
-        winPct: `${Math.round(s.winPct * 1000) / 10}%`,
-      };
-    });
-
-    charts.push({
-      type: "table",
-      title: `${teamLeague || "League"} Standings — Last Season`,
-      relevance: `How teams finished last year — historical context for your futures bet`,
-      data: priorData,
-      columns: [
-        { key: "rank", label: "#" },
-        { key: "team", label: "Team" },
-        { key: "record", label: "Record" },
-        { key: "winPct", label: "Win %" },
-      ],
-    });
+      const inOut = teamRank <= playoffCutoff ? "currently IN" : "currently OUT";
+      const gamesBack = teamIdx >= 0 ? leagueTeams[teamIdx].gamesBehind : "?";
+      charts.push({
+        type: "table",
+        title: `Playoff Picture — ${extraction.teams[0] || "Team"}`,
+        relevance: `Ranked #${teamRank} in ${teamLeague} (${inOut} — top ${playoffCutoff} make playoffs). ${gamesBack !== "-" ? `${gamesBack} GB from #1` : "Leading the league"}`,
+        data: standingsData,
+        columns: [
+          { key: "rank", label: "#" },
+          { key: "team", label: "Team" },
+          { key: "record", label: "Record" },
+          { key: "winPct", label: "Win %" },
+          { key: "gb", label: "GB" },
+          { key: "status", label: "Playoff" },
+        ],
+      });
+    } else {
+      // Non-playoff futures: show full standings
+      const standingsData = leagueTeams.slice(0, 15).map((s, i) => {
+        const isBetTeam = betTeamNames.some(bt => s.team.toLowerCase().includes(bt) || bt.includes(s.team.toLowerCase()));
+        return {
+          rank: i + 1,
+          team: isBetTeam ? `>> ${s.shortName} <<` : s.shortName,
+          record: `${s.wins}-${s.losses}`,
+          winPct: `${Math.round(s.winPct * 1000) / 10}%`,
+          gb: s.gamesBehind,
+          streak: s.streak,
+        };
+      });
+      charts.push({
+        type: "table",
+        title: `${teamLeague || "League"} Standings — Current`,
+        relevance: `Where your team sits right now in the ${teamLeague || "league"} standings`,
+        data: standingsData,
+        columns: [
+          { key: "rank", label: "#" },
+          { key: "team", label: "Team" },
+          { key: "record", label: "Record" },
+          { key: "winPct", label: "Win %" },
+          { key: "gb", label: "GB" },
+          { key: "streak", label: "Streak" },
+        ],
+      });
+    }
   }
 
   // For each team in the bet, show current season record + pace
@@ -2766,7 +2783,7 @@ function buildFuturesCharts(
     const data = [
       { stat: "Current Record", value: `${wins}-${losses}` },
       { stat: "Win %", value: `${Math.round(winPct * 100)}%` },
-      { stat: "Projected Wins (${totalGames}g)", value: `${paceWins}` },
+      { stat: `Projected Wins (${totalGames}g)`, value: `${paceWins}` },
       { stat: "Games Played", value: `${totalPlayed}` },
       { stat: "Games Remaining", value: `${totalGames - totalPlayed}` },
       { stat: "Avg Points For", value: `${team.scoring.avgPointsFor}` },
@@ -2789,25 +2806,24 @@ function buildFuturesCharts(
       columns: [{ key: "stat", label: "Stat" }, { key: "value", label: "Value" }],
     });
 
-    // Recent form chart
+    // Recent form — green/red win/loss bars
     if (team.recentGames.length >= 5) {
       const recent = team.recentGames.slice(-20);
-      let runningWins = 0;
-      const formData = recent.map((g, i) => {
-        if (g.won) runningWins++;
-        return {
-          game: `G${i + 1}`,
-          margin: g.margin,
-          winPct: Math.round((runningWins / (i + 1)) * 100),
-        };
-      });
+      const recentWins = recent.filter((g) => g.won).length;
+      const formData = recent.map((g) => ({
+        game: shortenName(g.opponent),
+        value: g.margin,
+        line: 0,
+        overLine: g.won,
+        home: g.home,
+      }));
       charts.push({
-        type: "line",
-        title: `${team.name} — Recent Form (Last ${recent.length} Games)`,
-        relevance: `Win margins and running win % — shows if team is trending up or down`,
+        type: "hitrate" as ChartConfig["type"],
+        title: `${team.name} — Recent Win/Loss (Last ${recent.length})`,
+        relevance: `${recentWins}-${recent.length - recentWins} in last ${recent.length} — green = win, red = loss`,
         data: formData,
         xKey: "game",
-        yKeys: ["margin"],
+        yKeys: ["value"],
       });
     }
   }
