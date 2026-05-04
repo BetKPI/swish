@@ -1,11 +1,12 @@
 "use client";
 
 /**
- * Stadium-feel hero used across all MLB views — player props, team bets,
- * parlay legs. Compact variant for parlay legs (no large stat block).
+ * Stadium/court/rink hero used across MLB, NBA, NHL views — player props,
+ * team bets, parlay legs. Compact variant for parlay legs.
  */
 
 import type { BetExtraction } from "@/types";
+import { SPORT_THEMES, resolveThemedSport, type ThemedSport } from "@/lib/sport-themes";
 
 interface SwishScore {
   score: number;
@@ -17,7 +18,7 @@ interface Props {
   extraction: Pick<BetExtraction, "sport" | "betType" | "teams" | "players" | "line" | "odds" | "market" | "description">;
   visuals?: Record<string, unknown>;
   swishScore?: SwishScore;
-  /** "full" = with line/odds row; "compact" = just header (used in parlay legs) */
+  /** "full" = with line/odds row; "compact" = just header */
   variant?: "full" | "compact";
 }
 
@@ -37,54 +38,106 @@ function scoreBg(s: number): string {
   return "bg-green-400/15 border-green-400/40";
 }
 
-function formatStatLabel(market?: string, description?: string): string {
+function formatStatLabel(sport: ThemedSport, market?: string, description?: string): string {
   const m = `${market || ""} ${description || ""}`.toLowerCase();
-  if (m.includes("strikeout") || /\bks?\b/.test(m)) return "Strikeouts";
-  if (m.includes("total base")) return "Total Bases";
-  if (m.includes("home run") || /\bhr\b/.test(m)) return "Home Runs";
-  if (m.includes("rbi")) return "RBI";
-  if (m.includes("stolen base")) return "Stolen Bases";
-  if (m.includes("run line") || m.includes("spread")) return "Run Line";
+  // Generic team-bet markets first
+  if (m.includes("run line") || (sport === "MLB" && m.includes("spread"))) return "Run Line";
+  if (m.includes("puck line") || (sport === "NHL" && m.includes("spread"))) return "Puck Line";
+  if (m.includes("spread")) return "Spread";
   if (m.includes("moneyline") || m.includes("money line")) return "Moneyline";
-  if (m.includes("total") && (m.includes("over") || m.includes("under"))) return "Total Runs";
   if (m.includes("first inning") || m.includes("nrfi")) return "First Inning";
-  if (m.includes("hit")) return "Hits";
+  if (m.includes("first goal")) return "First Goal";
+  if (m.includes("first basket")) return "First Basket";
+  if (m.includes("total") && (m.includes("over") || m.includes("under") || m.includes("o/u"))) {
+    if (sport === "MLB") return "Total Runs";
+    if (sport === "NHL") return "Total Goals";
+    if (sport === "NBA") return "Total Points";
+    return "Total";
+  }
+
+  // MLB-specific
+  if (sport === "MLB") {
+    if (m.includes("strikeout") || /\bks?\b/.test(m)) return "Strikeouts";
+    if (m.includes("total base")) return "Total Bases";
+    if (m.includes("home run") || /\bhr\b/.test(m)) return "Home Runs";
+    if (m.includes("rbi")) return "RBI";
+    if (m.includes("stolen base")) return "Stolen Bases";
+    if (m.includes("hit")) return "Hits";
+  }
+  // NBA-specific
+  if (sport === "NBA") {
+    if (m.includes("pra") || (m.includes("points") && m.includes("rebounds") && m.includes("assists"))) return "PRA";
+    if (m.includes("points") && m.includes("rebounds")) return "Points + Rebounds";
+    if (m.includes("points") && m.includes("assists")) return "Points + Assists";
+    if (m.includes("rebounds") && m.includes("assists")) return "Rebounds + Assists";
+    if (m.includes("three") || /\b3pt\b|\b3s\b/.test(m)) return "3-Pointers Made";
+    if (m.includes("rebound")) return "Rebounds";
+    if (m.includes("assist")) return "Assists";
+    if (m.includes("steal")) return "Steals";
+    if (m.includes("block")) return "Blocks";
+    if (m.includes("turnover")) return "Turnovers";
+    if (m.includes("point")) return "Points";
+  }
+  // NHL-specific
+  if (sport === "NHL") {
+    if (m.includes("save")) return "Saves";
+    if (m.includes("shot on goal") || m.includes("sog")) return "Shots on Goal";
+    if (m.includes("shot")) return "Shots";
+    if (m.includes("goal")) return "Goals";
+    if (m.includes("assist")) return "Assists";
+    if (m.includes("point")) return "Points";
+    if (m.includes("hit")) return "Hits";
+  }
   return market || "Bet";
 }
 
-/**
- * For "to record a hit" / "to hit a home run" / "anytime HR" style props with
- * no over/under line, return a short imperative phrase to display under the
- * player name. Returns null when the prop has a normal numeric line and the
- * stat + line block already covers it.
- */
-function extractActionPhrase(description?: string, market?: string, line?: number): string | null {
-  if (line != null) return null; // numeric line is already shown in the line block
+function extractActionPhrase(sport: ThemedSport, description?: string, market?: string, line?: number): string | null {
+  if (line != null) return null;
   const desc = (description || "").trim();
   if (!desc) return market || null;
   const m = `${desc} ${market || ""}`.toLowerCase();
 
-  // Common yes/no patterns
-  if (m.includes("anytime") && (m.includes("hr") || m.includes("home run"))) return "Anytime HR";
-  if (m.includes("hit a home run") || m.includes("to homer")) return "To Hit a HR";
-  if (m.includes("record a hit") || m.includes("to get a hit")) return "To Record a Hit";
-  if (m.includes("stolen base") && (m.includes("record") || m.includes("get"))) return "To Steal a Base";
-  if (m.includes("rbi") && (m.includes("record") || m.includes("get"))) return "To Record an RBI";
-  if (m.includes("first run") || m.includes("first to score")) return "First to Score";
-  if (m.includes("nrfi")) return "No Runs 1st Inning";
-  if (m.includes("yrfi")) return "Yes Run 1st Inning";
+  // Cross-sport
+  if (m.includes("first to score")) return "First to Score";
 
-  // Fallback: take the part of the description after the player name, before "in the" / "@"
+  // MLB
+  if (sport === "MLB") {
+    if (m.includes("anytime") && (m.includes("hr") || m.includes("home run"))) return "Anytime HR";
+    if (m.includes("hit a home run") || m.includes("to homer")) return "To Hit a HR";
+    if (m.includes("record a hit") || m.includes("to get a hit")) return "To Record a Hit";
+    if (m.includes("stolen base") && (m.includes("record") || m.includes("get"))) return "To Steal a Base";
+    if (m.includes("rbi") && (m.includes("record") || m.includes("get"))) return "To Record an RBI";
+    if (m.includes("first run")) return "First to Score";
+    if (m.includes("nrfi")) return "No Runs 1st Inning";
+    if (m.includes("yrfi")) return "Yes Run 1st Inning";
+  }
+  // NBA
+  if (sport === "NBA") {
+    if (m.includes("first basket") || m.includes("first field goal")) return "First Basket";
+    if (m.includes("anytime") && m.includes("three")) return "Anytime 3PT";
+    if (m.includes("double double") || m.includes("double-double")) return "Double-Double";
+    if (m.includes("triple double") || m.includes("triple-double")) return "Triple-Double";
+  }
+  // NHL
+  if (sport === "NHL") {
+    if (m.includes("first goal")) return "First Goal";
+    if (m.includes("anytime") && m.includes("goal")) return "Anytime Goal";
+    if (m.includes("hat trick")) return "Hat Trick";
+  }
+
+  // Fallback: trim trailing context
   const trimmed = desc
     .replace(/\b(?:in the|of the|from the|@|at|vs\.?)\b.*$/i, "")
     .replace(/\s+to\s+/i, " — ")
     .trim();
-  // Drop any leading player-team-name noise
   const tail = trimmed.split(/\s+—\s+/).pop() || trimmed;
   return tail.length > 4 && tail.length < 50 ? tail : null;
 }
 
-export default function MLBHero({ extraction, visuals, swishScore, variant = "full" }: Props) {
+export default function SportHero({ extraction, visuals, swishScore, variant = "full" }: Props) {
+  const sport = resolveThemedSport(extraction.sport) || "MLB";
+  const theme = SPORT_THEMES[sport];
+
   const playerName = extraction.players[0];
   const teamVisuals = (visuals?.teams || {}) as Record<string, { logo?: string; color?: string }>;
   const playerVisuals = (visuals?.players || {}) as Record<string, { headshot?: string }>;
@@ -95,26 +148,23 @@ export default function MLBHero({ extraction, visuals, swishScore, variant = "fu
   const teamALogo = teamA ? teamVisuals[teamA]?.logo : undefined;
   const teamBLogo = teamB ? teamVisuals[teamB]?.logo : undefined;
 
-  const stat = formatStatLabel(extraction.market, extraction.description);
+  const stat = formatStatLabel(sport, extraction.market, extraction.description);
   const line = extraction.line;
   const isPlayerProp = extraction.betType === "player_prop";
-  const action = extractActionPhrase(extraction.description, extraction.market, line);
+  const action = extractActionPhrase(sport, extraction.description, extraction.market, line);
 
   const compact = variant === "compact";
 
   return (
     <div
       className="relative overflow-hidden rounded-xl border border-border"
-      style={{ borderLeftWidth: 3, borderLeftColor: "#c8102e" }}
+      style={{ borderLeftWidth: 3, borderLeftColor: theme.accentBorder }}
     >
-      {/* Field gradient: navy sky → dim grass */}
+      {/* Sport-themed gradient */}
       <div
         className="absolute inset-0 pointer-events-none"
         aria-hidden
-        style={{
-          background:
-            "linear-gradient(180deg, #0c2340 0%, #0a1a2e 35%, #0a0a0a 55%, #0a3a23 100%)",
-        }}
+        style={{ background: theme.heroGradient }}
       />
       {/* Vignette */}
       <div
@@ -125,37 +175,16 @@ export default function MLBHero({ extraction, visuals, swishScore, variant = "fu
             "radial-gradient(ellipse at 50% 60%, transparent 0%, rgba(0,0,0,0.55) 90%)",
         }}
       />
-      {/* Diamond aerial */}
+      {/* Watermark — positioned bottom-center */}
       <div
-        className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center text-emerald-300/35"
+        className={`pointer-events-none absolute inset-x-0 bottom-0 flex justify-center ${theme.watermarkColor}`}
         aria-hidden
       >
-        <svg
-          viewBox="0 0 240 240"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.4"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          className={`${compact ? "w-[95%]" : "w-[110%] sm:w-[95%]"} h-auto translate-y-[18%]`}
-        >
-          <path d="M 10 185 Q 120 -50 230 185" strokeOpacity="0.55" />
-          <line x1="120" y1="200" x2="12" y2="184" strokeOpacity="0.5" />
-          <line x1="120" y1="200" x2="228" y2="184" strokeOpacity="0.5" />
-          <path d="M 25 175 Q 120 -30 215 175" strokeOpacity="0.25" strokeDasharray="3 6" />
-          <polygon points="120,200 175,145 120,90 65,145" strokeOpacity="1" strokeWidth="1.8" />
-          <path d="M 75 165 Q 120 110 165 165" strokeOpacity="0.45" />
-          <circle cx="120" cy="145" r="7" strokeOpacity="0.95" />
-          <rect x="115" y="195" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-          <rect x="170" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-          <rect x="115" y="85" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-          <rect x="60" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-        </svg>
+        {theme.fullWatermark}
       </div>
 
       <div className={`relative ${compact ? "p-4" : "p-5 sm:p-6 min-h-[200px]"}`}>
         <div className="flex items-start gap-3 sm:gap-4">
-          {/* Headshot OR matchup logos */}
           {isPlayerProp && headshot ? (
             <div className="relative flex-shrink-0">
               <div className="absolute inset-0 rounded-full bg-emerald-400/15 blur-md" aria-hidden />
@@ -183,7 +212,9 @@ export default function MLBHero({ extraction, visuals, swishScore, variant = "fu
               )}
             </div>
           ) : (
-            <span className="text-3xl sm:text-4xl flex-shrink-0">⚾</span>
+            <span className="text-3xl sm:text-4xl flex-shrink-0">
+              {sport === "MLB" ? "⚾" : sport === "NBA" ? "\u{1F3C0}" : "\u{1F3D2}"}
+            </span>
           )}
 
           <div className="flex-1 min-w-0">

@@ -6,7 +6,8 @@ import ChartDisplay from "./ChartDisplay";
 import FeedbackShare from "./FeedbackShare";
 import AnalysisChat from "./AnalysisChat";
 import GameStatusBanner from "./GameStatusBanner";
-import MLBHero from "./MLBHero";
+import SportHero from "./SportHero";
+import { resolveThemedSport } from "@/lib/sport-themes";
 
 interface ParlayResultsProps {
   extraction: BetExtraction;
@@ -158,9 +159,9 @@ export default function ParlayResults({
             </div>
           )}
 
-          {/* Leg Header — stadium hero for MLB, plain card for everything else */}
-          {(activeLeg.sport === "MLB" || activeLeg.sport === "BASEBALL") ? (
-            <MLBHero
+          {/* Leg Header — sport-themed hero for MLB/NBA/NHL, plain card otherwise */}
+          {resolveThemedSport(activeLeg.sport) ? (
+            <SportHero
               extraction={{
                 sport: activeLeg.sport,
                 betType: activeLeg.betType as BetExtraction["betType"],

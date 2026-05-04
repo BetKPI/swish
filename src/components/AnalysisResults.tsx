@@ -7,7 +7,8 @@ import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
 import MLBPlayerPropCard from "./MLBPlayerPropCard";
-import MLBHero from "./MLBHero";
+import SportHero from "./SportHero";
+import { resolveThemedSport, SPORT_THEMES } from "@/lib/sport-themes";
 import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
@@ -121,8 +122,18 @@ export default function AnalysisResults({
     );
   }
 
+  const themedSport = resolveThemedSport(extraction.sport);
+
   return (
-    <div className="space-y-6" id="analysis-content">
+    <div className="space-y-6 relative" id="analysis-content">
+      {/* Sport-themed page wash — subtle radial tint coming up from the bottom */}
+      {themedSport && (
+        <div
+          className="pointer-events-none fixed inset-0 -z-10"
+          aria-hidden
+          style={{ background: SPORT_THEMES[themedSport].pageWash }}
+        />
+      )}
       {/* Big HIT/MISS banner when game is final */}
       {isGraded && (
         <div className={`rounded-xl p-5 text-center border-2 ${
@@ -187,13 +198,14 @@ export default function AnalysisResults({
         </div>
       )}
 
-      {/* MLB stadium hero for non-player-prop MLB bets (player props use MLBPlayerPropCard above) */}
-      {sportNorm === "MLB" && (
-        <MLBHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
+      {/* Sport-themed hero for MLB / NBA / NHL bets (MLB player props are
+          handled by MLBPlayerPropCard above; this branch covers everything else). */}
+      {resolveThemedSport(extraction.sport) && (
+        <SportHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
       )}
 
-      {/* Bet Summary Header — hidden for MLB since MLBHero replaces it */}
-      {sportNorm !== "MLB" && (
+      {/* Bet Summary Header — hidden for sports with a SportHero */}
+      {!resolveThemedSport(extraction.sport) && (
       <div
         className="bg-surface rounded-xl p-4 border border-border"
         style={teamColor ? { borderLeftColor: teamColor, borderLeftWidth: 3 } : undefined}

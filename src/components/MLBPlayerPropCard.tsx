@@ -17,7 +17,8 @@ import type { BetExtraction, ChartConfig, GameStatusData, MLBInsights } from "@/
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
-import MLBHero from "./MLBHero";
+import SportHero from "./SportHero";
+import { SPORT_THEMES } from "@/lib/sport-themes";
 import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
@@ -151,14 +152,12 @@ export default function MLBPlayerPropCard({
 
   return (
     <div className="space-y-4 relative" id="mlb-card">
-      {/* Page-level field tint — extreme subtle grass green washing through everything */}
+      {/* Page-level field tint — sourced from sport theme (kept here so the
+          MLBPlayerPropCard renders the wash even when AnalysisResults early-returns). */}
       <div
         className="pointer-events-none fixed inset-0 -z-10"
         aria-hidden
-        style={{
-          background:
-            "radial-gradient(ellipse at 50% 100%, rgba(16, 122, 73, 0.08) 0%, transparent 60%)",
-        }}
+        style={{ background: SPORT_THEMES.MLB.pageWash }}
       />
       {/* HIT/MISS banner when graded */}
       {isFinal && (isHit || isMiss) && (
@@ -186,7 +185,7 @@ export default function MLBPlayerPropCard({
         />
       )}
 
-      <MLBHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
+      <SportHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
 
       {/* VERDICT + PROJECTION ROW */}
       <div className="space-y-2 px-1">
