@@ -1158,7 +1158,7 @@ async function analyzeSingleBet(
 
   // MLB player-prop: deterministic structured insights (verdict, projection, bullets, flags)
   const mlbInsights = computeMLBInsights(extraction, teamData);
-  const nbaInsights = computeNBAInsights(extraction, teamData);
+  const nbaInsights = await computeNBAInsights(extraction, teamData);
 
   // Insights-driven Swish Score override - when we have a real projection
   // (MLB or NBA player prop), the default scorer tends to bottom out at
@@ -1339,7 +1339,7 @@ function computeMLBInsights(
  * context (when present on teamData) and produces a verdict/projection/bullets
  * structure parallel to mlbInsights. Includes playoff-aware splits.
  */
-function computeNBAInsights(
+async function computeNBAInsights(
   extraction: BetExtraction,
   rawData: Record<string, unknown>
 ) {
@@ -1397,6 +1397,45 @@ function computeNBAInsights(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const oppTeamData = oppTeam ? (history as any)?.teams?.[oppTeam] : undefined;
 
+    // Pull series context from today's NBA scoreboard if this is a playoff
+    // game between the two teams. Cheap one-shot fetch with short cache.
+    let seriesContext: string | undefined;
+    let gameInSeries: number | undefined;
+    if (isPlayoffs) {
+      try {
+        const sb = await (await import("@/lib/fetch")).cachedFetch(
+          "https://site.api.espn.com/apis/site/v2/sports/basketball/nba/scoreboard",
+          60_000,
+        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const events = (sb as any)?.events || [];
+        const lower = extraction.teams.map((t) => t.toLowerCase());
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const match = events.find((e: any) => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const comps = e.competitions?.[0]?.competitors || [];
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const names = comps.map((c: any) => (c.team?.displayName || "").toLowerCase());
+          return lower.every((t) => names.some((n: string) => n.includes(t) || t.includes(n)));
+        });
+        if (match) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const series = match.competitions?.[0]?.series;
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const notes = match.competitions?.[0]?.notes || [];
+          if (series?.summary) seriesContext = series.summary;
+          // Extract game number from notes (e.g. "Game 5 of Eastern Conference Finals")
+          for (const n of notes) {
+            const text = n?.headline || n?.type || "";
+            const m = /game\s+(\d)/i.exec(String(text));
+            if (m) { gameInSeries = Number(m[1]); break; }
+          }
+        }
+      } catch (e) {
+        console.error("[NBA Series] fetch failed:", e);
+      }
+    }
+
     return buildNBAPlayerInsights({
       player: ts,
       stat,
@@ -1404,6 +1443,8 @@ function computeNBAInsights(
       oppTeam,
       oppTeamData,
       isPlayoffs,
+      seriesContext,
+      gameInSeries,
     });
   } catch (e) {
     console.error("[NBA Insights] failed:", e);
