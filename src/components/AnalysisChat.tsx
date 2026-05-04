@@ -15,6 +15,14 @@ interface AnalysisChatProps {
   computedData: Record<string, unknown>;
   swishScore?: SwishScore;
   suggestions?: string[];
+  /** Structured insights (MLB / NBA) — passed to chat for richer context */
+  insights?: {
+    verdict?: string;
+    projection?: { proj: number; diff: number; lean: string };
+    probability?: number;
+    bullets?: { label: string; value: string; tone: string }[];
+    flags?: string[];
+  };
 }
 
 interface ChatMessage {
@@ -68,6 +76,7 @@ export default function AnalysisChat({
   computedData,
   swishScore,
   suggestions: serverSuggestions,
+  insights,
 }: AnalysisChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
@@ -98,6 +107,7 @@ export default function AnalysisChat({
           extraction,
           computedData,
           swishScore,
+          insights,
           history,
         }),
       });
@@ -145,20 +155,19 @@ export default function AnalysisChat({
           Ask for more analysis
         </h3>
 
-        {/* Suggestion chips - only show if no messages yet */}
-        {messages.length === 0 && (
-          <div className="flex flex-wrap gap-2 mb-3">
-            {(serverSuggestions?.length ? serverSuggestions : (SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT)).map((s) => (
-              <button
-                key={s}
-                onClick={() => send(s)}
-                className="text-xs px-3 py-1.5 bg-surface-light hover:bg-border text-muted hover:text-foreground rounded-full transition-colors cursor-pointer"
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-        )}
+        {/* Suggestion chips - always visible so the user can drill repeatedly */}
+        <div className="flex flex-wrap gap-2 mb-3">
+          {(serverSuggestions?.length ? serverSuggestions : (SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT)).map((s) => (
+            <button
+              key={s}
+              onClick={() => send(s)}
+              disabled={loading}
+              className="text-xs px-3 py-1.5 bg-surface-light hover:bg-border text-muted hover:text-foreground rounded-full transition-colors cursor-pointer disabled:opacity-50"
+            >
+              {s}
+            </button>
+          ))}
+        </div>
 
         {/* Chat messages */}
         {messages.length > 0 && (

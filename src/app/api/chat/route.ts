@@ -272,7 +272,7 @@ async function logChatToDiscord(
 
 export async function POST(request: NextRequest) {
   try {
-    const { message, extraction, computedData, swishScore, history } = await request.json();
+    const { message, extraction, computedData, swishScore, insights, history } = await request.json();
     const chatHistory = Array.isArray(history) ? history : [];
 
     if (!message || !extraction) {
@@ -370,8 +370,15 @@ ${isMasters ? `This is a MASTERS bet at Augusta National. You have access to ric
 
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 ${conversationContext}
-SWISH SCORE (our data-strength rating for this bet):
+SWISH SCORE (= probability the bet hits, 0-10 scale):
 ${swishScore ? `Score: ${swishScore.score}/10 (${swishScore.label}) - ${swishScore.detail}` : "Not computed"}
+${insights ? `\nMODEL INSIGHTS (deterministic, derived from raw data - reference these instead of recomputing):
+- Verdict: ${insights.verdict || "n/a"}
+- Hit probability: ${typeof insights.probability === "number" ? `${Math.round(insights.probability * 100)}%` : "n/a"}
+- Projection: ${insights.projection ? `${insights.projection.proj} (${insights.projection.diff > 0 ? "+" : ""}${insights.projection.diff} vs line) - ${insights.projection.lean}` : "n/a"}
+- Edge bullets:
+${(insights.bullets || []).map((b: { label: string; value: string; tone: string }) => `  - ${b.label}: ${b.value} [${b.tone}]`).join("\n")}
+${insights.flags?.length ? `- Flags: ${insights.flags.join("; ")}` : ""}` : ""}
 ${statToolsContext}
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}

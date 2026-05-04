@@ -375,13 +375,14 @@ export default function MLBPlayerPropCard({
       )}
 
       {/* ASK A FOLLOW-UP - collapsed by default */}
-      <Collapsible label="Ask a follow-up">
+      <Collapsible label="Ask a follow-up" defaultOpen={true}>
         <div className="pt-2">
           <AnalysisChat
             extraction={extraction}
             computedData={computedData || {}}
             swishScore={swishScore}
             suggestions={suggestions}
+            insights={insights}
           />
         </div>
       </Collapsible>
