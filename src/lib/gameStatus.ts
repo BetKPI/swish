@@ -95,6 +95,18 @@ export async function checkGameStatus(
     const game = findMatchingGame(data.events, teams);
     if (!game) return null;
 
+    // Sanity check: if the matched game is "post" (completed) and ended more
+    // than 8 hours ago, treat it as no current game. Prevents grading a future
+    // bet against a stale completed game when ESPN's scoreboard hasn't yet
+    // populated today's slate.
+    const matchedState = game.competitions?.[0]?.status?.type?.state;
+    if (matchedState === "post") {
+      const eventTs = game.date ? Date.parse(game.date) : NaN;
+      if (Number.isFinite(eventTs) && Date.now() - eventTs > 8 * 60 * 60 * 1000) {
+        return null;
+      }
+    }
+
     const comp = game.competitions?.[0];
     if (!comp) return null;
 

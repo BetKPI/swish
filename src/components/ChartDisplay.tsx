@@ -84,49 +84,6 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
 
   return (
     <div ref={chartRef} className="bg-surface rounded-xl p-4 sm:p-5 space-y-3 relative group border border-border/50 hover:border-border transition-colors">
-      {/* Action buttons — top-right, visible on hover */}
-      <div className="absolute top-3 right-3 z-10 flex gap-1 opacity-0 group-hover:opacity-100 focus-within:opacity-100 transition-all">
-        {rated ? (
-          <span className="p-1.5 text-xs text-muted">{rated === "up" ? "Thanks!" : "Noted"}</span>
-        ) : (
-          <>
-            <button
-              onClick={() => handleRate("up")}
-              className="p-1.5 rounded-lg bg-surface-light/80 hover:bg-emerald-500/20 text-muted hover:text-emerald-400 transition-colors cursor-pointer"
-              aria-label="Relevant"
-              title="This chart is relevant"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
-            </button>
-            <button
-              onClick={() => handleRate("down")}
-              className="p-1.5 rounded-lg bg-surface-light/80 hover:bg-red-500/20 text-muted hover:text-red-400 transition-colors cursor-pointer"
-              aria-label="Not relevant"
-              title="Not relevant to this bet"
-            >
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
-            </button>
-          </>
-        )}
-        <button
-          onClick={handleShare}
-          disabled={shareState === "capturing"}
-          className="p-1.5 rounded-lg bg-surface-light/80 hover:bg-border text-muted hover:text-foreground transition-colors cursor-pointer disabled:opacity-50"
-          aria-label="Share chart"
-          title={shareState === "copied" ? "Copied!" : shareState === "downloaded" ? "Downloaded!" : "Share"}
-        >
-          {shareState === "copied" ? (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-          ) : shareState === "downloaded" ? (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-          ) : shareState === "capturing" ? (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-          ) : (
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
-          )}
-        </button>
-      </div>
-
       <div>
         <div className="flex items-start justify-between gap-2">
           <div className="flex-1 min-w-0">
@@ -167,6 +124,49 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
           isDistribution={type === "distribution"}
         />
       )}
+
+      {/* Action row — bottom-right, always visible (doesn't fight toggles) */}
+      <div className="flex justify-end gap-1 pt-1 -mb-1">
+        {rated ? (
+          <span className="px-2 py-1 text-[10px] text-muted">{rated === "up" ? "Thanks!" : "Noted"}</span>
+        ) : (
+          <>
+            <button
+              onClick={() => handleRate("up")}
+              className="p-1.5 rounded-md hover:bg-emerald-500/10 text-muted/70 hover:text-emerald-400 transition-colors cursor-pointer"
+              aria-label="Relevant"
+              title="Relevant chart"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M7 10v12"/><path d="M15 5.88 14 10h5.83a2 2 0 0 1 1.92 2.56l-2.33 8A2 2 0 0 1 17.5 22H4a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2.76a2 2 0 0 0 1.79-1.11L12 2a3.13 3.13 0 0 1 3 3.88Z"/></svg>
+            </button>
+            <button
+              onClick={() => handleRate("down")}
+              className="p-1.5 rounded-md hover:bg-red-500/10 text-muted/70 hover:text-red-400 transition-colors cursor-pointer"
+              aria-label="Not relevant"
+              title="Not relevant"
+            >
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M17 14V2"/><path d="M9 18.12 10 14H4.17a2 2 0 0 1-1.92-2.56l2.33-8A2 2 0 0 1 6.5 2H20a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-2.76a2 2 0 0 0-1.79 1.11L12 22a3.13 3.13 0 0 1-3-3.88Z"/></svg>
+            </button>
+          </>
+        )}
+        <button
+          onClick={handleShare}
+          disabled={shareState === "capturing"}
+          className="p-1.5 rounded-md hover:bg-surface-light text-muted/70 hover:text-foreground transition-colors cursor-pointer disabled:opacity-50"
+          aria-label="Share chart"
+          title={shareState === "copied" ? "Copied!" : shareState === "downloaded" ? "Downloaded!" : "Share"}
+        >
+          {shareState === "copied" ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          ) : shareState === "downloaded" ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+          ) : shareState === "capturing" ? (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          ) : (
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" x2="15.42" y1="13.51" y2="17.49"/><line x1="15.41" x2="8.59" y1="6.51" y2="10.49"/></svg>
+          )}
+        </button>
+      </div>
     </div>
   );
 }
