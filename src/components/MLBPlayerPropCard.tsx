@@ -17,6 +17,7 @@ import type { BetExtraction, ChartConfig, GameStatusData, MLBInsights } from "@/
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
+import MLBHero from "./MLBHero";
 import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
@@ -45,22 +46,6 @@ type ChartRow = {
   line?: number;
   overLine?: boolean;
 };
-
-function scoreColor(s: number): string {
-  if (s <= 3) return "text-red-500";
-  if (s <= 4.5) return "text-orange-400";
-  if (s <= 5.5) return "text-yellow-400";
-  if (s <= 7) return "text-emerald-400";
-  return "text-green-300";
-}
-
-function scoreBg(s: number): string {
-  if (s <= 3) return "bg-red-500/15 border-red-500/40";
-  if (s <= 4.5) return "bg-orange-500/15 border-orange-500/40";
-  if (s <= 5.5) return "bg-yellow-500/15 border-yellow-500/40";
-  if (s <= 7) return "bg-emerald-500/15 border-emerald-500/40";
-  return "bg-green-400/15 border-green-400/40";
-}
 
 const TIME_WINDOWS = [
   { label: "L5", value: 5 },
@@ -137,14 +122,7 @@ export default function MLBPlayerPropCard({
     setTimeout(() => setShareState("idle"), 2000);
   }, []);
 
-  const playerName = extraction.players[0] || extraction.description;
-  const teamVisuals = (visuals?.teams || {}) as Record<string, { logo?: string; color?: string }>;
-  const playerVisuals = (visuals?.players || {}) as Record<string, { headshot?: string }>;
-  const headshot = playerVisuals[playerName]?.headshot;
-  const teamName = extraction.teams[0];
   const oppTeam = extraction.teams[1];
-  const teamLogo = teamName ? teamVisuals[teamName]?.logo : undefined;
-
   const stat = formatStatLabel(extraction.market, extraction.description);
   const line = extraction.line;
 
@@ -199,122 +177,7 @@ export default function MLBPlayerPropCard({
         />
       )}
 
-      {/* HERO — stadium feel: navy "sky" top, grass "field" bottom, big diamond */}
-      <div
-        className="relative overflow-hidden rounded-xl border border-border"
-        style={{ borderLeftWidth: 3, borderLeftColor: "#c8102e" }}
-      >
-        {/* Field gradient: navy sky → dim grass */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden
-          style={{
-            background:
-              "linear-gradient(180deg, #0c2340 0%, #0a1a2e 35%, #0a0a0a 55%, #0a3a23 100%)",
-          }}
-        />
-        {/* Vignette to push focus to center */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          aria-hidden
-          style={{
-            background:
-              "radial-gradient(ellipse at 50% 60%, transparent 0%, rgba(0,0,0,0.55) 90%)",
-          }}
-        />
-        {/* Big centered diamond — stadium aerial */}
-        <div
-          className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center text-emerald-300/35"
-          aria-hidden
-        >
-          <svg
-            viewBox="0 0 240 240"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="1.4"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-            className="w-[110%] sm:w-[95%] h-auto translate-y-[18%]"
-          >
-            {/* Outfield arc */}
-            <path d="M 10 185 Q 120 -50 230 185" strokeOpacity="0.55" />
-            {/* Foul lines */}
-            <line x1="120" y1="200" x2="12" y2="184" strokeOpacity="0.5" />
-            <line x1="120" y1="200" x2="228" y2="184" strokeOpacity="0.5" />
-            {/* Outfield warning track (dashed) */}
-            <path d="M 25 175 Q 120 -30 215 175" strokeOpacity="0.25" strokeDasharray="3 6" />
-            {/* Infield diamond */}
-            <polygon points="120,200 175,145 120,90 65,145" strokeOpacity="1" strokeWidth="1.8" />
-            {/* Infield grass arc */}
-            <path d="M 75 165 Q 120 110 165 165" strokeOpacity="0.45" />
-            {/* Pitcher's mound */}
-            <circle cx="120" cy="145" r="7" strokeOpacity="0.95" />
-            {/* Bases */}
-            <rect x="115" y="195" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-            <rect x="170" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-            <rect x="115" y="85" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-            <rect x="60" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
-          </svg>
-        </div>
-
-        <div className="relative p-5 sm:p-6 min-h-[200px]">
-          <div className="flex items-start gap-4">
-            {headshot ? (
-              <div className="relative flex-shrink-0">
-                <div className="absolute inset-0 rounded-full bg-emerald-400/15 blur-md" aria-hidden />
-                <img
-                  src={headshot}
-                  alt=""
-                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover bg-surface-light border-2 border-white/15"
-                />
-              </div>
-            ) : teamLogo ? (
-              <img src={teamLogo} alt="" className="w-16 h-16 rounded-full bg-white object-contain flex-shrink-0 p-1.5" />
-            ) : (
-              <span className="text-4xl flex-shrink-0">⚾</span>
-            )}
-            <div className="flex-1 min-w-0">
-              <h2 className="font-black text-xl sm:text-2xl leading-tight tracking-tight uppercase truncate text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
-                {playerName}
-              </h2>
-              <p className="text-xs sm:text-sm text-white/70 mt-1 font-semibold tracking-wide">
-                {teamName || ""}
-                {oppTeam ? <> <span className="text-white/30">•</span> <span className="uppercase">vs {oppTeam}</span></> : null}
-              </p>
-              {swishScore && (
-                <div className={`inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-md border ${scoreBg(swishScore.score)}`}>
-                  <span className={`text-sm font-black tabular-nums leading-none ${scoreColor(swishScore.score)}`}>
-                    {swishScore.score}
-                  </span>
-                  <span className="text-[9px] uppercase tracking-wider text-muted">/ 10</span>
-                  <span className={`text-[10px] font-bold uppercase tracking-wider ${scoreColor(swishScore.score)}`}>
-                    {swishScore.label}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Stat / Line / Odds — bigger, terminal feel */}
-          <div className="mt-5 flex items-end justify-between gap-3">
-            <div>
-              <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">{stat}</div>
-              <div className="text-4xl sm:text-5xl font-black tabular-nums mt-1 leading-none text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
-                {line != null ? <><span className="text-white/60 text-2xl sm:text-3xl">O </span>{line}</> : "—"}
-              </div>
-            </div>
-            {extraction.odds && (
-              <div className="text-right">
-                <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">Odds</div>
-                <div className="text-xl sm:text-2xl font-bold tabular-nums text-accent-gold mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
-                  {extraction.odds}
-                </div>
-              </div>
-            )}
-          </div>
-
-        </div>
-      </div>
+      <MLBHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
 
       {/* VERDICT + PROJECTION ROW */}
       <div className="space-y-2 px-1">

@@ -1,0 +1,234 @@
+"use client";
+
+/**
+ * Stadium-feel hero used across all MLB views — player props, team bets,
+ * parlay legs. Compact variant for parlay legs (no large stat block).
+ */
+
+import type { BetExtraction } from "@/types";
+
+interface SwishScore {
+  score: number;
+  label: string;
+  detail: string;
+}
+
+interface Props {
+  extraction: Pick<BetExtraction, "sport" | "betType" | "teams" | "players" | "line" | "odds" | "market" | "description">;
+  visuals?: Record<string, unknown>;
+  swishScore?: SwishScore;
+  /** "full" = with line/odds row; "compact" = just header (used in parlay legs) */
+  variant?: "full" | "compact";
+}
+
+function scoreColor(s: number): string {
+  if (s <= 3) return "text-red-500";
+  if (s <= 4.5) return "text-orange-400";
+  if (s <= 5.5) return "text-yellow-400";
+  if (s <= 7) return "text-emerald-400";
+  return "text-green-300";
+}
+
+function scoreBg(s: number): string {
+  if (s <= 3) return "bg-red-500/15 border-red-500/40";
+  if (s <= 4.5) return "bg-orange-500/15 border-orange-500/40";
+  if (s <= 5.5) return "bg-yellow-500/15 border-yellow-500/40";
+  if (s <= 7) return "bg-emerald-500/15 border-emerald-500/40";
+  return "bg-green-400/15 border-green-400/40";
+}
+
+function formatStatLabel(market?: string, description?: string): string {
+  const m = `${market || ""} ${description || ""}`.toLowerCase();
+  if (m.includes("strikeout") || /\bks?\b/.test(m)) return "Strikeouts";
+  if (m.includes("total base")) return "Total Bases";
+  if (m.includes("home run") || /\bhr\b/.test(m)) return "Home Runs";
+  if (m.includes("rbi")) return "RBI";
+  if (m.includes("stolen base")) return "Stolen Bases";
+  if (m.includes("run line") || m.includes("spread")) return "Run Line";
+  if (m.includes("moneyline") || m.includes("money line")) return "Moneyline";
+  if (m.includes("total") && (m.includes("over") || m.includes("under"))) return "Total Runs";
+  if (m.includes("first inning") || m.includes("nrfi")) return "First Inning";
+  if (m.includes("hit")) return "Hits";
+  return market || "Bet";
+}
+
+export default function MLBHero({ extraction, visuals, swishScore, variant = "full" }: Props) {
+  const playerName = extraction.players[0];
+  const teamVisuals = (visuals?.teams || {}) as Record<string, { logo?: string; color?: string }>;
+  const playerVisuals = (visuals?.players || {}) as Record<string, { headshot?: string }>;
+  const headshot = playerName ? playerVisuals[playerName]?.headshot : undefined;
+
+  const teamA = extraction.teams[0];
+  const teamB = extraction.teams[1];
+  const teamALogo = teamA ? teamVisuals[teamA]?.logo : undefined;
+  const teamBLogo = teamB ? teamVisuals[teamB]?.logo : undefined;
+
+  const stat = formatStatLabel(extraction.market, extraction.description);
+  const line = extraction.line;
+  const isPlayerProp = extraction.betType === "player_prop";
+
+  const compact = variant === "compact";
+
+  return (
+    <div
+      className="relative overflow-hidden rounded-xl border border-border"
+      style={{ borderLeftWidth: 3, borderLeftColor: "#c8102e" }}
+    >
+      {/* Field gradient: navy sky → dim grass */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            "linear-gradient(180deg, #0c2340 0%, #0a1a2e 35%, #0a0a0a 55%, #0a3a23 100%)",
+        }}
+      />
+      {/* Vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 60%, transparent 0%, rgba(0,0,0,0.55) 90%)",
+        }}
+      />
+      {/* Diamond aerial */}
+      <div
+        className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center text-emerald-300/35"
+        aria-hidden
+      >
+        <svg
+          viewBox="0 0 240 240"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+          className={`${compact ? "w-[95%]" : "w-[110%] sm:w-[95%]"} h-auto translate-y-[18%]`}
+        >
+          <path d="M 10 185 Q 120 -50 230 185" strokeOpacity="0.55" />
+          <line x1="120" y1="200" x2="12" y2="184" strokeOpacity="0.5" />
+          <line x1="120" y1="200" x2="228" y2="184" strokeOpacity="0.5" />
+          <path d="M 25 175 Q 120 -30 215 175" strokeOpacity="0.25" strokeDasharray="3 6" />
+          <polygon points="120,200 175,145 120,90 65,145" strokeOpacity="1" strokeWidth="1.8" />
+          <path d="M 75 165 Q 120 110 165 165" strokeOpacity="0.45" />
+          <circle cx="120" cy="145" r="7" strokeOpacity="0.95" />
+          <rect x="115" y="195" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+          <rect x="170" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+          <rect x="115" y="85" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+          <rect x="60" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+        </svg>
+      </div>
+
+      <div className={`relative ${compact ? "p-4" : "p-5 sm:p-6 min-h-[200px]"}`}>
+        <div className="flex items-start gap-3 sm:gap-4">
+          {/* Headshot OR matchup logos */}
+          {isPlayerProp && headshot ? (
+            <div className="relative flex-shrink-0">
+              <div className="absolute inset-0 rounded-full bg-emerald-400/15 blur-md" aria-hidden />
+              <img
+                src={headshot}
+                alt=""
+                className={`relative ${compact ? "w-14 h-14" : "w-20 h-20 sm:w-24 sm:h-24"} rounded-full object-cover bg-surface-light border-2 border-white/15`}
+              />
+            </div>
+          ) : teamALogo || teamBLogo ? (
+            <div className="flex -space-x-2 flex-shrink-0">
+              {teamALogo && (
+                <img
+                  src={teamALogo}
+                  alt=""
+                  className={`${compact ? "w-12 h-12" : "w-16 h-16"} rounded-full bg-white object-contain p-1.5 border-2 border-white/15`}
+                />
+              )}
+              {teamBLogo && (
+                <img
+                  src={teamBLogo}
+                  alt=""
+                  className={`${compact ? "w-12 h-12" : "w-16 h-16"} rounded-full bg-white object-contain p-1.5 border-2 border-white/15`}
+                />
+              )}
+            </div>
+          ) : (
+            <span className="text-3xl sm:text-4xl flex-shrink-0">⚾</span>
+          )}
+
+          <div className="flex-1 min-w-0">
+            <h2 className={`font-black ${compact ? "text-base" : "text-xl sm:text-2xl"} leading-tight tracking-tight uppercase truncate text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}>
+              {playerName || (teamA && teamB ? `${teamA} vs ${teamB}` : extraction.description)}
+            </h2>
+            <p className="text-xs sm:text-sm text-white/70 mt-1 font-semibold tracking-wide">
+              {playerName && teamA ? (
+                <>
+                  {teamA}
+                  {teamB ? <> <span className="text-white/30">•</span> <span className="uppercase">vs {teamB}</span></> : null}
+                </>
+              ) : (
+                <span className="uppercase">{stat}</span>
+              )}
+            </p>
+            {swishScore && !compact && (
+              <div className={`inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-md border ${scoreBg(swishScore.score)}`}>
+                <span className={`text-sm font-black tabular-nums leading-none ${scoreColor(swishScore.score)}`}>
+                  {swishScore.score}
+                </span>
+                <span className="text-[9px] uppercase tracking-wider text-muted">/ 10</span>
+                <span className={`text-[10px] font-bold uppercase tracking-wider ${scoreColor(swishScore.score)}`}>
+                  {swishScore.label}
+                </span>
+              </div>
+            )}
+          </div>
+
+          {compact && swishScore && (
+            <div className={`flex-shrink-0 self-start rounded-md border px-2 py-1 text-center ${scoreBg(swishScore.score)}`}>
+              <div className={`text-base font-black tabular-nums leading-none ${scoreColor(swishScore.score)}`}>
+                {swishScore.score}
+              </div>
+              <div className="text-[8px] uppercase tracking-wider text-muted mt-0.5">/ 10</div>
+            </div>
+          )}
+        </div>
+
+        {/* Line / Odds row — full variant only */}
+        {!compact && line != null && (
+          <div className="mt-5 flex items-end justify-between gap-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">{stat}</div>
+              <div className="text-4xl sm:text-5xl font-black tabular-nums mt-1 leading-none text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
+                {isPlayerProp ? <><span className="text-white/60 text-2xl sm:text-3xl">O </span>{line}</> : (line >= 0 ? "+" : "") + line}
+              </div>
+            </div>
+            {extraction.odds && (
+              <div className="text-right">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">Odds</div>
+                <div className="text-xl sm:text-2xl font-bold tabular-nums text-accent-gold mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
+                  {extraction.odds}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {compact && (line != null || extraction.odds) && (
+          <div className="mt-3 flex items-baseline gap-3 text-xs">
+            {line != null && (
+              <div>
+                <span className="text-white/50 mr-1.5 uppercase tracking-wider text-[10px] font-bold">{stat}</span>
+                <span className="text-white font-black tabular-nums text-base">
+                  {isPlayerProp ? `O ${line}` : (line >= 0 ? "+" : "") + line}
+                </span>
+              </div>
+            )}
+            {extraction.odds && (
+              <div>
+                <span className="text-white/50 mr-1.5 uppercase tracking-wider text-[10px] font-bold">Odds</span>
+                <span className="text-accent-gold font-bold tabular-nums text-sm">{extraction.odds}</span>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

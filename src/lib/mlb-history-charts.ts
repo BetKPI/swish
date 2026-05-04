@@ -18,26 +18,49 @@ import { getChampionshipHistory, formatChampionshipSummary } from "./championshi
 
 // ── Local helpers ──────────────────────────────────────────────────
 
+// 3-letter MLB abbreviation lookup so chart x-axis labels stay tight ("@LAD"
+// not "@Dodgers") and don't get clipped by recharts at -30deg rotation.
+const MLB_ABBR: Record<string, string> = {
+  "arizona diamondbacks": "ARI", "atlanta braves": "ATL", "baltimore orioles": "BAL",
+  "boston red sox": "BOS", "chicago cubs": "CHC", "chicago white sox": "CWS",
+  "cincinnati reds": "CIN", "cleveland guardians": "CLE", "colorado rockies": "COL",
+  "detroit tigers": "DET", "houston astros": "HOU", "kansas city royals": "KCR",
+  "los angeles angels": "LAA", "los angeles dodgers": "LAD", "miami marlins": "MIA",
+  "milwaukee brewers": "MIL", "minnesota twins": "MIN", "new york mets": "NYM",
+  "new york yankees": "NYY", "athletics": "ATH", "oakland athletics": "OAK",
+  "philadelphia phillies": "PHI", "pittsburgh pirates": "PIT", "san diego padres": "SDP",
+  "san francisco giants": "SFG", "seattle mariners": "SEA", "st. louis cardinals": "STL",
+  "tampa bay rays": "TBR", "texas rangers": "TEX", "toronto blue jays": "TOR",
+  "washington nationals": "WSH",
+};
+
 function shortName(name: string): string {
   if (!name) return "";
+  const lower = name.trim().toLowerCase();
+  if (MLB_ABBR[lower]) return MLB_ABBR[lower];
+  // Suffix match: "Yankees" → "new york yankees" → "NYY"
+  for (const [full, abbr] of Object.entries(MLB_ABBR)) {
+    const lastWord = full.split(/\s+/).pop() || "";
+    if (lastWord && lower === lastWord) return abbr;
+  }
+  // Already a 2-4 letter code? (NYY, BOS, MIL)
+  if (name.length <= 4 && name === name.toUpperCase()) return name;
+  // Fallback: take last word, cap at 4 chars
   const parts = name.trim().split(/\s+/);
-  const last = parts[parts.length - 1];
-  if (last && last.length >= 3) return last;
-  return name.slice(0, 10);
+  const last = parts[parts.length - 1] || name;
+  return last.slice(0, 4).toUpperCase();
 }
 
 function fmtGame(date: string, oppName: string, isHome: boolean): string {
-  const yy = date.slice(2, 4);
-  const mmdd = date.length >= 10 ? `${date.slice(5, 7)}/${date.slice(8, 10)}` : date;
+  const mmdd = date.length >= 10 ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : date;
   const opp = shortName(oppName);
   const vs = isHome ? "vs" : "@";
-  return `${yy} ${mmdd} ${vs}${opp}`;
+  return `${mmdd} ${vs}${opp}`;
 }
 
 function fmtPitcherGame(date: string, oppName: string): string {
-  const yy = date.slice(2, 4);
-  const mmdd = date.length >= 10 ? `${date.slice(5, 7)}/${date.slice(8, 10)}` : date;
-  return `${yy} ${mmdd} ${shortName(oppName)}`;
+  const mmdd = date.length >= 10 ? `${Number(date.slice(5, 7))}/${Number(date.slice(8, 10))}` : date;
+  return `${mmdd} ${shortName(oppName)}`;
 }
 
 function round1(n: number): number {

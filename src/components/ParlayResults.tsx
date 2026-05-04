@@ -6,6 +6,7 @@ import ChartDisplay from "./ChartDisplay";
 import FeedbackShare from "./FeedbackShare";
 import AnalysisChat from "./AnalysisChat";
 import GameStatusBanner from "./GameStatusBanner";
+import MLBHero from "./MLBHero";
 
 interface ParlayResultsProps {
   extraction: BetExtraction;
@@ -157,26 +158,43 @@ export default function ParlayResults({
             </div>
           )}
 
-          {/* Leg Header */}
-          <div className="bg-surface rounded-xl p-3">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-lg">{sportEmoji(activeLeg.sport)}</span>
-              <h3 className="font-semibold text-sm">{activeLeg.description}</h3>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
-                {(activeLeg.betType || "player_prop").replace("_", "/")}
-              </span>
-              <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
-                {activeLeg.sport}
-              </span>
-              {activeLeg.odds && (
-                <span className="text-xs bg-accent-gold/20 text-accent-gold px-2 py-0.5 rounded-full">
-                  {activeLeg.odds}
+          {/* Leg Header — stadium hero for MLB, plain card for everything else */}
+          {(activeLeg.sport === "MLB" || activeLeg.sport === "BASEBALL") ? (
+            <MLBHero
+              extraction={{
+                sport: activeLeg.sport,
+                betType: activeLeg.betType as BetExtraction["betType"],
+                teams: activeLeg.teams,
+                players: activeLeg.players || [],
+                line: activeLeg.line,
+                odds: activeLeg.odds,
+                market: activeLeg.market,
+                description: activeLeg.description,
+              }}
+              swishScore={activeLeg.swishScore}
+              variant="compact"
+            />
+          ) : (
+            <div className="bg-surface rounded-xl p-3">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="text-lg">{sportEmoji(activeLeg.sport)}</span>
+                <h3 className="font-semibold text-sm">{activeLeg.description}</h3>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
+                  {(activeLeg.betType || "player_prop").replace("_", "/")}
                 </span>
-              )}
+                <span className="text-xs bg-surface-light text-muted px-2 py-0.5 rounded-full">
+                  {activeLeg.sport}
+                </span>
+                {activeLeg.odds && (
+                  <span className="text-xs bg-accent-gold/20 text-accent-gold px-2 py-0.5 rounded-full">
+                    {activeLeg.odds}
+                  </span>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Live Score / Final Result */}
           {activeLeg.gameStatus && (activeLeg.gameStatus.state === "in" || activeLeg.gameStatus.state === "post") && (

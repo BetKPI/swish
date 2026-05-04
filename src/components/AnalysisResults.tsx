@@ -7,6 +7,7 @@ import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
 import MLBPlayerPropCard from "./MLBPlayerPropCard";
+import MLBHero from "./MLBHero";
 import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
@@ -186,7 +187,13 @@ export default function AnalysisResults({
         </div>
       )}
 
-      {/* Bet Summary Header */}
+      {/* MLB stadium hero for non-player-prop MLB bets (player props use MLBPlayerPropCard above) */}
+      {sportNorm === "MLB" && (
+        <MLBHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
+      )}
+
+      {/* Bet Summary Header — hidden for MLB since MLBHero replaces it */}
+      {sportNorm !== "MLB" && (
       <div
         className="bg-surface rounded-xl p-4 border border-border"
         style={teamColor ? { borderLeftColor: teamColor, borderLeftWidth: 3 } : undefined}
@@ -234,6 +241,7 @@ export default function AnalysisResults({
           </div>
         </div>
       </div>
+      )}
 
       {/* AI Summary */}
       {summary && (
