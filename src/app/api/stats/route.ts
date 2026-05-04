@@ -1394,12 +1394,15 @@ function computeNBAInsights(
       (g: any) => g.seasonType === "playoffs",
     );
     const oppTeam = extraction.teams.find((t) => t !== extraction.players[0]) || extraction.teams[1];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const oppTeamData = oppTeam ? (history as any)?.teams?.[oppTeam] : undefined;
 
     return buildNBAPlayerInsights({
       player: ts,
       stat,
       line: extraction.line,
       oppTeam,
+      oppTeamData,
       isPlayoffs,
     });
   } catch (e) {

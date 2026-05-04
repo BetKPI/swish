@@ -8,7 +8,7 @@
  * since the user is targeting playoff bets right now.
  */
 
-import type { NBAPlayerTwoSeason, NBAPlayerGame } from "./nba-history";
+import type { NBAPlayerTwoSeason, NBAPlayerGame, NBATeamTwoSeason } from "./nba-history";
 
 export type Tone = "pos" | "neg" | "neutral";
 
@@ -148,9 +148,14 @@ export function buildNBAPlayerInsights(args: {
   stat: NBAStat;
   line: number;
   oppTeam?: string;
+  oppTeamData?: NBATeamTwoSeason;
   isPlayoffs?: boolean;
+  /** Series record like "BOS leads 2-1" if known. */
+  seriesContext?: string;
+  /** Game number in series — 5/6/7 carry leverage. */
+  gameInSeries?: number;
 }): NBAInsights {
-  const { player, stat, line, oppTeam, isPlayoffs } = args;
+  const { player, stat, line, oppTeam, oppTeamData, isPlayoffs, seriesContext, gameInSeries } = args;
   const allGames = player.games || [];
 
   // Split by season type -playoff games carry different signal than regular
@@ -281,6 +286,59 @@ export function buildNBAPlayerInsights(args: {
           tone: "neutral",
         });
       }
+    }
+  }
+
+  // Defensive matchup -opponent's recent points-allowed per game as a
+  // defensive quality proxy. For a points / PRA / scoring prop, a stingy
+  // defense suggests under, a leaky defense suggests over.
+  if (oppTeamData && (stat === "pts" || stat === "pra" || stat === "pr" || stat === "pa" || stat === "fg3m")) {
+    const recentDef = oppTeamData.games
+      .filter((g) => g.season === oppTeamData.currentSeason)
+      .slice(-20);
+    if (recentDef.length >= 8) {
+      const ppgAllowed = round1(mean(recentDef.map((g) => g.opponentScore)));
+      const vsLeague = round1(ppgAllowed - 113.5);
+      const tone: Tone =
+        ppgAllowed >= 117 ? "pos" :
+        ppgAllowed <= 110 ? "neg" :
+        "neutral";
+      const trail =
+        ppgAllowed >= 118 ? " (leaky D, run-friendly)" :
+        ppgAllowed <= 108 ? " (elite D, scoring suppressed)" :
+        "";
+      bullets.push({
+        label: `${oppTeam || "Opp"} D`,
+        value: `${ppgAllowed} ppg${trail} (${vsLeague > 0 ? "+" : ""}${vsLeague} vs lg)`,
+        tone,
+      });
+    }
+  }
+
+  // Pace projection -opp games avg total. Modern NBA avg is ~226; outliers
+  // 10+ off are meaningful for points / PRA.
+  if (oppTeamData && (stat === "pra" || stat === "pts")) {
+    const recentPace = oppTeamData.games.filter((g) => g.season === oppTeamData.currentSeason).slice(-20);
+    if (recentPace.length >= 8) {
+      const oppAvgTotal = round1(mean(recentPace.map((g) => g.total)));
+      if (oppAvgTotal >= 235) {
+        bullets.push({ label: "Pace", value: `${oppTeam} games avg ${oppAvgTotal} (fast)`, tone: "pos" });
+      } else if (oppAvgTotal <= 218) {
+        bullets.push({ label: "Pace", value: `${oppTeam} games avg ${oppAvgTotal} (slow)`, tone: "neg" });
+      }
+    }
+  }
+
+  // Series leverage -elimination / pivotal game flags for playoff context.
+  if (isPlayoffs && (seriesContext || gameInSeries != null)) {
+    const isElim = !!seriesContext && /down\s*[02]-3|trails?\s*[02]-3|0-3|1-3/i.test(seriesContext);
+    const isPivotal = gameInSeries != null && (gameInSeries === 5 || gameInSeries === 7);
+    if (isElim) {
+      bullets.push({ label: "Leverage", value: `${seriesContext} -elimination game`, tone: "pos" });
+    } else if (isPivotal) {
+      bullets.push({ label: "Leverage", value: `Game ${gameInSeries} (pivotal)`, tone: "pos" });
+    } else if (seriesContext) {
+      bullets.push({ label: "Series", value: seriesContext, tone: "neutral" });
     }
   }
 
