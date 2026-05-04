@@ -66,7 +66,7 @@ export default function BetHistory({ onLoad }: BetHistoryProps) {
         </div>
       )}
 
-      {/* Bet list — clickable */}
+      {/* Bet list - clickable */}
       <div className="space-y-2">
         {history.map((entry) => (
           <div

@@ -1,5 +1,5 @@
 /**
- * MLB History — two-season data primitives for deterministic history charts.
+ * MLB History - two-season data primitives for deterministic history charts.
  * Pulls last season + current YTD from the public MLB Stats API.
  */
 

@@ -1,10 +1,10 @@
 /**
- * Market detection — identifies exotic bet types from market strings.
+ * Market detection - identifies exotic bet types from market strings.
  *
  * Uses keyword presence (not exact substring matching) so "First Team
  * Basket Scorer" matches the same as "First Basket Scorer" or "1st Basket".
  *
- * Single source of truth — used by both stats/route.ts and charts.ts.
+ * Single source of truth - used by both stats/route.ts and charts.ts.
  */
 
 export type ExoticMarket =
@@ -100,7 +100,7 @@ export function detectExoticMarket(
     }
   }
 
-  // Futures — season-long bets (division, conference, win totals, MVP, playoffs, etc.)
+  // Futures - season-long bets (division, conference, win totals, MVP, playoffs, etc.)
   if (text.includes("division") || text.includes("pennant") || text.includes("conference") ||
       text.includes("win total") || text.includes("season wins") || text.includes("world series") ||
       text.includes("super bowl") || text.includes("stanley cup") || text.includes("nba champion") ||
@@ -113,7 +113,7 @@ export function detectExoticMarket(
     return "futures";
   }
 
-  // First N Innings (MLB) — "first 5 innings", "first 3 innings", "f5", "1st 7 innings", etc.
+  // First N Innings (MLB) - "first 5 innings", "first 3 innings", "f5", "1st 7 innings", etc.
   if (s === "MLB" || s === "BASEBALL" || !s) {
     if (/(?:first|1st|f)\s*\d+\s*(?:inning|inn)/i.test(text) ||
         /\bf[357]\b/.test(text)) {
@@ -121,7 +121,7 @@ export function detectExoticMarket(
     }
   }
 
-  // Anytime TD (NFL) — skeleton for when season starts
+  // Anytime TD (NFL) - skeleton for when season starts
   if (s === "NFL" || s === "NCAAF" || !s) {
     if (text.includes("anytime") && (text.includes("touchdown") || text.includes(" td"))) {
       return "anytime_td";

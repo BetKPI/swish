@@ -66,7 +66,7 @@ export async function copyImageToClipboard(blob: Blob, filename: string): Promis
       return true;
     }
   } catch {
-    // ClipboardItem not supported or permission denied — fall back
+    // ClipboardItem not supported or permission denied - fall back
   }
   downloadBlob(blob, filename);
   return false;

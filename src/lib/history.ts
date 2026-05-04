@@ -1,5 +1,5 @@
 /**
- * Bet history — localStorage-based, zero backend cost.
+ * Bet history - localStorage-based, zero backend cost.
  * Stores last 5 full analyses (clickable to re-view) with charts, stats, summary.
  */
 

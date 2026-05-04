@@ -32,7 +32,7 @@ export default function ParlayResults({
   const [activeTab, setActiveTab] = useState(0);
   const activeLeg = legs[activeTab];
 
-  // Persist chat visibility per leg — once opened on any leg, stays open on all
+  // Persist chat visibility per leg - once opened on any leg, stays open on all
   const [chatOpen, setChatOpen] = useState(true);
 
   const analyzedLegs = legs.filter((l) => !l.error && !l.unsupported);
@@ -103,7 +103,7 @@ export default function ParlayResults({
             )}
           </div>
           {missedLegs.length > 0 && (
-            <p className="text-xs text-red-400 mt-1">Parlay busted — {missedLegs[0].gameStatus?.grade?.detail}</p>
+            <p className="text-xs text-red-400 mt-1">Parlay busted - {missedLegs[0].gameStatus?.grade?.detail}</p>
           )}
           {missedLegs.length === 0 && hitLegs.length === legs.length && (
             <p className="text-xs text-emerald-400 mt-1">All legs hit!</p>
@@ -159,7 +159,7 @@ export default function ParlayResults({
             </div>
           )}
 
-          {/* Leg Header — sport-themed hero for MLB/NBA/NHL, plain card otherwise */}
+          {/* Leg Header - sport-themed hero for MLB/NBA/NHL, plain card otherwise */}
           {resolveThemedSport(activeLeg.sport) ? (
             <SportHero
               extraction={{
@@ -233,7 +233,7 @@ export default function ParlayResults({
             </div>
           )}
 
-          {/* Hit Rate Hero — first stat gets full-width treatment */}
+          {/* Hit Rate Hero - first stat gets full-width treatment */}
           {activeLeg.stats.length > 0 && activeLeg.stats[0]?.label?.toLowerCase().includes("rate") && (
             <div className="bg-surface rounded-xl p-4 text-center border border-accent/20">
               <p className="text-3xl font-black text-accent">
@@ -267,7 +267,7 @@ export default function ParlayResults({
         </div>
       )}
 
-      {/* Chat — rendered for ALL analyzed legs, hidden when not active tab */}
+      {/* Chat - rendered for ALL analyzed legs, hidden when not active tab */}
       {/* This preserves conversation history when switching between legs */}
       {legs.map((leg, i) => (
         !leg.error && !leg.unsupported && (

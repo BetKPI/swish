@@ -227,7 +227,7 @@ async function buildMLBHistoryContext(
     );
   }
 
-  // 4b) Probable pitcher's career vs opposing team — pulls 6 seasons for a deeper track record.
+  // 4b) Probable pitcher's career vs opposing team - pulls 6 seasons for a deeper track record.
   for (const teamName of extraction.teams) {
     const pp = probablePitchersByTeam[teamName];
     if (!pp) continue;
@@ -320,7 +320,7 @@ async function buildNBAHistoryContext(
     ctx.standings = await getNBAStandingsForSeasons([last - 2, last - 1, last, current]);
   }
 
-  // Quarter-score enrichment only for 1H / 3Q bets — expensive, so gated.
+  // Quarter-score enrichment only for 1H / 3Q bets - expensive, so gated.
   const isQuarterBet =
     /\b(1h|first half|1st half|3q|3rd quarter|third quarter|first 3 quarter|1st 3 quarter)\b/.test(marketLower) ||
     marketLower.includes("through 3");
@@ -393,7 +393,7 @@ async function fetchSportData(
   const isMLB = sport === "MLB" || sport === "BASEBALL";
 
   // BDL disabled for now (free tier doesn't include stats/game logs).
-  // Code lives in balldontlie.ts — re-enable when upgraded to paid plan.
+  // Code lives in balldontlie.ts - re-enable when upgraded to paid plan.
   // To re-enable: uncomment the block below and set BDL_API_KEY.
   /*
   if (isNBA) {
@@ -727,7 +727,7 @@ async function callGemini(
 }
 
 /**
- * Log bet failures/events to Discord automatically — no user action needed.
+ * Log bet failures/events to Discord automatically - no user action needed.
  */
 async function logToDiscord(
   type: "unsupported" | "error" | "empty_parlay" | "analysis_fail",
@@ -747,7 +747,7 @@ async function logToDiscord(
   const titles: Record<string, string> = {
     unsupported: "Unsupported Bet Submitted",
     error: "Analysis Error",
-    empty_parlay: "Parlay — No Legs Detected",
+    empty_parlay: "Parlay - No Legs Detected",
     analysis_fail: "Analysis Returned Empty",
   };
 
@@ -761,7 +761,7 @@ async function logToDiscord(
           color: colors[type] || 0x6366f1,
           fields: [
             { name: "Bet", value: extraction.description || "Unknown", inline: false },
-            { name: "Sport / Type", value: `${extraction.sport} — ${extraction.betType?.replace("_", "/")}`, inline: true },
+            { name: "Sport / Type", value: `${extraction.sport} - ${extraction.betType?.replace("_", "/")}`, inline: true },
             { name: "Teams", value: extraction.teams?.join(" vs ") || "?", inline: true },
             ...(extraction.players?.length ? [{ name: "Players", value: extraction.players.join(", "), inline: true }] : []),
             ...(detail ? [{ name: "Detail", value: detail.slice(0, 200), inline: false }] : []),
@@ -819,7 +819,7 @@ function parseGeminiJSON(text: string): Record<string, unknown> {
 }
 
 /**
- * Core analysis for a single bet — used by both single bets and parlay legs.
+ * Core analysis for a single bet - used by both single bets and parlay legs.
  * No HTTP round-trip, runs directly in the same function.
  */
 async function analyzeSingleBet(
@@ -938,7 +938,7 @@ async function analyzeSingleBet(
 
     // Always include prior season for richer data (early in season most players have few games)
     if (currentGames < 30) {
-      console.log(`[Stats] ${currentGames} games for ${playerName} — enriching with prior season`);
+      console.log(`[Stats] ${currentGames} games for ${playerName} - enriching with prior season`);
       const priorYear = new Date().getFullYear() - 1;
       try {
         const sport = (extraction.sport || "").toUpperCase();
@@ -969,7 +969,7 @@ async function analyzeSingleBet(
             }
           }
         }
-        // NBA: ESPN game logs are already full season, BDL is disabled — skip
+        // NBA: ESPN game logs are already full season, BDL is disabled - skip
       } catch (e) {
         console.error("[Stats] Prior season enrichment failed:", e);
       }
@@ -977,7 +977,7 @@ async function analyzeSingleBet(
   }
 
   // Auto-enrich team data with prior season games for spread/ML/O-U when data is thin
-  // This is generalized across ALL sports — ESPN schedule API supports season param
+  // This is generalized across ALL sports - ESPN schedule API supports season param
   if (["spread", "over_under", "moneyline"].includes(extraction.betType) && extraction.teams.length >= 1) {
     const priorYear = new Date().getFullYear() - 1;
     for (const teamName of extraction.teams) {
@@ -985,7 +985,7 @@ async function analyzeSingleBet(
       const td = (teamData as any)[teamName];
       const games = td?.recentGames;
       if (Array.isArray(games) && games.length < 30 && games.length > 0 && td?.team?.id) {
-        console.log(`[Stats] ${teamName} has ${games.length} games — fetching ${priorYear} season`);
+        console.log(`[Stats] ${teamName} has ${games.length} games - fetching ${priorYear} season`);
         try {
           const { getTeamSchedule } = await import("@/lib/espn");
           const priorSchedule = await getTeamSchedule(extraction.sport, td.team.id, priorYear);
@@ -1063,7 +1063,7 @@ async function analyzeSingleBet(
       isSummaryOnly ? "gemini-1.5-flash" : "gemini-2.5-flash",
       isSummaryOnly ? 2048 : 4096
     ),
-    // Skip game status for futures — no specific game to track
+    // Skip game status for futures - no specific game to track
     (((extraction.betType as string) === "futures")
       ? Promise.resolve(null)
       : checkGameStatus(
@@ -1111,7 +1111,7 @@ async function analyzeSingleBet(
   const mlbInsights = computeMLBInsights(extraction, teamData);
   const nbaInsights = computeNBAInsights(extraction, teamData);
 
-  // Insights-driven Swish Score override — when we have a real projection
+  // Insights-driven Swish Score override - when we have a real projection
   // (MLB or NBA player prop), the default scorer tends to bottom out at
   // "Shaky" because it expects a different data shape. Use the projection's
   // edge + bullet positivity to compute a meaningful score.
@@ -1126,7 +1126,7 @@ async function analyzeSingleBet(
     raw += Math.min(30, edge * 100); // strong over edge=0.20 → +20
     raw += (posBullets - negBullets) * 5;
     raw -= (insights.flags?.length || 0) * 3;
-    // Direction adjustment: under-leans flip to "negative" for over bets — but
+    // Direction adjustment: under-leans flip to "negative" for over bets - but
     // since the user picks side, we just measure conviction magnitude.
     raw = Math.max(20, Math.min(95, raw));
     const lean = insights.projection.lean;
@@ -1175,7 +1175,7 @@ async function analyzeSingleBet(
 }
 
 /**
- * MLB player-prop deterministic insights — pulls the in-memory MLB history
+ * MLB player-prop deterministic insights - pulls the in-memory MLB history
  * context from teamData and produces structured insights for the UI.
  */
 function computeMLBInsights(
@@ -1235,7 +1235,7 @@ function computeMLBInsights(
         ? extraction.teams[0].toLowerCase() === extraction.homeTeam.toLowerCase()
         : undefined;
 
-    // Resolve opposing pitcher — match probable pitcher to BvP pitcher name,
+    // Resolve opposing pitcher - match probable pitcher to BvP pitcher name,
     // or pick any probable pitcher if BvP missing (better than nothing).
     let oppPitcher: unknown = undefined;
     const probable = (history.probablePitchers || {}) as Record<string, unknown>;
@@ -1277,7 +1277,7 @@ function computeMLBInsights(
 }
 
 /**
- * NBA player-prop deterministic insights — pulls the in-memory NBA history
+ * NBA player-prop deterministic insights - pulls the in-memory NBA history
  * context (when present on teamData) and produces a verdict/projection/bullets
  * structure parallel to mlbInsights. Includes playoff-aware splits.
  */
@@ -1330,7 +1330,7 @@ function computeNBAInsights(
     if (!stat) return undefined;
 
     // Detect if any of the player's games are tagged as playoffs in the
-    // current season — if so, treat as playoff context.
+    // current season - if so, treat as playoff context.
     const isPlayoffs = normalized.some(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (g: any) => g.seasonType === "playoffs",
@@ -1393,13 +1393,13 @@ function computeKeyInsight(
         const proj = combined.projectedTotal;
         const diff = Math.round(Math.abs(proj - line) * 10) / 10;
         const direction = proj >= line ? "over" : "under";
-        return `Games project ~${proj} — ${diff} ${direction} the ${line} line`;
+        return `Games project ~${proj} - ${diff} ${direction} the ${line} line`;
       }
       if (teams.length >= 2 && line > 0) {
         const proj = Math.round((teams[0].scoring.avgPointsFor + teams[1].scoring.avgPointsFor) * 10) / 10;
         const diff = Math.round(Math.abs(proj - line) * 10) / 10;
         const direction = proj >= line ? "over" : "under";
-        return `Games project ~${proj} — ${diff} ${direction} the ${line} line`;
+        return `Games project ~${proj} - ${diff} ${direction} the ${line} line`;
       }
       return "Limited over/under data available";
     }
@@ -1544,7 +1544,7 @@ function computeHitRate(
 
 /**
  * Extract visual metadata (logos, headshots, team colors) from raw team data.
- * These are ESPN CDN URLs — no extra API calls needed.
+ * These are ESPN CDN URLs - no extra API calls needed.
  */
 function extractVisuals(
   teamData: Record<string, unknown>,
@@ -1638,7 +1638,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ parlay: true, legs: [] });
       }
 
-      // Step 1: Fix up legs — inherit missing teams/sport from parent
+      // Step 1: Fix up legs - inherit missing teams/sport from parent
       // Gemini can return null for any field, so guard everything
       const fixedLegs = legs.slice(0, 6).map((leg) => {
         if (!leg.teams || leg.teams.length === 0) {
@@ -1795,7 +1795,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(result);
   } catch (error) {
     console.error("Stats error:", error);
-    // Try to log to Discord — extraction may not be available if parsing failed
+    // Try to log to Discord - extraction may not be available if parsing failed
     try {
       const body = await request.clone().json().catch(() => null);
       if (body?.extraction) {
@@ -1823,18 +1823,18 @@ function buildSummaryPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You're a sports data analyst writing for 22-year-old bettors. Quick, punchy, data-driven. Present what the numbers say — no recommendations.
+  return `You're a sports data analyst writing for 22-year-old bettors. Quick, punchy, data-driven. Present what the numbers say - no recommendations.
 
 ${context}${marketContext}
 
 Return JSON with ONLY these keys:
 
-1. **summary**: 2-3 punchy sentences. Lead with the KEY number (hit rate, avg, trend direction). Then weave in opponent/matchup context and a situational factor (home/away, rest, streak, pitcher matchup). Example: "Brunson has cleared 26.5 points in 9 of his last 12, averaging 28.4 over that stretch. The Bulls rank 27th in opponent points allowed — and Brunson averages 31.2 on the road this season." Combine multiple data points into one flowing narrative, don't just list stats. No fluff, no "this looks good" — data story with context.
+1. **summary**: 2-3 punchy sentences. Lead with the KEY number (hit rate, avg, trend direction). Then weave in opponent/matchup context and a situational factor (home/away, rest, streak, pitcher matchup). Example: "Brunson has cleared 26.5 points in 9 of his last 12, averaging 28.4 over that stretch. The Bulls rank 27th in opponent points allowed - and Brunson averages 31.2 on the road this season." Combine multiple data points into one flowing narrative, don't just list stats. No fluff, no "this looks good" - data story with context.
 
 2. **stats**: Array of 3-4 stats (NOT 5). Each has:
    - label: short and punchy (4 words max). Use action words: "Hit Rate L10", "Season Avg", "Opp Allows", "Last 5 Trend"
    - value: the number/string (use % for rates, plain numbers for counts)
-   - context: ONE short sentence — must reference either (a) trend direction (rising/falling/stable), (b) opponent context, or (c) home/away split${marketContext ? " — reference the specific factors that matter for this market" : ""}
+   - context: ONE short sentence - must reference either (a) trend direction (rising/falling/stable), (b) opponent context, or (c) home/away split${marketContext ? " - reference the specific factors that matter for this market" : ""}
 
 Return ONLY valid JSON. No markdown.`;
 }
@@ -1852,13 +1852,13 @@ function buildFullAIPrompt(
     ? getMarketContext(extraction.market, extraction.sport)
     : "";
 
-  return `You're a sports data analyst writing for 22-year-old bettors. Quick, objective, data-driven. Present what the numbers say — no recommendations.
+  return `You're a sports data analyst writing for 22-year-old bettors. Quick, objective, data-driven. Present what the numbers say - no recommendations.
 
 ${context}${marketContext}
 
 Return JSON with:
 
-1. **summary**: MAX 2 short sentences. Data story only — no "bet this" or "pass". Just facts + context.
+1. **summary**: MAX 2 short sentences. Data story only - no "bet this" or "pass". Just facts + context.
 
 2. **stats**: Array of 3-5 stats, each with label, value, context.
 
@@ -1876,12 +1876,12 @@ Return ONLY valid JSON.`;
 
 // ── Shared data context builder ────────────────────────────────────
 
-// ── Parlay batch prompt — one Gemini call for all legs ─────────────
+// ── Parlay batch prompt - one Gemini call for all legs ─────────────
 
 function buildParlayBatchPrompt(
   legData: { leg: BetExtraction; teamData: Record<string, unknown> | null; computed: ReturnType<typeof computeAnalysis> | null; charts: unknown[] }[]
 ): string {
-  let context = `You're a sports data analyst. Give a quick, objective data summary for each parlay leg. No recommendations — just what the numbers say.
+  let context = `You're a sports data analyst. Give a quick, objective data summary for each parlay leg. No recommendations - just what the numbers say.
 
 `;
 
@@ -1898,8 +1898,8 @@ function buildParlayBatchPrompt(
 
   return `${context}
 
-Return JSON with ONE key "legs" — an array with ${legData.length} objects (one per leg, same order). Each object has:
-- summary: 2-3 sentences weaving key numbers with matchup/venue context into one flowing narrative. Don't just list stats — tell the data story. No "bet" or "pass" recommendations.
+Return JSON with ONE key "legs" - an array with ${legData.length} objects (one per leg, same order). Each object has:
+- summary: 2-3 sentences weaving key numbers with matchup/venue context into one flowing narrative. Don't just list stats - tell the data story. No "bet" or "pass" recommendations.
 - stats: array of 2-3 stats, each with label (4 words max), value, context (1 sentence with opponent or venue context)
 
 Example: {"legs":[{"summary":"...","stats":[...]},{"summary":"...","stats":[...]}]}
@@ -2014,7 +2014,7 @@ function buildDataContext(
 ): string {
   const { teamMetrics, headToHead, oddsAnalysis, betTypeInsights } = computed;
 
-  let ctx = `BET: ${extraction.sport} ${extraction.betType} — ${extraction.teams.join(" vs ")}`;
+  let ctx = `BET: ${extraction.sport} ${extraction.betType} - ${extraction.teams.join(" vs ")}`;
   if (extraction.odds) ctx += ` (${extraction.odds})`;
   if (extraction.line != null) ctx += ` Line: ${extraction.line}`;
   if (extraction.market) ctx += ` Market: ${extraction.market}`;
@@ -2057,7 +2057,7 @@ function buildDataContext(
       const p = pData as any;
       if (p.propAnalysis) {
         const pa = p.propAnalysis;
-        ctx += `\n\n${pName} PROP: ${pa.stat} over ${pa.line} — hit ${pa.hitCount}/${pa.totalGames} (${Math.round(pa.hitRate * 100)}%), avg ${pa.average}, L5 avg ${pa.last5Avg}, trend ${pa.trend}`;
+        ctx += `\n\n${pName} PROP: ${pa.stat} over ${pa.line} - hit ${pa.hitCount}/${pa.totalGames} (${Math.round(pa.hitRate * 100)}%), avg ${pa.average}, L5 avg ${pa.last5Avg}, trend ${pa.trend}`;
       }
       if (p.seasonAverages || p.seasonStats) {
         ctx += `\n  Season: ${JSON.stringify(p.seasonAverages || p.seasonStats)}`;

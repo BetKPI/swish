@@ -104,7 +104,7 @@ export default function AnalysisResults({
   const isMiss = gradeResult === "miss";
   const isGraded = isFinal && (isHit || isMiss);
 
-  // Specialized denser layout for player props in MLB and NBA — both insight
+  // Specialized denser layout for player props in MLB and NBA - both insight
   // shapes are structurally identical so we pass whichever applies.
   const sportNorm = normalizeSport(extraction.sport);
   const playerPropInsights =
@@ -133,7 +133,7 @@ export default function AnalysisResults({
 
   return (
     <div className="space-y-6 relative" id="analysis-content">
-      {/* Sport-themed page wash — subtle radial tint coming up from the bottom */}
+      {/* Sport-themed page wash - subtle radial tint coming up from the bottom */}
       {themedSport && (
         <div
           className="pointer-events-none fixed inset-0 -z-10"
@@ -211,7 +211,7 @@ export default function AnalysisResults({
         <SportHero extraction={extraction} visuals={visuals} swishScore={swishScore} variant="full" />
       )}
 
-      {/* Bet Summary Header — hidden for sports with a SportHero */}
+      {/* Bet Summary Header - hidden for sports with a SportHero */}
       {!resolveThemedSport(extraction.sport) && (
       <div
         className="bg-surface rounded-xl p-4 border border-border"
@@ -254,7 +254,7 @@ export default function AnalysisResults({
             </div>
             {extraction.confidence < 0.7 && (
               <p className="text-yellow-400 text-xs mt-2">
-                Heads up — we&apos;re not 100% sure we read this right. Double-check the details above.
+                Heads up - we&apos;re not 100% sure we read this right. Double-check the details above.
               </p>
             )}
           </div>
@@ -274,7 +274,7 @@ export default function AnalysisResults({
         </div>
       )}
 
-      {/* Hit Rate Hero — first stat gets full-width treatment */}
+      {/* Hit Rate Hero - first stat gets full-width treatment */}
       {stats.length > 0 && stats[0].label?.toLowerCase().includes("rate") && (
         <div className="bg-gradient-to-br from-accent/10 to-surface rounded-xl p-5 text-center border border-accent/30">
           <p className="text-4xl sm:text-5xl font-black text-accent tracking-tight">
@@ -308,7 +308,7 @@ export default function AnalysisResults({
         <ChartDisplay key={i} config={chart} extraction={extraction} />
       ))}
 
-      {/* Share Analysis — captures the entire analysis as one watermarked image */}
+      {/* Share Analysis - captures the entire analysis as one watermarked image */}
       <button
         onClick={handleShareAnalysis}
         disabled={shareState === "capturing"}

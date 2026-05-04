@@ -10,7 +10,7 @@ import { fetchWithRetry } from "@/lib/fetch";
 function normalizeSport(raw: string): string {
   const s = (raw || "").trim().toUpperCase();
   const map: Record<string, string> = {
-    // Golf variants — Gemini sometimes returns tournament/league name
+    // Golf variants - Gemini sometimes returns tournament/league name
     GOLF: "Golf",
     PGA: "Golf",
     "PGA TOUR": "Golf",
@@ -84,7 +84,7 @@ function detectHomeAway(extraction: Record<string, unknown>): void {
       const awayPart = atMatch[1].trim().toLowerCase();
       const homePart = atMatch[2].trim().toLowerCase();
 
-      // Match against team names (partial match — "tigers" matches "Detroit Tigers")
+      // Match against team names (partial match - "tigers" matches "Detroit Tigers")
       const t0Lower = teams[0].toLowerCase();
       const t1Lower = teams[1].toLowerCase();
 
@@ -106,7 +106,7 @@ function detectHomeAway(extraction: Record<string, unknown>): void {
     // Fallback: in most US sports, the first team listed is the away team
     // (on bet slips the format is typically "AWAY @ HOME" or "AWAY vs HOME")
     if (!extraction.homeTeam && !extraction.awayTeam) {
-      // Check for "vs" pattern — first team is typically listed first (away)
+      // Check for "vs" pattern - first team is typically listed first (away)
       const vsMatch = desc.match(/(.+?)\s+(?:vs\.?|versus)\s+(.+)/i);
       if (vsMatch) {
         const firstPart = vsMatch[1].trim().toLowerCase();
@@ -140,10 +140,10 @@ Return a JSON object with these fields:
 - line: The line/number (spread value, total, prop line) as a number, or null if not applicable
 - odds: The odds as a string (e.g., "-110", "+150", "1.95")
 - market: The specific market name (e.g., "First Basket Scorer", "Anytime TD Scorer", "Points Spread")
-- description: A human-readable one-sentence summary of the bet. IMPORTANT: If the bet slip shows "Team A @ Team B" or "Team A at Team B", preserve the "@" or "at" in the description — this tells us which team is away (before @) and which is home (after @).
+- description: A human-readable one-sentence summary of the bet. IMPORTANT: If the bet slip shows "Team A @ Team B" or "Team A at Team B", preserve the "@" or "at" in the description - this tells us which team is away (before @) and which is home (after @).
 - confidence: Your confidence in the extraction from 0 to 1 (1 = very confident)
 
-CRITICAL — PARLAY DETECTION:
+CRITICAL - PARLAY DETECTION:
 If the screenshot shows MORE THAN ONE bet selection (multiple lines/rows of bets, a bet slip with 2+ picks, or any indication of a multi-leg bet), you MUST set betType to "parlay" and include ALL legs. Signs of a parlay:
 - Multiple bet lines visible in the screenshot
 - "Parlay", "SGP", "Same Game Parlay", "Multi", "Accumulator", "Combo" in the UI
@@ -151,8 +151,8 @@ If the screenshot shows MORE THAN ONE bet selection (multiple lines/rows of bets
 - A total/combined odds line at the bottom
 
 For parlays, set betType to "parlay" and include a "legs" array where EVERY VISIBLE BET is its own leg with the FULL structure above (sport, betType, teams, players, line, odds, market, description, confidence). Do NOT skip any legs. Do NOT extract just one leg from a multi-leg slip. CRITICAL for each parlay leg:
-- "teams" array MUST include the team names involved — even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
-- "market" MUST be specific and accurate — for player props, state the exact stat: "Shots on Goal", "Points", "Assists", "Rebounds", "Strikeouts", "Hits", "Total Bases", "Goals", "Saves", etc. Do NOT default to "Points" for non-points props. For shots bets, use "Shots on Goal". For goals, use "Goals". This is critical for showing the correct charts.
+- "teams" array MUST include the team names involved - even for player props, include the teams playing in that game. Without teams, we cannot analyze the leg.
+- "market" MUST be specific and accurate - for player props, state the exact stat: "Shots on Goal", "Points", "Assists", "Rebounds", "Strikeouts", "Hits", "Total Bases", "Goals", "Saves", etc. Do NOT default to "Points" for non-points props. For shots bets, use "Shots on Goal". For goals, use "Goals". This is critical for showing the correct charts.
 - "players" array MUST include any player names in the leg.
 - Even if bets span different sports, include them ALL as legs.
 
@@ -215,7 +215,7 @@ export async function POST(request: NextRequest) {
         console.log(`[Analyze] ${model} returned ${response.status}, trying fallback...`);
         continue;
       }
-      break; // Other errors — don't retry with different model
+      break; // Other errors - don't retry with different model
     }
 
     if (!response || !response.ok) {
@@ -232,7 +232,7 @@ export async function POST(request: NextRequest) {
       const isOverloaded = status === 503 || status === 429 || status === 404;
       return NextResponse.json(
         { error: isOverloaded
-          ? "Our AI is temporarily overloaded — wait a few seconds and try again"
+          ? "Our AI is temporarily overloaded - wait a few seconds and try again"
           : "Failed to analyze image" },
         { status: isOverloaded ? 503 : 500 }
       );
@@ -254,7 +254,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Parse JSON — handle markdown code blocks and truncation
+    // Parse JSON - handle markdown code blocks and truncation
     let jsonText = text.trim();
     if (jsonText.startsWith("```")) {
       jsonText = jsonText.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
@@ -269,14 +269,14 @@ export async function POST(request: NextRequest) {
       const webhookUrl = process.env.DISCORD_WEBHOOK_URL;
       if (webhookUrl) {
         fetch(webhookUrl, { method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ embeds: [{ title: "Screenshot Analysis — JSON Parse Failed", color: 0xef4444, fields: [
+          body: JSON.stringify({ embeds: [{ title: "Screenshot Analysis - JSON Parse Failed", color: 0xef4444, fields: [
             { name: "Error", value: (parseErr as Error).message.slice(0, 200), inline: false },
             { name: "Raw text (last 200 chars)", value: jsonText.slice(-200), inline: false },
           ], timestamp: new Date().toISOString() }] }),
         }).catch(() => {});
       }
       return NextResponse.json(
-        { error: "Couldn't read the bet from that image — try a clearer or closer screenshot" },
+        { error: "Couldn't read the bet from that image - try a clearer or closer screenshot" },
         { status: 422 }
       );
     }
@@ -285,7 +285,7 @@ export async function POST(request: NextRequest) {
     // (Gemini sometimes returns "PGA", "The Masters", etc. instead of "Golf")
     normalizeExtraction(extraction);
 
-    // Detect home/away from "@" in description — "Tigers @ Red Sox" means Tigers away, Red Sox home
+    // Detect home/away from "@" in description - "Tigers @ Red Sox" means Tigers away, Red Sox home
     detectHomeAway(extraction);
 
     // Log parlay extractions to Discord for debugging
@@ -301,7 +301,7 @@ export async function POST(request: NextRequest) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             embeds: [{
-              title: `Parlay Extracted — ${legs.length} legs`,
+              title: `Parlay Extracted - ${legs.length} legs`,
               color: legs.every((l: { teams?: string[] }) => (l.teams?.length || 0) > 0) ? 0x10b981 : 0xf59e0b,
               fields: [
                 { name: "Description", value: (extraction.description || "?").slice(0, 200), inline: false },

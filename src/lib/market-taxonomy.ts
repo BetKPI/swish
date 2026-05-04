@@ -1,5 +1,5 @@
 /**
- * SWISH — Comprehensive Sports Betting Market Taxonomy
+ * SWISH - Comprehensive Sports Betting Market Taxonomy
  *
  * This file is the single source of truth for how Swish maps a detected bet
  * to the analysis it should display.  Every entry describes:
@@ -59,14 +59,14 @@ export interface MarketDefinition {
   relevantData: string[];
   /** What the ideal charts look like */
   idealCharts: { type: ChartType; title: string; description: string }[];
-  /** What data is commonly shown but IRRELEVANT — mistakes to avoid */
+  /** What data is commonly shown but IRRELEVANT - mistakes to avoid */
   irrelevantData: string[];
   /** Additional context for the AI summary */
   analysisNotes: string;
 }
 
 // ---------------------------------------------------------------------------
-// 1. STANDARD STAT PROPS — Points, Rebounds, Assists, Yards, etc.
+// 1. STANDARD STAT PROPS - Points, Rebounds, Assists, Yards, etc.
 // ---------------------------------------------------------------------------
 
 const standardStatProps: MarketDefinition[] = [
@@ -99,7 +99,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Points Per Game — Last 15 Games",
+        title: "Points Per Game - Last 15 Games",
         description:
           "Show the player's actual points each game with the prop line drawn as a horizontal reference. Highlight games above/below.",
       },
@@ -129,7 +129,7 @@ const standardStatProps: MarketDefinition[] = [
       "Opponent's overall record",
     ],
     analysisNotes:
-      "Points props are the most popular NBA prop. The key insight is RECENT form + matchup + minutes. A player averaging 25 PPG season-long but only 18 PPG in the last 5 games is a different bet than the season average suggests. Pace matters — two fast teams = more possessions = more scoring opportunities.",
+      "Points props are the most popular NBA prop. The key insight is RECENT form + matchup + minutes. A player averaging 25 PPG season-long but only 18 PPG in the last 5 games is a different bet than the season average suggests. Pace matters - two fast teams = more possessions = more scoring opportunities.",
   },
   {
     id: "nba_rebounds",
@@ -151,14 +151,14 @@ const standardStatProps: MarketDefinition[] = [
       "Opponent rebound rate allowed to position",
       "Opponent offensive rebound rate (more misses = more defensive boards)",
       "Team rebound share (does this player dominate the glass?)",
-      "Pace — more possessions = more missed shots = more rebounds",
+      "Pace - more possessions = more missed shots = more rebounds",
       "Projected game total and spread (blowouts change rebounding)",
       "Matchup: opponent FG% (lower FG% = more rebounds available)",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Rebounds Per Game — Last 15 Games",
+        title: "Rebounds Per Game - Last 15 Games",
         description:
           "Player's actual rebounds each game with prop line as horizontal reference.",
       },
@@ -182,7 +182,7 @@ const standardStatProps: MarketDefinition[] = [
       "Career rebounding averages",
     ],
     analysisNotes:
-      "Rebounds are more matchup-dependent than points. A center facing a team that shoots poorly from 3 (more long rebounds) will get more opportunities. Also check if a teammate center is out — that opens up boards.",
+      "Rebounds are more matchup-dependent than points. A center facing a team that shoots poorly from 3 (more long rebounds) will get more opportunities. Also check if a teammate center is out - that opens up boards.",
   },
   {
     id: "nba_assists",
@@ -205,13 +205,13 @@ const standardStatProps: MarketDefinition[] = [
       "Pace of play",
       "Home vs away assist splits",
       "Minutes trend",
-      "Point guard vs wing — role-based assist expectations",
-      "Teammate injuries — does this player handle the ball more?",
+      "Point guard vs wing - role-based assist expectations",
+      "Teammate injuries - does this player handle the ball more?",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Assists Per Game — Last 15 Games",
+        title: "Assists Per Game - Last 15 Games",
         description: "Game-by-game assists with prop line reference.",
       },
       {
@@ -254,7 +254,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Turnovers Per Game — Last 15 Games",
+        title: "Turnovers Per Game - Last 15 Games",
         description: "Game log with prop line reference.",
       },
       {
@@ -269,7 +269,7 @@ const standardStatProps: MarketDefinition[] = [
       "Opponent's scoring stats",
     ],
     analysisNotes:
-      "Turnovers are fairly consistent for high-usage players. The main variable is opponent defense — teams like the Heat that force turnovers will push the over.",
+      "Turnovers are fairly consistent for high-usage players. The main variable is opponent defense - teams like the Heat that force turnovers will push the over.",
   },
   {
     id: "nba_free_throws_made",
@@ -285,13 +285,13 @@ const standardStatProps: MarketDefinition[] = [
       "Matchup: opponent fouls per game",
       "Matchup: opponent foul rate in the paint",
       "Player drives to the basket per game",
-      "Game script — close games = more free throws late",
+      "Game script - close games = more free throws late",
       "Projected spread (blowout = less FT opportunity in 4th Q)",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Free Throws Made — Last 15 Games",
+        title: "Free Throws Made - Last 15 Games",
         description: "Game-by-game FTM with prop line.",
       },
       {
@@ -327,18 +327,18 @@ const standardStatProps: MarketDefinition[] = [
       "QB game log (passing yards last 5-8 games)",
       "Matchup: opponent pass yards allowed per game",
       "Matchup: opponent pass defense DVOA/EPA",
-      "Projected game script — trailing teams throw more",
+      "Projected game script - trailing teams throw more",
       "Projected game total and spread (high total = pass-heavy environment)",
       "Weather (wind/rain kills passing)",
       "Indoor vs outdoor venue",
-      "WR/TE availability — key weapons healthy?",
+      "WR/TE availability - key weapons healthy?",
       "Offensive line pass protection grades",
       "Opponent blitz rate",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Passing Yards — Last 8 Games",
+        title: "Passing Yards - Last 8 Games",
         description:
           "QB passing yards each game with the line drawn. Annotate opponent quality.",
       },
@@ -369,7 +369,7 @@ const standardStatProps: MarketDefinition[] = [
       "Red zone efficiency (yards, not TDs)",
     ],
     analysisNotes:
-      "Passing yards are heavily influenced by game script. A team trailing by 14 in the 2nd half will abandon the run and throw. Check the spread — big underdogs often push QB passing yards OVER. Weather is a silent killer for overs — always check wind speed.",
+      "Passing yards are heavily influenced by game script. A team trailing by 14 in the 2nd half will abandon the run and throw. Check the spread - big underdogs often push QB passing yards OVER. Weather is a silent killer for overs - always check wind speed.",
   },
   {
     id: "nfl_rushing_yards",
@@ -388,7 +388,7 @@ const standardStatProps: MarketDefinition[] = [
       "Carries per game trend (volume is king for rushing)",
       "Matchup: opponent rush yards allowed per game",
       "Matchup: opponent run defense DVOA/EPA",
-      "Projected game script — leading teams run more",
+      "Projected game script - leading teams run more",
       "Projected spread (favorites run more to protect leads)",
       "Offensive line run blocking grades",
       "Snap share and backfield split (workhorse vs committee)",
@@ -397,7 +397,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Rushing Yards — Last 8 Games",
+        title: "Rushing Yards - Last 8 Games",
         description:
           "Game-by-game rushing yards with prop line and carry count annotated.",
       },
@@ -421,7 +421,7 @@ const standardStatProps: MarketDefinition[] = [
       "Yards per carry (misleading without volume context)",
     ],
     analysisNotes:
-      "Rushing yards = carries x efficiency. Carries are more predictable than efficiency. A bellcow back getting 20+ carries will almost always hit differently than a committee back getting 12. Game script matters — favorites expected to lead will run more.",
+      "Rushing yards = carries x efficiency. Carries are more predictable than efficiency. A bellcow back getting 20+ carries will almost always hit differently than a committee back getting 12. Game script matters - favorites expected to lead will run more.",
   },
   {
     id: "nfl_receiving_yards",
@@ -442,14 +442,14 @@ const standardStatProps: MarketDefinition[] = [
       "Matchup: opponent pass yards allowed to position (WR1 vs WR2 vs TE)",
       "Matchup: cornerback assignment if trackable",
       "Air yards per game",
-      "Projected game script — trailing teams throw more",
+      "Projected game script - trailing teams throw more",
       "Projected game total",
       "QB-WR chemistry (completion % when targeted)",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Receiving Yards — Last 8 Games",
+        title: "Receiving Yards - Last 8 Games",
         description:
           "Game-by-game with target count annotated on each bar.",
       },
@@ -473,7 +473,7 @@ const standardStatProps: MarketDefinition[] = [
       "Touchdowns (yards, not TDs)",
     ],
     analysisNotes:
-      "Receiving yards are volatile. Even elite WRs have 30-yard games. Focus on target volume and air yards — those predict opportunity. A WR getting 10 targets per game has a much higher floor than one getting 5, even if the latter has a higher YPC.",
+      "Receiving yards are volatile. Even elite WRs have 30-yard games. Focus on target volume and air yards - those predict opportunity. A WR getting 10 targets per game has a much higher floor than one getting 5, even if the latter has a higher YPC.",
   },
   {
     id: "nfl_receptions",
@@ -492,14 +492,14 @@ const standardStatProps: MarketDefinition[] = [
       "Targets per game trend",
       "Catch rate / completion percentage when targeted",
       "Projected game script (trailing = more short passes)",
-      "Route types — short/intermediate routes = more catches",
+      "Route types - short/intermediate routes = more catches",
       "Matchup: opponent receptions allowed to position",
-      "Game total — high-scoring games often mean more passing",
+      "Game total - high-scoring games often mean more passing",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Receptions — Last 8 Games",
+        title: "Receptions - Last 8 Games",
         description: "Game log with targets overlaid.",
       },
       {
@@ -514,7 +514,7 @@ const standardStatProps: MarketDefinition[] = [
       "Team rushing stats",
     ],
     analysisNotes:
-      "Receptions are driven by targets and catch rate. Slot receivers and pass-catching RBs tend to have higher, more consistent reception counts. PPR-style analysis matters here — look at short-route rate.",
+      "Receptions are driven by targets and catch rate. Slot receivers and pass-catching RBs tend to have higher, more consistent reception counts. PPR-style analysis matters here - look at short-route rate.",
   },
   {
     id: "nfl_completions",
@@ -533,13 +533,13 @@ const standardStatProps: MarketDefinition[] = [
       "Pass attempts per game",
       "Game script projection (trailing = more attempts = more completions)",
       "Weather (wind/rain reduce completion %)",
-      "Opponent pass defense — pressure rate reduces completions",
+      "Opponent pass defense - pressure rate reduces completions",
       "WR drop rate",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Completions — Last 8 Games",
+        title: "Completions - Last 8 Games",
         description: "Game log with attempts overlaid.",
       },
       {
@@ -595,7 +595,7 @@ const standardStatProps: MarketDefinition[] = [
       "Team record",
     ],
     analysisNotes:
-      "Passing TDs are low-count and volatile. Even elite QBs have 0-TD games. The line is usually 1.5 — the real question is how often this QB hits 2+. Red zone efficiency matters more than total yards.",
+      "Passing TDs are low-count and volatile. Even elite QBs have 0-TD games. The line is usually 1.5 - the real question is how often this QB hits 2+. Red zone efficiency matters more than total yards.",
   },
   {
     id: "nfl_interceptions",
@@ -635,7 +635,7 @@ const standardStatProps: MarketDefinition[] = [
       "Team rushing stats",
     ],
     analysisNotes:
-      "INTs are rare events — most QBs throw 0 in a given game. The line is usually 0.5. Focus on QB's tendency under pressure and opponent's INT generation rate. Bad weather significantly increases INT risk.",
+      "INTs are rare events - most QBs throw 0 in a given game. The line is usually 0.5. Focus on QB's tendency under pressure and opponent's INT generation rate. Bad weather significantly increases INT risk.",
   },
 
   // ---- MLB ----
@@ -660,7 +660,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Hits Per Game — Last 20 Games",
+        title: "Hits Per Game - Last 20 Games",
         description: "Game-by-game hit count with prop line.",
       },
       {
@@ -681,7 +681,7 @@ const standardStatProps: MarketDefinition[] = [
       "Pitcher's strikeout rate (affects Ks, not necessarily hits)",
     ],
     analysisNotes:
-      "Hit props are usually set at 0.5 or 1.5. For 0.5, you need at least one hit — batting average and ABs matter. For 1.5, check multi-hit game frequency. Platoon splits (vs LHP/RHP) are significant in baseball. Always check the lineup is confirmed.",
+      "Hit props are usually set at 0.5 or 1.5. For 0.5, you need at least one hit - batting average and ABs matter. For 1.5, check multi-hit game frequency. Platoon splits (vs LHP/RHP) are significant in baseball. Always check the lineup is confirmed.",
   },
   {
     id: "mlb_home_runs",
@@ -709,7 +709,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Home Runs — Last 30 Games",
+        title: "Home Runs - Last 30 Games",
         description:
           "Mark games where HRs occurred. Show HR rate as a rolling average.",
       },
@@ -733,7 +733,7 @@ const standardStatProps: MarketDefinition[] = [
       "Career HR totals (rate matters, not counting stats)",
     ],
     analysisNotes:
-      "Home runs are rare events — even elite hitters only HR in ~8-10% of games. The line is almost always Yes/No. Focus on barrel rate, park factor, and opposing pitcher tendencies. A flyball hitter at Coors with wind blowing out is a different bet than one at Oracle Park.",
+      "Home runs are rare events - even elite hitters only HR in ~8-10% of games. The line is almost always Yes/No. Focus on barrel rate, park factor, and opposing pitcher tendencies. A flyball hitter at Coors with wind blowing out is a different bet than one at Oracle Park.",
   },
   {
     id: "mlb_total_bases",
@@ -758,7 +758,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Total Bases — Last 20 Games",
+        title: "Total Bases - Last 20 Games",
         description: "Game-by-game total bases with prop line.",
       },
       {
@@ -794,7 +794,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "RBIs — Last 20 Games",
+        title: "RBIs - Last 20 Games",
         description: "Game-by-game RBI count.",
       },
       {
@@ -830,7 +830,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Runs Scored — Last 20 Games",
+        title: "Runs Scored - Last 20 Games",
         description: "Game log with team total runs annotated.",
       },
     ],
@@ -866,7 +866,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Stolen Bases — Last 30 Games",
+        title: "Stolen Bases - Last 30 Games",
         description: "Mark games with SBs. Show attempt frequency.",
       },
       {
@@ -908,7 +908,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Goals — Last 15 Games",
+        title: "Goals - Last 15 Games",
         description: "Game log marking goal games.",
       },
       {
@@ -930,7 +930,7 @@ const standardStatProps: MarketDefinition[] = [
       "Team win/loss record",
     ],
     analysisNotes:
-      "Goals are rare events in hockey — even top scorers average 0.4-0.6 goals per game. Shot volume is the best predictor of goals. A player averaging 4+ shots on goal has more chances than one averaging 2. Power play time is a multiplier.",
+      "Goals are rare events in hockey - even top scorers average 0.4-0.6 goals per game. Shot volume is the best predictor of goals. A player averaging 4+ shots on goal has more chances than one averaging 2. Power play time is a multiplier.",
   },
   {
     id: "nhl_assists",
@@ -952,7 +952,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Assists — Last 15 Games",
+        title: "Assists - Last 15 Games",
         description: "Game log with assists.",
       },
       {
@@ -993,7 +993,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Points (G+A) — Last 15 Games",
+        title: "Points (G+A) - Last 15 Games",
         description: "Game-by-game points with goal/assist breakdown.",
       },
       {
@@ -1008,7 +1008,7 @@ const standardStatProps: MarketDefinition[] = [
       "Team record (not directly correlated)",
     ],
     analysisNotes:
-      "Points (G+A) is the most popular NHL prop. Line is usually 0.5. The over requires just one goal or assist. Focus on involvement — shots, PP time, linemate quality. Players on the top PP unit have the best chance of recording a point each game.",
+      "Points (G+A) is the most popular NHL prop. Line is usually 0.5. The over requires just one goal or assist. Focus on involvement - shots, PP time, linemate quality. Players on the top PP unit have the best chance of recording a point each game.",
   },
   {
     id: "nhl_shots_on_goal",
@@ -1035,7 +1035,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Shots on Goal — Last 15 Games",
+        title: "Shots on Goal - Last 15 Games",
         description:
           "Game-by-game SOG with prop line. One of the most consistent NHL stats.",
       },
@@ -1043,7 +1043,7 @@ const standardStatProps: MarketDefinition[] = [
         type: "distribution",
         title: "SOG Distribution",
         description:
-          "Histogram — SOG is one of the most normally distributed sports stats.",
+          "Histogram - SOG is one of the most normally distributed sports stats.",
       },
     ],
     irrelevantData: [
@@ -1077,7 +1077,7 @@ const standardStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Saves — Last 10 Starts",
+        title: "Saves - Last 10 Starts",
         description: "Game-by-game save count with shots faced.",
       },
       {
@@ -1137,14 +1137,14 @@ const firstScorerProps: MarketDefinition[] = [
       },
     ],
     irrelevantData: [
-      "Overall PPG (irrelevant — this is about the FIRST shot, not volume)",
+      "Overall PPG (irrelevant - this is about the FIRST shot, not volume)",
       "Career scoring averages",
       "Defensive stats",
       "Second half performance",
       "Rebounding/assists",
     ],
     analysisNotes:
-      "First basket is a unique market driven by team opening plays and tip-off dynamics. Centers who win the tip give their team possession. Then it's about who the offense goes to first. Some players are designated early-shot guys. Track actual first basket rates — some players hit this at 15-20% while others are under 5%. This is one of the most data-rich props if you have the right data.",
+      "First basket is a unique market driven by team opening plays and tip-off dynamics. Centers who win the tip give their team possession. Then it's about who the offense goes to first. Some players are designated early-shot guys. Track actual first basket rates - some players hit this at 15-20% while others are under 5%. This is one of the most data-rich props if you have the right data.",
   },
   {
     id: "nfl_first_td_scorer",
@@ -1261,7 +1261,7 @@ const firstScorerProps: MarketDefinition[] = [
       "Third period stats",
     ],
     analysisNotes:
-      "Similar to first basket in NBA — track actual first goal rates. Top-line forwards who shoot frequently in the first period are the best candidates. Power play time also helps — an early penalty can create a first goal opportunity.",
+      "Similar to first basket in NBA - track actual first goal rates. Top-line forwards who shoot frequently in the first period are the best candidates. Power play time also helps - an early penalty can create a first goal opportunity.",
   },
   {
     id: "soccer_first_goalscorer",
@@ -1300,7 +1300,7 @@ const firstScorerProps: MarketDefinition[] = [
       "Possession stats",
     ],
     analysisNotes:
-      "Penalty takers have an edge because a PK in the first half could be the first goal. Also look at set piece specialists — free kicks and corners can produce early goals. Own goals typically void first goalscorer bets.",
+      "Penalty takers have an edge because a PK in the first half could be the first goal. Also look at set piece specialists - free kicks and corners can produce early goals. Own goals typically void first goalscorer bets.",
   },
 ];
 
@@ -1335,7 +1335,7 @@ const anytimeScorerProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Touchdowns — Last 10 Games",
+        title: "Touchdowns - Last 10 Games",
         description:
           "Game-by-game TD count. Show games with 0, 1, 2+ TDs.",
       },
@@ -1359,7 +1359,7 @@ const anytimeScorerProps: MarketDefinition[] = [
       "Receiving yards for RBs (unless they catch TDs)",
     ],
     analysisNotes:
-      "Anytime TD is one of the most popular NFL props. The key stat is red zone usage — a goal-line back with 3 carries inside the 5 per game is more likely to score than a WR with 10 targets between the 20s. Game total matters — a game with a total of 52 will have ~7 TDs, giving more chances than a game totaling 38.",
+      "Anytime TD is one of the most popular NFL props. The key stat is red zone usage - a goal-line back with 3 carries inside the 5 per game is more likely to score than a WR with 10 targets between the 20s. Game total matters - a game with a total of 52 will have ~7 TDs, giving more chances than a game totaling 38.",
   },
   {
     id: "nhl_anytime_goal",
@@ -1385,7 +1385,7 @@ const anytimeScorerProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Goals — Last 15 Games",
+        title: "Goals - Last 15 Games",
         description: "Mark games with goals. Show rolling goal rate.",
       },
       {
@@ -1402,7 +1402,7 @@ const anytimeScorerProps: MarketDefinition[] = [
       "Plus/minus",
     ],
     analysisNotes:
-      "Anytime goal in hockey is a high-variance bet. Even 40-goal scorers only score in about half their games. Shots on goal is the best volume predictor. Power play time is a multiplier — PP goals account for ~25% of all goals. Check if the opposing goalie is a backup.",
+      "Anytime goal in hockey is a high-variance bet. Even 40-goal scorers only score in about half their games. Shots on goal is the best volume predictor. Power play time is a multiplier - PP goals account for ~25% of all goals. Check if the opposing goalie is a backup.",
   },
   {
     id: "soccer_anytime_goalscorer",
@@ -1429,7 +1429,7 @@ const anytimeScorerProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Goals — Last 15 Matches",
+        title: "Goals - Last 15 Matches",
         description: "Game-by-game goal tally.",
       },
       {
@@ -1452,7 +1452,7 @@ const anytimeScorerProps: MarketDefinition[] = [
       "Clean sheet stats",
     ],
     analysisNotes:
-      "Anytime goalscorer in soccer is about shot volume, shot quality (xG), and penalty duty. A striker on PK duty has a significant edge because PKs are converted ~75% of the time. Also check if the player is likely to play the full 90 — substitution risk can void a late goal.",
+      "Anytime goalscorer in soccer is about shot volume, shot quality (xG), and penalty duty. A striker on PK duty has a significant edge because PKs are converted ~75% of the time. Also check if the player is likely to play the full 90 - substitution risk can void a late goal.",
   },
 ];
 
@@ -1487,7 +1487,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "PRA — Last 15 Games",
+        title: "PRA - Last 15 Games",
         description:
           "Combined PRA per game with prop line. Stack the chart to show pts/reb/ast composition.",
       },
@@ -1510,7 +1510,7 @@ const multiStatProps: MarketDefinition[] = [
       "Career PRA averages",
     ],
     analysisNotes:
-      "PRA is the best stat for versatile players (LeBron, Jokic, Luka types). It smooths out variance — a player might have a low-scoring game but grab 12 boards and 8 assists. Minutes are the strongest predictor of PRA. Pace matters — two fast teams create more counting stat opportunities.",
+      "PRA is the best stat for versatile players (LeBron, Jokic, Luka types). It smooths out variance - a player might have a low-scoring game but grab 12 boards and 8 assists. Minutes are the strongest predictor of PRA. Pace matters - two fast teams create more counting stat opportunities.",
   },
   {
     id: "nba_pts_rebs",
@@ -1534,7 +1534,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Pts+Rebs — Last 15 Games",
+        title: "Pts+Rebs - Last 15 Games",
         description: "Combined total with stacked breakdown.",
       },
     ],
@@ -1568,7 +1568,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Pts+Asts — Last 15 Games",
+        title: "Pts+Asts - Last 15 Games",
         description: "Combined total with stacked breakdown.",
       },
     ],
@@ -1595,13 +1595,13 @@ const multiStatProps: MarketDefinition[] = [
     relevantData: [
       "Combined rebs+asts trend",
       "Minutes",
-      "Role — point-forward types (Jokic, Draymond) are the targets",
+      "Role - point-forward types (Jokic, Draymond) are the targets",
       "Pace",
     ],
     idealCharts: [
       {
         type: "line",
-        title: "Rebs+Asts — Last 15 Games",
+        title: "Rebs+Asts - Last 15 Games",
         description: "Combined total with stacked breakdown.",
       },
     ],
@@ -1642,7 +1642,7 @@ const multiStatProps: MarketDefinition[] = [
         type: "scatter",
         title: "Points vs Rebounds (or Assists)",
         description:
-          "Scatter plot of each game — show which games fell in DD territory.",
+          "Scatter plot of each game - show which games fell in DD territory.",
       },
     ],
     irrelevantData: [
@@ -1651,7 +1651,7 @@ const multiStatProps: MarketDefinition[] = [
       "Opponent offensive stats",
     ],
     analysisNotes:
-      "Double-doubles are achievable for ~15-20 NBA players on any given night. The key question is consistency — does the player hover around 10/10 or does one stat frequently dip below 10? Check the game log for near-misses (9 rebounds with 20 points).",
+      "Double-doubles are achievable for ~15-20 NBA players on any given night. The key question is consistency - does the player hover around 10/10 or does one stat frequently dip below 10? Check the game log for near-misses (9 rebounds with 20 points).",
   },
   {
     id: "nba_triple_double",
@@ -1669,8 +1669,8 @@ const multiStatProps: MarketDefinition[] = [
       "Triple-double rate this season",
       "How often player is close (near-triple-doubles)",
       "Minutes trend (needs extended playing time)",
-      "Pace — faster games create more stat opportunities",
-      "Game script — blowouts can pull starters early",
+      "Pace - faster games create more stat opportunities",
+      "Game script - blowouts can pull starters early",
     ],
     idealCharts: [
       {
@@ -1710,7 +1710,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Blocks + Steals — Last 15 Games",
+        title: "Blocks + Steals - Last 15 Games",
         description: "Combined game log.",
       },
     ],
@@ -1744,7 +1744,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "H+R+RBI — Last 20 Games",
+        title: "H+R+RBI - Last 20 Games",
         description: "Combined total with stacked breakdown.",
       },
     ],
@@ -1777,7 +1777,7 @@ const multiStatProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Fantasy Score — Last 10-15 Games",
+        title: "Fantasy Score - Last 10-15 Games",
         description:
           "Game-by-game fantasy score with platform scoring formula shown.",
       },
@@ -1828,7 +1828,7 @@ const gameProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Combined Score — Last 10 Games for Each Team",
+        title: "Combined Score - Last 10 Games for Each Team",
         description:
           "Two lines showing each team's combined game totals. Draw the O/U line.",
       },
@@ -1857,7 +1857,7 @@ const gameProps: MarketDefinition[] = [
       "Win/loss records in isolation",
     ],
     analysisNotes:
-      "The game total is the market's estimate of combined scoring. The best approach combines pace (how many possessions?), efficiency (how well do they score per possession?), and environment (weather, altitude, park). Totals have tightened in recent years — look for edges in pace mismatches.",
+      "The game total is the market's estimate of combined scoring. The best approach combines pace (how many possessions?), efficiency (how well do they score per possession?), and environment (weather, altitude, park). Totals have tightened in recent years - look for edges in pace mismatches.",
   },
   {
     id: "team_total",
@@ -1882,7 +1882,7 @@ const gameProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Team Points Scored — Last 10 Games",
+        title: "Team Points Scored - Last 10 Games",
         description: "Game-by-game scoring with the team total line drawn.",
       },
       {
@@ -2092,7 +2092,7 @@ const gameProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "BTTS Rate — Both Teams",
+        title: "BTTS Rate - Both Teams",
         description: "Percentage of each team's games where both teams scored.",
       },
       {
@@ -2108,7 +2108,7 @@ const gameProps: MarketDefinition[] = [
       "Corners/cards",
     ],
     analysisNotes:
-      "BTTS is one of soccer's most popular markets. Two attacking teams with poor defenses are ideal BTTS Yes candidates. Teams with high clean sheet rates suggest BTTS No. Check the specific H2H — some matchups consistently produce goals from both sides.",
+      "BTTS is one of soccer's most popular markets. Two attacking teams with poor defenses are ideal BTTS Yes candidates. Teams with high clean sheet rates suggest BTTS No. Check the specific H2H - some matchups consistently produce goals from both sides.",
   },
 ];
 
@@ -2139,7 +2139,7 @@ const periodProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "First Half Margin — Last 10 Games",
+        title: "First Half Margin - Last 10 Games",
         description: "How each team performs in the first half.",
       },
       {
@@ -2177,7 +2177,7 @@ const periodProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "First Half Combined Scoring — Last 10 Games",
+        title: "First Half Combined Scoring - Last 10 Games",
         description: "Combined 1H scoring for each team's recent games.",
       },
     ],
@@ -2250,7 +2250,7 @@ const periodProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "NRFI/YRFI Rate — Both Pitchers",
+        title: "NRFI/YRFI Rate - Both Pitchers",
         description:
           "Each starter's rate of allowing first-inning runs this season.",
       },
@@ -2291,7 +2291,7 @@ const futuresProps: MarketDefinition[] = [
     relevantData: [
       "Player's recent form (last 5-10 tournaments, finishes and strokes gained)",
       "Course history (previous results at this specific course)",
-      "Course fit — player strengths vs course demands (distance, accuracy, putting surface)",
+      "Course fit - player strengths vs course demands (distance, accuracy, putting surface)",
       "Strokes gained breakdown (off the tee, approach, around the green, putting)",
       "Current world ranking and form trajectory",
       "Weather forecast for the tournament",
@@ -2308,7 +2308,7 @@ const futuresProps: MarketDefinition[] = [
         type: "bar",
         title: "Strokes Gained Breakdown",
         description:
-          "SG: Off the Tee, SG: Approach, SG: Around the Green, SG: Putting — compared to field average.",
+          "SG: Off the Tee, SG: Approach, SG: Around the Green, SG: Putting - compared to field average.",
       },
       {
         type: "table",
@@ -2324,7 +2324,7 @@ const futuresProps: MarketDefinition[] = [
       "Head-to-head record against one player",
     ],
     analysisNotes:
-      "Golf tournament winner is the hardest bet to hit — a 156-player field means even favorites win only ~10-15% of the time. Focus on course fit and recent form. Strokes gained is the gold standard stat for golf analysis. Course history matters — some players consistently perform well at specific courses (e.g., Rahm at Augusta).",
+      "Golf tournament winner is the hardest bet to hit - a 156-player field means even favorites win only ~10-15% of the time. Focus on course fit and recent form. Strokes gained is the gold standard stat for golf analysis. Course history matters - some players consistently perform well at specific courses (e.g., Rahm at Augusta).",
   },
   {
     id: "golf_top_finish",
@@ -2365,7 +2365,7 @@ const futuresProps: MarketDefinition[] = [
       "Single-round scores (full tournament matters)",
     ],
     analysisNotes:
-      "Top-finish bets are a better value entry point than outright winner. A player doesn't need to win — just finish well. Look for players who are consistently in the top-20 even without winning. Consistency (SG total) is more important than ceiling.",
+      "Top-finish bets are a better value entry point than outright winner. A player doesn't need to win - just finish well. Look for players who are consistently in the top-20 even without winning. Consistency (SG total) is more important than ceiling.",
   },
   {
     id: "golf_make_cut",
@@ -2388,7 +2388,7 @@ const futuresProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Cuts Made — Last 15 Tournaments",
+        title: "Cuts Made - Last 15 Tournaments",
         description: "Binary made/missed with result annotated.",
       },
     ],
@@ -2437,7 +2437,7 @@ const futuresProps: MarketDefinition[] = [
       "Career earnings",
     ],
     analysisNotes:
-      "Golf matchups are the most 'handicappable' golf bet — it's just Player A vs Player B. Strokes gained total is the best predictor. For round matchups, check tee times — morning/afternoon waves can face different conditions.",
+      "Golf matchups are the most 'handicappable' golf bet - it's just Player A vs Player B. Strokes gained total is the best predictor. For round matchups, check tee times - morning/afternoon waves can face different conditions.",
   },
   {
     id: "golf_round_score",
@@ -2463,7 +2463,7 @@ const futuresProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Round Scores — Last 10 Tournaments",
+        title: "Round Scores - Last 10 Tournaments",
         description: "All round scores plotted, with the O/U line.",
       },
       {
@@ -2478,7 +2478,7 @@ const futuresProps: MarketDefinition[] = [
       "Career stats",
     ],
     analysisNotes:
-      "Round props isolate a single day's performance. Weather is critical — wind and rain can add 3-5 strokes to a round. First round leaders are a popular market — some players consistently start fast.",
+      "Round props isolate a single day's performance. Weather is critical - wind and rain can add 3-5 strokes to a round. First round leaders are a popular market - some players consistently start fast.",
   },
   {
     id: "season_futures",
@@ -2556,7 +2556,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Blocks — Last 15 Games",
+        title: "Blocks - Last 15 Games",
         description: "Game log with prop line.",
       },
       {
@@ -2591,7 +2591,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Steals — Last 15 Games",
+        title: "Steals - Last 15 Games",
         description: "Game log with prop line.",
       },
       {
@@ -2606,7 +2606,7 @@ const defensiveProps: MarketDefinition[] = [
       "Opponent scoring stats",
     ],
     analysisNotes:
-      "Steals are the most random major NBA stat — very hard to predict game-to-game. The line is usually 0.5-1.5. Active-hands defenders (guards who jump passing lanes) are the best targets. Matchup against turnover-prone teams helps.",
+      "Steals are the most random major NBA stat - very hard to predict game-to-game. The line is usually 0.5-1.5. Active-hands defenders (guards who jump passing lanes) are the best targets. Matchup against turnover-prone teams helps.",
   },
   {
     id: "nfl_sacks",
@@ -2631,7 +2631,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Sacks — Last 10 Games",
+        title: "Sacks - Last 10 Games",
         description: "Game log marking sack games. Show pressures as well.",
       },
       {
@@ -2647,7 +2647,7 @@ const defensiveProps: MarketDefinition[] = [
       "Opponent rushing stats",
     ],
     analysisNotes:
-      "Sacks are rare — even elite pass rushers average 0.5-1.0 per game. Pressure rate is a more stable predictor. The key matchup is pass rusher vs OT. Weak offensive lines facing elite edge rushers create the best sack prop opportunities.",
+      "Sacks are rare - even elite pass rushers average 0.5-1.0 per game. Pressure rate is a more stable predictor. The key matchup is pass rusher vs OT. Weak offensive lines facing elite edge rushers create the best sack prop opportunities.",
   },
   {
     id: "nfl_def_interceptions",
@@ -2672,7 +2672,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Interceptions — Season Log",
+        title: "Interceptions - Season Log",
         description: "Mark games with INTs.",
       },
       {
@@ -2687,7 +2687,7 @@ const defensiveProps: MarketDefinition[] = [
       "Defender's career INT total",
     ],
     analysisNotes:
-      "Defensive INTs are extremely rare individually. Even elite CBs only have ~5 INTs per season (1 every 3 games). The matchup matters more than the defender — turnover-prone QBs in bad weather create INT opportunities for anyone in the secondary.",
+      "Defensive INTs are extremely rare individually. Even elite CBs only have ~5 INTs per season (1 every 3 games). The matchup matters more than the defender - turnover-prone QBs in bad weather create INT opportunities for anyone in the secondary.",
   },
   {
     id: "nfl_forced_fumbles",
@@ -2740,7 +2740,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Blocked Shots — Last 15 Games",
+        title: "Blocked Shots - Last 15 Games",
         description: "Game log with prop line.",
       },
     ],
@@ -2770,7 +2770,7 @@ const defensiveProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Hits — Last 15 Games",
+        title: "Hits - Last 15 Games",
         description: "Game log with prop line.",
       },
     ],
@@ -2780,7 +2780,7 @@ const defensiveProps: MarketDefinition[] = [
       "Penalty minutes (correlated but separate)",
     ],
     analysisNotes:
-      "Hits are tracked inconsistently between arenas — home scorers are generous to home players. Be wary of splits between home and away. Physical players on physical teams in rivalry games hit more.",
+      "Hits are tracked inconsistently between arenas - home scorers are generous to home players. Be wary of splits between home and away. Physical players on physical teams in rivalry games hit more.",
   },
 ];
 
@@ -2815,7 +2815,7 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Strikeouts — Last 8 Starts",
+        title: "Strikeouts - Last 8 Starts",
         description:
           "Game-by-game Ks with innings pitched annotated. Show prop line.",
       },
@@ -2844,7 +2844,7 @@ const pitcherProps: MarketDefinition[] = [
       "Bullpen quality",
     ],
     analysisNotes:
-      "Strikeouts are the most predictable pitcher prop. K/9 and swinging strike rate are the best predictors. The matchup matters hugely — a high-K pitcher vs a high-K lineup is the dream scenario for overs. Innings pitched is the volume component — if a pitcher only goes 4 innings, the K count is capped.",
+      "Strikeouts are the most predictable pitcher prop. K/9 and swinging strike rate are the best predictors. The matchup matters hugely - a high-K pitcher vs a high-K lineup is the dream scenario for overs. Innings pitched is the volume component - if a pitcher only goes 4 innings, the K count is capped.",
   },
   {
     id: "mlb_pitcher_outs",
@@ -2871,14 +2871,14 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Innings Pitched — Last 8 Starts",
+        title: "Innings Pitched - Last 8 Starts",
         description: "Game-by-game IP with pitch counts annotated.",
       },
       {
         type: "bar",
         title: "Outs Recorded Breakdown",
         description:
-          "Show outs by inning — did they finish the 5th, 6th, 7th?",
+          "Show outs by inning - did they finish the 5th, 6th, 7th?",
       },
     ],
     irrelevantData: [
@@ -2903,7 +2903,7 @@ const pitcherProps: MarketDefinition[] = [
     resolutionStats: ["earned_runs"],
     relevantData: [
       "Pitcher ERA and recent ERA trend",
-      "FIP (Fielding Independent Pitching) — better predictor than ERA",
+      "FIP (Fielding Independent Pitching) - better predictor than ERA",
       "WHIP trend",
       "Matchup: opponent runs scored per game",
       "Matchup: opponent OPS vs LHP/RHP",
@@ -2914,7 +2914,7 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Earned Runs — Last 8 Starts",
+        title: "Earned Runs - Last 8 Starts",
         description: "Game-by-game ER with IP annotated.",
       },
       {
@@ -2945,7 +2945,7 @@ const pitcherProps: MarketDefinition[] = [
     resolutionStats: ["hits_allowed"],
     relevantData: [
       "Pitcher H/9 rate",
-      "BABIP (Batting Average on Balls in Play) — luck factor",
+      "BABIP (Batting Average on Balls in Play) - luck factor",
       "Matchup: opponent team batting average",
       "Matchup: opponent contact rate",
       "Defense quality behind the pitcher",
@@ -2954,7 +2954,7 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Hits Allowed — Last 8 Starts",
+        title: "Hits Allowed - Last 8 Starts",
         description: "Game-by-game hits allowed.",
       },
     ],
@@ -2986,7 +2986,7 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Walks — Last 8 Starts",
+        title: "Walks - Last 8 Starts",
         description: "Game-by-game walks with first-pitch strike % annotated.",
       },
     ],
@@ -2996,7 +2996,7 @@ const pitcherProps: MarketDefinition[] = [
       "Win/loss record",
     ],
     analysisNotes:
-      "Walks are a command stat. Pitchers who throw fewer first-pitch strikes walk more batters. The umpire assignment matters — some umps have a tight zone that inflates walk counts. Discipline-heavy lineups (high OBP, low chase rate) draw more walks.",
+      "Walks are a command stat. Pitchers who throw fewer first-pitch strikes walk more batters. The umpire assignment matters - some umps have a tight zone that inflates walk counts. Discipline-heavy lineups (high OBP, low chase rate) draw more walks.",
   },
   {
     id: "mlb_pitches_thrown",
@@ -3019,7 +3019,7 @@ const pitcherProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Pitch Count — Last 8 Starts",
+        title: "Pitch Count - Last 8 Starts",
         description: "Game-by-game pitch count with IP annotated.",
       },
     ],
@@ -3064,7 +3064,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Three-Pointers Made — Last 15 Games",
+        title: "Three-Pointers Made - Last 15 Games",
         description:
           "Game-by-game 3PM with attempts overlaid. Show the prop line.",
       },
@@ -3110,7 +3110,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Power Play Points — Last 15 Games",
+        title: "Power Play Points - Last 15 Games",
         description: "Game log of PP points.",
       },
       {
@@ -3148,7 +3148,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Faceoff Wins — Last 15 Games",
+        title: "Faceoff Wins - Last 15 Games",
         description: "Game log with prop line.",
       },
     ],
@@ -3183,7 +3183,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Shots on Target — Last 15 Matches",
+        title: "Shots on Target - Last 15 Matches",
         description: "Game log with prop line.",
       },
       {
@@ -3222,7 +3222,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Corners Per Game — Both Teams",
+        title: "Corners Per Game - Both Teams",
         description: "Average corners won and conceded for each team.",
       },
       {
@@ -3237,7 +3237,7 @@ const specialtyProps: MarketDefinition[] = [
       "Cards",
     ],
     analysisNotes:
-      "Corner props are popular in soccer. Attacking teams that face deep-defending opponents tend to win lots of corners. The line is usually 8.5-11.5 for total corners. Check the specific matchup dynamic — a team expected to dominate possession against a bus-parking team will rack up corners.",
+      "Corner props are popular in soccer. Attacking teams that face deep-defending opponents tend to win lots of corners. The line is usually 8.5-11.5 for total corners. Check the specific matchup dynamic - a team expected to dominate possession against a bus-parking team will rack up corners.",
   },
   {
     id: "soccer_cards",
@@ -3262,7 +3262,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Cards Per Game — Referee & Teams",
+        title: "Cards Per Game - Referee & Teams",
         description: "Referee's card average vs both teams' card averages.",
       },
       {
@@ -3303,7 +3303,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Assists — Last 15 Matches",
+        title: "Assists - Last 15 Matches",
         description: "Game log with assists.",
       },
       {
@@ -3319,7 +3319,7 @@ const specialtyProps: MarketDefinition[] = [
       "Possession %",
     ],
     analysisNotes:
-      "Soccer assists are rare — even elite playmakers average 0.3-0.5 per 90. Set piece takers (corner kick, free kick) have an edge because those deliveries lead to goals. Key passes per 90 is a better predictor than past assists because it measures chance creation regardless of teammate finishing.",
+      "Soccer assists are rare - even elite playmakers average 0.3-0.5 per 90. Set piece takers (corner kick, free kick) have an edge because those deliveries lead to goals. Key passes per 90 is a better predictor than past assists because it measures chance creation regardless of teammate finishing.",
   },
   {
     id: "nfl_kicking",
@@ -3346,7 +3346,7 @@ const specialtyProps: MarketDefinition[] = [
     idealCharts: [
       {
         type: "bar",
-        title: "Field Goals & PATs — Last 8 Games",
+        title: "Field Goals & PATs - Last 8 Games",
         description: "FGs and PATs per game with total kicking points.",
       },
       {
@@ -3434,7 +3434,7 @@ const coreGameMarkets: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Margin of Victory — Last 10 Games",
+        title: "Margin of Victory - Last 10 Games",
         description:
           "Actual margin of victory each game with the current spread drawn.",
       },
@@ -3486,7 +3486,7 @@ const coreGameMarkets: MarketDefinition[] = [
     idealCharts: [
       {
         type: "line",
-        title: "Recent Results — Last 10 Games",
+        title: "Recent Results - Last 10 Games",
         description: "W/L streak with margin annotated.",
       },
       {
@@ -3508,12 +3508,12 @@ const coreGameMarkets: MarketDefinition[] = [
       "Season totals (too high-level)",
     ],
     analysisNotes:
-      "Moneyline bets are about who wins. The implied probability from the odds tells you what the market thinks. Compare to your own estimate. Pythagorean wins and point differential are better predictors than record alone. Upsets in MLB are common (~43% underdog win rate) — it's a high-variance sport.",
+      "Moneyline bets are about who wins. The implied probability from the odds tells you what the market thinks. Compare to your own estimate. Pythagorean wins and point differential are better predictors than record alone. Upsets in MLB are common (~43% underdog win rate) - it's a high-variance sport.",
   },
 ];
 
 // ---------------------------------------------------------------------------
-// MASTER TAXONOMY — All markets combined
+// MASTER TAXONOMY - All markets combined
 // ---------------------------------------------------------------------------
 
 export const MARKET_TAXONOMY: MarketDefinition[] = [

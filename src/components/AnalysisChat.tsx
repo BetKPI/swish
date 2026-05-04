@@ -128,7 +128,7 @@ export default function AnalysisChat({
         ...prev,
         {
           role: "assistant",
-          content: "Something went wrong — try again.",
+          content: "Something went wrong - try again.",
           noData: true,
         },
       ]);
@@ -145,7 +145,7 @@ export default function AnalysisChat({
           Ask for more analysis
         </h3>
 
-        {/* Suggestion chips — only show if no messages yet */}
+        {/* Suggestion chips - only show if no messages yet */}
         {messages.length === 0 && (
           <div className="flex flex-wrap gap-2 mb-3">
             {(serverSuggestions?.length ? serverSuggestions : (SUGGESTIONS_BY_SPORT[extraction.sport?.toUpperCase()] || SUGGESTIONS_BY_SPORT.DEFAULT)).map((s) => (

@@ -43,7 +43,7 @@ export default function Home() {
   // Shared stats-fetching logic used by both fresh analysis and resume
   const fetchStats = useCallback(async (ext: BetExtraction) => {
     const timeout = (ms: number) => new Promise<never>((_, reject) =>
-      setTimeout(() => reject(new Error("Taking too long — try again or use a clearer screenshot")), ms)
+      setTimeout(() => reject(new Error("Taking too long - try again or use a clearer screenshot")), ms)
     );
     const isParlay = ext.betType === "parlay";
     setStatusMsg(isParlay ? "Breaking down each leg..." : "Pulling the numbers that matter...");
@@ -56,7 +56,7 @@ export default function Home() {
       }),
       timeout(statsTimeout),
     ]);
-    if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one — try again");
+    if (!statsRes.ok) throw new Error("Couldn't pull the stats for this one - try again");
     const statsData = await statsRes.json();
 
     if (statsData.parlay) {
@@ -186,7 +186,7 @@ export default function Home() {
 
     try {
       const timeout = (ms: number) => new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error("Taking too long — try again or use a clearer screenshot")), ms)
+        setTimeout(() => reject(new Error("Taking too long - try again or use a clearer screenshot")), ms)
       );
 
       setStatusMsg("Reading your bet...");
@@ -200,7 +200,7 @@ export default function Home() {
       ]);
       if (!analyzeRes.ok) {
         const errData = await analyzeRes.json().catch(() => null);
-        throw new Error(errData?.error || "Couldn't read that image — try a clearer screenshot");
+        throw new Error(errData?.error || "Couldn't read that image - try a clearer screenshot");
       }
       const analyzeData = await analyzeRes.json();
       setExtraction(analyzeData.extraction);
@@ -261,7 +261,7 @@ export default function Home() {
           {/* Hero section */}
           <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
             <div className="max-w-3xl mx-auto space-y-6">
-              {/* Value prop — lead with what they GET */}
+              {/* Value prop - lead with what they GET */}
               <div className="space-y-3">
                 <p className="text-accent text-sm font-semibold tracking-wide uppercase">Free. No sign-up. 20 seconds.</p>
                 <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
@@ -273,7 +273,7 @@ export default function Home() {
 
               <p className="text-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
                 Upload a screenshot of your bet slip and get hit rates,
-                historical charts, and a confidence score — powered by
+                historical charts, and a confidence score - powered by
                 real stats, not vibes.
               </p>
 
@@ -330,7 +330,7 @@ export default function Home() {
                         Drop your bet screenshot here
                       </p>
                       <p className="text-muted text-sm">
-                        DraftKings, FanDuel, PrizePicks, Underdog — any app
+                        DraftKings, FanDuel, PrizePicks, Underdog - any app
                       </p>
                       <p className="text-accent text-xs font-medium">
                         Props / parlays / O/U / spreads / moneylines
@@ -430,7 +430,7 @@ export default function Home() {
             <div className="text-4xl">😬</div>
             <h3 className="text-xl font-bold">We don&apos;t have that yet</h3>
             <p className="text-muted text-sm leading-relaxed">
-              We read your bet ({extraction.sport} — {(extraction.betType || "player_prop").replace("_", "/")}) but don&apos;t have the data to break it down right now. Try a different bet — we work best with NFL, NBA, MLB, NHL, Golf, and college sports.
+              We read your bet ({extraction.sport} - {(extraction.betType || "player_prop").replace("_", "/")}) but don&apos;t have the data to break it down right now. Try a different bet - we work best with NFL, NBA, MLB, NHL, Golf, and college sports.
             </p>
           </div>
           <button

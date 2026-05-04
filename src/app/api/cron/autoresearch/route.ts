@@ -5,7 +5,7 @@ import { join } from "path";
 export const maxDuration = 60;
 
 /**
- * Autoresearch cron — backtests Swish Score model weights against recent
+ * Autoresearch cron - backtests Swish Score model weights against recent
  * real outcomes and optimizes them via coordinate descent.
  *
  * Run manually: /api/cron/autoresearch
@@ -95,7 +95,7 @@ async function fetchYesterdayScores(sport: string, league: string): Promise<Game
       });
 
       // Spread outcome (using average closing line approximation)
-      // We use the margin to determine cover — approximate line from score
+      // We use the margin to determine cover - approximate line from score
       const impliedSpread = margin > 0 ? -(margin * 0.6) : Math.abs(margin) * 0.6;
       outcomes.push({
         sport: league.toUpperCase(),
@@ -198,7 +198,7 @@ function simulateScore(outcome: GameOutcome, weights: WeightSet): number {
   }
 }
 
-// ── Loss function — MSE between predicted confidence and actual result ──
+// ── Loss function - MSE between predicted confidence and actual result ──
 
 function computeLoss(outcomes: GameOutcome[], weights: Record<string, WeightSet>): number {
   let totalLoss = 0;
@@ -364,7 +364,7 @@ export async function GET(request: NextRequest) {
       optimized._meta = {
         version: (currentWeights._meta?.version || 2) + 1,
         updated: new Date().toISOString().slice(0, 10),
-        source: `autoresearch — optimized over ${allOutcomes.length} outcomes`,
+        source: `autoresearch - optimized over ${allOutcomes.length} outcomes`,
         notes: `Coordinate descent on ${new Date().toISOString().slice(0, 10)} scores. Improvement: ${(improvement * 100).toFixed(2)}%`,
       };
       writeFileSync(weightsPath, JSON.stringify(optimized, null, 2));

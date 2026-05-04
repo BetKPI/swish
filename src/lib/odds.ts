@@ -53,7 +53,7 @@ export function formatProbability(prob: number): string {
 }
 
 /**
- * Convert odds string to implied probability. That's it — no edge, no predictions.
+ * Convert odds string to implied probability. That's it - no edge, no predictions.
  */
 export function analyzeOdds(
   oddsStr: string | null | undefined

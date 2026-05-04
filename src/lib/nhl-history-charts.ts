@@ -1,5 +1,5 @@
 /**
- * NHL History Charts — deterministic chart builders consuming nhl-history primitives.
+ * NHL History Charts - deterministic chart builders consuming nhl-history primitives.
  */
 
 import type { ChartConfig } from "@/types";
@@ -70,7 +70,7 @@ export function buildNHLTeamHistoryChart(
     const l10Overs = last10.filter((g) => g.total > line).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Game Totals vs ${line} Line`,
+      title: `${team.teamName} - Game Totals vs ${line} Line`,
       relevance: `Over ${line} in ${allOvers}/${current.length} this season (${current.length > 0 ? Math.round((allOvers / current.length) * 100) : 0}%). Last 10: ${l10Overs}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -90,7 +90,7 @@ export function buildNHLTeamHistoryChart(
     const l10Wins = last10.filter((g) => g.won).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Win/Loss Margin`,
+      title: `${team.teamName} - Win/Loss Margin`,
       relevance: `${wins}-${current.length - wins} this season (${current.length > 0 ? Math.round((wins / current.length) * 100) : 0}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data: rows,
       xKey: "game",
@@ -110,7 +110,7 @@ export function buildNHLTeamHistoryChart(
     const l10Covers = last10.filter((g) => g.margin + line > 0).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Margin vs ${line > 0 ? "+" : ""}${line} Puckline`,
+      title: `${team.teamName} - Margin vs ${line > 0 ? "+" : ""}${line} Puckline`,
       relevance: `Covered in ${covers}/${current.length} this season (${current.length > 0 ? Math.round((covers / current.length) * 100) : 0}%). Last 10: ${l10Covers}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -126,8 +126,8 @@ export function buildNHLTeamHistoryChart(
   }));
   return {
     type: "hitrate" as ChartConfig["type"],
-    title: `${team.teamName} — Game Margins`,
-    relevance: `Goal margin per game — green = win, red = loss`,
+    title: `${team.teamName} - Game Margins`,
+    relevance: `Goal margin per game - green = win, red = loss`,
     data: rows,
     xKey: "game",
     yKeys: ["value"],
@@ -166,7 +166,7 @@ export function buildNHLTeamBetTypeTable(
 
   return {
     type: "table",
-    title: `${team.teamName} — ${marketType === "moneyline" ? "SU" : marketType === "total" ? "O/U" : "ATS"} track record`,
+    title: `${team.teamName} - ${marketType === "moneyline" ? "SU" : marketType === "total" ? "O/U" : "ATS"} track record`,
     relevance: `How ${team.teamName} has done on this ${marketType} bet type across both seasons.`,
     data: [
       { season: team.lastSeason.slice(2, 4) + "-" + team.lastSeason.slice(6), record: summarize(last), gp: last.length },
@@ -214,7 +214,7 @@ export function buildNHLHomeAwaySplits(
 
     return {
       type: "table",
-      title: `${team.teamName} — ${label} (${vGames.length}g)`,
+      title: `${team.teamName} - ${label} (${vGames.length}g)`,
       relevance: `${label} ${wins}-${vGames.length - wins} (${Math.round((wins / vGames.length) * 100)}%)`,
       data,
       columns: [
@@ -249,7 +249,7 @@ export function buildNHLHomeAwaySplits(
 
   return {
     type: "table",
-    title: `${team.teamName} — Home vs Away (${seasonLabel})`,
+    title: `${team.teamName} - Home vs Away (${seasonLabel})`,
     relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
     data,
     columns: [
@@ -272,7 +272,7 @@ export function buildNHLTeamH2HTable(
 
   return {
     type: "table",
-    title: `${team.teamName} vs ${opponentName} — head-to-head`,
+    title: `${team.teamName} vs ${opponentName} - head-to-head`,
     relevance: `Direct matchups across both seasons.`,
     data: h2h.map((g) => ({
       date: shortDate(g.date),
@@ -327,7 +327,7 @@ export function buildNHLPlayerHistoryChart(
 
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${player.playerName} — ${stat} vs ${line} Line`,
+      title: `${player.playerName} - ${stat} vs ${line} Line`,
       relevance: `Over ${line} in ${hits}/${allVals.length} this season (${allVals.length > 0 ? Math.round((hits / allVals.length) * 100) : 0}%). Last 10: ${last10Hits}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -335,7 +335,7 @@ export function buildNHLPlayerHistoryChart(
     };
   }
 
-  // No line — fall back to line chart
+  // No line - fall back to line chart
   const rows: Record<string, unknown>[] = [];
   for (const g of player.games) {
     const isCurrent = g.season === player.currentSeason;
@@ -347,7 +347,7 @@ export function buildNHLPlayerHistoryChart(
   }
   return {
     type: "line",
-    title: `${player.playerName} — ${stat}`,
+    title: `${player.playerName} - ${stat}`,
     relevance: `Game-by-game ${stat} across both seasons.`,
     data: rows,
     xKey: "date",
@@ -363,7 +363,7 @@ export function buildNHLPlayerHitRateTable(
   if (player.games.length === 0) return null;
   const { last, current } = splitBySeason(player.games, player.lastSeason, player.currentSeason);
   function rate(arr: NHLPlayerGame[]) {
-    if (arr.length === 0) return { rec: "—", pct: "—" };
+    if (arr.length === 0) return { rec: "-", pct: "-" };
     const hits = arr.filter((g) => getStat(g, stat) > line).length;
     return { rec: `${hits}/${arr.length}`, pct: `${((hits / arr.length) * 100).toFixed(0)}%` };
   }
@@ -371,7 +371,7 @@ export function buildNHLPlayerHitRateTable(
   const c = rate(current);
   return {
     type: "table",
-    title: `${player.playerName} — over ${line} ${stat} hit rate`,
+    title: `${player.playerName} - over ${line} ${stat} hit rate`,
     relevance: `How often ${player.playerName} has gone over ${line} ${stat} across both seasons.`,
     data: [
       { season: player.lastSeason.slice(2, 4) + "-" + player.lastSeason.slice(6), record: l.rec, pct: l.pct },
@@ -396,7 +396,7 @@ export function buildNHLPlayerVsOpponentTable(
   if (matches.length === 0) return null;
   return {
     type: "table",
-    title: `${player.playerName} vs ${opponentName} — ${stat} history`,
+    title: `${player.playerName} vs ${opponentName} - ${stat} history`,
     relevance: `Every game ${player.playerName} has played against ${opponentName}.`,
     data: matches.map((g) => ({
       date: shortDate(g.date),
@@ -437,14 +437,14 @@ export function buildNHLFuturesChart(
       date: snap.dateLabel,
       record: `${me.wins}-${me.losses}-${me.otLosses}`,
       points: me.points,
-      divisionRank: divRank || "—",
-      conferenceRank: confRank || "—",
+      divisionRank: divRank || "-",
+      conferenceRank: confRank || "-",
     });
   }
   if (rows.length === 0) return null;
   return {
     type: "table",
-    title: `${teamName} — futures track record`,
+    title: `${teamName} - futures track record`,
     relevance: `How ${teamName} has finished in their division and conference across recent seasons.`,
     data: rows,
     columns: [
@@ -477,7 +477,7 @@ export function buildNHLFirstPeriodChart(
   });
   return {
     type: "line",
-    title: `${team.teamName} — first-period goals (combined)`,
+    title: `${team.teamName} - first-period goals (combined)`,
     relevance: `Total first-period goals scored in ${team.teamName}'s games across both seasons${line != null ? ` vs the ${line} line` : ""}.`,
     data: rows,
     xKey: "date",
@@ -493,7 +493,7 @@ export function buildNHLFirstPeriodHitRate(
   if (games.length === 0) return null;
   const { last, current } = splitBySeason(games, team.lastSeason, team.currentSeason);
   function rate(arr: NHLTeamGame[]) {
-    if (arr.length === 0) return { rec: "—", pct: "—" };
+    if (arr.length === 0) return { rec: "-", pct: "-" };
     const hits = arr.filter((g) => (g.p1Team || 0) + (g.p1Opp || 0) > line).length;
     return { rec: `${hits}/${arr.length}`, pct: `${((hits / arr.length) * 100).toFixed(0)}%` };
   }
@@ -501,7 +501,7 @@ export function buildNHLFirstPeriodHitRate(
   const c = rate(current);
   return {
     type: "table",
-    title: `${team.teamName} — over ${line} 1st period goals hit rate`,
+    title: `${team.teamName} - over ${line} 1st period goals hit rate`,
     relevance: `How often ${team.teamName}'s games have gone over ${line} combined first-period goals.`,
     data: [
       { season: team.lastSeason.slice(2, 4) + "-" + team.lastSeason.slice(6), record: l.rec, pct: l.pct },
@@ -612,15 +612,15 @@ export function buildNHLDefaultCharts(
         const confYears = record.league;
         const divYears = record.division;
         const data: Record<string, string>[] = [];
-        if (titleYears.length > 0) data.push({ stat: "Stanley Cup", Value: `${titleYears.length}x — last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Stanley Cup", Value: "Never", Years: "—" });
-        if (confYears.length > 0) data.push({ stat: "Conference Finals", Value: `${confYears.length}x — last: ${confYears[0]}`, Years: confYears.slice(0, 6).join(", ") + (confYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Conference Finals", Value: "Never", Years: "—" });
-        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x — last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Division Titles", Value: "Never", Years: "—" });
+        if (titleYears.length > 0) data.push({ stat: "Stanley Cup", Value: `${titleYears.length}x - last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Stanley Cup", Value: "Never", Years: "-" });
+        if (confYears.length > 0) data.push({ stat: "Conference Finals", Value: `${confYears.length}x - last: ${confYears[0]}`, Years: confYears.slice(0, 6).join(", ") + (confYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Conference Finals", Value: "Never", Years: "-" });
+        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x - last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Division Titles", Value: "Never", Years: "-" });
         out.push({
           type: "table",
-          title: `${teamName} — Championship History`,
+          title: `${teamName} - Championship History`,
           relevance: formatChampionshipSummary(teamName, record, "title"),
           data,
           columns: [{ key: "stat", label: "" }, { key: "Value", label: "Record" }, { key: "Years", label: "Recent Years" }],
@@ -665,7 +665,7 @@ export function buildNHLDefaultCharts(
     if (rec) out.push(rec);
   }
 
-  // Venue splits — combined when both venues known
+  // Venue splits - combined when both venues known
   if (teams.length === 2 && homeTeam && awayTeam) {
     const awayName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "away");
     const homeName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "home");
@@ -691,7 +691,7 @@ export function buildNHLDefaultCharts(
         ];
         out.push({
           type: "table",
-          title: "Venue Matchup — Road vs Home",
+          title: "Venue Matchup - Road vs Home",
           relevance: `${awayTeamData.teamName} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeamData.teamName} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
           columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],

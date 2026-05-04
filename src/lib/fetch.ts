@@ -1,5 +1,5 @@
 /**
- * Shared fetch utilities — in-memory cache + retry.
+ * Shared fetch utilities - in-memory cache + retry.
  * Drop-in replacement for fetch() in all API modules.
  */
 
@@ -14,9 +14,9 @@ const cache = new Map<string, CacheEntry>();
 
 // Default TTLs (milliseconds)
 export const TTL = {
-  SHORT: 1 * 60 * 60 * 1000,   // 1 hour  — schedules, scoreboards
-  MEDIUM: 3 * 60 * 60 * 1000,  // 3 hours — player stats, game logs
-  LONG: 6 * 60 * 60 * 1000,    // 6 hours — team records, season stats
+  SHORT: 1 * 60 * 60 * 1000,   // 1 hour  - schedules, scoreboards
+  MEDIUM: 3 * 60 * 60 * 1000,  // 3 hours - player stats, game logs
+  LONG: 6 * 60 * 60 * 1000,    // 6 hours - team records, season stats
 } as const;
 
 function getCached(key: string, ttl: number): unknown | null {
@@ -58,11 +58,11 @@ export async function fetchWithRetry(
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, options);
-      // Don't retry client errors (4xx) — only server errors
+      // Don't retry client errors (4xx) - only server errors
       if (res.ok || (res.status >= 400 && res.status < 500)) {
         return res;
       }
-      // 5xx — worth retrying
+      // 5xx - worth retrying
       if (attempt < retries) {
         console.log(`[fetch] ${res.status} on ${url.slice(0, 80)}… retrying in ${delayMs}ms`);
         await sleep(delayMs);

@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
         },
         {
           name: "Sport / Type",
-          value: `${bet?.sport || "?"} — ${(bet?.betType || bet?.market || "?").replace("_", "/")}`,
+          value: `${bet?.sport || "?"} - ${(bet?.betType || bet?.market || "?").replace("_", "/")}`,
           inline: true,
         },
         ...(bet?.market ? [{

@@ -41,7 +41,7 @@ export interface TennisH2H {
   matches: TennisMatch[];
 }
 
-// ── Surface mapping (static — ESPN doesn't provide surface) ──────
+// ── Surface mapping (static - ESPN doesn't provide surface) ──────
 
 const TOURNAMENT_SURFACES: Record<string, string> = {
   // Grand Slams
@@ -221,7 +221,7 @@ export async function getPlayerMatchHistory(
   for (const season of seasons) {
     const eventLog = await fetchEventLog(league, player.id, season);
 
-    // Fetch match details — limit concurrent requests to stay within time budget
+    // Fetch match details - limit concurrent requests to stay within time budget
     const batchSize = 5;
     const maxMatches = 40; // Cap total matches per player
     for (let i = 0; i < eventLog.length && allMatches.length < maxMatches; i += batchSize) {

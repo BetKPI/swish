@@ -1,5 +1,5 @@
 /**
- * NHL History — two-season data primitives for deterministic history charts.
+ * NHL History - two-season data primitives for deterministic history charts.
  * Uses the free api-web.nhle.com endpoints.
  */
 
@@ -230,7 +230,7 @@ export async function resolveNHLPlayer(name: string): Promise<{ id: number; name
   return { id: p.playerId, name: p.fullName, position: p.position };
 }
 
-// ── Standings (current only — NHL API requires a date for historical) ─
+// ── Standings (current only - NHL API requires a date for historical) ─
 
 export async function getNHLStandingsSnapshot(dateISO?: string): Promise<NHLStandingsSnapshot> {
   const url = dateISO ? `${BASE}/standings/${dateISO}` : `${BASE}/standings/now`;

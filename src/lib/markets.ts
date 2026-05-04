@@ -6,7 +6,7 @@
  * - What charts to build
  * - Context to give the AI for smarter summaries
  *
- * This is the "sports brain" — it knows that first basket = tip-off,
+ * This is the "sports brain" - it knows that first basket = tip-off,
  * that pitcher strikeouts depend on opponent K%, etc.
  */
 
@@ -19,7 +19,7 @@ export interface MarketIntelligence {
   supportingStats: string[];
   /** What charts to build (templates) */
   chartTypes: ChartTemplate[];
-  /** Context for AI summary — what makes this bet smart/dumb */
+  /** Context for AI summary - what makes this bet smart/dumb */
   analysisContext: string;
   /** Specific data to request that generic code wouldn't know about */
   dataHints: string[];
@@ -39,11 +39,11 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
     primaryStat: "pts",
     supportingStats: ["first_quarter_pts", "usage_rate", "starter_status", "tip_off"],
     chartTypes: [
-      { type: "comparison", title: "First Quarter Scoring", description: "Average 1Q points — who gets going early?" },
+      { type: "comparison", title: "First Quarter Scoring", description: "Average 1Q points - who gets going early?" },
       { type: "trend", title: "Recent Scoring Starts", description: "Points in the first 5 minutes of recent games" },
       { type: "matchup", title: "Position Matchup", description: "How this player's position scores early against opponent" },
     ],
-    analysisContext: `First basket depends on: (1) Does the team win the tip-off? Check center matchup. (2) Who takes the first shot? Look at first-quarter usage rate and shot attempts. (3) Can they finish? First-shot FG% matters more than overall FG%. Players who drive to the basket have higher first-basket rates than jump shooters. Also check if player starts — bench players rarely score first.`,
+    analysisContext: `First basket depends on: (1) Does the team win the tip-off? Check center matchup. (2) Who takes the first shot? Look at first-quarter usage rate and shot attempts. (3) Can they finish? First-shot FG% matters more than overall FG%. Players who drive to the basket have higher first-basket rates than jump shooters. Also check if player starts - bench players rarely score first.`,
     dataHints: ["first_quarter_scoring", "starter_status", "usage_rate_early"],
   },
   "points": {
@@ -90,7 +90,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
     chartTypes: [
       { type: "trend", title: "Threes Made Trend", description: "Game-by-game threes with prop line" },
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
-      { type: "distribution", title: "Three-Point Distribution", description: "How many threes per game — clustering around the line?" },
+      { type: "distribution", title: "Three-Point Distribution", description: "How many threes per game - clustering around the line?" },
     ],
     analysisContext: `Three-pointers are high-variance. Key factors: attempts matter more than percentage (volume shooters hit lines more consistently), opponent 3PT defense (do they close out well?), home/away split (shooting is often better at home), and game script (trailing teams shoot more threes). A player who attempts 8 threes per game at 35% is more reliable than one attempting 4 at 40%.`,
     dataHints: ["three_point_attempts", "three_point_percentage", "opponent_3pt_defense"],
@@ -103,7 +103,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "trend", title: "Steals Trend", description: "Game-by-game steals" },
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
     ],
-    analysisContext: `Steals are very low-volume and high-variance — even elite defenders average 1-2 per game. Key factors: opponent's turnover rate (sloppy teams give up more steals), minutes played, and the player's defensive role (on-ball defenders get more steals). This is one of the hardest props to predict consistently.`,
+    analysisContext: `Steals are very low-volume and high-variance - even elite defenders average 1-2 per game. Key factors: opponent's turnover rate (sloppy teams give up more steals), minutes played, and the player's defensive role (on-ball defenders get more steals). This is one of the hardest props to predict consistently.`,
     dataHints: ["opponent_turnovers"],
   },
   "blocks": {
@@ -126,7 +126,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "comparison", title: "PRA Breakdown", description: "Which category contributes most?" },
     ],
-    analysisContext: `PRA (Points + Rebounds + Assists) is a combined stat that rewards all-around players. Because it combines three stats, it tends to be more consistent than any single stat — the variance smooths out. Key question: is the line set close to the player's average? If average PRA is 35 and line is 34.5, that's tight. Look at minutes risk (blowouts) and matchup difficulty.`,
+    analysisContext: `PRA (Points + Rebounds + Assists) is a combined stat that rewards all-around players. Because it combines three stats, it tends to be more consistent than any single stat - the variance smooths out. Key question: is the line set close to the player's average? If average PRA is 35 and line is 34.5, that's tight. Look at minutes risk (blowouts) and matchup difficulty.`,
     dataHints: ["minutes_played", "game_score"],
   },
   "double_double": {
@@ -149,7 +149,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "comparison", title: "1H vs 2H Split", description: "Does this player front-load or back-load scoring?" },
       { type: "hitRate", title: "1H Hit Rate", description: "How often they exceed this line in the first half" },
     ],
-    analysisContext: `First half player points are about how a player distributes their scoring. Some players come out aggressive in Q1-Q2 and coast in the second half (e.g. LeBron historically front-loads). Others are 4th quarter scorers. Key factors: (1) Does the player score more in the first or second half? Look at quarter-by-quarter splits if available. (2) Game script prediction — if this is expected to be a blowout, starters may rest in the 2nd half, making 1H the only window. (3) Opponent's first-half defensive intensity vs second-half adjustments. (4) Pace of the first half — some teams start fast, others slow.`,
+    analysisContext: `First half player points are about how a player distributes their scoring. Some players come out aggressive in Q1-Q2 and coast in the second half (e.g. LeBron historically front-loads). Others are 4th quarter scorers. Key factors: (1) Does the player score more in the first or second half? Look at quarter-by-quarter splits if available. (2) Game script prediction - if this is expected to be a blowout, starters may rest in the 2nd half, making 1H the only window. (3) Opponent's first-half defensive intensity vs second-half adjustments. (4) Pace of the first half - some teams start fast, others slow.`,
     dataHints: ["first_half_scoring_rate", "quarter_splits"],
   },
   "first_quarter_total": {
@@ -161,7 +161,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "comparison", title: "Both Teams 1Q Average", description: "Combined first quarter scoring" },
       { type: "hitRate", title: "1Q Over Rate", description: "How often the 1Q total exceeds this line" },
     ],
-    analysisContext: `First quarter totals are a specific sub-market. Key factors: (1) Some teams are notorious slow starters — they come out flat in Q1 then adjust. Others sprint out of the gate. (2) Pace in the first quarter is often different from full-game pace — some coaches script the first few possessions. (3) Starters always play Q1 (no bench rotation yet), so star power matters more. (4) Teams coming off rest vs back-to-backs often show different Q1 energy. (5) First-quarter scoring averages are NOT simply full-game average divided by 4 — the distribution is uneven.`,
+    analysisContext: `First quarter totals are a specific sub-market. Key factors: (1) Some teams are notorious slow starters - they come out flat in Q1 then adjust. Others sprint out of the gate. (2) Pace in the first quarter is often different from full-game pace - some coaches script the first few possessions. (3) Starters always play Q1 (no bench rotation yet), so star power matters more. (4) Teams coming off rest vs back-to-backs often show different Q1 energy. (5) First-quarter scoring averages are NOT simply full-game average divided by 4 - the distribution is uneven.`,
     dataHints: ["first_quarter_scores", "pace_first_quarter"],
   },
   "first_half_total": {
@@ -173,7 +173,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "comparison", title: "1H vs Full Game Ratio", description: "What percentage of scoring happens in the first half?" },
       { type: "hitRate", title: "1H Over Rate", description: "How often the 1H total exceeds this line" },
     ],
-    analysisContext: `First half totals differ from full game for several reasons: (1) Starters play most of the first half, so the talent on the court is higher. (2) There's no garbage time scoring that inflates full-game totals in blowouts. (3) Some teams make major halftime defensive adjustments (coaches like Tom Thibodeau are known for this). (4) Track each team's first-half scoring average vs their full-game average to see the ratio — it's usually not exactly 50%. (5) Foul trouble hasn't accumulated yet, so the game flows differently.`,
+    analysisContext: `First half totals differ from full game for several reasons: (1) Starters play most of the first half, so the talent on the court is higher. (2) There's no garbage time scoring that inflates full-game totals in blowouts. (3) Some teams make major halftime defensive adjustments (coaches like Tom Thibodeau are known for this). (4) Track each team's first-half scoring average vs their full-game average to see the ratio - it's usually not exactly 50%. (5) Foul trouble hasn't accumulated yet, so the game flows differently.`,
     dataHints: ["first_half_scoring", "halftime_adjustment_tendency"],
   },
   "alt_spread": {
@@ -185,7 +185,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "trend", title: "Recent Margins", description: "Game-by-game margin of victory" },
       { type: "hitRate", title: "Cover Rate at This Line", description: "How often they'd cover this alternate line" },
     ],
-    analysisContext: `Alternate spreads offer better odds for wider margins. The key insight is margin DISTRIBUTION — not averages. A team that wins by exactly 7 points every game is very different from one that alternates between 20-point wins and 3-point losses, even if the average margin is the same. For large alt spreads (+200 or higher): (1) How often does this team blow opponents out? Look at blowout rate (wins by 15+). (2) What's the opponent's tendency to get blown out or keep games close? (3) Is there a pace mismatch that could lead to a high-margin outcome? (4) Rest advantage can lead to blowouts. (5) Alt spreads are often +EV when the market underestimates blowout probability in mismatched games.`,
+    analysisContext: `Alternate spreads offer better odds for wider margins. The key insight is margin DISTRIBUTION - not averages. A team that wins by exactly 7 points every game is very different from one that alternates between 20-point wins and 3-point losses, even if the average margin is the same. For large alt spreads (+200 or higher): (1) How often does this team blow opponents out? Look at blowout rate (wins by 15+). (2) What's the opponent's tendency to get blown out or keep games close? (3) Is there a pace mismatch that could lead to a high-margin outcome? (4) Rest advantage can lead to blowouts. (5) Alt spreads are often +EV when the market underestimates blowout probability in mismatched games.`,
     dataHints: ["margin_distribution", "blowout_rate", "opponent_blowout_rate"],
   },
   "player_combo": {
@@ -196,7 +196,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
       { type: "comparison", title: "Stats in Wins vs Losses", description: "Does this player perform better when the team wins?" },
       { type: "hitRate", title: "Both Legs Hit Rate", description: "How often both conditions are met simultaneously" },
     ],
-    analysisContext: `Player combo props (e.g. "Brunson 25+ pts AND Knicks win") are CORRELATED bets, which is the key insight most bettors miss. When a star player scores well, the team is more likely to win — so the two legs aren't independent events. Sportsbooks know this and price it in, but not always accurately. Key analysis: (1) What are the player's stats in WINS specifically vs losses? A player averaging 26 PPG might average 30 in wins and 20 in losses. (2) How likely is the team to win? If they're heavy favorites, the combo is almost as likely as the player prop alone. (3) Does the player carry harder in close games or coast in blowouts? (4) The correlation benefit: if you think the team wins, the player prop is more likely to hit too, so the combo odds may offer value.`,
+    analysisContext: `Player combo props (e.g. "Brunson 25+ pts AND Knicks win") are CORRELATED bets, which is the key insight most bettors miss. When a star player scores well, the team is more likely to win - so the two legs aren't independent events. Sportsbooks know this and price it in, but not always accurately. Key analysis: (1) What are the player's stats in WINS specifically vs losses? A player averaging 26 PPG might average 30 in wins and 20 in losses. (2) How likely is the team to win? If they're heavy favorites, the combo is almost as likely as the player prop alone. (3) Does the player carry harder in close games or coast in blowouts? (4) The correlation benefit: if you think the team wins, the player prop is more likely to hit too, so the combo odds may offer value.`,
     dataHints: ["stats_in_wins", "stats_in_losses", "team_win_probability"],
   },
   "sgp": {
@@ -206,7 +206,7 @@ const NBA_MARKETS: Record<string, MarketIntelligence> = {
     chartTypes: [
       { type: "comparison", title: "Leg Correlation", description: "Are these legs working together or against each other?" },
     ],
-    analysisContext: `Same Game Parlays (SGPs) are where sportsbooks make the most money because bettors treat legs as independent when they're often correlated. KEY INSIGHT: (1) "Team wins" + "Over total" + "Star player scores a lot" are all POSITIVELY correlated — if one hits, the others are more likely too. Books should give you BETTER odds for this correlation, but they often give WORSE odds. (2) NEGATIVE correlation example: "Under 210" + "Player Over 30 pts" — if the game is low-scoring, it's harder for any individual to score 30+. (3) The best SGPs exploit POSITIVE correlation that the book underprices. (4) Never build an SGP where legs work against each other. (5) The more legs you add, the more the house edge compounds — 2-3 leg SGPs are more viable than 5+ leg ones.`,
+    analysisContext: `Same Game Parlays (SGPs) are where sportsbooks make the most money because bettors treat legs as independent when they're often correlated. KEY INSIGHT: (1) "Team wins" + "Over total" + "Star player scores a lot" are all POSITIVELY correlated - if one hits, the others are more likely too. Books should give you BETTER odds for this correlation, but they often give WORSE odds. (2) NEGATIVE correlation example: "Under 210" + "Player Over 30 pts" - if the game is low-scoring, it's harder for any individual to score 30+. (3) The best SGPs exploit POSITIVE correlation that the book underprices. (4) Never build an SGP where legs work against each other. (5) The more legs you add, the more the house edge compounds - 2-3 leg SGPs are more viable than 5+ leg ones.`,
     dataHints: ["leg_correlation_analysis"],
   },
 };
@@ -223,7 +223,7 @@ const NFL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "TD Rate", description: "How often they score in a game" },
       { type: "matchup", title: "Red Zone Opportunity", description: "Red zone usage and opponent red zone defense" },
     ],
-    analysisContext: `Anytime TD scorer props require understanding RED ZONE usage, not just general stats. Key factors: (1) Red zone targets/carries — this is THE stat. A receiver with 5 red zone targets per game is far more likely to score than one with 1, regardless of total yards. (2) Goal-line carries for RBs — some teams use a specific short-yardage back. (3) Touchdown dependency — some players score on long plays (less predictable) vs goal-line situations (more predictable). (4) Opponent red zone defense — how often do they allow TDs vs field goals in the red zone? (5) Game script — if the team is expected to be trailing, passing TDs are more likely; if leading, rushing TDs. (6) TD rate per game is the baseline — a player scoring in 60% of games at -120 is different value than one scoring in 40% at -120. (7) Touchdowns are relatively rare events, so even the best TD scorers don't score every game.`,
+    analysisContext: `Anytime TD scorer props require understanding RED ZONE usage, not just general stats. Key factors: (1) Red zone targets/carries - this is THE stat. A receiver with 5 red zone targets per game is far more likely to score than one with 1, regardless of total yards. (2) Goal-line carries for RBs - some teams use a specific short-yardage back. (3) Touchdown dependency - some players score on long plays (less predictable) vs goal-line situations (more predictable). (4) Opponent red zone defense - how often do they allow TDs vs field goals in the red zone? (5) Game script - if the team is expected to be trailing, passing TDs are more likely; if leading, rushing TDs. (6) TD rate per game is the baseline - a player scoring in 60% of games at -120 is different value than one scoring in 40% at -120. (7) Touchdowns are relatively rare events, so even the best TD scorers don't score every game.`,
     dataHints: ["red_zone_targets", "red_zone_carries", "goal_line_usage", "td_rate_per_game", "opponent_red_zone_td_rate"],
   },
   "passing_yards": {
@@ -235,7 +235,7 @@ const NFL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "matchup", title: "vs Opponent Pass Defense", description: "How many yards does this defense give up?" },
     ],
-    analysisContext: `Passing yards depend on: (1) Pass attempts — volume is king. A QB throwing 35+ times will hit most yardage lines. (2) Game script — trailing teams throw more, leading teams run more. Vegas spread is a proxy for game script. (3) Opponent pass defense rank and yards allowed per game. (4) Weather — wind and rain crush passing numbers. (5) Pace of play — up-tempo offenses get more plays. (6) Receiver health — missing the WR1 can reduce efficiency. (7) Indoor vs outdoor — dome games are more pass-friendly.`,
+    analysisContext: `Passing yards depend on: (1) Pass attempts - volume is king. A QB throwing 35+ times will hit most yardage lines. (2) Game script - trailing teams throw more, leading teams run more. Vegas spread is a proxy for game script. (3) Opponent pass defense rank and yards allowed per game. (4) Weather - wind and rain crush passing numbers. (5) Pace of play - up-tempo offenses get more plays. (6) Receiver health - missing the WR1 can reduce efficiency. (7) Indoor vs outdoor - dome games are more pass-friendly.`,
     dataHints: ["pass_attempts", "opponent_pass_yards_allowed", "game_script_projection"],
   },
   "rushing_yards": {
@@ -247,7 +247,7 @@ const NFL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "matchup", title: "vs Opponent Run Defense", description: "How many yards does this defense give up on the ground?" },
     ],
-    analysisContext: `Rushing yards depend on: (1) Carries — more carries = more yards, but carries depend on game script (leading teams run more). (2) Opponent run defense rank and yards allowed per game. (3) Offensive line quality — the RB matters less than the line in short-yardage. (4) Game script — if the team is expected to lead (negative spread), they'll run more. (5) Split backfield risk — is this a bell-cow back or a committee? Check snap percentage. (6) Weather — rain/snow HELPS rushing because it hurts passing, so teams run more.`,
+    analysisContext: `Rushing yards depend on: (1) Carries - more carries = more yards, but carries depend on game script (leading teams run more). (2) Opponent run defense rank and yards allowed per game. (3) Offensive line quality - the RB matters less than the line in short-yardage. (4) Game script - if the team is expected to lead (negative spread), they'll run more. (5) Split backfield risk - is this a bell-cow back or a committee? Check snap percentage. (6) Weather - rain/snow HELPS rushing because it hurts passing, so teams run more.`,
     dataHints: ["carries", "opponent_rush_yards_allowed", "snap_percentage", "game_script"],
   },
   "receiving_yards": {
@@ -259,7 +259,7 @@ const NFL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "matchup", title: "Cornerback Matchup", description: "Who's covering this receiver?" },
     ],
-    analysisContext: `Receiving yards depend on: (1) Target share — what percentage of team passes go to this player? This is more stable than raw yards. (2) Opponent cornerback matchup — is the CB elite or a weak spot? Slot receivers often avoid the top CB. (3) Game script — trailing teams throw more, benefiting all receivers. (4) QB connection — some WR-QB combos have higher target rates. (5) Air yards — a WR who runs deep routes has higher variance (fewer catches but big plays) vs a slot guy who catches 8 short passes consistently. (6) Weather hurts deep passing more than short passing.`,
+    analysisContext: `Receiving yards depend on: (1) Target share - what percentage of team passes go to this player? This is more stable than raw yards. (2) Opponent cornerback matchup - is the CB elite or a weak spot? Slot receivers often avoid the top CB. (3) Game script - trailing teams throw more, benefiting all receivers. (4) QB connection - some WR-QB combos have higher target rates. (5) Air yards - a WR who runs deep routes has higher variance (fewer catches but big plays) vs a slot guy who catches 8 short passes consistently. (6) Weather hurts deep passing more than short passing.`,
     dataHints: ["targets", "target_share", "air_yards", "opponent_cb_ranking"],
   },
 };
@@ -275,9 +275,9 @@ const MLB_MARKETS: Record<string, MarketIntelligence> = {
       { type: "trend", title: "Strikeout Trend", description: "Game-by-game Ks with prop line" },
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "matchup", title: "Opponent Strikeout Rate", description: "Does this lineup strike out a lot?" },
-      { type: "comparison", title: "Ks per Inning", description: "K rate — does pitcher go deep into games?" },
+      { type: "comparison", title: "Ks per Inning", description: "K rate - does pitcher go deep into games?" },
     ],
-    analysisContext: `Pitcher strikeouts depend on: (1) K/9 rate — the pitcher's strikeout ability, (2) opponent team strikeout rate — a team that Ks 25% of the time gives more Ks than one at 18%, (3) innings pitched — a pitcher who only goes 5 innings has fewer K opportunities than one going 7, (4) pitch count limits for early-season or returning pitchers, (5) bullpen availability — managers may pull starters earlier if the pen is fresh.`,
+    analysisContext: `Pitcher strikeouts depend on: (1) K/9 rate - the pitcher's strikeout ability, (2) opponent team strikeout rate - a team that Ks 25% of the time gives more Ks than one at 18%, (3) innings pitched - a pitcher who only goes 5 innings has fewer K opportunities than one going 7, (4) pitch count limits for early-season or returning pitchers, (5) bullpen availability - managers may pull starters earlier if the pen is fresh.`,
     dataHints: ["k_per_9", "opponent_k_rate", "avg_innings_per_start", "pitch_count"],
   },
   "hits_pitcher": {
@@ -326,7 +326,7 @@ const MLB_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they exceed this line" },
       { type: "comparison", title: "RBI Opportunities", description: "Depends on who bats before them" },
     ],
-    analysisContext: `RBIs are heavily dependent on context — a great hitter batting 1st or 9th gets fewer RBI opportunities than a mediocre hitter batting 4th with runners on. Key factors: batting order position (3-5 hitters get most RBI chances), team's on-base percentage (runners on base = RBI opportunities), batting average with runners in scoring position (RISP), and opponent pitcher quality.`,
+    analysisContext: `RBIs are heavily dependent on context - a great hitter batting 1st or 9th gets fewer RBI opportunities than a mediocre hitter batting 4th with runners on. Key factors: batting order position (3-5 hitters get most RBI chances), team's on-base percentage (runners on base = RBI opportunities), batting average with runners in scoring position (RISP), and opponent pitcher quality.`,
     dataHints: ["batting_order_position", "avg_with_risp", "team_obp"],
   },
   "total_bases": {
@@ -373,7 +373,7 @@ const MLB_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they stay under this line" },
       { type: "matchup", title: "Opponent OPS", description: "How dangerous is this lineup?" },
     ],
-    analysisContext: `Earned runs depend on ERA, innings pitched (more innings = more run exposure), opponent lineup quality (OPS), and ballpark factors. A pitcher with a 3.00 ERA averages 3 ER per 9 innings, so in a 6-inning outing you'd expect ~2 ER. But runs are lumpy — one bad inning can blow the line.`,
+    analysisContext: `Earned runs depend on ERA, innings pitched (more innings = more run exposure), opponent lineup quality (OPS), and ballpark factors. A pitcher with a 3.00 ERA averages 3 ER per 9 innings, so in a 6-inning outing you'd expect ~2 ER. But runs are lumpy - one bad inning can blow the line.`,
     dataHints: ["era", "opponent_ops", "ballpark_run_factor"],
   },
 };
@@ -390,7 +390,7 @@ const NHL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they score" },
       { type: "matchup", title: "vs Opponent Goalie", description: "Opponent goalie save percentage" },
     ],
-    analysisContext: `Goals are extremely volatile — even elite scorers only score in ~40-50% of games. Key factors: shot volume (more shots = more goal chances), shooting percentage (unsustainable if very high), power play time (PP goals are easier), opponent goalie save percentage, and time on ice. A player generating 4+ shots per game is a better bet than one generating 2 even if their goal averages are similar.`,
+    analysisContext: `Goals are extremely volatile - even elite scorers only score in ~40-50% of games. Key factors: shot volume (more shots = more goal chances), shooting percentage (unsustainable if very high), power play time (PP goals are easier), opponent goalie save percentage, and time on ice. A player generating 4+ shots per game is a better bet than one generating 2 even if their goal averages are similar.`,
     dataHints: ["shots_per_game", "shooting_percentage", "power_play_time", "opponent_goalie_sv_pct"],
   },
   "assists": {
@@ -413,7 +413,7 @@ const NHL_MARKETS: Record<string, MarketIntelligence> = {
       { type: "hitRate", title: "Hit Rate", description: "How often they record 1+ point" },
       { type: "comparison", title: "Goals vs Assists Split", description: "How they generate points" },
     ],
-    analysisContext: `Points (goals + assists) are more stable than goals alone because you get credit for both scoring and setting up. Key factors: same as goals and assists combined — shot volume, linemates, power play time, TOI, and opponent quality. Players on the top power play unit are significantly more likely to record a point.`,
+    analysisContext: `Points (goals + assists) are more stable than goals alone because you get credit for both scoring and setting up. Key factors: same as goals and assists combined - shot volume, linemates, power play time, TOI, and opponent quality. Players on the top power play unit are significantly more likely to record a point.`,
     dataHints: ["shots", "power_play_time", "toi"],
   },
   "shots": {

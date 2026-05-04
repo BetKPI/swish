@@ -9,7 +9,7 @@ import { fetchMastersHistory, analyzeHoleHistory, analyzeAmenCorner, analyzeSund
 import { computeHitRate, computeTrend, computeConsistency } from "@/lib/stat-tools";
 
 /**
- * Chat endpoint — two-step flow:
+ * Chat endpoint - two-step flow:
  * 1. AI decides if it can answer from existing data or needs a data fetch
  * 2. If fetch needed, we call the API, then AI generates the chart with real data
  */
@@ -239,10 +239,10 @@ async function logChatToDiscord(
   if (!webhookUrl) return;
 
   const colors: Record<string, number> = {
-    chart: 0x10b981,    // green — answered
-    fetched: 0x6366f1,  // purple — had to fetch new data
-    no_data: 0xf59e0b,  // yellow — couldn't answer
-    error: 0xef4444,    // red — crashed
+    chart: 0x10b981,    // green - answered
+    fetched: 0x6366f1,  // purple - had to fetch new data
+    no_data: 0xf59e0b,  // yellow - couldn't answer
+    error: 0xef4444,    // red - crashed
   };
 
   const icons: Record<string, string> = {
@@ -299,7 +299,7 @@ export async function POST(request: NextRequest) {
     let statToolsContext = "";
     if (cd) {
       const toolResults: string[] = [];
-      // Player prop data — compute hit rate, trend, consistency
+      // Player prop data - compute hit rate, trend, consistency
       const playerData = cd._players || cd.playerData;
       if (playerData) {
         for (const [name, pData] of Object.entries(playerData)) {
@@ -326,7 +326,7 @@ export async function POST(request: NextRequest) {
           }
         }
       }
-      // Team metrics — trends from recent games
+      // Team metrics - trends from recent games
       const teamMetrics = cd.teamMetrics;
       if (teamMetrics) {
         for (const [name, tm] of Object.entries(teamMetrics)) {
@@ -341,13 +341,13 @@ export async function POST(request: NextRequest) {
         }
       }
       if (toolResults.length > 0) {
-        statToolsContext = `\nDETERMINISTIC STAT MODEL RESULTS (pre-computed — reference these exact numbers, do NOT re-calculate):\n${toolResults.join("\n")}\n`;
+        statToolsContext = `\nDETERMINISTIC STAT MODEL RESULTS (pre-computed - reference these exact numbers, do NOT re-calculate):\n${toolResults.join("\n")}\n`;
       }
     }
 
     // Build conversation context string for drill-down
     const conversationContext = chatHistory.length > 0
-      ? `\nCONVERSATION SO FAR (the user is drilling down — each message builds on the last):\n${chatHistory.map((m: { role: string; content: string; chartTitle?: string; chartType?: string }) =>
+      ? `\nCONVERSATION SO FAR (the user is drilling down - each message builds on the last):\n${chatHistory.map((m: { role: string; content: string; chartTitle?: string; chartType?: string }) =>
           m.role === "user"
             ? `  USER: "${m.content}"`
             : `  ASSISTANT: ${m.content}${m.chartTitle ? ` [showed ${m.chartType} chart: "${m.chartTitle}"]` : ""}`
@@ -357,7 +357,7 @@ export async function POST(request: NextRequest) {
     // Build explicit player context for pronoun resolution
     const primaryPlayer = extraction.players?.[0] || "";
     const playerContext = primaryPlayer
-      ? `\nPRIMARY PLAYER: "${primaryPlayer}" — when the user says "he", "his", "him", "their", "the player", or any pronoun, they mean ${primaryPlayer}. ALWAYS resolve pronouns to this player.`
+      ? `\nPRIMARY PLAYER: "${primaryPlayer}" - when the user says "he", "his", "him", "their", "the player", or any pronoun, they mean ${primaryPlayer}. ALWAYS resolve pronouns to this player.`
       : "";
 
     const triagePrompt = `You are a sports analytics assistant. The user analyzed a ${extraction.sport} ${extraction.betType} bet (${extraction.teams?.join(" vs ")}).
@@ -371,7 +371,7 @@ ${isMasters ? `This is a MASTERS bet at Augusta National. You have access to ric
 TODAY'S DATE: ${new Date().toISOString().slice(0, 10)} (current season: ${currentYear})
 ${conversationContext}
 SWISH SCORE (our data-strength rating for this bet):
-${swishScore ? `Score: ${swishScore.score}/10 (${swishScore.label}) — ${swishScore.detail}` : "Not computed"}
+${swishScore ? `Score: ${swishScore.score}/10 (${swishScore.label}) - ${swishScore.detail}` : "Not computed"}
 ${statToolsContext}
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
@@ -379,11 +379,11 @@ ${JSON.stringify(computedData, null, 2)}
 USER QUESTION: "${message}"
 
 Decide: can you answer this from the existing data, or do you need to fetch more?
-NOTE: Futures bets may have only ONE team and no opponent — this is normal. Use standings, win%, and team record from existing data to answer.
+NOTE: Futures bets may have only ONE team and no opponent - this is normal. Use standings, win%, and team record from existing data to answer.
 
 Respond with ONLY valid JSON in one of these formats:
 
-FORMAT 1 — You CAN answer from existing data:
+FORMAT 1 - You CAN answer from existing data:
 {
   "need_fetch": false,
   "chart": {
@@ -398,32 +398,32 @@ FORMAT 1 — You CAN answer from existing data:
 }
 For tables use "columns": [{"key":"k","label":"Label"}] instead of xKey/yKeys.
 
-FORMAT 2 — You NEED more data:
+FORMAT 2 - You NEED more data:
 {
   "need_fetch": true,
   "fetch": {
     "action": one of "mlb_player", "mlb_pitcher_matchup", "mlb_pitcher_h2h", "nba_player", "nhl_player", "nhl_team_goalie", "team_schedule", "golf_player", "masters_hole", "pga_tournament",
     "playerName": "name" (for player actions),
-    "season": year as number (e.g. ${currentYear - 1} for last season — INCLUDE THIS when user asks about a previous season or "last year"),
-    "pitcher1Name": "name" (for pitcher_h2h — use actual pitcher names from existing data if available),
+    "season": year as number (e.g. ${currentYear - 1} for last season - INCLUDE THIS when user asks about a previous season or "last year"),
+    "pitcher1Name": "name" (for pitcher_h2h - use actual pitcher names from existing data if available),
     "pitcher2Name": "name" (for pitcher_h2h),
     "team1": "team" (for pitcher_matchup or pitcher_h2h),
     "team2": "team" (for pitcher_matchup or pitcher_h2h),
     "sport": "sport" (for team_schedule),
     "teamName": "team" (for team_schedule or nhl_team_goalie),
-    "tournament": "tournament name" (for pga_tournament — e.g. "US Open", "PGA Championship", "The Open")
+    "tournament": "tournament name" (for pga_tournament - e.g. "US Open", "PGA Championship", "The Open")
   },
   "message": "Fetching that data now..."
 }
 
-FORMAT 3 — The data simply doesn't exist in any free sports API:
+FORMAT 3 - The data simply doesn't exist in any free sports API:
 {
   "need_fetch": false,
   "no_data": true,
   "message": "Brief explanation of why we can't get this (1-2 sentences)"
 }
 
-FORMAT 4 — The user is asking a non-data question (about the app, feedback, how things work, or general conversation):
+FORMAT 4 - The user is asking a non-data question (about the app, feedback, how things work, or general conversation):
 {
   "need_fetch": false,
   "no_data": true,
@@ -440,7 +440,7 @@ RULES:
   • Time range: "since January", "last 2 months" → filter by date
   • Combined: "home games in the playoffs" → apply multiple filters
   When the data has these fields (home, opponent, seasonType, date), filter from existing data (FORMAT 1). When you need richer data, re-fetch with the appropriate action (FORMAT 2).
-- BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to — that's what you're here for.
+- BE PROACTIVE: Don't just read back what the bet is. ANALYZE it. If the user asks a vague question like "what do you think" or "how does he look", give them data-driven analysis with a chart. Fetch data if you need to - that's what you're here for.
 - COMMON CHART REQUESTS: Users often ask for these using casual language. ALWAYS produce a chart (FORMAT 1) from existing data:
   • "game margin" / "margin chart" / "point diff" → bar chart of game-by-game margin from recentGames
   • "scoring trend" / "season chart" → line chart of scoring across ALL available games
@@ -449,37 +449,37 @@ RULES:
   • "last season" / "previous season" → re-fetch with prior season year (FORMAT 2)
   • "how it looks now" / "game over" / "did it hit" → check gameStatus and recent scores in data, build a result summary chart
   If the data exists in computedData.teamMetrics or recentGames, build the chart. Do NOT say no_data for requests that can be answered from existing team/player data.
-- IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" — they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
+- IMPORTANT: The user's question is ALWAYS about the existing bet/player/team shown above unless they explicitly name someone else. "What about his shots?", "show me rebounds", "how about assists?" - they mean the SAME player from the bet. Use existing data or fetch for the SAME player. NEVER ask who they mean.
 - PLAYER NAME RESOLUTION: When the user says a first name only (e.g., "Alexis", "Cooper", "Nathan"), match it to the player listed in "Players in this bet" above. Use the FULL player name in any fetch action. If the bet has "Alexis Lafreniere" and user says "Alexis", use "Alexis Lafreniere".
-- If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable — don't say no_data if the data is sitting right there.
+- If the existing data contains recentGames with home/away flags, you CAN build home/away split charts (FORMAT 1). Team records, game logs, and scoring data in the existing data are chartable - don't say no_data if the data is sitting right there.
 - For FORMAT 1, ONLY use numbers from the existing data. Never invent.
 - GOLF: For ANY golf question, ALWAYS fetch data. Available actions:
-  • "masters_hole" — Masters/Augusta hole-by-hole history 2019-2025 (Amen Corner, Sunday scoring, all 18 holes)
-  • "pga_tournament" — Historical results at specific major tournaments (US Open, PGA Championship, The Open). Use when user asks "how does he do at the US Open" or "his major history". Include "tournament" field with the tournament name.
-  • "golf_player" — Current tournament position and live leaderboard
+  • "masters_hole" - Masters/Augusta hole-by-hole history 2019-2025 (Amen Corner, Sunday scoring, all 18 holes)
+  • "pga_tournament" - Historical results at specific major tournaments (US Open, PGA Championship, The Open). Use when user asks "how does he do at the US Open" or "his major history". Include "tournament" field with the tournament name.
+  • "golf_player" - Current tournament position and live leaderboard
   For Masters questions, prefer "masters_hole". For other tournament history, use "pga_tournament". For current/live data, use "golf_player".
 - For pitcher matchups between two MLB teams, use "mlb_pitcher_matchup".
 - For historical H2H between two pitchers, use "mlb_pitcher_h2h". Extract pitcher names from existing data if available.
 - For individual player lookups, use the sport-specific player action. If the user doesn't name a player, use the player from the existing bet context.
 - For NHL goalie stats, use "nhl_team_goalie" with the team name.
 - SEASON/YEAR INFERENCE: "last year"/"last season" → ${currentYear - 1}. For NHL, format is "20242025". If user says a year number, re-fetch with that season.
-- We CAN fetch historical stats for any past MLB/NBA/NHL season — do NOT return no_data for past season requests.
+- We CAN fetch historical stats for any past MLB/NBA/NHL season - do NOT return no_data for past season requests.
 - Data keys must be camelCase.
-- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) — NOT for stats, splits, game logs, or trends which we can always fetch or compute.
-- SWISH SCORE: If the user asks "what's the score", "is this a good bet", "what do you think", or mentions the Swish Score — reference the score above and explain what's driving it (hit rate, trend, consistency, etc). The score is computed deterministically from real data, not from AI judgment. Explain the data factors.
-- FUTURES BETS: For bets like "win the World Series", "win the AL", "win the division", the existing data will have standings snapshots and team records. Build a table or chart from that data showing current standings position, win%, and recent trajectory. There may be only ONE team (no opponent) — that's normal for futures. Use existing data to show their path to the title. If the user asks about championship history, use "team_schedule" to fetch more data.`;
+- Only use FORMAT 3 for things genuinely unavailable (weather, referee stats, injury reports, real-time odds, etc.) - NOT for stats, splits, game logs, or trends which we can always fetch or compute.
+- SWISH SCORE: If the user asks "what's the score", "is this a good bet", "what do you think", or mentions the Swish Score - reference the score above and explain what's driving it (hit rate, trend, consistency, etc). The score is computed deterministically from real data, not from AI judgment. Explain the data factors.
+- FUTURES BETS: For bets like "win the World Series", "win the AL", "win the division", the existing data will have standings snapshots and team records. Build a table or chart from that data showing current standings position, win%, and recent trajectory. There may be only ONE team (no opponent) - that's normal for futures. Use existing data to show their path to the title. If the user asks about championship history, use "team_schedule" to fetch more data.`;
 
     const triageText = await callGemini(triagePrompt, apiKey);
     if (!triageText) {
       await logChatToDiscord(message, extraction, "no_data", "Gemini returned empty");
-      return NextResponse.json({ type: "no_data", message: "I didn't catch that — try asking about the stats, trends, or matchup for this bet." });
+      return NextResponse.json({ type: "no_data", message: "I didn't catch that - try asking about the stats, trends, or matchup for this bet." });
     }
 
     let triage: Record<string, unknown>;
     try {
       triage = parseJSON(triageText);
     } catch {
-      // Gemini returned non-JSON — treat as a text answer
+      // Gemini returned non-JSON - treat as a text answer
       await logChatToDiscord(message, extraction, "no_data", "Gemini returned non-JSON");
       return NextResponse.json({ type: "no_data", message: triageText.slice(0, 300) });
     }
@@ -527,7 +527,7 @@ ${conversationContext}
 We just fetched this data:
 ${JSON.stringify(fetchedData, null, 2)}
 
-Create a chart that ANALYZES this data in the context of their bet and conversation. If the user is drilling down (e.g. "just home games", "last 5 games", "without player X"), FILTER the data accordingly and show only the filtered subset. Don't just display raw numbers — tell them something useful about whether the data supports or undermines their bet. Respond with ONLY valid JSON:
+Create a chart that ANALYZES this data in the context of their bet and conversation. If the user is drilling down (e.g. "just home games", "last 5 games", "without player X"), FILTER the data accordingly and show only the filtered subset. Don't just display raw numbers - tell them something useful about whether the data supports or undermines their bet. Respond with ONLY valid JSON:
 {
   "type": "chart",
   "message": "Brief explanation of what the chart shows (1 sentence)",
@@ -553,7 +553,7 @@ RULES:
         logChatToDiscord(message, extraction, "error", "Gemini returned empty after data fetch");
         return NextResponse.json({
           type: "no_data",
-          message: "Got the data but couldn't generate the chart — try rephrasing.",
+          message: "Got the data but couldn't generate the chart - try rephrasing.",
         });
       }
 
@@ -566,7 +566,7 @@ RULES:
     await logChatToDiscord(message, extraction, "no_data", "Fell through to fallback");
     return NextResponse.json({
       type: "no_data",
-      message: triage.message || "Not sure how to handle that — try a different question.",
+      message: triage.message || "Not sure how to handle that - try a different question.",
     });
   } catch (error) {
     console.error("Chat error:", error);
@@ -576,7 +576,7 @@ RULES:
     } catch { /* silent */ }
     return NextResponse.json({
       type: "no_data",
-      message: "Something went wrong — try again.",
+      message: "Something went wrong - try again.",
     });
   }
 }

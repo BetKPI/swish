@@ -1,5 +1,5 @@
 /**
- * Ball Don't Lie API — free NBA data (no key required).
+ * Ball Don't Lie API - free NBA data (no key required).
  * https://www.balldontlie.io/
  *
  * Provides: player search, season averages, game logs, team stats.
@@ -26,7 +26,7 @@ function isAvailable(): boolean {
 
 function markAuthFailed() {
   authFailed = true;
-  console.log("[BDL] API key missing or invalid — all BDL calls will be skipped this invocation");
+  console.log("[BDL] API key missing or invalid - all BDL calls will be skipped this invocation");
 }
 
 // ── Types ──────────────────────────────────────────────────────────
@@ -163,7 +163,7 @@ export async function getSeasonAverages(
       { headers: headers() }
     );
     if (res.status === 401 || res.status === 403) {
-      console.log("[BDL] season_averages requires paid plan — marking unavailable");
+      console.log("[BDL] season_averages requires paid plan - marking unavailable");
       markAuthFailed();
       return null;
     }
@@ -263,7 +263,7 @@ export interface PropAnalysis {
 }
 
 /**
- * Fetch all NBA data for a bet — players and teams.
+ * Fetch all NBA data for a bet - players and teams.
  */
 export async function fetchNBAData(
   teamNames: string[],
@@ -273,7 +273,7 @@ export async function fetchNBAData(
 ): Promise<Record<string, unknown>> {
   // If no API key, skip BDL entirely
   if (!isAvailable()) {
-    console.log("[BDL] No API key — skipping Ball Don't Lie, falling through to ESPN");
+    console.log("[BDL] No API key - skipping Ball Don't Lie, falling through to ESPN");
     return { _unsupported: true, _reason: "no_api_key" };
   }
 
@@ -313,7 +313,7 @@ export async function fetchNBAData(
 
       // If stats endpoints failed (free tier), flag to fall through to ESPN
       if (!seasonAverages && gameLog.length === 0) {
-        console.log(`[BDL] Stats unavailable for ${name} (free tier?) — will fall through to ESPN`);
+        console.log(`[BDL] Stats unavailable for ${name} (free tier?) - will fall through to ESPN`);
         return { _unsupported: true, _reason: "stats_restricted" };
       }
 
@@ -455,6 +455,6 @@ function getStatValue(game: BDLGameStats, stat: string): number {
 
 function getCurrentSeason(): number {
   const now = new Date();
-  // NBA season spans two calendar years — if before July, use previous year
+  // NBA season spans two calendar years - if before July, use previous year
   return now.getMonth() < 6 ? now.getFullYear() - 1 : now.getFullYear();
 }

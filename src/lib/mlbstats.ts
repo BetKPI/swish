@@ -1,5 +1,5 @@
 /**
- * MLB Stats API — free, no key required.
+ * MLB Stats API - free, no key required.
  * https://statsapi.mlb.com
  *
  * Provides: player search, season stats, game logs, pitcher/batter splits,
@@ -243,7 +243,7 @@ export async function getPitcherVsTeam(
   opponentTeamId: number
 ): Promise<Record<string, unknown>[]> {
   try {
-    // Get career game log (recent seasons) — filter by opponent
+    // Get career game log (recent seasons) - filter by opponent
     const currentYear = new Date().getFullYear();
     const seasons = Array.from({ length: 6 }, (_, i) => currentYear - i).join(",");
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -609,7 +609,7 @@ function mapMLBMarketToStat(market: string, player: MLBPlayer): string {
     return "strikeOuts_pitching"; // most common pitcher prop
   }
 
-  // Hitter combos — must check before singles
+  // Hitter combos - must check before singles
   if (m.includes("h+r+rbi") || m.includes("hits+runs+rbi") || m.includes("hits runs rbi")) return "hits+runs+rbi";
   if (m.includes("hits+runs") || m.includes("h+r")) return "hits+runs";
   if (m.includes("hits+rbi") || m.includes("h+rbi")) return "hits+rbi";

@@ -19,7 +19,7 @@ interface TestResult {
 
 const BASE_URL = "https://swish-jet.vercel.app";
 
-// Real bets across every sport/type combo — FanDuel/DraftKings style
+// Real bets across every sport/type combo - FanDuel/DraftKings style
 const TEST_BETS = [
   // ── NBA Player Props (7 markets) ──────────────────────────────
   { sport: "NBA", betType: "player_prop", teams: ["New York Knicks", "Chicago Bulls"], players: ["Jalen Brunson"], market: "Points", line: 26.5, odds: "-115", description: "Brunson Over 26.5 Points", confidence: 0.9 },
@@ -157,7 +157,7 @@ async function testBet(results: TestResult[], extraction: Record<string, unknown
 
     const data = await res.json();
 
-    // Parlay — check each leg has charts
+    // Parlay - check each leg has charts
     if (data.parlay) {
       const legs = data.legs || [];
       const legCharts = legs.map((l: { charts?: unknown[]; error?: boolean }) => l.charts?.length || 0);
@@ -266,7 +266,7 @@ async function reportToDiscord(
 
   const embeds: Record<string, unknown>[] = [
     {
-      title: `\u{1F9EA} Stress Test — ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`,
+      title: `\u{1F9EA} Stress Test - ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`,
       color,
       fields: [
         { name: "Bets Tested", value: `${betResults.length}`, inline: true },
@@ -290,9 +290,9 @@ async function reportToDiscord(
     embeds.push({ title: "Empty Results", color: 0xf59e0b, fields: [{ name: "\u200b", value: list.slice(0, 1024), inline: false }], timestamp: new Date().toISOString() });
   }
 
-  // Chart counts per bet — shows what's actually rendering
+  // Chart counts per bet - shows what's actually rendering
   const chartDetail = passed.slice(0, 20).map((r) =>
-    `${r.charts === 0 ? "\u26A0\uFE0F" : "\u2705"} **${r.bet}** — ${r.charts} charts, ${r.stats} stats (${((r.ms || 0) / 1000).toFixed(1)}s)`
+    `${r.charts === 0 ? "\u26A0\uFE0F" : "\u2705"} **${r.bet}** - ${r.charts} charts, ${r.stats} stats (${((r.ms || 0) / 1000).toFixed(1)}s)`
   ).join("\n");
   if (chartDetail) {
     embeds.push({ title: "Chart Counts", color: 0x6366f1, fields: [{ name: "\u200b", value: chartDetail.slice(0, 1024), inline: false }], timestamp: new Date().toISOString() });

@@ -1,8 +1,8 @@
 /**
- * NFL Touchdown Scorer data — anytime TD and first TD.
+ * NFL Touchdown Scorer data - anytime TD and first TD.
  *
  * Loads from models/nfl-td-data.json (built during NFL season).
- * Currently a skeleton — will be populated when NFL season starts.
+ * Currently a skeleton - will be populated when NFL season starts.
  *
  * Data will include:
  * - Per-player TD rate (rushing + receiving TDs / games played)
@@ -32,7 +32,7 @@ function loadDB(): NFLTDData | null {
     _db = JSON.parse(raw);
     return _db;
   } catch {
-    return null; // No data during offseason — expected
+    return null; // No data during offseason - expected
   }
 }
 

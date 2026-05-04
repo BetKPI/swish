@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Stadium/court/rink hero used across MLB, NBA, NHL views — player props,
+ * Stadium/court/rink hero used across MLB, NBA, NHL views - player props,
  * team bets, parlay legs. Compact variant for parlay legs.
  */
 
@@ -128,9 +128,9 @@ function extractActionPhrase(sport: ThemedSport, description?: string, market?: 
   // Fallback: trim trailing context
   const trimmed = desc
     .replace(/\b(?:in the|of the|from the|@|at|vs\.?)\b.*$/i, "")
-    .replace(/\s+to\s+/i, " — ")
+    .replace(/\s+to\s+/i, " - ")
     .trim();
-  const tail = trimmed.split(/\s+—\s+/).pop() || trimmed;
+  const tail = trimmed.split(/\s+-\s+/).pop() || trimmed;
   return tail.length > 4 && tail.length < 50 ? tail : null;
 }
 
@@ -175,7 +175,7 @@ export default function SportHero({ extraction, visuals, swishScore, variant = "
             "radial-gradient(ellipse at 50% 60%, transparent 0%, rgba(0,0,0,0.55) 90%)",
         }}
       />
-      {/* Watermark — positioned bottom-center */}
+      {/* Watermark - positioned bottom-center */}
       <div
         className={`pointer-events-none absolute inset-x-0 bottom-0 flex justify-center ${theme.watermarkColor}`}
         aria-hidden
@@ -259,7 +259,7 @@ export default function SportHero({ extraction, visuals, swishScore, variant = "
           )}
         </div>
 
-        {/* Line / Odds row — full variant only */}
+        {/* Line / Odds row - full variant only */}
         {!compact && line != null && (
           <div className="mt-5 flex items-end justify-between gap-3">
             <div>

@@ -87,7 +87,7 @@ function buildVerdict(rows: ChartRow[], stat: string, line?: number): string {
     ? `cleared ${line}`
     : `hit ${line}+`;
   if (streak >= 3) {
-    return `${word.charAt(0).toUpperCase() + word.slice(1)} in ${overs} of last ${last10.length} — ${streak} straight.`;
+    return `${word.charAt(0).toUpperCase() + word.slice(1)} in ${overs} of last ${last10.length} - ${streak} straight.`;
   }
   return `${word.charAt(0).toUpperCase() + word.slice(1)} in ${overs} of last ${last10.length}.`;
 }
@@ -152,7 +152,7 @@ export default function MLBPlayerPropCard({
 
   return (
     <div className="space-y-4 relative" id="mlb-card">
-      {/* Page-level field tint — sourced from sport theme (kept here so the
+      {/* Page-level field tint - sourced from sport theme (kept here so the
           MLBPlayerPropCard renders the wash even when AnalysisResults early-returns). */}
       <div
         className="pointer-events-none fixed inset-0 -z-10"
@@ -202,7 +202,7 @@ export default function MLBPlayerPropCard({
       {/* PRIMARY CHART */}
       {primaryChart && allRows.length > 0 && line != null && (
         <div className="relative bg-surface rounded-xl border border-border/50 p-4 sm:p-5 space-y-3 overflow-hidden">
-          {/* Subtle diamond watermark — top-right corner */}
+          {/* Subtle diamond watermark - top-right corner */}
           <div className="pointer-events-none absolute -top-4 -right-4 w-32 h-32 text-emerald-400/[0.06]" aria-hidden>
             <svg viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" className="w-full h-full">
               <polygon points="120,200 175,145 120,90 65,145" />
@@ -252,7 +252,7 @@ export default function MLBPlayerPropCard({
                         ? "text-red-400"
                         : "text-foreground"
                 }`}>
-                  {r.val != null ? `${r.val}%` : "—"}
+                  {r.val != null ? `${r.val}%` : "-"}
                 </div>
               </div>
             ))}
@@ -308,7 +308,7 @@ export default function MLBPlayerPropCard({
         </div>
       )}
 
-      {/* INSIGHT BULLETS — split by tone into Edge / Risk / Context */}
+      {/* INSIGHT BULLETS - split by tone into Edge / Risk / Context */}
       {insightBullets.length > 0 && (() => {
         const pos = insightBullets.filter((b) => b.tone === "pos");
         const neg = insightBullets.filter((b) => b.tone === "neg");
@@ -356,7 +356,7 @@ export default function MLBPlayerPropCard({
         </div>
       )}
 
-      {/* MATCHUP DETAILS — collapsed by default */}
+      {/* MATCHUP DETAILS - collapsed by default */}
       {tables.length > 0 && (
         <Collapsible label="Matchup details" count={tables.length}>
           <div className="space-y-2 pt-2">
@@ -367,14 +367,14 @@ export default function MLBPlayerPropCard({
         </Collapsible>
       )}
 
-      {/* FULL ANALYSIS — collapsed by default */}
+      {/* FULL ANALYSIS - collapsed by default */}
       {summary && (
         <Collapsible label="The breakdown">
           <p className="text-sm text-foreground/85 leading-[1.7] pt-2">{summary}</p>
         </Collapsible>
       )}
 
-      {/* ASK A FOLLOW-UP — collapsed by default */}
+      {/* ASK A FOLLOW-UP - collapsed by default */}
       <Collapsible label="Ask a follow-up">
         <div className="pt-2">
           <AnalysisChat
@@ -503,7 +503,7 @@ function InsightGroup({
         : { box: "bg-surface border-border/50", title: "text-muted", value: "text-foreground", topStripe: "bg-border" };
   return (
     <div className={`relative rounded-xl border p-3 sm:p-4 overflow-hidden ${styles.box}`}>
-      {/* Foul-line accent — diagonal pinstripe at the top */}
+      {/* Foul-line accent - diagonal pinstripe at the top */}
       <div className={`absolute top-0 left-0 right-0 h-0.5 ${styles.topStripe}`} aria-hidden />
       <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 ${styles.title}`}>
         {title}
@@ -563,7 +563,7 @@ function ProjectionPill({
           <span className={`text-[10px] uppercase tracking-widest font-black ${accentText}`}>{lean}</span>
         </div>
       </div>
-      {/* Edge meter — center anchor, fills left or right based on sign */}
+      {/* Edge meter - center anchor, fills left or right based on sign */}
       <div className="relative h-1.5 bg-border/50 rounded-full overflow-hidden">
         <div className="absolute top-0 bottom-0 left-1/2 w-px bg-foreground/30" />
         <div

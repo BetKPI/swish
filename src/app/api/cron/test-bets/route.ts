@@ -61,14 +61,14 @@ export async function GET(request: NextRequest) {
     // Build all bet configs first
     const bets: Record<string, unknown>[] = [];
 
-    // NBA — 1 game, 4 bet types
+    // NBA - 1 game, 4 bet types
     const nbaGame = nbaGames[0];
     if (nbaGame) {
       const t = [nbaGame.away.name, nbaGame.home.name];
       bets.push(
         { sport: "NBA", betType: "moneyline", teams: t, players: [], odds: "-110", description: `${t[0]} ML vs ${t[1]}`, confidence: 0.9 },
         { sport: "NBA", betType: "spread", teams: t, players: [], line: -3.5, odds: "-110", description: `${t[0]} -3.5 vs ${t[1]}`, confidence: 0.9 },
-        { sport: "NBA", betType: "over_under", teams: t, players: [], line: 220.5, odds: "-110", description: `Over 220.5 — ${t[0]} vs ${t[1]}`, confidence: 0.9 },
+        { sport: "NBA", betType: "over_under", teams: t, players: [], line: 220.5, odds: "-110", description: `Over 220.5 - ${t[0]} vs ${t[1]}`, confidence: 0.9 },
       );
       const p = nbaGame.players[0];
       if (p) {
@@ -78,13 +78,13 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // MLB — 1 game, 4 bet types
+    // MLB - 1 game, 4 bet types
     const mlbGame = mlbGames[0];
     if (mlbGame) {
       const t = [mlbGame.away.name, mlbGame.home.name];
       bets.push(
         { sport: "MLB", betType: "moneyline", teams: t, players: [], odds: "+130", description: `${t[0]} ML vs ${t[1]}`, confidence: 0.9 },
-        { sport: "MLB", betType: "over_under", teams: t, players: [], line: 8.5, odds: "-110", description: `Over 8.5 — ${t[0]} vs ${t[1]}`, confidence: 0.9 },
+        { sport: "MLB", betType: "over_under", teams: t, players: [], line: 8.5, odds: "-110", description: `Over 8.5 - ${t[0]} vs ${t[1]}`, confidence: 0.9 },
         { sport: "MLB", betType: "spread", teams: t, players: [], line: -1.5, odds: "+140", description: `${t[0]} -1.5 vs ${t[1]}`, confidence: 0.9 },
       );
       const p = mlbGame.players[0];
@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Run all bets in parallel (all at once — they hit different endpoints)
+    // Run all bets in parallel (all at once - they hit different endpoints)
     console.log(`[QA] Running ${bets.length} bets in parallel`);
     await Promise.all(bets.map((bet) => testBet(results, bet)));
 
@@ -303,7 +303,7 @@ async function reportToDiscord(results: TestResult[], totalMs: number) {
 
   const embeds = [
     {
-      title: `QA Run — ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`,
+      title: `QA Run - ${new Date().toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}`,
       color,
       fields: [
         { name: "Tested", value: `${results.length}`, inline: true },
@@ -355,7 +355,7 @@ async function reportToDiscord(results: TestResult[], totalMs: number) {
     .slice(0, 3);
   if (slowest.length > 0 && slowest[0].timeMs && slowest[0].timeMs > 5000) {
     const slowList = slowest
-      .map((s) => `\u{1F422} **${s.bet}** — ${((s.timeMs || 0) / 1000).toFixed(1)}s`)
+      .map((s) => `\u{1F422} **${s.bet}** - ${((s.timeMs || 0) / 1000).toFixed(1)}s`)
       .join("\n");
     embeds.push({
       title: "Slowest Bets",

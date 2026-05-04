@@ -19,7 +19,7 @@ import {
 import type { ChartConfig } from "@/types";
 import { captureWithWatermark, copyImageToClipboard, downloadBlob } from "@/lib/captureWithWatermark";
 
-// Props.cash-inspired color palette — vibrant on dark backgrounds
+// Props.cash-inspired color palette - vibrant on dark backgrounds
 const COLORS = ["#22c55e", "#818cf8", "#38bdf8", "#f87171", "#a78bfa", "#fb923c"];
 
 // Special keys get specific styling
@@ -36,7 +36,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
   const [rated, setRated] = useState<"up" | "down" | null>(null);
   const [window, setWindow] = useState<number | null>(null); // null = all data
 
-  // Time window filter — applies to hitrate, line, and bar charts (not tables)
+  // Time window filter - applies to hitrate, line, and bar charts (not tables)
   const showToggle = type !== "table" && data.length > 10;
   const windowOptions = [
     { label: "L5", value: 5 },
@@ -125,7 +125,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
         />
       )}
 
-      {/* Action row — bottom-right, always visible (doesn't fight toggles) */}
+      {/* Action row - bottom-right, always visible (doesn't fight toggles) */}
       <div className="flex justify-end gap-1 pt-1 -mb-1">
         {rated ? (
           <span className="px-2 py-1 text-[10px] text-muted">{rated === "up" ? "Thanks!" : "Noted"}</span>
@@ -267,7 +267,7 @@ function RechartsHitRate({
   const l10Rate = hitRatePct(data.slice(-10));
   const l20Rate = hitRatePct(data.slice(-20));
 
-  // Split filters — only show if data has home/away info
+  // Split filters - only show if data has home/away info
   const hasHomeAway = data.some((d) => typeof d.home === "boolean");
   const splitOptions = hasHomeAway
     ? [
@@ -286,7 +286,7 @@ function RechartsHitRate({
 
   return (
     <div className="space-y-2">
-      {/* Hit rate summary row — props.cash style */}
+      {/* Hit rate summary row - props.cash style */}
       <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs justify-center">
         {[
           { label: "Season", pct: allRate },
@@ -297,7 +297,7 @@ function RechartsHitRate({
           <span key={item.label} className="flex items-center gap-1">
             <span className="text-muted">{item.label}</span>
             <span className={`font-bold ${rateColor(item.pct)}`}>
-              {item.pct != null ? `${item.pct}%` : "—"}
+              {item.pct != null ? `${item.pct}%` : "-"}
             </span>
           </span>
         ))}
@@ -350,7 +350,7 @@ function RechartsHitRate({
         </BarChart>
       </ResponsiveContainer>
 
-      {/* Split filter pills — HOME / AWAY */}
+      {/* Split filter pills - HOME / AWAY */}
       {splitOptions.length > 0 && (
         <div className="flex gap-1.5 justify-center pt-1">
           {splitOptions.map((opt) => (

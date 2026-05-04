@@ -66,7 +66,7 @@ export default function AnalyzingAnimation({ sport, sports, statusMsg, isParlay 
     return () => clearInterval(interval);
   }, [sportList.length]);
 
-  // Progress steps on a timer — gives real feeling of progression
+  // Progress steps on a timer - gives real feeling of progression
   useEffect(() => {
     // Step 0: Read (immediate)
     // Step 1: Fetch (after 2s)
@@ -111,10 +111,10 @@ export default function AnalyzingAnimation({ sport, sports, statusMsg, isParlay 
     <div className="max-w-md mx-auto px-4 pt-16 sm:pt-24 text-center space-y-8">
       {/* Sport animation */}
       <div className="relative mx-auto w-32 h-32">
-        {/* Outer ring — spinning */}
+        {/* Outer ring - spinning */}
         <div className="absolute inset-0 rounded-full border-4 border-accent/20 border-t-accent animate-spin" style={{ animationDuration: "1.5s" }} />
 
-        {/* Inner content — bouncing emoji (remounts on sport swap so the
+        {/* Inner content - bouncing emoji (remounts on sport swap so the
              bounce restarts, giving a clear visual for each cycle) */}
         <div className="absolute inset-0 flex items-center justify-center">
           <span
@@ -133,7 +133,7 @@ export default function AnalyzingAnimation({ sport, sports, statusMsg, isParlay 
           {statusMsg}{".".repeat(dots)}
         </p>
         {isParlay && (
-          <p className="text-sm text-muted mt-1">Parlays take a bit longer — analyzing each leg</p>
+          <p className="text-sm text-muted mt-1">Parlays take a bit longer - analyzing each leg</p>
         )}
       </div>
 

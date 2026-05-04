@@ -177,7 +177,7 @@ export default function ExampleShowcase() {
           The stats behind the bet
         </h3>
         <p className="text-muted text-sm max-w-lg mx-auto">
-          Not box scores. The specific numbers for your specific bet — props, spreads, totals.
+          Not box scores. The specific numbers for your specific bet - props, spreads, totals.
         </p>
       </div>
 
@@ -214,7 +214,7 @@ export default function ExampleShowcase() {
         ))}
       </div>
 
-      {/* Scroll indicator dots — mobile only */}
+      {/* Scroll indicator dots - mobile only */}
       <div className="flex justify-center gap-1.5 lg:hidden">
         {examples.map((_, i) => (
           <div

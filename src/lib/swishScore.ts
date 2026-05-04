@@ -1,5 +1,5 @@
 /**
- * Swish Score — a 0-10 data-strength rating for any bet type.
+ * Swish Score - a 0-10 data-strength rating for any bet type.
  * Computed internally on 0-100, displayed as X.X/10.
  *
  * Scale: 5 = neutral, 7+ = data looks strong, 8.5+ = very strong, below 4 = data looks weak.
@@ -10,7 +10,7 @@ import { join } from "path";
 import type { ComputedAnalysis } from "./analytics";
 import type { BetExtraction } from "@/types";
 
-// Load model weights from JSON — updated by autoresearch loop
+// Load model weights from JSON - updated by autoresearch loop
 interface ModelWeights {
   player_prop: { hitRate: number; trend: number; consistency: number; sampleSize: number; homeAway: number };
   spread: { atsCoverRate: number; closeGames: number; marginTrend: number; homeAwayRecord: number; restAdvantage: number };
@@ -89,10 +89,10 @@ function scorePlayerProp(
   const line = pa.line ?? extraction.line ?? 0;
   const trend = pa.trend ?? "stable";
 
-  // Hit rate: 40% weight — map 0-100% to 0-100 score
+  // Hit rate: 40% weight - map 0-100% to 0-100 score
   const hitRateScore = clamp(hitRate * 100);
 
-  // Trend direction: 20% weight — last5 vs season avg
+  // Trend direction: 20% weight - last5 vs season avg
   let trendScore = 50;
   if (line > 0 && average > 0) {
     const diff = last5Avg - average;
@@ -102,7 +102,7 @@ function scorePlayerProp(
   if (trend === "rising") trendScore = Math.max(trendScore, 60);
   if (trend === "falling") trendScore = Math.min(trendScore, 40);
 
-  // Consistency / std dev: 15% weight — lower std dev = higher score
+  // Consistency / std dev: 15% weight - lower std dev = higher score
   const seasonStats = pData?.seasonAverages || pData?.seasonStats;
   let consistencyScore = 50;
   if (seasonStats) {
@@ -159,14 +159,14 @@ function scoreSpread(
   const coverRate = ats?.coverRate ?? 0.5;
   const atsScore = clamp(coverRate * 100);
 
-  // Close games record: 20% weight — games decided within line + 3
+  // Close games record: 20% weight - games decided within line + 3
   const closeGames = team.recentGames.filter(g => Math.abs(g.margin) <= Math.abs(line) + 3);
   const closeWins = closeGames.filter(g => g.won).length;
   const closeScore = closeGames.length > 0
     ? clamp((closeWins / closeGames.length) * 100)
     : 50;
 
-  // Margin trend: 20% weight — are margins growing or shrinking?
+  // Margin trend: 20% weight - are margins growing or shrinking?
   const games = team.recentGames;
   let marginTrendScore = 50;
   if (games.length >= 4) {

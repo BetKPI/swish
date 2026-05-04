@@ -1,5 +1,5 @@
 /**
- * NBA History Charts — deterministic chart builders consuming nba-history primitives.
+ * NBA History Charts - deterministic chart builders consuming nba-history primitives.
  * Two-season overlays render as two colored series via separate yKeys.
  */
 
@@ -73,7 +73,7 @@ export function buildNBATeamHistoryChart(
     const l10Overs = last10.filter((g) => g.total > line).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Game Totals vs ${line} Line`,
+      title: `${team.teamName} - Game Totals vs ${line} Line`,
       relevance: `Over ${line} in ${allOvers}/${current.length} this season (${current.length > 0 ? Math.round((allOvers / current.length) * 100) : 0}%). Last 10: ${l10Overs}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -93,7 +93,7 @@ export function buildNBATeamHistoryChart(
     const l10Wins = last10.filter((g) => g.won).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Win/Loss Margin`,
+      title: `${team.teamName} - Win/Loss Margin`,
       relevance: `${wins}-${current.length - wins} this season (${current.length > 0 ? Math.round((wins / current.length) * 100) : 0}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data: rows,
       xKey: "game",
@@ -114,7 +114,7 @@ export function buildNBATeamHistoryChart(
     const l10Covers = last10.filter((g) => g.margin + line > 0).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      title: `${team.teamName} - Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
       relevance: `Covered in ${covers}/${current.length} this season (${current.length > 0 ? Math.round((covers / current.length) * 100) : 0}%). Last 10: ${l10Covers}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -122,7 +122,7 @@ export function buildNBATeamHistoryChart(
     };
   }
 
-  // No line — margin bars
+  // No line - margin bars
   const rows = recent.map((g) => ({
     game: `${shortDate(g.date)} ${g.opponent}`,
     value: g.margin,
@@ -131,8 +131,8 @@ export function buildNBATeamHistoryChart(
   }));
   return {
     type: "hitrate" as ChartConfig["type"],
-    title: `${team.teamName} — Game Margins`,
-    relevance: `Point margin per game — green = win, red = loss`,
+    title: `${team.teamName} - Game Margins`,
+    relevance: `Point margin per game - green = win, red = loss`,
     data: rows,
     xKey: "game",
     yKeys: ["value"],
@@ -165,7 +165,7 @@ export function buildNBATeamBetTypeTable(
       const push = games.length - over - under;
       return `${over}-${under}${push > 0 ? `-${push}` : ""} O/U (${games.length > 0 ? ((over / games.length) * 100).toFixed(0) : "0"}% O)`;
     }
-    // spread: line is "team is favored by X" — team covers if margin > line
+    // spread: line is "team is favored by X" - team covers if margin > line
     if (line == null) {
       const w = games.filter((g) => g.won).length;
       return `${w}-${games.length - w} SU`;
@@ -183,7 +183,7 @@ export function buildNBATeamBetTypeTable(
 
   return {
     type: "table",
-    title: `${team.teamName} — ${marketType === "moneyline" ? "SU" : marketType === "total" ? "O/U" : "ATS"} track record`,
+    title: `${team.teamName} - ${marketType === "moneyline" ? "SU" : marketType === "total" ? "O/U" : "ATS"} track record`,
     relevance: `How ${team.teamName} has performed on this ${marketType} bet type across both seasons.`,
     data: rows,
     columns: [
@@ -231,7 +231,7 @@ export function buildNBAHomeAwaySplits(
 
     return {
       type: "table",
-      title: `${team.teamName} — ${label} (${vGames.length}g)`,
+      title: `${team.teamName} - ${label} (${vGames.length}g)`,
       relevance: `${label} ${wins}-${vGames.length - wins} (${Math.round((wins / vGames.length) * 100)}%)`,
       data,
       columns: [
@@ -263,7 +263,7 @@ export function buildNBAHomeAwaySplits(
 
   return {
     type: "table",
-    title: `${team.teamName} — Home vs Away (${team.currentSeason - 1}-${String(team.currentSeason).slice(2)})`,
+    title: `${team.teamName} - Home vs Away (${team.currentSeason - 1}-${String(team.currentSeason).slice(2)})`,
     relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
     data,
     columns: [
@@ -296,7 +296,7 @@ export function buildNBATeamH2HTable(
 
   return {
     type: "table",
-    title: `${team.teamName} vs ${opponentName} — head-to-head`,
+    title: `${team.teamName} vs ${opponentName} - head-to-head`,
     relevance: `Direct matchups across both seasons (and prior).`,
     data: rows,
     columns: [
@@ -317,7 +317,7 @@ export type NBAPlayerStatKey = "PTS" | "REB" | "AST" | "3PM" | "STL" | "BLK" | "
 
 function findStat(game: NBAPlayerGame, key: NBAPlayerStatKey): number | null {
   // ESPN labels for NBA gamelog typically: "PTS", "REB", "AST", "3PT" (e.g. 3-7), "FG", "STL", "BLK", "TO", "MIN".
-  // We only read numeric fields, so "3PM"/"FGM" may be missing — try common aliases.
+  // We only read numeric fields, so "3PM"/"FGM" may be missing - try common aliases.
   const s = game.stats;
   if (key === "PTS") return s.PTS ?? null;
   if (key === "REB") return s.REB ?? null;
@@ -363,7 +363,7 @@ export function buildNBAPlayerHistoryChart(
 
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${player.playerName} — ${stat} vs ${line} Line`,
+      title: `${player.playerName} - ${stat} vs ${line} Line`,
       relevance: `Over ${line} in ${hits}/${allVals.length} this season (${allVals.length > 0 ? Math.round((hits / allVals.length) * 100) : 0}%). Last 10: ${last10Hits}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -371,7 +371,7 @@ export function buildNBAPlayerHistoryChart(
     };
   }
 
-  // No line — fall back to line chart across both seasons
+  // No line - fall back to line chart across both seasons
   const rows: Record<string, unknown>[] = [];
   let hasAny = false;
   for (const g of player.games) {
@@ -389,7 +389,7 @@ export function buildNBAPlayerHistoryChart(
 
   return {
     type: "line",
-    title: `${player.playerName} — ${stat} (${player.lastSeason - 1}-${String(player.lastSeason).slice(2)} & ${player.currentSeason - 1}-${String(player.currentSeason).slice(2)})`,
+    title: `${player.playerName} - ${stat} (${player.lastSeason - 1}-${String(player.lastSeason).slice(2)} & ${player.currentSeason - 1}-${String(player.currentSeason).slice(2)})`,
     relevance: `Game-by-game ${stat} across both seasons.`,
     data: rows,
     xKey: "date",
@@ -407,7 +407,7 @@ export function buildNBAPlayerHitRateTable(
 
   function hitRate(games: NBAPlayerGame[]) {
     const vals = games.map((g) => findStat(g, stat)).filter((v): v is number => v != null);
-    if (vals.length === 0) return { rec: "—", pct: "—" };
+    if (vals.length === 0) return { rec: "-", pct: "-" };
     const hits = vals.filter((v) => v > line).length;
     return { rec: `${hits}/${vals.length}`, pct: `${((hits / vals.length) * 100).toFixed(0)}%` };
   }
@@ -417,7 +417,7 @@ export function buildNBAPlayerHitRateTable(
 
   return {
     type: "table",
-    title: `${player.playerName} — over ${line} ${stat} hit rate`,
+    title: `${player.playerName} - over ${line} ${stat} hit rate`,
     relevance: `How often ${player.playerName} has gone over ${line} ${stat} across both seasons.`,
     data: [
       { season: `${player.lastSeason - 1}-${String(player.lastSeason).slice(2)}`, record: l.rec, pct: l.pct },
@@ -445,7 +445,7 @@ export function buildNBAPlayerVsOpponentTable(
     date: shortDate(g.date),
     season: `${g.season - 1}-${String(g.season).slice(2)}`,
     site: g.home ? "Home" : "Away",
-    value: findStat(g, stat) ?? "—",
+    value: findStat(g, stat) ?? "-",
     ...(line != null ? { hit: typeof findStat(g, stat) === "number" && (findStat(g, stat) as number) > line ? "✓" : "✗" } : {}),
   }));
 
@@ -459,7 +459,7 @@ export function buildNBAPlayerVsOpponentTable(
 
   return {
     type: "table",
-    title: `${player.playerName} vs ${opponentName} — ${stat} history`,
+    title: `${player.playerName} vs ${opponentName} - ${stat} history`,
     relevance: `Every game ${player.playerName} has played against ${opponentName} across both seasons.`,
     data: rows,
     columns,
@@ -486,8 +486,8 @@ export function buildNBAFuturesChart(
       season: `${snap.season - 1}-${String(snap.season).slice(2)}`,
       record: `${me.wins}-${me.losses}`,
       winPct: me.winPct,
-      conferenceRank: rank > 0 ? rank : "—",
-      seed: me.seed || "—",
+      conferenceRank: rank > 0 ? rank : "-",
+      seed: me.seed || "-",
     });
   }
   if (rows.length === 0) return null;
@@ -497,7 +497,7 @@ export function buildNBAFuturesChart(
 
   return {
     type: "table",
-    title: `${teamName} — ${kindLabel} futures track record`,
+    title: `${teamName} - ${kindLabel} futures track record`,
     relevance: `How ${teamName} has finished in their ${kind === "division" ? "division" : "conference"} across recent seasons.`,
     data: rows,
     columns: [
@@ -541,7 +541,7 @@ export function buildNBAQuarterScoringChart(
   const label = through === "q3" ? "through 3Q" : "through the half";
   return {
     type: "line",
-    title: `${team.teamName} — scoring ${label}`,
+    title: `${team.teamName} - scoring ${label}`,
     relevance: `${team.teamName}'s points ${label} and the full-game context${line != null ? ` vs the ${line} line` : ""}.`,
     data: rows,
     xKey: "date",
@@ -565,7 +565,7 @@ export function buildNBAQuarterHitRateTable(
   if (games.length === 0) return null;
   const { last, current } = splitBySeason(games, team.lastSeason, team.currentSeason);
   function rate(arr: NBATeamGame[]) {
-    if (arr.length === 0) return { rec: "—", pct: "—" };
+    if (arr.length === 0) return { rec: "-", pct: "-" };
     const hits = arr.filter((g) => {
       const teamPts =
         through === "q3"
@@ -585,7 +585,7 @@ export function buildNBAQuarterHitRateTable(
   const label = through === "q3" ? "3Q" : "half";
   return {
     type: "table",
-    title: `${team.teamName} — over ${line} ${metric} pts through ${label}`,
+    title: `${team.teamName} - over ${line} ${metric} pts through ${label}`,
     relevance: `How often ${team.teamName}'s${metric === "game" ? " combined game" : ""} scoring has exceeded ${line} through ${label}.`,
     data: [
       { season: `${team.lastSeason - 1}-${String(team.lastSeason).slice(2)}`, record: l.rec, pct: l.pct },
@@ -707,15 +707,15 @@ export function buildNBADefaultCharts(
         const confYears = record.league;
         const divYears = record.division;
         const data: Record<string, string>[] = [];
-        if (titleYears.length > 0) data.push({ stat: "NBA Finals", Value: `${titleYears.length}x — last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "NBA Finals", Value: "Never", Years: "—" });
-        if (confYears.length > 0) data.push({ stat: "Conference Titles", Value: `${confYears.length}x — last: ${confYears[0]}`, Years: confYears.slice(0, 6).join(", ") + (confYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Conference Titles", Value: "Never", Years: "—" });
-        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x — last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Division Titles", Value: "Never", Years: "—" });
+        if (titleYears.length > 0) data.push({ stat: "NBA Finals", Value: `${titleYears.length}x - last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "NBA Finals", Value: "Never", Years: "-" });
+        if (confYears.length > 0) data.push({ stat: "Conference Titles", Value: `${confYears.length}x - last: ${confYears[0]}`, Years: confYears.slice(0, 6).join(", ") + (confYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Conference Titles", Value: "Never", Years: "-" });
+        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x - last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Division Titles", Value: "Never", Years: "-" });
         out.push({
           type: "table",
-          title: `${teamName} — Championship History`,
+          title: `${teamName} - Championship History`,
           relevance: formatChampionshipSummary(teamName, record, futuresType),
           data,
           columns: [{ key: "stat", label: "" }, { key: "Value", label: "Record" }, { key: "Years", label: "Recent Years" }],
@@ -761,7 +761,7 @@ export function buildNBADefaultCharts(
     if (rec) out.push(rec);
   }
 
-  // Venue splits — combined when both venues known
+  // Venue splits - combined when both venues known
   if (teams.length === 2 && homeTeam && awayTeam) {
     const awayName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "away");
     const homeName = teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "home");
@@ -787,7 +787,7 @@ export function buildNBADefaultCharts(
         ];
         out.push({
           type: "table",
-          title: "Venue Matchup — Road vs Home",
+          title: "Venue Matchup - Road vs Home",
           relevance: `${awayTeamData.teamName} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeamData.teamName} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
           columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],

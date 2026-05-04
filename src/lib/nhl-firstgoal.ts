@@ -97,7 +97,7 @@ export async function getFirstGoalData(
     rate: s.rate,
   }));
 
-  // Find the requested player — search through team firstScorers lists
+  // Find the requested player - search through team firstScorers lists
   let playerProfile: FirstGoalPlayerProfile | null = null;
 
   // First: search players object if it exists

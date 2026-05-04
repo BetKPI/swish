@@ -1,5 +1,5 @@
 /**
- * NBA History — two-season data primitives for deterministic history charts.
+ * NBA History - two-season data primitives for deterministic history charts.
  * Pulls team schedules, player game logs, standings, and quarter scores from
  * ESPN's free web APIs (no auth required).
  */

@@ -1,6 +1,6 @@
 /**
  * Historical championship wins for major US sports teams.
- * Static data — updated once per year after each sport's championship.
+ * Static data - updated once per year after each sport's championship.
  * Used by futures charts to show "last time they won" context.
  */
 

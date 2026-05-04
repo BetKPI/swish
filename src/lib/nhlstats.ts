@@ -1,5 +1,5 @@
 /**
- * NHL Stats API — free, no key required.
+ * NHL Stats API - free, no key required.
  * https://api-web.nhle.com
  *
  * Provides: player search, season stats, game logs, team standings, schedules.
@@ -433,7 +433,7 @@ function analyzeNHLProp(
 
 function mapNHLMarketToStat(market: string): string {
   const m = (market || "").toLowerCase();
-  // Combo stats — must check before singles
+  // Combo stats - must check before singles
   if (m.includes("goals+assists") || m.includes("g+a")) return "goals+assists";
   if (m.includes("shots+goals") || m.includes("sog+g")) return "shots+goals";
   if (m.includes("points+shots") || m.includes("pts+sog")) return "points+shots";

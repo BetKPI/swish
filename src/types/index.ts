@@ -9,9 +9,9 @@ export interface BetExtraction {
   description: string;
   confidence: number;
   legs?: BetExtraction[];
-  /** Away team (the team traveling) — detected from "@" in bet description */
+  /** Away team (the team traveling) - detected from "@" in bet description */
   awayTeam?: string;
-  /** Home team (the host) — detected from "@" in bet description */
+  /** Home team (the host) - detected from "@" in bet description */
   homeTeam?: string;
 }
 

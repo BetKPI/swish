@@ -1,5 +1,5 @@
 /**
- * Sport-specific visual theming used by SportHero — gradients, watermark
+ * Sport-specific visual theming used by SportHero - gradients, watermark
  * SVGs, accent borders, page-level tints. Add a new sport by adding an
  * entry here.
  */
@@ -25,7 +25,7 @@ export interface SportTheme {
   cornerWatermarkColor: string;
 }
 
-// ── MLB — diamond, navy sky → grass ────────────────────────────────
+// ── MLB - diamond, navy sky → grass ────────────────────────────────
 
 const mlbFullWatermark = (
   <svg
@@ -67,7 +67,7 @@ const mlbCornerWatermark = (
   </svg>
 );
 
-// ── NBA — half court (top-down), arena dark → wood/amber ───────────
+// ── NBA - half court (top-down), arena dark → wood/amber ───────────
 
 const nbaFullWatermark = (
   <svg
@@ -79,7 +79,7 @@ const nbaFullWatermark = (
     strokeLinecap="round"
     className="w-[110%] sm:w-[95%] h-auto translate-y-[10%]"
   >
-    {/* Court outline (half-court — baseline at top, half-court line at bottom) */}
+    {/* Court outline (half-court - baseline at top, half-court line at bottom) */}
     <rect x="20" y="10" width="200" height="220" strokeOpacity="0.7" />
     {/* Backboard + rim at top of the key */}
     <line x1="100" y1="22" x2="140" y2="22" strokeOpacity="0.95" strokeWidth="2.5" />
@@ -110,7 +110,7 @@ const nbaCornerWatermark = (
   </svg>
 );
 
-// ── NHL — full rink top-down, arena dark → ice blue ───────────────
+// ── NHL - full rink top-down, arena dark → ice blue ───────────────
 
 const nhlFullWatermark = (
   <svg

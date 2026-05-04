@@ -1,6 +1,6 @@
 /**
  * Deterministic chart builders for common bet types.
- * Charts are built from pre-computed data — no AI involved.
+ * Charts are built from pre-computed data - no AI involved.
  */
 
 import type { ChartConfig } from "@/types";
@@ -62,11 +62,11 @@ export function buildCharts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const raw = rawData as any;
 
-  // Tennis — player vs player with rankings
+  // Tennis - player vs player with rankings
   if (sport === "TENNIS" || sport === "ATP" || sport === "WTA") {
     charts = buildTennisCharts(extraction, rawData);
   }
-  // Golf — completely different data structure
+  // Golf - completely different data structure
   else if (isGolfSport(sport)) {
     // Check for hole-in-one market first
     const golfExotic = detectExoticMarket(marketStr, descStr, sport);
@@ -76,7 +76,7 @@ export function buildCharts(
       charts = buildGolfCharts(extraction, rawData);
     }
   }
-  // Exotic markets — detected by keyword presence, not exact substring
+  // Exotic markets - detected by keyword presence, not exact substring
   else {
     const exotic = detectExoticMarket(marketStr, descStr, sport);
     if (exotic === "first_basket" && raw?._firstBasket) {
@@ -171,16 +171,16 @@ export function buildCharts(
     }
   }
 
-  // Validate all charts — remove empty/invalid data before filtering
+  // Validate all charts - remove empty/invalid data before filtering
   const validated = charts.filter((c) => validateChart(c));
 
   // Filter and reorder all charts through the relevance system
-  // This learns from user ratings — irrelevant charts get hidden over time
+  // This learns from user ratings - irrelevant charts get hidden over time
   return filterAndSortCharts(validated, sport, extraction.market || betType);
 }
 
 /**
- * Chart validation layer — catches bad data before it reaches the UI.
+ * Chart validation layer - catches bad data before it reaches the UI.
  * Filters out charts with empty data, all-zero values, or mismatched stats.
  */
 function validateChart(chart: ChartConfig): boolean {
@@ -273,7 +273,7 @@ function buildTennisCharts(
     if (yearSummary.length > 0) {
       charts.push({
         type: "table",
-        title: "Win % by season — both players",
+        title: "Win % by season - both players",
         relevance: "Year-by-year win rate across the last two seasons for each player.",
         data: yearSummary,
         columns: [
@@ -286,12 +286,12 @@ function buildTennisCharts(
     }
   }
 
-  // 1. H2H record — the most important chart for match bets
+  // 1. H2H record - the most important chart for match bets
   if (h2h && h2h.matches.length > 0) {
     charts.push({
       type: "table",
-      title: `H2H Record — ${h2h.player1} vs ${h2h.player2} (${h2h.player1Wins}-${h2h.player2Wins})`,
-      relevance: `${h2h.matches.length} career meetings — ${h2h.player1Wins > h2h.player2Wins ? h2h.player1 : h2h.player2} leads the H2H`,
+      title: `H2H Record - ${h2h.player1} vs ${h2h.player2} (${h2h.player1Wins}-${h2h.player2Wins})`,
+      relevance: `${h2h.matches.length} career meetings - ${h2h.player1Wins > h2h.player2Wins ? h2h.player1 : h2h.player2} leads the H2H`,
       data: h2h.matches.map(m => ({
         date: m.date,
         tournament: m.tournament.length > 25 ? m.tournament.slice(0, 22) + "..." : m.tournament,
@@ -319,8 +319,8 @@ function buildTennisCharts(
       const p2Wins = sameSurface.length - p1Wins;
       charts.push({
         type: "table",
-        title: `H2H on ${ctxSurface} — ${h2h.player1} vs ${h2h.player2} (${p1Wins}-${p2Wins})`,
-        relevance: `Only their meetings on ${ctxSurface} — surface-specific track record matters.`,
+        title: `H2H on ${ctxSurface} - ${h2h.player1} vs ${h2h.player2} (${p1Wins}-${p2Wins})`,
+        relevance: `Only their meetings on ${ctxSurface} - surface-specific track record matters.`,
         data: sameSurface.map((m) => ({
           date: m.date,
           tournament: m.tournament.length > 25 ? m.tournament.slice(0, 22) + "..." : m.tournament,
@@ -339,7 +339,7 @@ function buildTennisCharts(
     }
   }
 
-  // 1c. Grand Slam specific view — H2H and individual records at this slam
+  // 1c. Grand Slam specific view - H2H and individual records at this slam
   if (ctxSlam) {
     const slamLower = ctxSlam.toLowerCase();
     // H2H at this slam
@@ -350,7 +350,7 @@ function buildTennisCharts(
         const p2 = slamH2H.length - p1;
         charts.push({
           type: "table",
-          title: `${ctxSlam} H2H — ${h2h.player1} vs ${h2h.player2} (${p1}-${p2})`,
+          title: `${ctxSlam} H2H - ${h2h.player1} vs ${h2h.player2} (${p1}-${p2})`,
           relevance: `Head-to-head meetings at ${ctxSlam}.`,
           data: slamH2H.map((m) => ({
             date: m.date,
@@ -425,8 +425,8 @@ function buildTennisCharts(
       charts.push({
         type: "table",
         title: playerRankings.length >= 2
-          ? "Player Rankings — Head to Head"
-          : `${playerRankings[0].player} — Ranking`,
+          ? "Player Rankings - Head to Head"
+          : `${playerRankings[0].player} - Ranking`,
         relevance: playerRankings.length >= 2
           ? `${playerRankings[0].player} (${playerRankings[0].rank}) vs ${playerRankings[1].player} (${playerRankings[1].rank})`
           : `Currently ranked ${playerRankings[0].rank} with ${playerRankings[0].points} points`,
@@ -455,7 +455,7 @@ function buildTennisCharts(
     const recentMatches = profile.matches.slice(0, 15);
     charts.push({
       type: "table",
-      title: `${profile.name} — Recent Results (${profile.record.wins}-${profile.record.losses})`,
+      title: `${profile.name} - Recent Results (${profile.record.wins}-${profile.record.losses})`,
       relevance: `Last ${recentMatches.length} matches across 2025-2026 season`,
       data: recentMatches.map(m => ({
         date: m.date,
@@ -487,15 +487,15 @@ function buildTennisCharts(
       surfaceData.sort((a, b) => b.matches - a.matches);
       charts.push({
         type: "bar",
-        title: `${profile.name} — Win Rate by Surface`,
-        relevance: `Surface matters in tennis — ${surfaceData[0]?.surface} is their most played`,
+        title: `${profile.name} - Win Rate by Surface`,
+        relevance: `Surface matters in tennis - ${surfaceData[0]?.surface} is their most played`,
         data: surfaceData,
         xKey: "surface",
         yKeys: ["winPct"],
       });
     }
 
-    // Tournament depth chart — how far they go (bar chart of round reached)
+    // Tournament depth chart - how far they go (bar chart of round reached)
     const roundCounts: Record<string, number> = {};
     for (const m of profile.matches) {
       // Track deepest round per tournament
@@ -516,8 +516,8 @@ function buildTennisCharts(
     if (depthData.length >= 2) {
       charts.push({
         type: "bar",
-        title: `${profile.name} — Tournament Exits`,
-        relevance: `Where they typically get knocked out — deeper exits = stronger form`,
+        title: `${profile.name} - Tournament Exits`,
+        relevance: `Where they typically get knocked out - deeper exits = stronger form`,
         data: depthData,
         xKey: "round",
         yKeys: ["exits"],
@@ -540,8 +540,8 @@ function buildTennisCharts(
     });
     charts.push({
       type: "table",
-      title: `${(raw._league || "ATP").toUpperCase()} Rankings — Top 20`,
-      relevance: "Current tour rankings — higher-ranked players win more often on tour",
+      title: `${(raw._league || "ATP").toUpperCase()} Rankings - Top 20`,
+      relevance: "Current tour rankings - higher-ranked players win more often on tour",
       data: top20,
       columns: [
         { key: "rank", label: "#" },
@@ -583,7 +583,7 @@ function buildGolfCharts(
   const isMakeCut = market.includes("make cut") || market.includes("miss cut") || market.includes("make/miss");
   const isMatchup = market.includes("matchup") || market.includes("head-to-head") || market.includes("h2h") || market.includes("3-ball") || market.includes("3 ball");
 
-  // 1. Current tournament leaderboard — show for winner/top finish/cut bets when tournament is live
+  // 1. Current tournament leaderboard - show for winner/top finish/cut bets when tournament is live
   const showLeaderboard = isTournamentStarted && (isWinner || isTopFinish || isMakeCut || isFirstRound);
   if (showLeaderboard && leaderboard && Array.isArray(leaderboard) && leaderboard.length > 0) {
     const data = leaderboard.slice(0, 10).map((p: { position: number; name: string; score: string }) => ({
@@ -595,7 +595,7 @@ function buildGolfCharts(
     const titlePrefix = tournamentStatus === "post" ? "Final Leaderboard" : "Current Leaderboard";
     charts.push({
       type: "table",
-      title: tournamentName ? `${titlePrefix} — ${tournamentName}` : titlePrefix,
+      title: tournamentName ? `${titlePrefix} - ${tournamentName}` : titlePrefix,
       relevance: `Where ${playerName} stands right now`,
       data,
       columns: [
@@ -605,17 +605,17 @@ function buildGolfCharts(
       ],
     });
   } else if (!isTournamentStarted && tournamentName && (isWinner || isTopFinish || isMakeCut)) {
-    // Tournament hasn't started — show a status note only for position-based bets
+    // Tournament hasn't started - show a status note only for position-based bets
     charts.push({
       type: "table",
-      title: `${tournamentName} — Not Yet Started`,
+      title: `${tournamentName} - Not Yet Started`,
       relevance: `The tournament hasn't started yet. Leaderboard will be available once play begins.`,
       data: [{ info: `${tournamentName} has not started yet. Check back once the first round begins.` }],
       columns: [{ key: "info", label: "Status" }],
     });
   }
 
-  // 2. Player round-by-round scores — relevant for winner/top finish/cut bets
+  // 2. Player round-by-round scores - relevant for winner/top finish/cut bets
   const pData = players?.[playerName];
   if (isTournamentStarted && (isWinner || isTopFinish || isMakeCut || isFirstRound) && pData?.rounds && Array.isArray(pData.rounds) && pData.rounds.length > 0) {
     const data = pData.rounds.map((r: { round: number; strokes: number; toPar: string }) => ({
@@ -625,8 +625,8 @@ function buildGolfCharts(
     }));
     charts.push({
       type: "bar",
-      title: `${playerName} — Round-by-Round Scores`,
-      relevance: `Stroke totals each round — shows consistency and Sunday form`,
+      title: `${playerName} - Round-by-Round Scores`,
+      relevance: `Stroke totals each round - shows consistency and Sunday form`,
       data,
       xKey: "round",
       yKeys: ["strokes"],
@@ -637,7 +637,7 @@ function buildGolfCharts(
   if (masters && masters[playerName]) {
     const mData = masters[playerName];
 
-    // Amen Corner analysis (holes 11-13) — the most famous stretch in golf
+    // Amen Corner analysis (holes 11-13) - the most famous stretch in golf
     if (mData.amenCorner && Array.isArray(mData.amenCorner) && mData.amenCorner.length > 0) {
       const data = mData.amenCorner.map((h: { hole: number; holeName: string; par: number; avgStrokes: number; birdieRate: number; bogeyRate: number; totalRounds: number }) => ({
         hole: `#${h.hole} ${h.holeName}`,
@@ -648,8 +648,8 @@ function buildGolfCharts(
       }));
       charts.push({
         type: "table",
-        title: `${playerName} — Amen Corner History`,
-        relevance: `Holes 11-13 at Augusta across ${mData.amenCorner[0]?.totalRounds || 0} career rounds — where tournaments are won and lost`,
+        title: `${playerName} - Amen Corner History`,
+        relevance: `Holes 11-13 at Augusta across ${mData.amenCorner[0]?.totalRounds || 0} career rounds - where tournaments are won and lost`,
         data,
         columns: [
           { key: "hole", label: "Hole" },
@@ -674,7 +674,7 @@ function buildGolfCharts(
         }));
       charts.push({
         type: "line",
-        title: `${playerName} — Augusta Hole-by-Hole Avg vs Par`,
+        title: `${playerName} - Augusta Hole-by-Hole Avg vs Par`,
         relevance: `Where ${playerName} gains and loses strokes at Augusta across multiple Masters`,
         data,
         xKey: "hole",
@@ -682,7 +682,7 @@ function buildGolfCharts(
       });
     }
 
-    // Sunday scoring history — only for winner/top finish bets (not relevant for cut/HIO)
+    // Sunday scoring history - only for winner/top finish bets (not relevant for cut/HIO)
     if ((isWinner || isTopFinish) && mData.sundays && Array.isArray(mData.sundays) && mData.sundays.length > 0) {
       const data = mData.sundays.map((s: { year: number; round4Score: number; round4ToPar: string; frontNine: number; backNine: number }) => ({
         year: String(s.year),
@@ -693,15 +693,15 @@ function buildGolfCharts(
       }));
       charts.push({
         type: "bar",
-        title: `${playerName} — Masters Sunday Scores`,
-        relevance: `Final round history — ${data.length} Sundays at Augusta. Back 9 pressure is where it matters.`,
+        title: `${playerName} - Masters Sunday Scores`,
+        relevance: `Final round history - ${data.length} Sundays at Augusta. Back 9 pressure is where it matters.`,
         data,
         xKey: "year",
         yKeys: ["front9", "back9"],
       });
     }
 
-    // Year-over-year Masters history — show scores AND to-par as a table (more useful than bar chart of raw scores)
+    // Year-over-year Masters history - show scores AND to-par as a table (more useful than bar chart of raw scores)
     if (mData.history?.years && Array.isArray(mData.history.years) && mData.history.years.length > 0) {
       const data = mData.history.years.map((y: { year: number; totalScore?: number; totalToPar?: string; rounds?: { round: number; totalStrokes: number; toPar: string }[] }) => {
         const rounds = y.rounds || [];
@@ -719,8 +719,8 @@ function buildGolfCharts(
       if (data.length >= 1) {
         charts.push({
           type: "table",
-          title: `${playerName} — Masters History (${data.length} Appearances)`,
-          relevance: `Year-by-year performance at Augusta — scores, rounds, and to-par`,
+          title: `${playerName} - Masters History (${data.length} Appearances)`,
+          relevance: `Year-by-year performance at Augusta - scores, rounds, and to-par`,
           data,
           columns: [
             { key: "year", label: "Year" },
@@ -741,7 +741,7 @@ function buildGolfCharts(
 
 // ── Hole-in-One charts ───────────────────────────────────────────
 
-// Known Masters hole-in-ones — public historical record
+// Known Masters hole-in-ones - public historical record
 const MASTERS_HOLE_IN_ONES = [
   // Recent years with well-documented aces
   { year: 2025, player: "N/A (none recorded)", hole: 0, holeName: "-", round: 0 },
@@ -767,15 +767,15 @@ function buildHoleInOneCharts(
 ): ChartConfig[] {
   const charts: ChartConfig[] = [];
 
-  // 1. Key context — tournament-level HIO probability
+  // 1. Key context - tournament-level HIO probability
   // ~95 aces in Masters history (1934-2025), most tournaments have 0-2
   // In recent era (2004-2025), roughly 60% of Masters have had at least one HIO
   const recentYears = 22; // 2004-2025
   const yearsWithAce = new Set(MASTERS_HOLE_IN_ONES.map((a) => a.year)).size;
   const acesByHole = [
-    { hole: "#4 Flowering Crab Apple", par: 3, yards: 240, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 4).length, note: "Longest par 3 — fewest aces" },
+    { hole: "#4 Flowering Crab Apple", par: 3, yards: 240, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 4).length, note: "Longest par 3 - fewest aces" },
     { hole: "#6 Juniper", par: 3, yards: 180, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 6).length, note: "Downhill, reachable" },
-    { hole: "#12 Golden Bell", par: 3, yards: 155, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 12).length, note: "Amen Corner — wind is unpredictable" },
+    { hole: "#12 Golden Bell", par: 3, yards: 155, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 12).length, note: "Amen Corner - wind is unpredictable" },
     { hole: "#16 Redbud", par: 3, yards: 170, aces: MASTERS_HOLE_IN_ONES.filter((a) => a.hole === 16).length, note: "Most aces in Masters history" },
   ];
 
@@ -793,11 +793,11 @@ function buildHoleInOneCharts(
     ],
   });
 
-  // 3. Bar chart — aces by hole
+  // 3. Bar chart - aces by hole
   charts.push({
     type: "bar",
     title: "Aces by Par 3 Hole (2004-2025)",
-    relevance: `Redbud (#16) is the ace hole — short, downhill, players go for it`,
+    relevance: `Redbud (#16) is the ace hole - short, downhill, players go for it`,
     data: acesByHole.map((h) => ({ hole: h.hole.split(" ")[0], aces: h.aces })),
     xKey: "hole",
     yKeys: ["aces"],
@@ -815,7 +815,7 @@ function buildHoleInOneCharts(
     charts.push({
       type: "bar",
       title: "Hole-in-Ones Per Masters (Recent History)",
-      relevance: `Shows how many aces per tournament — some years have multiple, some have none`,
+      relevance: `Shows how many aces per tournament - some years have multiple, some have none`,
       data: yearData,
       xKey: "year",
       yKeys: ["aces"],
@@ -832,8 +832,8 @@ function buildHoleInOneCharts(
   if (aceLog.length > 0) {
     charts.push({
       type: "table",
-      title: "Masters Hole-in-Ones — Full Record (Recent Era)",
-      relevance: `${aceLog.length} recorded aces — #16 Redbud dominates`,
+      title: "Masters Hole-in-Ones - Full Record (Recent Era)",
+      relevance: `${aceLog.length} recorded aces - #16 Redbud dominates`,
       data: aceLog,
       columns: [
         { key: "year", label: "Year" },
@@ -858,7 +858,7 @@ function buildHoleInOneCharts(
     if (scoringData.length > 0) {
       charts.push({
         type: "table",
-        title: "Par 3 Ace Rate — From Our Data (2019-2025)",
+        title: "Par 3 Ace Rate - From Our Data (2019-2025)",
         relevance: `Computed from ${hioData.totalPar3Rounds} individual par-3 rounds in our dataset`,
         data: scoringData,
         columns: [
@@ -893,13 +893,13 @@ function buildFirstBasketCharts(
   // Helper: last name from "F. LastName" format
   const lastName = (n: string) => n.split(". ")[1] || n.split(" ").pop() || n;
 
-  // 1. Tip-off matchup — head to head, compact
+  // 1. Tip-off matchup - head to head, compact
   const tipH2H = fbData.tipH2H;
   if (pTip && oTip) {
     const data: Record<string, unknown>[] = [
       { stat: "Center", [pTip.team + " *"]: lastName(pTip.name), [oTip.team]: lastName(oTip.name) },
     ];
-    // H2H record first — most relevant
+    // H2H record first - most relevant
     if (tipH2H && tipH2H.total > 0) {
       data.push({ stat: "H2H Tips", [pTip.team + " *"]: `${tipH2H.playerWins}-${tipH2H.opponentWins}`, [oTip.team]: `${tipH2H.opponentWins}-${tipH2H.playerWins}` });
     }
@@ -922,7 +922,7 @@ function buildFirstBasketCharts(
     });
   }
 
-  // 2. First shot + first basket combined — one table per team
+  // 2. First shot + first basket combined - one table per team
   // Player's team (marked with *)
   if (pTeam?.firstScorers?.length > 0) {
     const data = pTeam.firstScorers.slice(0, 5).map((p: { name: string; count: number; rate: number }, i: number) => {
@@ -937,7 +937,7 @@ function buildFirstBasketCharts(
     });
     charts.push({
       type: "table",
-      title: `${pTeam.tricode} — First Basket (Your Bet)`,
+      title: `${pTeam.tricode} - First Basket (Your Bet)`,
       relevance: `${pTeam.totalGames} games. * = your player. Who scores first and who shoots first.`,
       data,
       columns: [
@@ -962,7 +962,7 @@ function buildFirstBasketCharts(
     });
     charts.push({
       type: "table",
-      title: `${oTeam.tricode} — First Basket (Opponent)`,
+      title: `${oTeam.tricode} - First Basket (Opponent)`,
       relevance: `${oTeam.totalGames} games. Who scores first on the other side.`,
       data,
       columns: [
@@ -974,7 +974,7 @@ function buildFirstBasketCharts(
     });
   }
 
-  // 3. Bar chart — both teams' top first basket scorers (only if BOTH teams have data)
+  // 3. Bar chart - both teams' top first basket scorers (only if BOTH teams have data)
   if (pTeam?.firstScorers?.length > 0 && oTeam?.firstScorers?.length > 0) {
     const barData: { player: string; rate: number; team: string }[] = [];
     for (const p of (pTeam.firstScorers).slice(0, 3)) {
@@ -985,7 +985,7 @@ function buildFirstBasketCharts(
     }
     charts.push({
       type: "bar",
-      title: `First Basket Rate — ${pTeam.tricode} vs ${oTeam.tricode}`,
+      title: `First Basket Rate - ${pTeam.tricode} vs ${oTeam.tricode}`,
       relevance: `% of games each player scores first. ${shortPlayer} vs the field.`,
       data: barData,
       xKey: "player",
@@ -1020,7 +1020,7 @@ function buildNRFICharts(
       }));
       charts.push({
         type: "hitrate",
-        title: `${pitcher.name} — First Inning Results`,
+        title: `${pitcher.name} - First Inning Results`,
         relevance: `${pitcher.cleanFirstInnings}/${pitcher.gamesStarted} clean first innings (${pitcher.firstInningCleanRate}% NRFI rate)`,
         data,
         xKey: "game",
@@ -1030,7 +1030,7 @@ function buildNRFICharts(
 
     charts.push({
       type: "table",
-      title: `${pitcher.name} — First Inning Profile`,
+      title: `${pitcher.name} - First Inning Profile`,
       relevance: `How often this pitcher keeps the first inning scoreless`,
       data: [
         { stat: "NRFI Rate", value: `${pitcher.firstInningCleanRate}%` },
@@ -1047,7 +1047,7 @@ function buildNRFICharts(
     });
   }
 
-  // 2. Team-level NRFI data — both teams' pitching staffs
+  // 2. Team-level NRFI data - both teams' pitching staffs
   if (teamNrfi) {
     const team1 = teamNrfi.team1;
     const team2 = teamNrfi.team2;
@@ -1067,7 +1067,7 @@ function buildNRFICharts(
 
       charts.push({
         type: "table",
-        title: `Pitching Staff — First Inning NRFI Rates`,
+        title: `Pitching Staff - First Inning NRFI Rates`,
         relevance: `Both teams' pitchers and how often they keep the 1st inning clean`,
         data: allPitchers.map((p) => ({
           pitcher: p.pitcher,
@@ -1083,12 +1083,12 @@ function buildNRFICharts(
         ],
       });
 
-      // Bar chart comparing NRFI rates — top pitchers from each team
+      // Bar chart comparing NRFI rates - top pitchers from each team
       const topPitchers = allPitchers.filter((p) => p.games >= 2).slice(0, 8);
       if (topPitchers.length >= 2) {
         charts.push({
           type: "bar",
-          title: `NRFI Rate Comparison — Likely Starters`,
+          title: `NRFI Rate Comparison - Likely Starters`,
           relevance: `Higher NRFI % = cleaner first innings. Look for the probable starter.`,
           data: topPitchers.map((p) => ({ pitcher: `${p.pitcher.split(" ").pop()} (${p.team})`, nrfiRate: p.nrfiRate })),
           xKey: "pitcher",
@@ -1109,7 +1109,7 @@ function buildNRFICharts(
         }));
         charts.push({
           type: "hitrate",
-          title: `${topP.name} (${shortenName(team.name)}) — Recent 1st Innings`,
+          title: `${topP.name} (${shortenName(team.name)}) - Recent 1st Innings`,
           relevance: `${topP.cleanFirstInnings}/${topP.gamesStarted} clean (${Math.round(topP.nrfiRate)}% NRFI)`,
           data,
           xKey: "game",
@@ -1146,7 +1146,7 @@ function buildFirstGoalCharts(
     }
     charts.push({
       type: "table",
-      title: "First Goal Scorers — Recent Games",
+      title: "First Goal Scorers - Recent Games",
       relevance: `Who actually scores first in NHL games. ${playerName}'s rate vs the league leaders.`,
       data,
       columns: [
@@ -1161,7 +1161,7 @@ function buildFirstGoalCharts(
   if (player) {
     charts.push({
       type: "table",
-      title: `${playerName} — Goal Scoring Profile`,
+      title: `${playerName} - Goal Scoring Profile`,
       relevance: `Goals per game, shooting %, and first goal rate`,
       data: [
         { stat: "First Goal Rate", value: `${player.firstGoalRate}%` },
@@ -1184,8 +1184,8 @@ function buildFirstGoalCharts(
       }));
       charts.push({
         type: "bar",
-        title: `${playerName} — Goals Per Game`,
-        relevance: `Recent goal output — more goals = more chances to score first`,
+        title: `${playerName} - Goals Per Game`,
+        relevance: `Recent goal output - more goals = more chances to score first`,
         data,
         xKey: "game",
         yKeys: ["goals"],
@@ -1237,7 +1237,7 @@ function buildDoubleDoubleCharts(
   // 1. DD hit rate chart
   charts.push({
     type: "hitrate",
-    title: `${playerName} — Double-Double Rate (Last ${games.length})`,
+    title: `${playerName} - Double-Double Rate (Last ${games.length})`,
     relevance: `${ddCount}/${games.length} double-doubles (${ddRate}%)`,
     data: games.map((g: { game: string; isDD: boolean; categories: number }) => ({
       game: g.game,
@@ -1252,8 +1252,8 @@ function buildDoubleDoubleCharts(
   // 2. Game log table with all stats
   charts.push({
     type: "table",
-    title: `${playerName} — Recent Multi-Stat Game Log`,
-    relevance: `PTS/REB/AST per game — need 10+ in two categories for a double-double`,
+    title: `${playerName} - Recent Multi-Stat Game Log`,
+    relevance: `PTS/REB/AST per game - need 10+ in two categories for a double-double`,
     data: games.map((g: { game: string; pts: number; reb: number; ast: number; isDD: boolean }) => ({
       game: g.game,
       pts: g.pts,
@@ -1297,7 +1297,7 @@ function buildComboCharts(
   const sample = gameLog[0] as any;
   const isBDL = sample?.game && (sample?.pts !== undefined || sample?.reb !== undefined); // BDLGameStats
   const isNHL = sample?.gameDate && (sample?.goals !== undefined || sample?.assists !== undefined || sample?.shots !== undefined);
-  const isMLB = sample?.stat && typeof sample.stat === "object"; // MLBGameLog — nested stat object
+  const isMLB = sample?.stat && typeof sample.stat === "object"; // MLBGameLog - nested stat object
   // ESPN format: has stats (not stat) object
   const isESPN = sample?.stats && typeof sample.stats === "object";
 
@@ -1399,7 +1399,7 @@ function buildComboCharts(
   if (line > 0) {
     charts.push({
       type: "hitrate",
-      title: `${playerName} — ${comboLabel} vs ${line} Line`,
+      title: `${playerName} - ${comboLabel} vs ${line} Line`,
       relevance: `${hitCount}/${games.length} over the line (${hitRate}%) | avg ${avgTotal}`,
       data: games.map((g: { game: string; total: number; overLine: boolean }) => ({
         game: g.game,
@@ -1430,8 +1430,8 @@ function buildComboCharts(
     const trendWord = last3Avg > avgTotal * 1.1 ? "hot streak" : last3Avg < avgTotal * 0.9 ? "cold stretch" : "steady";
     charts.push({
       type: "line",
-      title: `${playerName} — ${comboLabel} Trend`,
-      relevance: `Avg ${avgTotal}, last 3 avg ${last3Avg} — ${trendWord}`,
+      title: `${playerName} - ${comboLabel} Trend`,
+      relevance: `Avg ${avgTotal}, last 3 avg ${last3Avg} - ${trendWord}`,
       data,
       xKey: "game",
       yKeys: [comboLabel, "rollingAvg", ...(line > 0 ? ["propLine"] : [])],
@@ -1441,8 +1441,8 @@ function buildComboCharts(
   // 3. Component breakdown table
   charts.push({
     type: "table",
-    title: `${playerName} — ${comboLabel} Breakdown`,
-    relevance: `Each stat component per game${line > 0 ? ` — need ${line}+ combined` : ""}`,
+    title: `${playerName} - ${comboLabel} Breakdown`,
+    relevance: `Each stat component per game${line > 0 ? ` - need ${line}+ combined` : ""}`,
     data: games.map((g: Record<string, unknown>) => {
       const row: Record<string, unknown> = { game: g.game };
       for (const sk of statKeys) row[sk.key] = g[sk.key];
@@ -1456,7 +1456,7 @@ function buildComboCharts(
     ],
   });
 
-  // 4. Hit rate by window (last 5, 10, season) — only if we have a line
+  // 4. Hit rate by window (last 5, 10, season) - only if we have a line
   if (line > 0 && games.length >= 5) {
     const last5 = games.slice(-5);
     const last10 = games.slice(-10);
@@ -1465,7 +1465,7 @@ function buildComboCharts(
     charts.push({
       type: "bar",
       title: `Hit Rate: ${comboLabel} Over ${line}`,
-      relevance: `Hit rate by recency — trending ${l5Hit / Math.min(5, last5.length) > hitCount / games.length ? "up" : "down"}`,
+      relevance: `Hit rate by recency - trending ${l5Hit / Math.min(5, last5.length) > hitCount / games.length ? "up" : "down"}`,
       data: [
         { window: "Last 5", hitRate: Math.round((l5Hit / Math.min(5, last5.length)) * 100), games: `${l5Hit}/${Math.min(5, last5.length)}` },
         { window: "Last 10", hitRate: Math.round((l10Hit / Math.min(10, last10.length)) * 100), games: `${l10Hit}/${Math.min(10, last10.length)}` },
@@ -1497,7 +1497,7 @@ function nbaComboExtractors(
         const espnKey = s === "pts" ? "PTS" : s === "reb" ? "REB" : "AST";
         return Number(st?.[espnKey]) || 0;
       }
-      // Generic/fallback — covers multiple field names
+      // Generic/fallback - covers multiple field names
       if (s === "pts") return Number(g.PTS || g.points || g.pts || 0);
       if (s === "reb") return Number(g.REB || g.totalRebounds || g.reb || g.rebounds || 0);
       if (s === "ast") return Number(g.AST || g.assists || g.ast || 0);
@@ -1554,7 +1554,7 @@ function buildPitcherMatchupChart(
     }
   }
 
-  // Deduplicate — same pitcher might appear in both home/away
+  // Deduplicate - same pitcher might appear in both home/away
   const seen = new Set<string>();
   const unique = pitcherRows.filter((p) => {
     if (seen.has(p.pitcher)) return false;
@@ -1568,7 +1568,7 @@ function buildPitcherMatchupChart(
     type: "table",
     title: "Probable Pitcher Matchup",
     relevance: unique.length >= 2
-      ? `${unique[0].pitcher} vs ${unique[1].pitcher} — starting pitchers drive the outcome`
+      ? `${unique[0].pitcher} vs ${unique[1].pitcher} - starting pitchers drive the outcome`
       : `${unique[0].pitcher} on the mound`,
     data: unique,
     columns: [
@@ -1593,7 +1593,7 @@ function buildSpreadCharts(
   const teams = Object.values(computed.teamMetrics);
   const line = extraction.line ?? 0;
 
-  // 1. Green/red cover chart — green = covered spread, red = didn't
+  // 1. Green/red cover chart - green = covered spread, red = didn't
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     const recent = team.recentGames.slice(-20);
@@ -1609,7 +1609,7 @@ function buildSpreadCharts(
     const l10Covers = last10.filter((g) => g.margin + line > 0).length;
     charts.push({
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.name} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      title: `${team.name} - Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
       relevance: `Covered in ${covers}/${allGames.length} (${Math.round((covers / allGames.length) * 100)}%). Last 10: ${l10Covers}/${last10.length}`,
       data,
       xKey: "game",
@@ -1617,7 +1617,7 @@ function buildSpreadCharts(
     });
   }
 
-  // 2. Matchup comparison table (0.69 effect — win%, opponent strength)
+  // 2. Matchup comparison table (0.69 effect - win%, opponent strength)
   if (teams.length === 2) {
     const t0 = teams[0], t1 = teams[1];
     const data = [
@@ -1650,15 +1650,15 @@ function buildSpreadCharts(
     });
   }
 
-  // 3. Margin distribution — how often they win by buckets (0.79 effect)
+  // 3. Margin distribution - how often they win by buckets (0.79 effect)
   const primary = teams[0];
   if (primary && primary.recentGames.length >= 5) {
     const buckets = marginDistribution(primary.recentGames);
     const mostCommon = buckets.reduce((a, b) => (b.count > a.count ? b : a), buckets[0]);
     charts.push({
       type: "bar",
-      title: `${primary.name} — Win/Loss Margin Distribution`,
-      relevance: `Most common outcome: ${mostCommon.range} (${mostCommon.count} games) — ${line !== 0 ? `the ${line > 0 ? "+" : ""}${line} spread needs margins above that` : ""}`,
+      title: `${primary.name} - Win/Loss Margin Distribution`,
+      relevance: `Most common outcome: ${mostCommon.range} (${mostCommon.count} games) - ${line !== 0 ? `the ${line > 0 ? "+" : ""}${line} spread needs margins above that` : ""}`,
       data: buckets,
       xKey: "range",
       yKeys: ["count"],
@@ -1670,7 +1670,7 @@ function buildSpreadCharts(
     charts.push(buildH2HTable(computed, extraction.teams));
   }
 
-  // 5. Venue splits — combined comparison when both teams' venues known
+  // 5. Venue splits - combined comparison when both teams' venues known
   if (teams.length === 2 && extraction.homeTeam && extraction.awayTeam) {
     // Combined table: Away team's road stats vs Home team's home stats
     const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
@@ -1697,7 +1697,7 @@ function buildSpreadCharts(
         ];
         charts.push({
           type: "table",
-          title: "Venue Matchup — Road vs Home",
+          title: "Venue Matchup - Road vs Home",
           relevance: `${awayTeam.name} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeam.name} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
           columns: [
@@ -1729,7 +1729,7 @@ function buildSpreadCharts(
         ];
         charts.push({
           type: "table",
-          title: `${team.name} — Home vs Away Splits`,
+          title: `${team.name} - Home vs Away Splits`,
           relevance: `Home ${homeWins}-${homeGames.length - homeWins} (${Math.round((homeCovers / homeGames.length) * 100)}% ATS), Away ${awayWins}-${awayGames.length - awayWins} (${Math.round((awayCovers / awayGames.length) * 100)}% ATS)`,
           data,
           columns: [
@@ -1742,7 +1742,7 @@ function buildSpreadCharts(
     }
   }
 
-  // 6. Close games record — games decided by 6 or fewer (0.25 effect — weakly useful)
+  // 6. Close games record - games decided by 6 or fewer (0.25 effect - weakly useful)
   if (teams.length === 2) {
     const closeGamesData = teams.map((t) => {
       const close = t.recentGames.filter((g) => Math.abs(g.margin) <= 6);
@@ -1767,7 +1767,7 @@ function buildSpreadCharts(
       charts.push({
         type: "table",
         title: "Close Games Record (decided by 6 or fewer)",
-        relevance: `Spreads often come down to close games — ${closeGamesData.map((d) => `${d.team} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
+        relevance: `Spreads often come down to close games - ${closeGamesData.map((d) => `${d.team} ${d.closeWins}-${d.closeLosses}`).join(", ")} in tight ones`,
         data: tableData,
         columns: [
           { key: "team", label: "Team" },
@@ -1780,7 +1780,7 @@ function buildSpreadCharts(
     }
   }
 
-  // Pitcher matchup — critical for MLB bets
+  // Pitcher matchup - critical for MLB bets
   const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
   if (pitcherChart) charts.push(pitcherChart);
 
@@ -1820,7 +1820,7 @@ function buildOverUnderCharts(
     const label = isUnder ? "Under" : "Over";
     charts.push({
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.name} — Game Totals vs ${line} (${label})`,
+      title: `${team.name} - Game Totals vs ${line} (${label})`,
       relevance: `${label} ${line} in ${hits}/${allGames.length} (${Math.round((hits / allGames.length) * 100)}%). Last 10: ${l10Hits}/${last10.length}`,
       data,
       xKey: "game",
@@ -1847,7 +1847,7 @@ function buildOverUnderCharts(
     charts.push({
       type: "table",
       title: "Pace & Scoring Comparison",
-      relevance: `Combined scoring projects ~${projection} — ${projection > line ? `${(projection - line).toFixed(1)} over` : `${(line - projection).toFixed(1)} under`} the ${line} line`,
+      relevance: `Combined scoring projects ~${projection} - ${projection > line ? `${(projection - line).toFixed(1)} over` : `${(line - projection).toFixed(1)} under`} the ${line} line`,
       data,
       columns: [
         { key: "stat", label: "" },
@@ -1857,10 +1857,10 @@ function buildOverUnderCharts(
     });
   }
 
-  // Scoring & Defense Trend removed — backtesting shows scoring trend
+  // Scoring & Defense Trend removed - backtesting shows scoring trend
   // has near-zero predictive power for O/U (0.02–0.07 effect size).
 
-  // 3. Venue scoring splits — combined when both venues known
+  // 3. Venue scoring splits - combined when both venues known
   if (teams.length === 2 && extraction.homeTeam && extraction.awayTeam) {
     const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
       arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
@@ -1882,7 +1882,7 @@ function buildOverUnderCharts(
         ];
         charts.push({
           type: "table",
-          title: "Venue Scoring — Road vs Home",
+          title: "Venue Scoring - Road vs Home",
           relevance: `${awayTeam.name} over ${line} in ${awayOvers}/${awayGames.length} road, ${homeTeam.name} in ${homeOvers}/${homeGames.length} home`,
           data,
           columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
@@ -1905,7 +1905,7 @@ function buildOverUnderCharts(
         ];
         charts.push({
           type: "table",
-          title: `${team.name} — Home vs Away Scoring`,
+          title: `${team.name} - Home vs Away Scoring`,
           relevance: `Home over rate ${Math.round((homeOvers / homeGames.length) * 100)}% vs away ${Math.round((awayOvers / awayGames.length) * 100)}%`,
           data,
           columns: [{ key: "stat", label: "" }, { key: "Home", label: "Home" }, { key: "Away", label: "Away" }],
@@ -1919,7 +1919,7 @@ function buildOverUnderCharts(
     charts.push(buildH2HTable(computed, extraction.teams));
   }
 
-  // Pitcher matchup — critical for MLB totals
+  // Pitcher matchup - critical for MLB totals
   const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
   if (pitcherChart) charts.push(pitcherChart);
 
@@ -1936,7 +1936,7 @@ function buildMoneylineCharts(
   const charts: ChartConfig[] = [];
   const teams = Object.values(computed.teamMetrics);
 
-  // 1. Team comparison table (0.54 effect — win%, margin, differential)
+  // 1. Team comparison table (0.54 effect - win%, margin, differential)
   if (teams.length === 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
@@ -1963,7 +1963,7 @@ function buildMoneylineCharts(
     });
   }
 
-  // 2. Win/loss green/red bars — best ML predictor
+  // 2. Win/loss green/red bars - best ML predictor
   for (const team of teams) {
     if (team.recentGames.length < 3) continue;
     const recent = team.recentGames.slice(-20);
@@ -1978,7 +1978,7 @@ function buildMoneylineCharts(
     const l10Wins = last10.filter((g) => g.won).length;
     charts.push({
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.name} — Win/Loss Margin`,
+      title: `${team.name} - Win/Loss Margin`,
       relevance: `${wins}-${team.recentGames.length - wins} overall (${Math.round((wins / team.recentGames.length) * 100)}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data,
       xKey: "game",
@@ -1986,10 +1986,10 @@ function buildMoneylineCharts(
     });
   }
 
-  // Scoring Trend removed — raw scoring numbers are noise for ML
+  // Scoring Trend removed - raw scoring numbers are noise for ML
   // (0.02 effect size). Point differential (above) is what matters.
 
-  // 3. Venue splits — combined when both venues known
+  // 3. Venue splits - combined when both venues known
   if (teams.length === 2 && extraction.homeTeam && extraction.awayTeam) {
     const avgG = (arr: GameResult[], fn: (g: GameResult) => number) =>
       arr.length > 0 ? Math.round((arr.reduce((s, g) => s + fn(g), 0) / arr.length) * 10) / 10 : 0;
@@ -2013,7 +2013,7 @@ function buildMoneylineCharts(
         ];
         charts.push({
           type: "table",
-          title: "Venue Matchup — Road vs Home",
+          title: "Venue Matchup - Road vs Home",
           relevance: `${awayTeam.name} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeam.name} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
           columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
@@ -2037,7 +2037,7 @@ function buildMoneylineCharts(
         ];
         charts.push({
           type: "table",
-          title: `${team.name} — Home vs Away`,
+          title: `${team.name} - Home vs Away`,
           relevance: `Home ${homeWins}-${homeGames.length - homeWins}, Away ${awayWins}-${awayGames.length - awayWins}`,
           data,
           columns: [{ key: "stat", label: "" }, { key: "Home", label: "Home" }, { key: "Away", label: "Away" }],
@@ -2051,7 +2051,7 @@ function buildMoneylineCharts(
     charts.push(buildH2HTable(computed, extraction.teams));
   }
 
-  // Pitcher matchup — critical for MLB moneyline
+  // Pitcher matchup - critical for MLB moneyline
   const pitcherChart = buildPitcherMatchupChart(rawData, extraction.teams);
   if (pitcherChart) charts.push(pitcherChart);
 
@@ -2110,7 +2110,7 @@ function buildPlayerPropCharts(
         shots: "shots", goals: "goals", assists: "assists", points: "points",
         saves: "saves", goalsAgainst: "goalsAgainst", powerPlayGoals: "powerPlayGoals",
         powerPlayPoints: "powerPlayPoints", plusMinus: "plusMinus",
-        // Combo stats map to themselves — handled below
+        // Combo stats map to themselves - handled below
         "goals+assists": "goals+assists", "shots+goals": "shots+goals", "points+shots": "points+shots",
       };
       const nhlKey = nhlStatMap[statKey] || statKey;
@@ -2209,7 +2209,7 @@ function buildPlayerPropCharts(
         stolenBases: "stolenBases", totalBases: "totalBases", strikeOuts: "strikeOuts",
         baseOnBalls: "baseOnBalls", strikeOuts_pitching: "strikeOuts",
         earnedRuns: "earnedRuns", inningsPitched: "inningsPitched",
-        // Combo stats map to themselves — handled below
+        // Combo stats map to themselves - handled below
         "hits+runs+rbi": "hits+runs+rbi", "hits+runs": "hits+runs",
         "hits+rbi": "hits+rbi", "runs+rbi": "runs+rbi", "totalBases+runs": "totalBases+runs",
       };
@@ -2253,7 +2253,7 @@ function buildPlayerPropCharts(
       };
     }
 
-    // 1. Hit Rate visual — Props.Cash-style per-game bar chart (green/red)
+    // 1. Hit Rate visual - Props.Cash-style per-game bar chart (green/red)
     const gameValues = propAnalysis?.gameValues;
     const totalGamesAvailable = gameValues?.length || 0;
     if (gameValues && totalGamesAvailable > 0 && line > 0) {
@@ -2276,9 +2276,9 @@ function buildPlayerPropCharts(
       const showingSubset = totalGamesAvailable > CHART_LIMIT;
       charts.push({
         type: "hitrate" as ChartConfig["type"],
-        title: `${playerName} — ${showingSubset ? `Last ${hitRateN} of ${totalGamesAvailable}` : `${hitRateN}`} Games vs ${line} ${statLabel}`,
+        title: `${playerName} - ${showingSubset ? `Last ${hitRateN} of ${totalGamesAvailable}` : `${hitRateN}`} Games vs ${line} ${statLabel}`,
         relevance: showingSubset
-          ? `Showing ${hitRateN} most recent — season: ${seasonHitCount}/${seasonTotal} over (${seasonHitPct}%)`
+          ? `Showing ${hitRateN} most recent - season: ${seasonHitCount}/${seasonTotal} over (${seasonHitPct}%)`
           : `${hitRateOverCount}/${hitRateN} over the line (${hitRatePct}%)`,
         data: hitRateData,
         xKey: "game",
@@ -2286,7 +2286,7 @@ function buildPlayerPropCharts(
       });
     }
 
-    // 2. Game log trend with rolling average — THE key chart
+    // 2. Game log trend with rolling average - THE key chart
     if (gameValues && gameValues.length > 0) {
       const CHART_LIMIT = 20;
       const recent = gameValues.slice(-CHART_LIMIT);
@@ -2311,15 +2311,15 @@ function buildPlayerPropCharts(
       const trendDirection = last5TrendAvg > seasonAvg * 1.05 ? "Trending up" : last5TrendAvg < seasonAvg * 0.95 ? "Trending down" : "Trending flat";
       charts.push({
         type: "line",
-        title: `${playerName} — ${statLabel} Trend (${totalGamesAvailable > recent.length ? `Last ${recent.length} of ${totalGamesAvailable}` : `Last ${recent.length}`})`,
-        relevance: `${trendDirection} — last 5 avg ${last5TrendAvg} vs season avg ${seasonAvg} | ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%), on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
+        title: `${playerName} - ${statLabel} Trend (${totalGamesAvailable > recent.length ? `Last ${recent.length} of ${totalGamesAvailable}` : `Last ${recent.length}`})`,
+        relevance: `${trendDirection} - last 5 avg ${last5TrendAvg} vs season avg ${seasonAvg} | ${propAnalysis?.hitCount || 0}/${propAnalysis?.totalGames || 0} over ${line} (${Math.round((propAnalysis?.hitRate || 0) * 100)}%), on a ${trendWord} (last 3: ${Math.round(last3Avg * 10) / 10})`,
         data,
         xKey: "game",
         yKeys: [statLabel, "rollingAvg", "propLine"],
       });
     }
 
-    // 3. Hit rate breakdown by window — last 5, 10, and full season
+    // 3. Hit rate breakdown by window - last 5, 10, and full season
     if (propAnalysis && propAnalysis.totalGames > 0 && gameValues) {
       const last5 = gameValues.slice(-5);
       const last10 = gameValues.slice(-10);
@@ -2343,14 +2343,14 @@ function buildPlayerPropCharts(
       charts.push({
         type: "bar",
         title: `Hit Rate: ${statLabel} Over ${line}`,
-        relevance: `Hit rate by recency — trending ${l5Hit / Math.min(5, last5.length) > propAnalysis.hitRate ? "up" : l5Hit / Math.min(5, last5.length) < propAnalysis.hitRate ? "down" : "steady"}${streakNote}`,
+        relevance: `Hit rate by recency - trending ${l5Hit / Math.min(5, last5.length) > propAnalysis.hitRate ? "up" : l5Hit / Math.min(5, last5.length) < propAnalysis.hitRate ? "down" : "steady"}${streakNote}`,
         data,
         xKey: "window",
         yKeys: ["hitRate"],
       });
     }
 
-    // 4. Value distribution — how often does he hit each range
+    // 4. Value distribution - how often does he hit each range
     if (gameValues && gameValues.length >= 5) {
       const values = gameValues.map((g: { value: number }) => g.value);
       const min = Math.min(...values);
@@ -2380,8 +2380,8 @@ function buildPlayerPropCharts(
 
         charts.push({
           type: "bar",
-          title: `${playerName} — ${statLabel} Distribution`,
-          relevance: `${consistency} (std dev ${stdDev}) — shows how often he lands in each range`,
+          title: `${playerName} - ${statLabel} Distribution`,
+          relevance: `${consistency} (std dev ${stdDev}) - shows how often he lands in each range`,
           data: buckets,
           xKey: "range",
           yKeys: ["count"],
@@ -2401,7 +2401,7 @@ function buildPlayerPropCharts(
       ];
       charts.push({
         type: "bar",
-        title: `${playerName} — Averages vs Line`,
+        title: `${playerName} - Averages vs Line`,
         relevance: `Season (${propAnalysis.average}), last 5 (${propAnalysis.last5Avg}), last 3 (${last3Avg}) vs the ${line} line`,
         data,
         xKey: "metric",
@@ -2421,8 +2421,8 @@ function buildPlayerPropCharts(
         const venueNote = diff > line * 0.15 ? (homeAvg > awayAvg ? "notably better at home" : "notably better on the road") : "similar home and away";
         charts.push({
           type: "bar",
-          title: `${playerName} — ${statLabel} Home vs Away`,
-          relevance: `Home: ${homeAvg}, Away: ${awayAvg} — ${venueNote}`,
+          title: `${playerName} - ${statLabel} Home vs Away`,
+          relevance: `Home: ${homeAvg}, Away: ${awayAvg} - ${venueNote}`,
           data: [
             { venue: "Home", average: homeAvg, propLine: line },
             { venue: "Away", average: awayAvg, propLine: line },
@@ -2467,8 +2467,8 @@ function buildPlayerPropCharts(
         }));
         charts.push({
           type: "bar",
-          title: `${playerName} — ${statLabel} vs ${opponentName}`,
-          relevance: `${vsOpponent.length} games against this opponent — avg ${avg(vsOpponent)}`,
+          title: `${playerName} - ${statLabel} vs ${opponentName}`,
+          relevance: `${vsOpponent.length} games against this opponent - avg ${avg(vsOpponent)}`,
           data,
           xKey: "game",
           yKeys: [statLabel, "propLine"],
@@ -2476,7 +2476,7 @@ function buildPlayerPropCharts(
       }
     }
 
-    // 7. Opponent defensive context — only for scoring-related props
+    // 7. Opponent defensive context - only for scoring-related props
     // Team "points allowed" is meaningless for TB, SB, K, saves, etc.
     const scoringStats = ["pts", "points", "goals", "reb", "ast", "fg3m", "pra", "pts+reb", "pts+ast", "reb+ast", "shots"];
     const isScoringStat = scoringStats.includes(statKey) || statKey.includes("pts") || statKey.includes("points");
@@ -2504,10 +2504,10 @@ function buildPlayerPropCharts(
           { metric: `${playerName} Season Avg`, value: propAnalysis?.average || 0 },
           { metric: "Prop Line", value: line },
         ];
-        const defTrend = oppL5Allows > oppAllows ? "allowing more recently — defense slipping" : "allowing less recently — defense tightening";
+        const defTrend = oppL5Allows > oppAllows ? "allowing more recently - defense slipping" : "allowing less recently - defense tightening";
         charts.push({
           type: "bar",
-          title: `Matchup Context — Opponent Defense`,
+          title: `Matchup Context - Opponent Defense`,
           relevance: `${opponentMetrics.name} allows ${oppAllows} pts/game, ${defTrend}`,
           data,
           xKey: "metric",
@@ -2516,7 +2516,7 @@ function buildPlayerPropCharts(
       }
     }
 
-    // 8. Rest day impact — performance by days of rest between games
+    // 8. Rest day impact - performance by days of rest between games
     if (gameValues && gameValues.length >= 6) {
       // Sort by date ascending to compute rest days
       const sorted = [...gameValues]
@@ -2554,12 +2554,12 @@ function buildPlayerPropCharts(
         const diffPct = minAvg > 0 ? Math.round(((maxAvg - minAvg) / minAvg) * 100) : 0;
         const bestBucket = activeBuckets[avgs.indexOf(maxAvg)].name;
         const meaningful = diffPct >= 15;
-        // Only show rest days if impact is significant — avoids noise charts
+        // Only show rest days if impact is significant - avoids noise charts
         if (meaningful) {
         charts.push({
           type: "table" as ChartConfig["type"],
-          title: `${playerName} — ${statLabel} by Rest Days`,
-          relevance: `Rest matters: best with ${bestBucket} (${diffPct}% higher avg) — consider schedule context`,
+          title: `${playerName} - ${statLabel} by Rest Days`,
+          relevance: `Rest matters: best with ${bestBucket} (${diffPct}% higher avg) - consider schedule context`,
           data,
           xKey: "bucket",
           yKeys: ["games", "avgValue", "hitRate"],
@@ -2568,9 +2568,9 @@ function buildPlayerPropCharts(
       }
     }
 
-    // 9. Minutes / TOI correlation — performance in high vs low playing-time games
+    // 9. Minutes / TOI correlation - performance in high vs low playing-time games
     if (gameValues && gameValues.length >= 6 && Array.isArray(gameLog) && gameLog.length > 0) {
-      // Extract minutes from raw game logs — supports NBA (min), NHL (toi), ESPN (stats.MIN / stats.minutes)
+      // Extract minutes from raw game logs - supports NBA (min), NHL (toi), ESPN (stats.MIN / stats.minutes)
       const parseMinutes = (raw: string | number | undefined): number | null => {
         if (raw === undefined || raw === null || raw === "") return null;
         if (typeof raw === "number") return raw;
@@ -2644,10 +2644,10 @@ function buildPlayerPropCharts(
             const meaningful = Math.abs(diffPct) >= 10;
             charts.push({
               type: "table" as ChartConfig["type"],
-              title: `${playerName} — ${statLabel} by Playing Time`,
+              title: `${playerName} - ${statLabel} by Playing Time`,
               relevance: meaningful
-                ? `Playing time matters: ${diffPct > 0 ? "higher" : "lower"} ${statLabel} in high-minutes games (${highAvg} vs ${lowAvg}, ${Math.abs(diffPct)}% diff) — monitor minutes projection`
-                : `Minimal playing time impact (${highAvg} vs ${lowAvg}) — stat output relatively stable regardless of minutes`,
+                ? `Playing time matters: ${diffPct > 0 ? "higher" : "lower"} ${statLabel} in high-minutes games (${highAvg} vs ${lowAvg}, ${Math.abs(diffPct)}% diff) - monitor minutes projection`
+                : `Minimal playing time impact (${highAvg} vs ${lowAvg}) - stat output relatively stable regardless of minutes`,
               data,
               xKey: "group",
               yKeys: ["games", "avgValue", "hitRate"],
@@ -2678,7 +2678,7 @@ function buildFuturesCharts(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const standings = (rawData as any)?._standings as { current: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[]; prior: { team: string; shortName: string; league: string; wins: number; losses: number; winPct: number; gamesBehind: string; streak: string }[] } | undefined;
 
-  // 1. Standings — focused on the bet team's playoff position
+  // 1. Standings - focused on the bet team's playoff position
   const descLower = (extraction.description || "").toLowerCase();
   const isPlayoffBet = descLower.includes("playoff") || descLower.includes("make") || descLower.includes("miss");
 
@@ -2725,8 +2725,8 @@ function buildFuturesCharts(
       const gamesBack = teamIdx >= 0 ? leagueTeams[teamIdx].gamesBehind : "?";
       charts.push({
         type: "table",
-        title: `Playoff Picture — ${extraction.teams[0] || "Team"}`,
-        relevance: `Ranked #${teamRank} in ${teamLeague} (${inOut} — top ${playoffCutoff} make playoffs). ${gamesBack !== "-" ? `${gamesBack} GB from #1` : "Leading the league"}`,
+        title: `Playoff Picture - ${extraction.teams[0] || "Team"}`,
+        relevance: `Ranked #${teamRank} in ${teamLeague} (${inOut} - top ${playoffCutoff} make playoffs). ${gamesBack !== "-" ? `${gamesBack} GB from #1` : "Leading the league"}`,
         data: standingsData,
         columns: [
           { key: "rank", label: "#" },
@@ -2752,7 +2752,7 @@ function buildFuturesCharts(
       });
       charts.push({
         type: "table",
-        title: `${teamLeague || "League"} Standings — Current`,
+        title: `${teamLeague || "League"} Standings - Current`,
         relevance: `Where your team sits right now in the ${teamLeague || "league"} standings`,
         data: standingsData,
         columns: [
@@ -2775,7 +2775,7 @@ function buildFuturesCharts(
     if (totalPlayed === 0) continue;
 
     const winPct = team.record.pct;
-    const projectedWins = Math.round(winPct * 162); // MLB = 162, NBA = 82 — use MLB default
+    const projectedWins = Math.round(winPct * 162); // MLB = 162, NBA = 82 - use MLB default
     const sport = (extraction.description || "").toUpperCase();
     const totalGames = sport.includes("NBA") || sport.includes("BASKETBALL") ? 82 : sport.includes("NHL") || sport.includes("HOCKEY") ? 82 : 162;
     const paceWins = Math.round(winPct * totalGames);
@@ -2812,13 +2812,13 @@ function buildFuturesCharts(
 
     charts.push({
       type: "table",
-      title: `${team.name} — Season Pace & Projection`,
-      relevance: `${wins}-${losses} through ${totalPlayed} games — on pace for ${paceWins} wins`,
+      title: `${team.name} - Season Pace & Projection`,
+      relevance: `${wins}-${losses} through ${totalPlayed} games - on pace for ${paceWins} wins`,
       data,
       columns: [{ key: "stat", label: "Stat" }, { key: "value", label: "Value" }],
     });
 
-    // Recent form — green/red win/loss bars
+    // Recent form - green/red win/loss bars
     if (team.recentGames.length >= 5) {
       const recent = team.recentGames.slice(-20);
       const recentWins = recent.filter((g) => g.won).length;
@@ -2831,8 +2831,8 @@ function buildFuturesCharts(
       }));
       charts.push({
         type: "hitrate" as ChartConfig["type"],
-        title: `${team.name} — Recent Win/Loss (Last ${recent.length})`,
-        relevance: `${recentWins}-${recent.length - recentWins} in last ${recent.length} — green = win, red = loss`,
+        title: `${team.name} - Recent Win/Loss (Last ${recent.length})`,
+        relevance: `${recentWins}-${recent.length - recentWins} in last ${recent.length} - green = win, red = loss`,
         data: formData,
         xKey: "game",
         yKeys: ["value"],
@@ -2882,7 +2882,7 @@ function buildFirst5InningsCharts(
   const nMatch = desc.match(/(?:first|1st|f)\s*(\d+)/i);
   const inningsN = nMatch ? Number(nMatch[1]) : 5;
 
-  // Team comparison — relevant for any first-N bet
+  // Team comparison - relevant for any first-N bet
   if (teams.length >= 2) {
     const data = [
       { stat: "Record", [shortenName(teams[0].name)]: `${teams[0].record.wins}-${teams[0].record.losses}`, [shortenName(teams[1].name)]: `${teams[1].record.wins}-${teams[1].record.losses}` },
@@ -2892,7 +2892,7 @@ function buildFirst5InningsCharts(
     ];
     charts.push({
       type: "table",
-      title: `Team Comparison — First ${inningsN} Innings Context`,
+      title: `Team Comparison - First ${inningsN} Innings Context`,
       relevance: `First ${inningsN} bets depend on starting pitchers. Lower scoring teams favor unders.`,
       data,
       columns: [
@@ -2918,7 +2918,7 @@ function buildFirst5InningsCharts(
       allPitchers.sort((a, b) => b.games - a.games);
       charts.push({
         type: "table",
-        title: "Starting Pitchers — First Inning Clean Rate",
+        title: "Starting Pitchers - First Inning Clean Rate",
         relevance: `First ${inningsN} result depends heavily on the starter. Higher clean rate = better for unders.`,
         data: allPitchers.map((p) => ({ pitcher: p.pitcher, team: p.team, cleanRate: `${p.nrfiRate}%`, starts: p.games })),
         columns: [
@@ -2931,7 +2931,7 @@ function buildFirst5InningsCharts(
     }
   }
 
-  // Game margin trend — early-game performance correlates with F5
+  // Game margin trend - early-game performance correlates with F5
   for (const team of teams) {
     if (team.recentGames.length < 5) continue;
     const recent = team.recentGames.slice(-15);
@@ -2941,8 +2941,8 @@ function buildFirst5InningsCharts(
     }));
     charts.push({
       type: "bar",
-      title: `${team.name} — Game Margins (Last ${recent.length})`,
-      relevance: `Teams winning by large margins tend to lead early — relevant for first ${inningsN} bets`,
+      title: `${team.name} - Game Margins (Last ${recent.length})`,
+      relevance: `Teams winning by large margins tend to lead early - relevant for first ${inningsN} bets`,
       data,
       xKey: "game",
       yKeys: ["margin"],
@@ -2976,8 +2976,8 @@ function buildPlayerPropFallbackCharts(
       }));
       charts.push({
         type: "line",
-        title: `${opponentTeam.name} — Points Allowed Trend`,
-        relevance: `How much the opponent gives up — context for ${playerName}'s ${statLabel} prop`,
+        title: `${opponentTeam.name} - Points Allowed Trend`,
+        relevance: `How much the opponent gives up - context for ${playerName}'s ${statLabel} prop`,
         data,
         xKey: "game",
         yKeys: ["allowed"],
@@ -3079,7 +3079,7 @@ function inferMarketFromDescription(extraction: { market?: string; description?:
 function mapMarketToStatKey(market: string): string {
   const m = (market || "").toLowerCase();
 
-  // ── Combo stats FIRST (order matters — combos contain single-stat keywords) ──
+  // ── Combo stats FIRST (order matters - combos contain single-stat keywords) ──
   // NBA combos
   if (m.includes("pts+reb+ast") || m === "pra" || m.includes("points rebounds assists") || m.includes("points+rebounds+assists")) return "pra";
   if (m.includes("pts+reb") || m.includes("points+rebounds")) return "pts+reb";
@@ -3121,7 +3121,7 @@ function mapMarketToStatKey(market: string): string {
   if (m.includes("total bases") || m.includes("tb")) return "totalBases";
   if (m.includes("run") && !m.includes("home run")) return "runs";
   if (m.includes("hit")) return "hits";
-  // NHL points (distinct from NBA pts — "points" in NHL context = goals+assists)
+  // NHL points (distinct from NBA pts - "points" in NHL context = goals+assists)
   if (m.includes("point") || m.includes("pts")) return "pts";
   return "pts";
 }
@@ -3143,7 +3143,7 @@ function buildH2HTable(
   }));
   return {
     type: "table",
-    title: `${teamNames[0]} vs ${teamNames[1]} — Recent Matchups`,
+    title: `${teamNames[0]} vs ${teamNames[1]} - Recent Matchups`,
     relevance: `H2H record: ${h2h.team1Wins}-${h2h.team2Wins}, avg total: ${h2h.avgTotal}`,
     data,
     columns: [

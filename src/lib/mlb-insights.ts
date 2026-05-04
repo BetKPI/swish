@@ -2,7 +2,7 @@
  * MLB player-prop insights -deterministic narrative generation.
  *
  * Takes raw MLB history data + the bet, returns structured punchy insights:
- * verdict, projection vs line, bullet stats, risk flags. No LLM needed —
+ * verdict, projection vs line, bullet stats, risk flags. No LLM needed -
  * everything here is reproducible from the same inputs.
  */
 

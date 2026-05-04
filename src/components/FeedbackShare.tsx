@@ -42,7 +42,7 @@ export default function FeedbackShare({
         }),
       });
     } catch {
-      // Silent fail — don't break UX for feedback
+      // Silent fail - don't break UX for feedback
     }
   };
 

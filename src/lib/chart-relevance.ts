@@ -1,5 +1,5 @@
 /**
- * Chart relevance scoring — learns from user ratings.
+ * Chart relevance scoring - learns from user ratings.
  *
  * Each chart gets a relevance score (0-1) keyed by sport+market+chartPattern.
  * Thumbs up increases score, thumbs down decreases it.
@@ -45,7 +45,7 @@ function saveDB(): void {
     writeFileSync(RELEVANCE_PATH, JSON.stringify(_db, null, 2));
     _dirty = false;
   } catch {
-    // On Vercel filesystem is read-only — scores update in memory only
+    // On Vercel filesystem is read-only - scores update in memory only
     // They persist via the daily refresh script reading Discord ratings
   }
 }
@@ -57,7 +57,7 @@ function saveDB(): void {
 function buildKey(sport: string, market: string, chartTitle: string): string {
   const s = (sport || "unknown").toLowerCase().replace(/\s+/g, "_");
   const m = (market || "unknown").toLowerCase().replace(/[^a-z0-9]/g, "_").replace(/_+/g, "_");
-  // Normalize chart title to a pattern — strip player names, numbers, team names
+  // Normalize chart title to a pattern - strip player names, numbers, team names
   const t = (chartTitle || "unknown").toLowerCase()
     .replace(/[A-Z][a-z]+ [A-Z][a-z]+/g, "_player_") // "Jalen Brunson" → "_player_"
     .replace(/\d+\.?\d*/g, "_num_") // numbers

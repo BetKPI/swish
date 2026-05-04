@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { checkGameStatus } from "@/lib/gameStatus";
 
 /**
- * Lightweight game status endpoint — ESPN only, no Gemini calls.
+ * Lightweight game status endpoint - ESPN only, no Gemini calls.
  * Used for live score polling (every 30s).
  */
 export async function POST(request: NextRequest) {

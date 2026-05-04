@@ -1,5 +1,5 @@
 /**
- * MLB ballpark factors — multi-year averages, normalized to 100 = league avg.
+ * MLB ballpark factors - multi-year averages, normalized to 100 = league avg.
  * Higher = more hitter-friendly for that stat. Used to add park context to
  * player-prop insights ("Coors Field, +15% HR").
  *
@@ -13,7 +13,7 @@ export interface ParkFactors {
   runs: number; // 100 = neutral
   hr: number;
   hits: number;
-  k: number; // pitcher K factor — >100 = pitcher-friendly for K's
+  k: number; // pitcher K factor - >100 = pitcher-friendly for K's
 }
 
 const PARK_FACTORS: Record<string, ParkFactors> = {

@@ -1,5 +1,5 @@
 /**
- * MLB History Charts — deterministic chart builders consuming mlb-history primitives.
+ * MLB History Charts - deterministic chart builders consuming mlb-history primitives.
  * Two-season overlays render as two colored series via separate yKeys.
  */
 
@@ -74,7 +74,7 @@ function pct(n: number, d: number): number {
 
 /**
  * Centered-ish rolling mean. Uses a trailing window so each point reflects
- * "last N games up to here" — the shape people expect from a smoothed
+ * "last N games up to here" - the shape people expect from a smoothed
  * performance line. Window shrinks at the start so early points aren't empty.
  */
 function rollingMean(values: number[], window: number): number[] {
@@ -113,7 +113,7 @@ export function buildMLBTeamHistoryChart(
     const l10Overs = last10.filter((g) => g.totalRuns > line).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Game Totals vs ${line} Line`,
+      title: `${team.teamName} - Game Totals vs ${line} Line`,
       relevance: `Over ${line} in ${allOvers}/${games.length} this season (${pct(allOvers, games.length)}%). Last 10: ${l10Overs}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -134,7 +134,7 @@ export function buildMLBTeamHistoryChart(
     const l10Wins = last10.filter((g) => g.won).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Win/Loss Margin`,
+      title: `${team.teamName} - Win/Loss Margin`,
       relevance: `${wins}-${games.length - wins} this season (${pct(wins, games.length)}%). Last 10: ${l10Wins}-${last10.length - l10Wins}`,
       data: rows,
       xKey: "game",
@@ -155,7 +155,7 @@ export function buildMLBTeamHistoryChart(
     const l10Covers = last10.filter((g) => g.margin + line > 0).length;
     return {
       type: "hitrate" as ChartConfig["type"],
-      title: `${team.teamName} — Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
+      title: `${team.teamName} - Margin vs ${line > 0 ? "+" : ""}${line} Spread`,
       relevance: `Covered in ${covers}/${games.length} this season (${pct(covers, games.length)}%). Last 10: ${l10Covers}/${last10.length}`,
       data: rows,
       xKey: "game",
@@ -163,7 +163,7 @@ export function buildMLBTeamHistoryChart(
     };
   }
 
-  // No line — show margin bars with win/loss coloring
+  // No line - show margin bars with win/loss coloring
   const rows = recent.map((g) => ({
     game: fmtGame(g.date, g.opponent, g.isHome),
     value: g.margin,
@@ -172,8 +172,8 @@ export function buildMLBTeamHistoryChart(
   }));
   return {
     type: "hitrate" as ChartConfig["type"],
-    title: `${team.teamName} — Game Margins`,
-    relevance: `Run margin per game — green = win, red = loss`,
+    title: `${team.teamName} - Game Margins`,
+    relevance: `Run margin per game - green = win, red = loss`,
     data: rows,
     xKey: "game",
     yKeys: ["value"],
@@ -233,7 +233,7 @@ export function buildMLBPitcherHistoryChart(
 
   return {
     type: "line",
-    title: `${pitcher.pitcherName} — ${label} per Start`,
+    title: `${pitcher.pitcherName} - ${label} per Start`,
     relevance: `${pitcher.lastSeasonYear} avg ${round1(lastAvg)}, ${pitcher.currentSeasonYear} avg ${round1(curAvg)}`,
     data: rows,
     xKey: "game",
@@ -241,7 +241,7 @@ export function buildMLBPitcherHistoryChart(
   };
 }
 
-// ── Pitcher hit-rate (strikeouts vs line) — props.cash style ──────
+// ── Pitcher hit-rate (strikeouts vs line) - props.cash style ──────
 
 /**
  * Green/red bars for pitcher Ks vs a sportsbook line. Mirrors the batter
@@ -273,7 +273,7 @@ export function buildMLBPitcherHitRateChart(
 
   return {
     type: "hitrate" as ChartConfig["type"],
-    title: `${pitcher.pitcherName} — Strikeouts vs ${line} Line`,
+    title: `${pitcher.pitcherName} - Strikeouts vs ${line} Line`,
     relevance: `Over ${line} K's in ${overs}/${allGames.length} starts (${pct(overs, allGames.length)}%). Last 10: ${last10Overs}/${last10.length} (${pct(last10Overs, last10.length)}%)`,
     data: rows,
     xKey: "game",
@@ -317,8 +317,8 @@ export function buildMLBPitcherSeasonRecord(
         er += g.er;
         k += g.k;
       }
-      const era = ip > 0 ? ((er / ip) * 9).toFixed(2) : "—";
-      const kPer9 = ip > 0 ? ((k / ip) * 9).toFixed(1) : "—";
+      const era = ip > 0 ? ((er / ip) * 9).toFixed(2) : "-";
+      const kPer9 = ip > 0 ? ((k / ip) * 9).toFixed(1) : "-";
       rows.push({
         pitcher: p.pitcherName,
         season: s.label,
@@ -338,25 +338,25 @@ export function buildMLBPitcherSeasonRecord(
       pitcher: `${missingTeamName} starter`,
       season: "TBD",
       gs: 0,
-      record: "—",
-      era: "—",
-      kPer9: "—",
+      record: "-",
+      era: "-",
+      kPer9: "-",
     });
   }
 
   const heading =
     pitchers.length === 2
-      ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} — Season W-L, ERA, K/9`
+      ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} - Season W-L, ERA, K/9`
       : missingTeamName
-        ? `${pitchers[0].pitcherName} vs ${missingTeamName} (starter TBD) — Season W-L, ERA, K/9`
-        : `${pitchers[0].pitcherName} — Season W-L, ERA, K/9`;
+        ? `${pitchers[0].pitcherName} vs ${missingTeamName} (starter TBD) - Season W-L, ERA, K/9`
+        : `${pitchers[0].pitcherName} - Season W-L, ERA, K/9`;
 
   return {
     type: "table",
     title: heading,
     relevance:
       pitchers.length === 2
-        ? "Both probable pitchers' season records side by side — wins/losses, ERA, and strikeouts per nine."
+        ? "Both probable pitchers' season records side by side - wins/losses, ERA, and strikeouts per nine."
         : missingTeamName
           ? `${pitchers[0].pitcherName}'s season record. The opposing starter for ${missingTeamName} hadn't been announced when the data was pulled.`
           : "Probable pitcher's season record, ERA, and strikeouts per nine.",
@@ -372,7 +372,7 @@ export function buildMLBPitcherSeasonRecord(
   };
 }
 
-// ── Pitcher matchup — recent starts side by side ──────────────────
+// ── Pitcher matchup - recent starts side by side ──────────────────
 
 export function buildMLBPitcherComparisonTable(
   home: MLBPitcherTwoSeason | undefined,
@@ -410,8 +410,8 @@ export function buildMLBPitcherComparisonTable(
     type: "table",
     title:
       pitchers.length === 2
-        ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} — Recent Starts`
-        : `${pitchers[0].pitcherName} — Recent Starts`,
+        ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} - Recent Starts`
+        : `${pitchers[0].pitcherName} - Recent Starts`,
     relevance:
       pitchers.length === 2
         ? `Side-by-side last ${perPitcher} starts for both probable pitchers. Decision column: W, L, or ND (no decision).`
@@ -441,7 +441,7 @@ export function buildMLBTeamRecordTable(team: MLBTeamTwoSeason): ChartConfig | n
   function summarize(games: MLBTeamGame[], label: string) {
     const w = games.filter((g) => g.won).length;
     const l = games.length - w;
-    const winPct = games.length > 0 ? ((w / games.length) * 100).toFixed(1) : "—";
+    const winPct = games.length > 0 ? ((w / games.length) * 100).toFixed(1) : "-";
     const runDiff =
       games.length > 0
         ? round1(
@@ -460,7 +460,7 @@ export function buildMLBTeamRecordTable(team: MLBTeamTwoSeason): ChartConfig | n
 
   return {
     type: "table",
-    title: `${team.teamName} — Record & Win %`,
+    title: `${team.teamName} - Record & Win %`,
     relevance: "Season and recent win percentage alongside the run-differential chart.",
     data: rows,
     columns: [
@@ -509,7 +509,7 @@ export function buildMLBPitcherVsOpponentTable(
 
   return {
     type: "table",
-    title: `${pitcher.pitcherName} vs ${opponentName} — Recent Starts`,
+    title: `${pitcher.pitcherName} vs ${opponentName} - Recent Starts`,
     relevance: `${all.length} starts: ${totER} ER in ${round1(totIP)} IP, ${totK} K (${totalEra} ERA)`,
     data,
     columns: [
@@ -553,7 +553,7 @@ export function buildMLBBatterHistoryChart(
     }
   };
 
-  // Green/red hit rate bar chart — props.cash style
+  // Green/red hit rate bar chart - props.cash style
   const allGames = [...batter.currentSeason];
   const recentGames = allGames.slice(-20); // Show last 20 games for readability
   const rows: Record<string, unknown>[] = recentGames.map((g) => {
@@ -586,7 +586,7 @@ export function buildMLBBatterHistoryChart(
 
   return {
     type: "hitrate" as ChartConfig["type"],
-    title: `${batter.batterName} — ${label} vs ${line} Line`,
+    title: `${batter.batterName} - ${label} vs ${line} Line`,
     relevance: `Over ${line} in ${hits}/${curTotal} this season (${pct(hits, curTotal)}%). Last 10: ${last10Hits}/${last10.length} (${pct(last10Hits, last10.length)}%)`,
     data: rows,
     xKey: "game",
@@ -603,9 +603,9 @@ export function buildMLBBatterVsPitcherTable(
   const small = bvp.pa < 5;
   return {
     type: "table",
-    title: `${bvp.batterName} vs ${bvp.pitcherName} — Career`,
+    title: `${bvp.batterName} vs ${bvp.pitcherName} - Career`,
     relevance: small
-      ? `Small sample — ${bvp.pa} PA`
+      ? `Small sample - ${bvp.pa} PA`
       : `${bvp.pa} PA, ${bvp.hits}-${bvp.ab}, ${bvp.hr} HR, ${bvp.so} K`,
     data: [
       {
@@ -663,7 +663,7 @@ export function buildMLBFuturesChart(
 
   return {
     type: "bar",
-    title: `${teamName} — ${marketLabel} Rank by Season`,
+    title: `${teamName} - ${marketLabel} Rank by Season`,
     relevance:
       market === "world_series"
         ? `Currently ${latest.rank} in the league (${latest.season}). League rank is a rough proxy for WS odds.`
@@ -691,7 +691,7 @@ export function buildMLBLasersChart(
     return {
       type: "table",
       title: "Hard-Hit & Exit Velocity",
-      relevance: "Statcast exit velocity data not yet wired — coming soon",
+      relevance: "Statcast exit velocity data not yet wired - coming soon",
       data: [{ note: "Statcast data unavailable in this build" }],
       columns: [{ key: "note", label: "Status" }],
     };
@@ -764,7 +764,7 @@ export function buildMLBFirstInningsChart(
 
   return {
     type: "line",
-    title: `${team.teamName} — First ${innings} Inning${plural} Total Runs`,
+    title: `${team.teamName} - First ${innings} Inning${plural} Total Runs`,
     relevance,
     data: rows,
     xKey: "game",
@@ -870,7 +870,7 @@ export function buildMLBHomeAwaySplits(
 
     return {
       type: "table",
-      title: `${team.teamName} — ${label} (${vGames.length}g)`,
+      title: `${team.teamName} - ${label} (${vGames.length}g)`,
       relevance: `${label} ${wins}-${vGames.length - wins} (${Math.round((wins / vGames.length) * 100)}%)`,
       data,
       columns: [
@@ -901,7 +901,7 @@ export function buildMLBHomeAwaySplits(
 
   return {
     type: "table",
-    title: `${team.teamName} — Home vs Away (${team.currentSeasonYear})`,
+    title: `${team.teamName} - Home vs Away (${team.currentSeasonYear})`,
     relevance: `Home ${homeWins}-${home.length - homeWins} (${Math.round((homeWins / home.length) * 100)}%), Away ${awayWins}-${away.length - awayWins} (${Math.round((awayWins / away.length) * 100)}%)`,
     data,
     columns: [
@@ -935,7 +935,7 @@ export function buildMLBTeamH2HTable(
   const wins = h2h.filter((g) => g.won).length;
   return {
     type: "table",
-    title: `${team.teamName} vs ${opponentName} — head-to-head (${wins}-${h2h.length - wins})`,
+    title: `${team.teamName} vs ${opponentName} - head-to-head (${wins}-${h2h.length - wins})`,
     relevance: `${h2h.length} matchups across ${team.lastSeasonYear}-${team.currentSeasonYear}`,
     data: h2h.map((g) => ({
       date: shortDateMLB(g.date),
@@ -1015,7 +1015,7 @@ export function buildMLBDefaultCharts(
         if (seasonRecords.length > 0) {
           out.push({
             type: "table",
-            title: `${teamName} — Season-by-Season`,
+            title: `${teamName} - Season-by-Season`,
             relevance: `Recent final records and rankings`,
             data: seasonRecords,
             columns: [
@@ -1037,15 +1037,15 @@ export function buildMLBDefaultCharts(
         const leagueYears = record.league;
         const divYears = record.division;
         const data: Record<string, string>[] = [];
-        if (titleYears.length > 0) data.push({ stat: "World Series Titles", Value: `${titleYears.length}x — last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "World Series Titles", Value: "Never", Years: "—" });
-        if (leagueYears.length > 0) data.push({ stat: "Pennants (AL/NL)", Value: `${leagueYears.length}x — last: ${leagueYears[0]}`, Years: leagueYears.slice(0, 6).join(", ") + (leagueYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Pennants (AL/NL)", Value: "Never", Years: "—" });
-        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x — last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
-        else data.push({ stat: "Division Titles", Value: "Never", Years: "—" });
+        if (titleYears.length > 0) data.push({ stat: "World Series Titles", Value: `${titleYears.length}x - last: ${titleYears[0]}`, Years: titleYears.slice(0, 6).join(", ") + (titleYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "World Series Titles", Value: "Never", Years: "-" });
+        if (leagueYears.length > 0) data.push({ stat: "Pennants (AL/NL)", Value: `${leagueYears.length}x - last: ${leagueYears[0]}`, Years: leagueYears.slice(0, 6).join(", ") + (leagueYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Pennants (AL/NL)", Value: "Never", Years: "-" });
+        if (divYears.length > 0) data.push({ stat: "Division Titles", Value: `${divYears.length}x - last: ${divYears[0]}`, Years: divYears.slice(0, 6).join(", ") + (divYears.length > 6 ? "..." : "") });
+        else data.push({ stat: "Division Titles", Value: "Never", Years: "-" });
         out.push({
           type: "table",
-          title: `${teamName} — Championship History`,
+          title: `${teamName} - Championship History`,
           relevance: formatChampionshipSummary(teamName, record, futuresType),
           data,
           columns: [
@@ -1140,7 +1140,7 @@ export function buildMLBDefaultCharts(
     if (rec) out.push(rec);
   }
 
-  // Venue splits — combined into one table when both teams' venues known
+  // Venue splits - combined into one table when both teams' venues known
   if (teams.length === 2 && homeTeam && awayTeam) {
     const awayTeamData = history.teams[teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "away") || ""];
     const homeTeamData = history.teams[teams.find((t) => getVenueHint(t, homeTeam, awayTeam) === "home") || ""];
@@ -1169,7 +1169,7 @@ export function buildMLBDefaultCharts(
         data.push({ stat: "Games", [awayCol]: `${awayGames.length}`, [homeCol]: `${homeGames.length}` });
         out.push({
           type: "table",
-          title: "Venue Matchup — Road vs Home",
+          title: "Venue Matchup - Road vs Home",
           relevance: `${awayTeamData.teamName} ${awayWins}-${awayGames.length - awayWins} on road vs ${homeTeamData.teamName} ${homeWins}-${homeGames.length - homeWins} at home`,
           data,
           columns: [{ key: "stat", label: "" }, { key: awayCol, label: awayCol }, { key: homeCol, label: homeCol }],
@@ -1198,7 +1198,7 @@ export function buildMLBDefaultCharts(
     }
   }
 
-  // Both probable pitchers compared side by side — replaces the old per-team
+  // Both probable pitchers compared side by side - replaces the old per-team
   // ERA chart and pitcher-vs-opponent-team table which users said felt wrong
   // ("Yamamoto vs Mets" when they really wanted pitcher-vs-pitcher).
   // We pass team names through so the chart can flag a TBD starter explicitly
@@ -1212,7 +1212,7 @@ export function buildMLBDefaultCharts(
   if (homePitcher || awayPitcher) {
     const record = buildMLBPitcherSeasonRecord(homePitcher, awayPitcher, homeKey, awayKey);
     if (record) out.push(record);
-    // Recent starts table removed — redundant with the full season record above
+    // Recent starts table removed - redundant with the full season record above
   }
 
   return out;

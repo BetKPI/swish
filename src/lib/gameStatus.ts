@@ -1,5 +1,5 @@
 /**
- * Game status checker — detects live, completed, and upcoming games.
+ * Game status checker - detects live, completed, and upcoming games.
  * Provides live scores, player stat lines, and bet grading for completed games.
  */
 
@@ -30,7 +30,7 @@ export interface BetGrade {
   result: "hit" | "miss" | "push" | "pending";
   actual?: number | string; // actual value for the relevant stat
   line?: number;
-  detail: string; // "Over 5.5 assists — had 7 assists" or "Spread -3.5 — won by 5"
+  detail: string; // "Over 5.5 assists - had 7 assists" or "Spread -3.5 - won by 5"
 }
 
 // ── ESPN sport/league mapping ─────────────────────────────────────
@@ -160,7 +160,7 @@ export async function checkGameStatus(
         result: "pending",
         actual: current,
         line,
-        detail: `${current} ${(market || "").toLowerCase()} so far — needs ${line > current ? `${(line - current + (line % 1 === 0.5 ? 0.5 : 1)).toFixed(line % 1 === 0.5 ? 1 : 0)} more` : "already over the line"}`,
+        detail: `${current} ${(market || "").toLowerCase()} so far - needs ${line > current ? `${(line - current + (line % 1 === 0.5 ? 0.5 : 1)).toFixed(line % 1 === 0.5 ? 1 : 0)} more` : "already over the line"}`,
       };
     }
 
@@ -308,10 +308,10 @@ function gradeBet(
         actual: totalScore,
         line,
         detail: push
-          ? `Total ${totalScore} — push at ${line}`
+          ? `Total ${totalScore} - push at ${line}`
           : over
-          ? `Over ${line} hit — total was ${totalScore}`
-          : `Under ${line} hit — total was ${totalScore}`,
+          ? `Over ${line} hit - total was ${totalScore}`
+          : `Under ${line} hit - total was ${totalScore}`,
       };
     }
 
@@ -325,10 +325,10 @@ function gradeBet(
         actual: margin,
         line,
         detail: push
-          ? `${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)} — push at ${line > 0 ? "+" : ""}${line}`
+          ? `${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)} - push at ${line > 0 ? "+" : ""}${line}`
           : covered
-          ? `Spread ${line > 0 ? "+" : ""}${line} covered — ${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)}`
-          : `Spread ${line > 0 ? "+" : ""}${line} missed — ${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)}`,
+          ? `Spread ${line > 0 ? "+" : ""}${line} covered - ${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)}`
+          : `Spread ${line > 0 ? "+" : ""}${line} missed - ${game.homeTeam} ${margin > 0 ? "won" : "lost"} by ${Math.abs(margin)}`,
       };
     }
 
@@ -338,7 +338,7 @@ function gradeBet(
       return {
         result: homeWon ? "hit" : "miss",
         actual: `${homeScore}-${awayScore}`,
-        detail: `${game.homeTeam} ${homeScore}-${awayScore} ${game.awayTeam} — ${homeWon ? game.homeTeam : game.awayTeam} wins`,
+        detail: `${game.homeTeam} ${homeScore}-${awayScore} ${game.awayTeam} - ${homeWon ? game.homeTeam : game.awayTeam} wins`,
       };
     }
 
@@ -360,10 +360,10 @@ function gradeBet(
         actual,
         line,
         detail: push
-          ? `${actual} ${marketLabel} — push at ${line}`
+          ? `${actual} ${marketLabel} - push at ${line}`
           : over
-          ? `Over ${line} ${marketLabel} hit — had ${actual}`
-          : `Under ${line} ${marketLabel} — had ${actual}`,
+          ? `Over ${line} ${marketLabel} hit - had ${actual}`
+          : `Under ${line} ${marketLabel} - had ${actual}`,
       };
     }
 
