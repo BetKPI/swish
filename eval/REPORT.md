@@ -68,15 +68,37 @@ The L10-vs-career regression flag on AD ("8.8 vs 11 (-2.2)") and the playoff-vs-
 - **NBA spread / total → 500** — uncaught error. Needs investigation.
 - **3-pointers** — SGA threes still reading 0. ESPN's gamelog likely uses a label this code's `num()` helper isn't matching. Defer.
 
-## What I didn't ship (next session)
+## Round 3 — what shipped after the user said "fix all that now"
 
-These are the highest-value remaining items based on the Googleable/non-Googleable lens:
+All five "what's still Googleable" items either landed or have stub structure for future automation:
 
-1. **Statcast for all hitters** — extend `tryFetchBatterExitVelocity` to feed exit velo, hard-hit%, and barrel rate into hitter insights for every prop, not just HR. Sharps live for "hitter L20 has .280 BA but .310 xBA — under-performing, due to regress up."
-2. **Opposing bullpen quality** — for K and total props, surface "starter goes ~5.5 IP, bullpen 4.5 ERA L20". Already have team game logs; need to compute relief ERA.
-3. **NBA defensive matchup** — DvP rank vs the position, plus likely primary defender. ESPN exposes opponent allowed stats by position.
-4. **Series leverage for playoffs** — pull current series score and tag elimination/pivotal games. Star usage rate typically jumps 2-3% in elimination scenarios.
-5. **NBA spread/total 500 fix** — debug the team-bet path so the eval is complete.
+| Item | Commit | What you see in the bullets |
+| --- | --- | --- |
+| NBA spread/total 500 | `a584cbe` | Hardened `buildDataContext` against missing recentForm/scoring/recentGames + wrapped prompt builders. NBA spread / total now return full analysis. |
+| Statcast / xStats for all hitters | `9c9c3c8` | "xSLG vs SLG: .677 vs .628 (cold, due regress up)" / "xwOBA: .450 (elite)" — pulled from MLB Stats API expectedStatistics endpoint, not just HR props. |
+| Opposing pitching/hitting context | `11f507b` | "New York Yankees staff ERA: 3.01 (elite staff)" on hitter props; "{Opp} K%" on pitcher K props with Ks-easy / tough-K-matchup flags. |
+| NBA defensive matchup + pace | `cf2eda6` | "Cleveland Cavaliers D: 115.4 ppg (+1.9 vs lg)" with leaky-D / elite-D flags; pace-of-play tilt on PRA / scoring props. |
+| Series leverage from ESPN | `03bc35d` | Auto-pulls the playoff series summary from today's NBA scoreboard and flags elimination / pivotal (Game 5/7) spots. |
+| Opp team detection bug | `6d2ba9c` | Tatum was being matched against "Boston Celtics D" (his own team). Now resolved by counting opponent appearances in the player's gamelog. |
+
+## Round 3 sample output
+
+| Bet | Swish | Top non-Googleable bullet |
+| --- | --- | --- |
+| Aaron Judge over 1.5 TB | **9.5 Strong** | xSLG .677 vs SLG .628 (cold, due regress up) + xwOBA .450 (elite) + Yankees staff ERA 3.01 (elite staff) |
+| Mookie Betts over 0.5 hits | **7.2 Solid** | xBA .249 vs BA .179 (cold, due regress up) + Dodgers staff ERA 3.22 (elite staff) |
+| Tatum over 28.5 points | **5.0 Toss-Up** | vs Cleveland 3/5 (avg 30.8) — historical edge despite L10 cold streak; CLE D 115.4 ppg (+1.9 vs lg) |
+| LeBron over 38.5 PRA | **6.0 Toss-Up** | Playoffs vs reg: 36.5 vs 39.3 (-2.8) + MIN D 110.8 ppg |
+| AD over 11.5 reb | **3.5 Shaky** | L10 vs career: 8.8 vs 11 (-2.2) — clean under read with regression flag |
+
+## Reproduce
+
+```bash
+bash /c/Users/scott/Desktop/swish/eval/run-eval.sh
+# results land in eval/results/<id>.json
+```
+
+`EVAL_BASE_URL` env var overrides the target (defaults to `https://swish-jet.vercel.app`).
 
 ## Reproduce
 
