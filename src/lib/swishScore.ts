@@ -195,18 +195,32 @@ function scoreSpread(
   }
 
   const w = getWeights().spread;
-  const raw = atsScore * w.atsCoverRate + closeScore * w.closeGames + marginTrendScore * w.marginTrend + homeAwayScore * w.homeAwayRecord + restScore * w.restAdvantage;
-  const score = Math.round(clamp(raw));
+  const rawScore = atsScore * w.atsCoverRate + closeScore * w.closeGames + marginTrendScore * w.marginTrend + homeAwayScore * w.homeAwayRecord + restScore * w.restAdvantage;
+  const dataProb = Math.max(0.15, Math.min(0.85, rawScore / 100));
 
+  const impliedProb = computed.oddsAnalysis?.impliedProbability;
+  let finalProb: number;
+  if (typeof impliedProb === "number" && impliedProb > 0 && impliedProb < 1) {
+    finalProb = impliedProb * 0.6 + dataProb * 0.4;
+  } else {
+    finalProb = dataProb;
+  }
+  finalProb = Math.max(0.05, Math.min(0.95, finalProb));
+
+  const score = Math.round(finalProb * 100);
   const covers = ats?.covers ?? 0;
   const total = (ats?.covers ?? 0) + (ats?.fails ?? 0);
   const avgMargin = games.length > 0
     ? Math.round((games.reduce((s, g) => s + g.margin, 0) / games.length) * 10) / 10
     : 0;
-  const displayScore = toDisplay(score);
-  const detail = `Covered ${line} in ${covers}/${total}, avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}`;
-
-  return { score: displayScore, label: getLabel(score), detail };
+  const detailParts: string[] = [`~${score}% chance to cover`];
+  if (typeof impliedProb === "number") detailParts.push(`market ${Math.round(impliedProb * 100)}%`);
+  detailParts.push(`covered ${covers}/${total}, avg margin ${avgMargin > 0 ? "+" : ""}${avgMargin}`);
+  return {
+    score: toDisplay(score),
+    label: getLabel(score),
+    detail: detailParts.join(" · "),
+  };
 }
 
 // ── Over/Under scoring ────────────────────────────────────────────
@@ -263,16 +277,30 @@ function scoreOverUnder(
   }
 
   const w = getWeights().over_under;
-  const raw = overRateScore * w.overRate + paceScore * w.paceProjection + trendScore * w.scoringTrend + avgVsLineScore * w.avgVsLine;
-  const score = Math.round(clamp(raw));
+  const rawScore = overRateScore * w.overRate + paceScore * w.paceProjection + trendScore * w.scoringTrend + avgVsLineScore * w.avgVsLine;
+  const dataProb = Math.max(0.15, Math.min(0.85, rawScore / 100));
 
+  const impliedProb = computed.oddsAnalysis?.impliedProbability;
+  let finalProb: number;
+  if (typeof impliedProb === "number" && impliedProb > 0 && impliedProb < 1) {
+    finalProb = impliedProb * 0.6 + dataProb * 0.4;
+  } else {
+    finalProb = dataProb;
+  }
+  finalProb = Math.max(0.05, Math.min(0.95, finalProb));
+
+  const score = Math.round(finalProb * 100);
   const projRounded = Math.round(projection * 10) / 10;
   const diff = Math.round((projection - line) * 10) / 10;
   const overUnder = diff >= 0 ? "over" : "under";
-  const displayScore = toDisplay(score);
-  const detail = `Projects ~${projRounded} total, ${Math.abs(diff)} ${overUnder} the ${line} line`;
-
-  return { score: displayScore, label: getLabel(score), detail };
+  const detailParts: string[] = [`~${score}% chance to hit`];
+  if (typeof impliedProb === "number") detailParts.push(`market ${Math.round(impliedProb * 100)}%`);
+  detailParts.push(`projects ~${projRounded}, ${Math.abs(diff)} ${overUnder} the ${line} line`);
+  return {
+    score: toDisplay(score),
+    label: getLabel(score),
+    detail: detailParts.join(" · "),
+  };
 }
 
 // ── Moneyline scoring ─────────────────────────────────────────────
@@ -287,36 +315,65 @@ function scoreMoneyline(
     return { score: toDisplay(45), label: getLabel(45), detail: "Not enough data for moneyline analysis" };
   }
 
-  // Win pct: 30% weight
-  const winPctScore = clamp(team.record.pct * 100);
+  // Data-only probability estimate from team metrics
+  let dataProb = 0.5;
+  let weight = 0;
+  if (team.record && team.record.pct > 0) {
+    dataProb += team.record.pct * 0.30;
+    weight += 0.30;
+  }
+  if (team.recentForm) {
+    dataProb += (team.recentForm.wins / 5) * 0.25;
+    weight += 0.25;
+  }
+  if (team.scoring) {
+    const ptDiff = team.scoring.avgPointsFor - team.scoring.avgPointsAgainst;
+    // logistic-ish: +5 ppg ≈ 70%, -5 ppg ≈ 30%
+    const ptDiffProb = 0.5 + Math.max(-0.30, Math.min(0.30, ptDiff * 0.04));
+    dataProb += ptDiffProb * 0.20;
+    weight += 0.20;
+  }
+  if (team.homeRecord) {
+    dataProb += team.homeRecord.pct * 0.15;
+    weight += 0.15;
+  }
+  if (team.streak) {
+    const streakAdj = (team.streak.type === "W" ? 0.5 + team.streak.count * 0.02 : 0.5 - team.streak.count * 0.02);
+    dataProb += Math.max(0.2, Math.min(0.8, streakAdj)) * 0.10;
+    weight += 0.10;
+  }
+  // Subtract baseline (0.5 * weight) and re-add to normalize back to a prob
+  dataProb = weight > 0 ? (dataProb - 0.5 * weight) / weight + 0.5 : 0.5;
+  dataProb = Math.max(0.10, Math.min(0.90, dataProb));
 
-  // Recent form last 5: 25% weight
-  const last5Wins = team.recentForm.wins;
-  const formScore = clamp((last5Wins / 5) * 100);
+  // Anchor to market implied probability when we have odds. The market
+  // accounts for opponent strength which our team-only metrics ignore;
+  // without it we'd give underdogs scores well above their real chance.
+  const impliedProb = computed.oddsAnalysis?.impliedProbability;
+  let finalProb: number;
+  if (typeof impliedProb === "number" && impliedProb > 0 && impliedProb < 1) {
+    // 70% market + 30% data — small data nudge above/below the line
+    finalProb = impliedProb * 0.7 + dataProb * 0.3;
+  } else {
+    finalProb = dataProb;
+  }
+  finalProb = Math.max(0.05, Math.min(0.95, finalProb));
 
-  // Point differential: 20% weight
-  const ptDiff = team.scoring.avgPointsFor - team.scoring.avgPointsAgainst;
-  const diffScore = clamp(50 + ptDiff * 2);
-
-  // Home/away pct: 15% weight
-  let homeAwayScore = 50;
-  if (team.homeRecord) homeAwayScore = clamp(team.homeRecord.pct * 100);
-
-  // Streak: 10% weight
-  let streakScore = 50;
-  if (team.streak.type === "W") streakScore = clamp(50 + team.streak.count * 10);
-  else streakScore = clamp(50 - team.streak.count * 10);
-
-  const w = getWeights().moneyline;
-  const raw = winPctScore * w.winPct + formScore * w.recentForm + diffScore * w.pointDiff + homeAwayScore * w.homeAwayPct + streakScore * w.streak;
-  const score = Math.round(clamp(raw));
-
-  const winPct = Math.round(team.record.pct * 100);
-  const streakStr = `${team.streak.type}${team.streak.count}`;
-  const displayScore = toDisplay(score);
-  const detail = `${team.name} ${winPct}% win rate, on a ${streakStr} streak`;
-
-  return { score: displayScore, label: getLabel(score), detail };
+  const score = Math.round(finalProb * 100);
+  const winPct = Math.round((team.record?.pct || 0) * 100);
+  const streakStr = team.streak ? `${team.streak.type}${team.streak.count}` : "";
+  const detailParts: string[] = [
+    `~${score}% chance to win`,
+  ];
+  if (typeof impliedProb === "number") {
+    detailParts.push(`market ${Math.round(impliedProb * 100)}%`);
+  }
+  if (team.record) detailParts.push(`${winPct}% win rate ${streakStr}`);
+  return {
+    score: toDisplay(score),
+    label: getLabel(score),
+    detail: detailParts.join(" · "),
+  };
 }
 
 // ── Main entry point ──────────────────────────────────────────────

@@ -45,7 +45,24 @@ async function callGemini(prompt: string, apiKey: string): Promise<string | null
 function parseJSON(text: string): Record<string, unknown> {
   let t = text.trim();
   if (t.startsWith("```")) t = t.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  return JSON.parse(t);
+  // Direct parse
+  try { return JSON.parse(t); } catch { /* fall through */ }
+  // Try to extract the largest balanced { ... } block
+  const first = t.indexOf("{");
+  const last = t.lastIndexOf("}");
+  if (first >= 0 && last > first) {
+    const sub = t.slice(first, last + 1);
+    try { return JSON.parse(sub); } catch { /* fall through */ }
+  }
+  // Strip code fences anywhere
+  const cleaned = t
+    .replace(/```(?:json)?/gi, "")
+    .replace(/^[^{]*?(?=\{)/, "")
+    .replace(/\}[^}]*$/, "}");
+  if (cleaned.startsWith("{") && cleaned.endsWith("}")) {
+    return JSON.parse(cleaned);
+  }
+  throw new Error("non-json");
 }
 
 // Available data-fetching actions the AI can request
