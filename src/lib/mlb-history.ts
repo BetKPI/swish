@@ -508,20 +508,109 @@ export async function getMLBStandingsForSeasons(
   }
 }
 
-// ── Statcast exit velocity (stub) ──────────────────────────────────
+// ── Statcast / xStats — actual + expected hitting stats ────────────
 
-export async function tryFetchBatterExitVelocity(
-  _batterId: number,
-):
-  Promise<
-    | { available: false }
-    | {
-        available: true;
-        avgExitVelo: number;
-        maxExitVelo: number;
-        hardHitPct: number;
-        barrelPct: number;
-      }
-  > {
-  return { available: false };
+export interface BatterStatcast {
+  available: boolean;
+  // Actual season stats
+  ba?: number;
+  slg?: number;
+  woba?: number;
+  // Expected stats (from Statcast)
+  xba?: number;
+  xslg?: number;
+  xwoba?: number;
+  // Derived deltas — actual minus expected. Positive = over-performing
+  // (running hot, due to regress down). Negative = under-performing
+  // (running cold, due to regress up).
+  baDelta?: number;
+  slgDelta?: number;
+  wobaDelta?: number;
+}
+
+/**
+ * Pull both actual and expected hitting stats for a batter from MLB Stats
+ * API. The expected stats (xBA / xSLG / xwOBA) are Statcast-derived and
+ * give a sharp bettor a regression read: actual minus expected tells you
+ * whether the player is running hot or due to bounce back.
+ *
+ * Used for total bases / hits / HR / RBI props, not just HR.
+ */
+export async function tryFetchBatterExitVelocity(batterId: number): Promise<BatterStatcast> {
+  if (!batterId) return { available: false };
+  const year = new Date().getFullYear();
+
+  const parseAvg = (s: unknown): number | undefined => {
+    if (typeof s !== "string") return undefined;
+    const n = Number(s);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  try {
+    const [actualR, expectedR] = await Promise.all([
+      fetch(
+        `https://statsapi.mlb.com/api/v1/people/${batterId}/stats?stats=season&group=hitting&season=${year}`,
+        { signal: AbortSignal.timeout(8000) },
+      ),
+      fetch(
+        `https://statsapi.mlb.com/api/v1/people/${batterId}/stats?stats=expectedStatistics&group=hitting&season=${year}`,
+        { signal: AbortSignal.timeout(8000) },
+      ),
+    ]);
+    if (!actualR.ok && !expectedR.ok) return { available: false };
+    const actualJ = actualR.ok ? await actualR.json() : null;
+    const expectedJ = expectedR.ok ? await expectedR.json() : null;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const actualSplit = (actualJ?.stats?.[0]?.splits || [])[0];
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const expectedSplit = (expectedJ?.stats?.[0]?.splits || [])[0];
+
+    const ba = parseAvg(actualSplit?.stat?.avg);
+    const slg = parseAvg(actualSplit?.stat?.slg);
+    const wobaActual = parseAvg(actualSplit?.stat?.obp); // OBP not wOBA, but useful
+
+    const xba = parseAvg(expectedSplit?.stat?.avg);
+    const xslg = parseAvg(expectedSplit?.stat?.slg);
+    const xwoba = parseAvg(expectedSplit?.stat?.woba);
+
+    if (ba == null && xba == null) {
+      // Try last year fallback if current season has nothing
+      const lastYear = year - 1;
+      const fallback = await fetch(
+        `https://statsapi.mlb.com/api/v1/people/${batterId}/stats?stats=season,expectedStatistics&group=hitting&season=${lastYear}`,
+        { signal: AbortSignal.timeout(8000) },
+      );
+      if (!fallback.ok) return { available: false };
+      const j = await fallback.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const seasonSplit = j.stats?.find((s: any) => s.type?.displayName === "season")?.splits?.[0];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const expSplit = j.stats?.find((s: any) => s.type?.displayName === "expectedStatistics")?.splits?.[0];
+      const fb_ba = parseAvg(seasonSplit?.stat?.avg);
+      const fb_slg = parseAvg(seasonSplit?.stat?.slg);
+      const fb_xba = parseAvg(expSplit?.stat?.avg);
+      const fb_xslg = parseAvg(expSplit?.stat?.slg);
+      if (fb_ba == null && fb_xba == null) return { available: false };
+      return {
+        available: true,
+        ba: fb_ba, slg: fb_slg,
+        xba: fb_xba, xslg: fb_xslg,
+        baDelta: fb_ba != null && fb_xba != null ? Math.round((fb_ba - fb_xba) * 1000) / 1000 : undefined,
+        slgDelta: fb_slg != null && fb_xslg != null ? Math.round((fb_slg - fb_xslg) * 1000) / 1000 : undefined,
+      };
+    }
+
+    return {
+      available: true,
+      ba, slg, woba: wobaActual,
+      xba, xslg, xwoba,
+      baDelta: ba != null && xba != null ? Math.round((ba - xba) * 1000) / 1000 : undefined,
+      slgDelta: slg != null && xslg != null ? Math.round((slg - xslg) * 1000) / 1000 : undefined,
+      wobaDelta: wobaActual != null && xwoba != null ? Math.round((wobaActual - xwoba) * 1000) / 1000 : undefined,
+    };
+  } catch (e) {
+    console.error("[Statcast] fetch failed:", e);
+    return { available: false };
+  }
 }

@@ -12,6 +12,7 @@ import type {
   MLBPitcherTwoSeason,
   MLBPitcherGame,
   MLBBatterVsPitcher,
+  BatterStatcast,
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
 
@@ -104,8 +105,9 @@ export function buildHitterInsights(args: {
   bvp?: MLBBatterVsPitcher;
   isHome?: boolean;
   homeTeam?: string;
+  statcast?: BatterStatcast;
 }): MLBInsights {
-  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam } = args;
+  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast } = args;
   const games = batter.currentSeason;
   const lastSeason = batter.lastSeason;
   const statLabel = STAT_LABELS[stat];
@@ -196,6 +198,50 @@ export function buildHitterInsights(args: {
         label: `vs ${oppTeam}`,
         value: `${vsOppOvers}/${vsOpp.length} (${pct(vsOppOvers, vsOpp.length)}%)`,
         tone: pct(vsOppOvers, vsOpp.length) >= 60 ? "pos" : pct(vsOppOvers, vsOpp.length) <= 40 ? "neg" : "neutral",
+      });
+    }
+  }
+
+  // Statcast / xStats - the regression read sharps care about. xBA / xSLG /
+  // xwOBA are Statcast-derived "deserved" stats; comparing actual vs expected
+  // tells you whether the player is running hot (sell-high) or cold
+  // (buy-low / regress up). This is non-Googleable synthesis.
+  if (statcast?.available) {
+    const fmtAvg = (n?: number) => n != null ? `.${(Math.round(n * 1000)).toString().padStart(3, "0")}` : "?";
+    // For HR / total bases, show xSLG vs SLG (power)
+    if ((stat === "homeRuns" || stat === "totalBases") && statcast.slg != null && statcast.xslg != null) {
+      const delta = statcast.slgDelta || 0;
+      const tone: Tone = Math.abs(delta) < 0.025 ? "neutral" : delta < 0 ? "pos" : "neg";
+      const trail = Math.abs(delta) >= 0.025
+        ? delta > 0 ? " (hot, regress down)" : " (cold, due regress up)"
+        : "";
+      bullets.push({
+        label: "xSLG vs SLG",
+        value: `${fmtAvg(statcast.xslg)} vs ${fmtAvg(statcast.slg)}${trail}`,
+        tone,
+      });
+    }
+    // For hits / RBI / runs / general — show xBA vs BA (contact quality)
+    else if (statcast.ba != null && statcast.xba != null) {
+      const delta = statcast.baDelta || 0;
+      const tone: Tone = Math.abs(delta) < 0.020 ? "neutral" : delta < 0 ? "pos" : "neg";
+      const trail = Math.abs(delta) >= 0.020
+        ? delta > 0 ? " (hot, regress down)" : " (cold, due regress up)"
+        : "";
+      bullets.push({
+        label: "xBA vs BA",
+        value: `${fmtAvg(statcast.xba)} vs ${fmtAvg(statcast.ba)}${trail}`,
+        tone,
+      });
+    }
+    // wOBA always useful as a one-number quality read
+    if (statcast.xwoba != null && (stat === "homeRuns" || stat === "totalBases" || stat === "rbi")) {
+      const xwoba = statcast.xwoba;
+      const tone: Tone = xwoba >= 0.370 ? "pos" : xwoba <= 0.310 ? "neg" : "neutral";
+      bullets.push({
+        label: "xwOBA",
+        value: `${fmtAvg(xwoba)}${xwoba >= 0.400 ? " (elite)" : xwoba >= 0.370 ? " (above avg)" : xwoba <= 0.290 ? " (poor)" : ""}`,
+        tone,
       });
     }
   }

@@ -1294,6 +1294,7 @@ function computeMLBInsights(
     if (extraction.line == null) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildHitterInsights } = require("@/lib/mlb-insights");
+    const statcast = history.exitVelo?.[player];
     return buildHitterInsights({
       batter,
       stat,
@@ -1303,6 +1304,7 @@ function computeMLBInsights(
       bvp,
       isHome,
       homeTeam: extraction.homeTeam,
+      statcast,
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
