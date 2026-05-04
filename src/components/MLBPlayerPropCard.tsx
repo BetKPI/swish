@@ -13,7 +13,7 @@ import {
   ReferenceLine,
   LabelList,
 } from "recharts";
-import type { BetExtraction, ChartConfig, GameStatusData } from "@/types";
+import type { BetExtraction, ChartConfig, GameStatusData, MLBInsights } from "@/types";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
@@ -35,6 +35,7 @@ interface Props {
   swishScore?: SwishScore;
   keyInsight?: string;
   suggestions?: string[];
+  insights?: MLBInsights;
   onReset: () => void;
 }
 
@@ -114,10 +115,10 @@ export default function MLBPlayerPropCard({
   visuals,
   swishScore,
   suggestions,
+  insights,
   onReset,
 }: Props) {
   const [windowVal, setWindowVal] = useState<number | null>(10);
-  const [showFullAnalysis, setShowFullAnalysis] = useState(false);
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
 
   const handleShare = useCallback(async () => {
@@ -157,7 +158,10 @@ export default function MLBPlayerPropCard({
   const l10 = hitRate(allRows.slice(-10));
   const l20 = hitRate(allRows.slice(-20));
 
-  const verdict = buildVerdict(allRows, stat, line);
+  const verdict = insights?.verdict || buildVerdict(allRows, stat, line);
+  const projection = insights?.projection;
+  const insightBullets = insights?.bullets || [];
+  const flags = insights?.flags || [];
 
   // Secondary tables (BvP / vs opponent)
   const tables = charts.filter((c) => c.type === "table");
@@ -195,90 +199,134 @@ export default function MLBPlayerPropCard({
         />
       )}
 
-      {/* HERO — diamond watermark, player, line, score */}
+      {/* HERO — stadium feel: navy "sky" top, grass "field" bottom, big diamond */}
       <div
-        className="relative overflow-hidden rounded-xl border border-border bg-gradient-to-br from-surface via-surface to-[#0c2340]/30"
+        className="relative overflow-hidden rounded-xl border border-border"
         style={{ borderLeftWidth: 3, borderLeftColor: "#c8102e" }}
       >
-        {/* Diamond watermark */}
+        {/* Field gradient: navy sky → dim grass */}
         <div
-          className="pointer-events-none absolute -right-4 -bottom-6 w-44 h-44 sm:w-56 sm:h-56 text-emerald-400/15"
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden
+          style={{
+            background:
+              "linear-gradient(180deg, #0c2340 0%, #0a1a2e 35%, #0a0a0a 55%, #0a3a23 100%)",
+          }}
+        />
+        {/* Vignette to push focus to center */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          aria-hidden
+          style={{
+            background:
+              "radial-gradient(ellipse at 50% 60%, transparent 0%, rgba(0,0,0,0.55) 90%)",
+          }}
+        />
+        {/* Big centered diamond — stadium aerial */}
+        <div
+          className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center text-emerald-300/35"
           aria-hidden
         >
-          {/* Inline SVG so it picks up currentColor and stays crisp */}
-          <svg viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" strokeLinecap="round" className="w-full h-full">
-            <path d="M 30 175 Q 120 -10 210 175" strokeOpacity="0.5" />
-            <line x1="120" y1="190" x2="32" y2="174" strokeOpacity="0.45" />
-            <line x1="120" y1="190" x2="208" y2="174" strokeOpacity="0.45" />
-            <polygon points="120,190 170,140 120,90 70,140" strokeOpacity="0.9" />
-            <circle cx="120" cy="140" r="6" strokeOpacity="0.9" />
-            <rect x="116" y="186" width="8" height="8" strokeOpacity="0.9" />
-            <rect x="166" y="136" width="8" height="8" strokeOpacity="0.9" />
-            <rect x="116" y="86" width="8" height="8" strokeOpacity="0.9" />
-            <rect x="66" y="136" width="8" height="8" strokeOpacity="0.9" />
+          <svg
+            viewBox="0 0 240 240"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.4"
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            className="w-[110%] sm:w-[95%] h-auto translate-y-[18%]"
+          >
+            {/* Outfield arc */}
+            <path d="M 10 185 Q 120 -50 230 185" strokeOpacity="0.55" />
+            {/* Foul lines */}
+            <line x1="120" y1="200" x2="12" y2="184" strokeOpacity="0.5" />
+            <line x1="120" y1="200" x2="228" y2="184" strokeOpacity="0.5" />
+            {/* Outfield warning track (dashed) */}
+            <path d="M 25 175 Q 120 -30 215 175" strokeOpacity="0.25" strokeDasharray="3 6" />
+            {/* Infield diamond */}
+            <polygon points="120,200 175,145 120,90 65,145" strokeOpacity="1" strokeWidth="1.8" />
+            {/* Infield grass arc */}
+            <path d="M 75 165 Q 120 110 165 165" strokeOpacity="0.45" />
+            {/* Pitcher's mound */}
+            <circle cx="120" cy="145" r="7" strokeOpacity="0.95" />
+            {/* Bases */}
+            <rect x="115" y="195" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+            <rect x="170" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+            <rect x="115" y="85" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
+            <rect x="60" y="140" width="10" height="10" strokeOpacity="1" fill="currentColor" fillOpacity="0.4" />
           </svg>
         </div>
 
-        <div className="relative p-4 sm:p-5">
-          <div className="flex items-start gap-3">
+        <div className="relative p-5 sm:p-6 min-h-[200px]">
+          <div className="flex items-start gap-4">
             {headshot ? (
-              <img src={headshot} alt="" className="w-14 h-14 rounded-full object-cover bg-surface-light flex-shrink-0 border border-border" />
+              <div className="relative flex-shrink-0">
+                <div className="absolute inset-0 rounded-full bg-emerald-400/15 blur-md" aria-hidden />
+                <img
+                  src={headshot}
+                  alt=""
+                  className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover bg-surface-light border-2 border-white/15"
+                />
+              </div>
             ) : teamLogo ? (
-              <img src={teamLogo} alt="" className="w-12 h-12 rounded-full bg-white object-contain flex-shrink-0 p-1" />
+              <img src={teamLogo} alt="" className="w-16 h-16 rounded-full bg-white object-contain flex-shrink-0 p-1.5" />
             ) : (
-              <span className="text-3xl flex-shrink-0">⚾</span>
+              <span className="text-4xl flex-shrink-0">⚾</span>
             )}
             <div className="flex-1 min-w-0">
-              <h2 className="font-black text-lg sm:text-xl leading-tight tracking-tight uppercase truncate">
+              <h2 className="font-black text-xl sm:text-2xl leading-tight tracking-tight uppercase truncate text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]">
                 {playerName}
               </h2>
-              <p className="text-xs text-muted mt-0.5">
+              <p className="text-xs sm:text-sm text-white/70 mt-1 font-semibold tracking-wide">
                 {teamName || ""}
-                {oppTeam ? <> <span className="text-muted/50">•</span> vs {oppTeam}</> : null}
+                {oppTeam ? <> <span className="text-white/30">•</span> <span className="uppercase">vs {oppTeam}</span></> : null}
               </p>
-            </div>
-            {swishScore && (
-              <div className={`flex-shrink-0 rounded-lg border px-2.5 py-1.5 text-center ${scoreBg(swishScore.score)}`}>
-                <div className={`text-xl font-black tabular-nums leading-none ${scoreColor(swishScore.score)}`}>
-                  {swishScore.score}
+              {swishScore && (
+                <div className={`inline-flex items-center gap-1.5 mt-2 px-2 py-0.5 rounded-md border ${scoreBg(swishScore.score)}`}>
+                  <span className={`text-sm font-black tabular-nums leading-none ${scoreColor(swishScore.score)}`}>
+                    {swishScore.score}
+                  </span>
+                  <span className="text-[9px] uppercase tracking-wider text-muted">/ 10</span>
+                  <span className={`text-[10px] font-bold uppercase tracking-wider ${scoreColor(swishScore.score)}`}>
+                    {swishScore.label}
+                  </span>
                 </div>
-                <div className="text-[9px] uppercase tracking-wider text-muted mt-0.5">/ 10</div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
 
-          {/* Stat / Line / Odds */}
-          <div className="mt-4 flex items-baseline justify-between gap-3">
+          {/* Stat / Line / Odds — bigger, terminal feel */}
+          <div className="mt-5 flex items-end justify-between gap-3">
             <div>
-              <div className="text-[10px] uppercase tracking-widest text-muted font-bold">{stat}</div>
-              <div className="text-3xl sm:text-4xl font-black tabular-nums mt-0.5">
-                {line != null ? <>{line >= 0 ? "Over " : ""}{line}</> : "—"}
+              <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">{stat}</div>
+              <div className="text-4xl sm:text-5xl font-black tabular-nums mt-1 leading-none text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.7)]">
+                {line != null ? <><span className="text-white/60 text-2xl sm:text-3xl">O </span>{line}</> : "—"}
               </div>
             </div>
             {extraction.odds && (
               <div className="text-right">
-                <div className="text-[10px] uppercase tracking-widest text-muted font-bold">Odds</div>
-                <div className="text-lg font-bold tabular-nums text-accent-gold mt-0.5">
+                <div className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold">Odds</div>
+                <div className="text-xl sm:text-2xl font-bold tabular-nums text-accent-gold mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]">
                   {extraction.odds}
                 </div>
               </div>
             )}
           </div>
 
-          {swishScore && (
-            <p className={`text-xs font-bold mt-3 ${scoreColor(swishScore.score)}`}>
-              {swishScore.label} <span className="text-muted/70 font-normal">— {swishScore.detail}</span>
-            </p>
-          )}
         </div>
       </div>
 
-      {/* VERDICT one-liner */}
-      {verdict && (
-        <p className="text-base sm:text-lg font-bold leading-snug px-1">
-          {verdict}
-        </p>
-      )}
+      {/* VERDICT + PROJECTION ROW */}
+      <div className="space-y-2 px-1">
+        {verdict && (
+          <p className="text-base sm:text-lg font-bold leading-snug">
+            {verdict}
+          </p>
+        )}
+        {projection && (
+          <ProjectionPill projection={projection} line={line} />
+        )}
+      </div>
 
       {/* PRIMARY CHART */}
       {primaryChart && allRows.length > 0 && line != null && (
@@ -378,40 +426,72 @@ export default function MLBPlayerPropCard({
         </div>
       )}
 
-      {/* CONTEXT — secondary tables compacted */}
-      {tables.length > 0 && (
-        <div className="space-y-2">
-          {tables.map((t, i) => (
-            <CompactTable key={i} chart={t} />
-          ))}
+      {/* INSIGHT BULLETS — the punchy stuff */}
+      {insightBullets.length > 0 && (
+        <div className="bg-surface rounded-xl border border-border/50 p-3 sm:p-4">
+          <div className="text-[10px] uppercase tracking-widest font-bold text-muted mb-2.5">
+            Key Insights
+          </div>
+          <div className="space-y-1.5">
+            {insightBullets.map((b, i) => (
+              <div key={i} className="flex items-baseline justify-between gap-3 text-sm">
+                <span className="text-muted truncate">{b.label}</span>
+                <span className={`font-bold tabular-nums text-right whitespace-nowrap ${
+                  b.tone === "pos" ? "text-emerald-400"
+                    : b.tone === "neg" ? "text-red-400"
+                    : "text-foreground"
+                }`}>
+                  {b.value}
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* RISK FLAGS */}
+      {flags.length > 0 && (
+        <div className="bg-yellow-500/5 border border-yellow-500/30 rounded-xl p-3">
+          <div className="text-[10px] uppercase tracking-widest font-bold text-yellow-400 mb-1.5">
+            Heads up
+          </div>
+          <ul className="space-y-1 text-xs text-yellow-200/90">
+            {flags.map((f, i) => (
+              <li key={i} className="leading-relaxed">• {f}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* MATCHUP DETAILS — collapsed by default */}
+      {tables.length > 0 && (
+        <Collapsible label="Matchup details" count={tables.length}>
+          <div className="space-y-2 pt-2">
+            {tables.map((t, i) => (
+              <CompactTable key={i} chart={t} />
+            ))}
+          </div>
+        </Collapsible>
       )}
 
       {/* FULL ANALYSIS — collapsed by default */}
       {summary && (
-        <div className="bg-surface rounded-xl border border-border/50">
-          <button
-            onClick={() => setShowFullAnalysis((v) => !v)}
-            className="w-full flex items-center justify-between p-4 text-left cursor-pointer"
-            aria-expanded={showFullAnalysis}
-          >
-            <span className="text-xs uppercase tracking-widest font-bold text-accent">
-              The Breakdown
-            </span>
-            <svg
-              className={`w-4 h-4 text-muted transition-transform ${showFullAnalysis ? "rotate-180" : ""}`}
-              viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
-            >
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
-          </button>
-          {showFullAnalysis && (
-            <div className="px-4 pb-4 -mt-1">
-              <p className="text-sm text-foreground/85 leading-[1.7]">{summary}</p>
-            </div>
-          )}
-        </div>
+        <Collapsible label="The breakdown">
+          <p className="text-sm text-foreground/85 leading-[1.7] pt-2">{summary}</p>
+        </Collapsible>
       )}
+
+      {/* ASK A FOLLOW-UP — collapsed by default */}
+      <Collapsible label="Ask a follow-up">
+        <div className="pt-2">
+          <AnalysisChat
+            extraction={extraction}
+            computedData={computedData || {}}
+            swishScore={swishScore}
+            suggestions={suggestions}
+          />
+        </div>
+      </Collapsible>
 
       {/* Action bar */}
       <div className="grid grid-cols-2 gap-2">
@@ -430,16 +510,47 @@ export default function MLBPlayerPropCard({
         </button>
       </div>
 
-      {/* Chat */}
-      <AnalysisChat
-        extraction={extraction}
-        computedData={computedData || {}}
-        swishScore={swishScore}
-        suggestions={suggestions}
-      />
+      {/* Tiny feedback footer */}
+      <div className="pt-2 border-t border-border/30">
+        <FeedbackShare extraction={extraction} summary={summary} gameStatus={gameStatus} />
+      </div>
+    </div>
+  );
+}
 
-      {/* Feedback */}
-      <FeedbackShare extraction={extraction} summary={summary} gameStatus={gameStatus} />
+function Collapsible({
+  label,
+  count,
+  defaultOpen = false,
+  children,
+}: {
+  label: string;
+  count?: number;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-surface rounded-xl border border-border/50">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer"
+        aria-expanded={open}
+      >
+        <span className="text-xs uppercase tracking-widest font-bold text-muted flex items-center gap-2">
+          {label}
+          {count != null && count > 0 && (
+            <span className="text-[10px] bg-surface-light text-muted px-1.5 py-0.5 rounded tabular-nums">{count}</span>
+          )}
+        </span>
+        <svg
+          className={`w-4 h-4 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
     </div>
   );
 }
@@ -478,6 +589,44 @@ function CompactTable({ chart }: { chart: ChartConfig }) {
       {chart.relevance && (
         <p className="text-[11px] text-muted/80 mt-2 leading-relaxed">{chart.relevance}</p>
       )}
+    </div>
+  );
+}
+
+function ProjectionPill({
+  projection,
+  line,
+}: {
+  projection: NonNullable<MLBInsights["projection"]>;
+  line?: number;
+}) {
+  const { proj, diff, lean } = projection;
+  const sign = diff > 0 ? "+" : "";
+  const tone =
+    lean.startsWith("strong over") || lean === "lean over"
+      ? "pos"
+      : lean.startsWith("strong under") || lean === "lean under"
+        ? "neg"
+        : "neutral";
+  const toneClass =
+    tone === "pos"
+      ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+      : tone === "neg"
+        ? "bg-red-500/10 border-red-500/40 text-red-300"
+        : "bg-surface-light border-border/60 text-muted";
+  return (
+    <div className={`flex items-center justify-between rounded-lg border px-3 py-2 ${toneClass}`}>
+      <div className="flex items-baseline gap-2">
+        <span className="text-[10px] uppercase tracking-widest font-bold opacity-80">L10 Proj</span>
+        <span className="text-base font-black tabular-nums">{proj}</span>
+        {line != null && (
+          <span className="text-[11px] text-muted/80 tabular-nums">vs {line}</span>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-bold tabular-nums">{sign}{diff}</span>
+        <span className="text-[10px] uppercase tracking-widest font-black opacity-90">{lean}</span>
+      </div>
     </div>
   );
 }

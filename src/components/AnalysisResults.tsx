@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData } from "@/types";
+import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData, MLBInsights } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
@@ -26,6 +26,7 @@ interface AnalysisResultsProps {
   swishScore?: SwishScore;
   keyInsight?: string;
   suggestions?: string[];
+  mlbInsights?: MLBInsights;
   onReset: () => void;
 }
 
@@ -59,6 +60,7 @@ export default function AnalysisResults({
   swishScore,
   keyInsight,
   suggestions,
+  mlbInsights,
   onReset,
 }: AnalysisResultsProps) {
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
@@ -112,6 +114,7 @@ export default function AnalysisResults({
         swishScore={swishScore}
         keyInsight={keyInsight}
         suggestions={suggestions}
+        insights={mlbInsights}
         onReset={onReset}
       />
     );

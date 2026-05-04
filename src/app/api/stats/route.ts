@@ -1107,6 +1107,9 @@ async function analyzeSingleBet(
   const aiStats = (aiResult.stats || []) as { label: string; value: string; context: string }[];
   const allStats = hitRate ? [hitRate, ...aiStats] : aiStats;
 
+  // MLB player-prop: deterministic structured insights (verdict, projection, bullets, flags)
+  const mlbInsights = computeMLBInsights(extraction, teamData);
+
   if (isSummaryOnly) {
     return {
       summary: aiResult.summary || "Check the charts below.",
@@ -1118,6 +1121,7 @@ async function analyzeSingleBet(
       swishScore,
       keyInsight,
       suggestions,
+      mlbInsights,
     };
   }
 
@@ -1131,7 +1135,85 @@ async function analyzeSingleBet(
     swishScore,
     keyInsight,
     suggestions,
+    mlbInsights,
   };
+}
+
+/**
+ * MLB player-prop deterministic insights — pulls the in-memory MLB history
+ * context from teamData and produces structured insights for the UI.
+ */
+function computeMLBInsights(
+  extraction: BetExtraction,
+  rawData: Record<string, unknown>
+) {
+  const sport = (extraction.sport || "").toUpperCase();
+  if (sport !== "MLB" && sport !== "BASEBALL") return undefined;
+  if (extraction.betType !== "player_prop") return undefined;
+  const player = extraction.players[0];
+  if (!player) return undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const history = (rawData as any)?._mlbHistory;
+  if (!history) return undefined;
+
+  const market = extraction.market || "";
+  const desc = extraction.description || "";
+  const m = `${market} ${desc}`.toLowerCase();
+
+  // Detect pitcher vs hitter prop
+  const isPitcher =
+    m.includes("strikeout") || /\bks?\b/.test(m) || m.includes("earned run") || m.includes("inning");
+  const oppTeam = extraction.teams.find((t) => !history.pitchersByName?.[player] || true) ||
+    extraction.teams[0];
+
+  try {
+    if (isPitcher) {
+      const pitcher = history.pitchersByName?.[player];
+      if (!pitcher) return undefined;
+      const focus: "strikeouts" | "era" | "innings" =
+        m.includes("strikeout") || /\bks?\b/.test(m)
+          ? "strikeouts"
+          : m.includes("earned run") || m.includes("era")
+            ? "era"
+            : "innings";
+      const career = history.pitcherCareerVsOpponent?.[player];
+      // Lazy-load to avoid pulling the lib unless we need it
+      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      const { buildPitcherInsights } = require("@/lib/mlb-insights");
+      return buildPitcherInsights({ pitcher, focus, line: extraction.line, oppTeam, career });
+    }
+
+    const batter = history.batters?.[player];
+    if (!batter) return undefined;
+    const stat: "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases" =
+      m.includes("total base") ? "totalBases" :
+      m.includes("home run") || /\bhr\b/.test(m) ? "homeRuns" :
+      m.includes("rbi") || m.includes("runs batted") ? "rbi" :
+      m.includes("stolen base") ? "stolenBases" :
+      m.includes("run scored") || m.includes("runs scored") ? "runs" :
+      m.includes("strikeout") ? "strikeOuts" :
+      "hits";
+    const bvp = history.batterVsPitcher?.[player];
+    const isHome =
+      extraction.homeTeam && extraction.teams[0]
+        ? extraction.teams[0].toLowerCase() === extraction.homeTeam.toLowerCase()
+        : undefined;
+    if (extraction.line == null) return undefined;
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { buildHitterInsights } = require("@/lib/mlb-insights");
+    return buildHitterInsights({
+      batter,
+      stat,
+      line: extraction.line,
+      oppTeam,
+      bvp,
+      isHome,
+    });
+  } catch (e) {
+    console.error("[MLB Insights] failed:", e);
+    return undefined;
+  }
 }
 
 /**

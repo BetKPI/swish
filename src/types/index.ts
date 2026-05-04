@@ -86,3 +86,15 @@ export interface GameStatusData {
 }
 
 export type AppState = 'upload' | 'analyzing' | 'results' | 'error' | 'unsupported' | 'parlay';
+
+export interface MLBInsights {
+  verdict: string;
+  projection?: {
+    proj: number;
+    diff: number;
+    edge: number;
+    lean: 'strong over' | 'lean over' | 'pass' | 'lean under' | 'strong under';
+  };
+  bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
+  flags: string[];
+}
