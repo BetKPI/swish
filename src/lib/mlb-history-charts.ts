@@ -218,6 +218,46 @@ export function buildMLBPitcherHistoryChart(
   };
 }
 
+// ── Pitcher hit-rate (strikeouts vs line) — props.cash style ──────
+
+/**
+ * Green/red bars for pitcher Ks vs a sportsbook line. Mirrors the batter
+ * hit-rate chart so pitcher K props get the same visual treatment.
+ */
+export function buildMLBPitcherHitRateChart(
+  pitcher: MLBPitcherTwoSeason,
+  line: number,
+): ChartConfig | null {
+  const allGames = [...pitcher.currentSeason];
+  if (allGames.length < 5) {
+    // Augment with last season tail when current season is thin (early in year)
+    const tail = pitcher.lastSeason.slice(-Math.max(0, 10 - allGames.length));
+    allGames.unshift(...tail);
+  }
+  if (allGames.length < 5) return null;
+
+  const recent = allGames.slice(-20);
+  const rows = recent.map((g) => ({
+    game: fmtPitcherGame(g.date, g.opponent),
+    value: g.k,
+    line,
+    overLine: g.k > line,
+  }));
+
+  const overs = allGames.filter((g) => g.k > line).length;
+  const last10 = allGames.slice(-10);
+  const last10Overs = last10.filter((g) => g.k > line).length;
+
+  return {
+    type: "hitrate" as ChartConfig["type"],
+    title: `${pitcher.pitcherName} — Strikeouts vs ${line} Line`,
+    relevance: `Over ${line} K's in ${overs}/${allGames.length} starts (${pct(overs, allGames.length)}%). Last 10: ${last10Overs}/${last10.length} (${pct(last10Overs, last10.length)}%)`,
+    data: rows,
+    xKey: "game",
+    yKeys: ["value"],
+  };
+}
+
 // ── Pitcher season summary (W-L, ERA, K/9) ────────────────────────
 
 export function buildMLBPitcherSeasonRecord(
@@ -996,7 +1036,12 @@ export function buildMLBDefaultCharts(
       if (pitcherFocus) {
         const pitcherTS = history.pitchersByName[playerName];
         if (pitcherTS) {
-          const c = buildMLBPitcherHistoryChart(pitcherTS, pitcherFocus);
+          // For strikeouts with a known line, render the props.cash-style
+          // green/red bar chart. For ERA/innings, keep the season-overlay line.
+          const c =
+            pitcherFocus === "strikeouts" && line !== undefined
+              ? buildMLBPitcherHitRateChart(pitcherTS, line)
+              : buildMLBPitcherHistoryChart(pitcherTS, pitcherFocus);
           if (c) out.push(c);
           const oppTeamName = teams[0];
           const oppTeam = oppTeamName ? history.teams[oppTeamName] : undefined;

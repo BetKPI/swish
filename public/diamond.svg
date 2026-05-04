@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" stroke-linecap="round">
+  <!-- Outfield arc -->
+  <path d="M 30 175 Q 120 -10 210 175" stroke-opacity="0.5" />
+  <!-- Foul lines -->
+  <line x1="120" y1="190" x2="32" y2="174" stroke-opacity="0.45" />
+  <line x1="120" y1="190" x2="208" y2="174" stroke-opacity="0.45" />
+  <!-- Infield diamond (rotated square) -->
+  <polygon points="120,190 170,140 120,90 70,140" stroke-opacity="0.9" />
+  <!-- Pitcher's mound -->
+  <circle cx="120" cy="140" r="6" stroke-opacity="0.9" />
+  <!-- Bases -->
+  <rect x="116" y="186" width="8" height="8" stroke-opacity="0.9" />
+  <rect x="166" y="136" width="8" height="8" stroke-opacity="0.9" />
+  <rect x="116" y="86" width="8" height="8" stroke-opacity="0.9" />
+  <rect x="66" y="136" width="8" height="8" stroke-opacity="0.9" />
+  <!-- Subtle infield grass arc -->
+  <path d="M 80 165 Q 120 115 160 165" stroke-opacity="0.3" stroke-dasharray="2 4" />
+</svg>

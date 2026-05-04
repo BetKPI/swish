@@ -6,6 +6,7 @@ import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
 import GameStatusBanner from "./GameStatusBanner";
+import MLBPlayerPropCard from "./MLBPlayerPropCard";
 import { captureWithWatermark, copyImageToClipboard } from "@/lib/captureWithWatermark";
 
 interface SwishScore {
@@ -96,6 +97,25 @@ export default function AnalysisResults({
   const isHit = gradeResult === "hit";
   const isMiss = gradeResult === "miss";
   const isGraded = isFinal && (isHit || isMiss);
+
+  // Specialized layout for MLB player props — denser, mobile-first, props.cash-style
+  const sportNorm = normalizeSport(extraction.sport);
+  if (sportNorm === "MLB" && extraction.betType === "player_prop") {
+    return (
+      <MLBPlayerPropCard
+        extraction={extraction}
+        charts={charts}
+        summary={summary}
+        computedData={computedData}
+        gameStatus={gameStatus}
+        visuals={visuals}
+        swishScore={swishScore}
+        keyInsight={keyInsight}
+        suggestions={suggestions}
+        onReset={onReset}
+      />
+    );
+  }
 
   return (
     <div className="space-y-6" id="analysis-content">
