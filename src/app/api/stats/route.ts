@@ -1393,7 +1393,22 @@ async function computeNBAInsights(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (g: any) => g.seasonType === "playoffs",
     );
-    const oppTeam = extraction.teams.find((t) => t !== extraction.players[0]) || extraction.teams[1];
+    // Resolve player's own team by counting how often each team appears as
+    // opponent in the player's gamelog. Player's team = the one that appears
+    // 0 (or minimum) times as opponent. Opp = the other one. This avoids
+    // the previous bug where `find(t => t !== players[0])` always returned
+    // the first team since team names never match player names.
+    const oppCount: Record<string, number> = {};
+    for (const t of extraction.teams) {
+      const lower = t.toLowerCase();
+      oppCount[t] = normalized.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (g: any) => (g.opponent || "").toLowerCase().includes(lower) || lower.includes((g.opponent || "").toLowerCase()),
+      ).length;
+    }
+    const sortedByCount = Object.entries(oppCount).sort((a, b) => a[1] - b[1]);
+    const playerTeam = sortedByCount[0]?.[0]; // least-as-opponent = player's team
+    const oppTeam = extraction.teams.find((t) => t !== playerTeam) || extraction.teams[1];
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const oppTeamData = oppTeam ? (history as any)?.teams?.[oppTeam] : undefined;
 
