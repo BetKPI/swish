@@ -426,28 +426,39 @@ export default function MLBPlayerPropCard({
         </div>
       )}
 
-      {/* INSIGHT BULLETS — the punchy stuff */}
-      {insightBullets.length > 0 && (
-        <div className="bg-surface rounded-xl border border-border/50 p-3 sm:p-4">
-          <div className="text-[10px] uppercase tracking-widest font-bold text-muted mb-2.5">
-            Key Insights
-          </div>
-          <div className="space-y-1.5">
-            {insightBullets.map((b, i) => (
-              <div key={i} className="flex items-baseline justify-between gap-3 text-sm">
-                <span className="text-muted truncate">{b.label}</span>
-                <span className={`font-bold tabular-nums text-right whitespace-nowrap ${
-                  b.tone === "pos" ? "text-emerald-400"
-                    : b.tone === "neg" ? "text-red-400"
-                    : "text-foreground"
-                }`}>
-                  {b.value}
-                </span>
+      {/* INSIGHT BULLETS — split by tone into Edge / Risk / Context */}
+      {insightBullets.length > 0 && (() => {
+        const pos = insightBullets.filter((b) => b.tone === "pos");
+        const neg = insightBullets.filter((b) => b.tone === "neg");
+        const neu = insightBullets.filter((b) => b.tone === "neutral");
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            {pos.length > 0 && (
+              <InsightGroup
+                title="The edge"
+                accent="emerald"
+                bullets={pos}
+              />
+            )}
+            {neg.length > 0 && (
+              <InsightGroup
+                title="The risk"
+                accent="red"
+                bullets={neg}
+              />
+            )}
+            {neu.length > 0 && (
+              <div className={`${pos.length === 0 && neg.length === 0 ? "sm:col-span-2" : pos.length > 0 || neg.length > 0 ? "sm:col-span-2" : ""}`}>
+                <InsightGroup
+                  title="Context"
+                  accent="muted"
+                  bullets={neu}
+                />
               </div>
-            ))}
+            )}
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* RISK FLAGS */}
       {flags.length > 0 && (
@@ -593,6 +604,40 @@ function CompactTable({ chart }: { chart: ChartConfig }) {
   );
 }
 
+function InsightGroup({
+  title,
+  accent,
+  bullets,
+}: {
+  title: string;
+  accent: "emerald" | "red" | "muted";
+  bullets: { label: string; value: string; tone: "pos" | "neg" | "neutral" }[];
+}) {
+  const styles =
+    accent === "emerald"
+      ? { box: "bg-emerald-500/[0.04] border-emerald-500/30", title: "text-emerald-400", value: "text-emerald-300" }
+      : accent === "red"
+        ? { box: "bg-red-500/[0.04] border-red-500/30", title: "text-red-400", value: "text-red-300" }
+        : { box: "bg-surface border-border/50", title: "text-muted", value: "text-foreground" };
+  return (
+    <div className={`rounded-xl border p-3 sm:p-4 ${styles.box}`}>
+      <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 ${styles.title}`}>
+        {title}
+      </div>
+      <div className="space-y-1.5">
+        {bullets.map((b, i) => (
+          <div key={i} className="flex items-baseline justify-between gap-3 text-sm">
+            <span className="text-muted truncate">{b.label}</span>
+            <span className={`font-bold tabular-nums text-right whitespace-nowrap ${styles.value}`}>
+              {b.value}
+            </span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function ProjectionPill({
   projection,
   line,
@@ -600,7 +645,7 @@ function ProjectionPill({
   projection: NonNullable<MLBInsights["projection"]>;
   line?: number;
 }) {
-  const { proj, diff, lean } = projection;
+  const { proj, diff, lean, edge } = projection;
   const sign = diff > 0 ? "+" : "";
   const tone =
     lean.startsWith("strong over") || lean === "lean over"
@@ -610,22 +655,39 @@ function ProjectionPill({
         : "neutral";
   const toneClass =
     tone === "pos"
-      ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+      ? "bg-emerald-500/[0.06] border-emerald-500/40"
       : tone === "neg"
-        ? "bg-red-500/10 border-red-500/40 text-red-300"
-        : "bg-surface-light border-border/60 text-muted";
+        ? "bg-red-500/[0.06] border-red-500/40"
+        : "bg-surface-light border-border/60";
+  const accentText =
+    tone === "pos" ? "text-emerald-400" : tone === "neg" ? "text-red-400" : "text-muted";
+  // Edge meter: clamp to ±50% range visually
+  const pctOfRange = Math.max(-1, Math.min(1, edge / 0.5));
+  const fillPct = Math.abs(pctOfRange) * 50; // 0..50% of bar width
   return (
-    <div className={`flex items-center justify-between rounded-lg border px-3 py-2 ${toneClass}`}>
-      <div className="flex items-baseline gap-2">
-        <span className="text-[10px] uppercase tracking-widest font-bold opacity-80">L10 Proj</span>
-        <span className="text-base font-black tabular-nums">{proj}</span>
-        {line != null && (
-          <span className="text-[11px] text-muted/80 tabular-nums">vs {line}</span>
-        )}
+    <div className={`rounded-lg border px-3 py-2.5 ${toneClass}`}>
+      <div className="flex items-baseline justify-between gap-2 mb-2">
+        <div className="flex items-baseline gap-2">
+          <span className="text-[10px] uppercase tracking-widest font-bold text-muted">L10 Projection</span>
+          <span className="text-lg font-black tabular-nums text-foreground">{proj}</span>
+          {line != null && (
+            <span className="text-[11px] text-muted tabular-nums">vs {line}</span>
+          )}
+        </div>
+        <div className="flex items-baseline gap-2">
+          <span className={`text-sm font-bold tabular-nums ${accentText}`}>{sign}{diff}</span>
+          <span className={`text-[10px] uppercase tracking-widest font-black ${accentText}`}>{lean}</span>
+        </div>
       </div>
-      <div className="flex items-center gap-2">
-        <span className="text-sm font-bold tabular-nums">{sign}{diff}</span>
-        <span className="text-[10px] uppercase tracking-widest font-black opacity-90">{lean}</span>
+      {/* Edge meter — center anchor, fills left or right based on sign */}
+      <div className="relative h-1.5 bg-border/50 rounded-full overflow-hidden">
+        <div className="absolute top-0 bottom-0 left-1/2 w-px bg-foreground/30" />
+        <div
+          className={`absolute top-0 bottom-0 ${
+            pctOfRange >= 0 ? "left-1/2 bg-emerald-500" : "right-1/2 bg-red-500"
+          }`}
+          style={{ width: `${fillPct}%` }}
+        />
       </div>
     </div>
   );
