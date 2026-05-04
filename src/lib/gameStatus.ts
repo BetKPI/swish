@@ -160,11 +160,27 @@ export async function checkGameStatus(
 }
 
 // ── Find matching game ────────────────────────────────────────────
+// When ESPN's scoreboard returns multiple matching events (e.g. yesterday's
+// completed game still on the slate plus today's upcoming game), prefer:
+//   1) more team matches
+//   2) live (in) > upcoming (pre) > completed (post)
+//   3) closer to "now" by event date
+// Otherwise an early-morning bet on tonight's game gets graded against
+// last night's box score.
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function findMatchingGame(events: any[], teams: string[]): any | null {
   if (teams.length === 0) return null;
   const teamLower = teams.map((t) => (t || "").toLowerCase());
+  const now = Date.now();
+
+  type Scored = {
+    event: unknown;
+    matches: number;
+    statePriority: number;
+    distance: number;
+  };
+  const scored: Scored[] = [];
 
   for (const event of events) {
     const comp = event.competitions?.[0];
@@ -180,7 +196,6 @@ function findMatchingGame(events: any[], teams: string[]): any | null {
       })
     );
 
-    // Check if any of our teams match any game team
     const matches = teamLower.filter((t) =>
       gameTeams.some(
         (gt: { display: string; short: string; abbrev: string; name: string }) =>
@@ -192,10 +207,26 @@ function findMatchingGame(events: any[], teams: string[]): any | null {
           t.includes(gt.display)
       )
     );
+    if (matches.length === 0) continue;
 
-    if (matches.length >= 1) return event;
+    const state = comp.status?.type?.state as "pre" | "in" | "post" | undefined;
+    // Higher = better. Live game we're tracking right now beats everything,
+    // upcoming game beats a completed past game.
+    const statePriority = state === "in" ? 3 : state === "pre" ? 2 : state === "post" ? 1 : 0;
+
+    const eventDate = event.date ? Date.parse(event.date) : NaN;
+    const distance = Number.isFinite(eventDate) ? Math.abs(eventDate - now) : Number.POSITIVE_INFINITY;
+
+    scored.push({ event, matches: matches.length, statePriority, distance });
   }
-  return null;
+  if (scored.length === 0) return null;
+
+  scored.sort((a, b) => {
+    if (b.matches !== a.matches) return b.matches - a.matches;
+    if (b.statePriority !== a.statePriority) return b.statePriority - a.statePriority;
+    return a.distance - b.distance;
+  });
+  return scored[0].event;
 }
 
 // ── Player stat line from box score ───────────────────────────────
