@@ -508,6 +508,93 @@ export async function getMLBStandingsForSeasons(
   }
 }
 
+// ── Team pitching + hitting season stats ───────────────────────────
+
+export interface TeamPitchingStats {
+  era: number;          // team ERA
+  whip: number;
+  kPer9: number;
+  bbPer9: number;
+  hrPer9: number;
+}
+
+export interface TeamHittingStats {
+  ba: number;
+  obp: number;
+  slg: number;
+  kPct: number;         // strikeouts / plate appearances
+  bbPct: number;
+  runsPerGame: number;
+}
+
+/**
+ * Pull a team's season pitching stats from MLB Stats API. Used to add
+ * "opposing staff quality" context to total bets and K props.
+ */
+export async function getTeamPitchingStats(teamId: number): Promise<TeamPitchingStats | null> {
+  if (!teamId) return null;
+  const year = new Date().getFullYear();
+  try {
+    const r = await fetch(
+      `${BASE}/teams/${teamId}/stats?stats=season&group=pitching&season=${year}`,
+      { signal: AbortSignal.timeout(8000) },
+    );
+    if (!r.ok) return null;
+    const j = await r.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const s = (j?.stats?.[0]?.splits?.[0]?.stat || {}) as Record<string, any>;
+    const era = Number(s.era);
+    const whip = Number(s.whip);
+    const kPer9 = Number(s.strikeoutsPer9Inn);
+    const bbPer9 = Number(s.walksPer9Inn);
+    const hrPer9 = Number(s.homeRunsPer9);
+    if (!Number.isFinite(era)) return null;
+    return {
+      era,
+      whip: Number.isFinite(whip) ? whip : 0,
+      kPer9: Number.isFinite(kPer9) ? kPer9 : 0,
+      bbPer9: Number.isFinite(bbPer9) ? bbPer9 : 0,
+      hrPer9: Number.isFinite(hrPer9) ? hrPer9 : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Team season hitting stats — used for "opposing lineup K rate" on
+ * pitcher K props and "opponent's offensive output" on totals.
+ */
+export async function getTeamHittingStats(teamId: number): Promise<TeamHittingStats | null> {
+  if (!teamId) return null;
+  const year = new Date().getFullYear();
+  try {
+    const r = await fetch(
+      `${BASE}/teams/${teamId}/stats?stats=season&group=hitting&season=${year}`,
+      { signal: AbortSignal.timeout(8000) },
+    );
+    if (!r.ok) return null;
+    const j = await r.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const s = (j?.stats?.[0]?.splits?.[0]?.stat || {}) as Record<string, any>;
+    const pa = Number(s.plateAppearances);
+    const k = Number(s.strikeOuts);
+    const bb = Number(s.baseOnBalls);
+    const games = Number(s.gamesPlayed);
+    const runs = Number(s.runs);
+    return {
+      ba: Number(s.avg) || 0,
+      obp: Number(s.obp) || 0,
+      slg: Number(s.slg) || 0,
+      kPct: pa > 0 ? Math.round((k / pa) * 1000) / 1000 : 0,
+      bbPct: pa > 0 ? Math.round((bb / pa) * 1000) / 1000 : 0,
+      runsPerGame: games > 0 ? Math.round((runs / games) * 10) / 10 : 0,
+    };
+  } catch {
+    return null;
+  }
+}
+
 // ── Statcast / xStats — actual + expected hitting stats ────────────
 
 export interface BatterStatcast {

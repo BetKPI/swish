@@ -13,6 +13,8 @@ import type {
   MLBPitcherGame,
   MLBBatterVsPitcher,
   BatterStatcast,
+  TeamPitchingStats,
+  TeamHittingStats,
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
 
@@ -106,8 +108,9 @@ export function buildHitterInsights(args: {
   isHome?: boolean;
   homeTeam?: string;
   statcast?: BatterStatcast;
+  oppPitching?: TeamPitchingStats | null;
 }): MLBInsights {
-  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast } = args;
+  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast, oppPitching } = args;
   const games = batter.currentSeason;
   const lastSeason = batter.lastSeason;
   const statLabel = STAT_LABELS[stat];
@@ -261,6 +264,28 @@ export function buildHitterInsights(args: {
     }
   }
 
+  // Opposing pitching staff strength - bullpen exposure for late-game props.
+  // Hitter sees the starter for ~2 ABs and the bullpen for 1-2 more, so the
+  // staff's overall ERA is a reasonable proxy when the starter is OK but the
+  // pen is lit up (or vice versa).
+  if (oppPitching && oppTeam) {
+    const era = oppPitching.era;
+    if (Number.isFinite(era) && era > 0) {
+      const tone: Tone =
+        // For hits / TB / HR / RBI: high opposing ERA = good for over
+        era >= 4.50 ? "pos" : era <= 3.50 ? "neg" : "neutral";
+      const note =
+        era >= 4.80 ? " (lit up)" :
+        era <= 3.30 ? " (elite staff)" :
+        "";
+      bullets.push({
+        label: `${oppTeam} staff ERA`,
+        value: `${era.toFixed(2)}${note}`,
+        tone,
+      });
+    }
+  }
+
   // Opposing pitcher form -concrete matchup edge
   if (oppPitcher && oppPitcher.currentSeason.length >= 3) {
     const cur = oppPitcher.currentSeason;
@@ -353,8 +378,9 @@ export function buildPitcherInsights(args: {
   oppTeam?: string;
   career?: MLBPitcherGame[];
   homeTeam?: string;
+  oppHitting?: TeamHittingStats | null;
 }): MLBInsights {
-  const { pitcher, focus, line, oppTeam, career, homeTeam } = args;
+  const { pitcher, focus, line, oppTeam, career, homeTeam, oppHitting } = args;
   const games = pitcher.currentSeason;
   const values = games.map((g) => pickPitcher(g, focus));
   const last10 = values.slice(-10);
@@ -437,6 +463,33 @@ export function buildPitcherInsights(args: {
           tone: diff < 0 ? "pos" : "neg", // fewer runs = pitcher-friendly
         });
       }
+    }
+  }
+
+  // Opposing lineup K rate - the read sharps want for K props.
+  // High K% offense = pitcher Ks come easier; low K% offense = harder.
+  if (oppHitting && oppTeam) {
+    if (focus === "strikeouts") {
+      const kPct = oppHitting.kPct;
+      const pctStr = `${(kPct * 100).toFixed(1)}%`;
+      const tone: Tone = kPct >= 0.235 ? "pos" : kPct <= 0.205 ? "neg" : "neutral";
+      const trail =
+        kPct >= 0.250 ? " (Ks easy here)" :
+        kPct <= 0.200 ? " (tough K matchup)" : "";
+      bullets.push({
+        label: `${oppTeam} K%`,
+        value: `${pctStr}${trail}`,
+        tone,
+      });
+    } else if (focus === "era") {
+      // For ERA props, opposing offense's R/G is the read.
+      const rpg = oppHitting.runsPerGame;
+      const tone: Tone = rpg >= 5.0 ? "neg" : rpg <= 4.0 ? "pos" : "neutral";
+      bullets.push({
+        label: `${oppTeam} R/G`,
+        value: `${rpg.toFixed(1)}${rpg >= 5.0 ? " (high-scoring offense)" : rpg <= 3.8 ? " (low-scoring)" : ""}`,
+        tone,
+      });
     }
   }
 

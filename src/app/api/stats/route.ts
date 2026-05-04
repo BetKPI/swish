@@ -11,12 +11,16 @@ import {
   getBatterVsPitcher,
   getMLBStandingsForSeasons,
   tryFetchBatterExitVelocity,
+  getTeamPitchingStats,
+  getTeamHittingStats,
   getLastAndCurrentSeasons,
   type MLBTeamTwoSeason,
   type MLBPitcherTwoSeason,
   type MLBPitcherGame,
   type MLBBatterTwoSeason,
   type MLBBatterVsPitcher,
+  type TeamPitchingStats,
+  type TeamHittingStats,
 } from "@/lib/mlb-history";
 import {
   resolveNBATeam,
@@ -101,6 +105,9 @@ interface MLBHistoryContextShape {
   standings: Awaited<ReturnType<typeof getMLBStandingsForSeasons>>;
   exitVelo: Record<string, Awaited<ReturnType<typeof tryFetchBatterExitVelocity>>>;
   pitcherCareerVsOpponent: Record<string, MLBPitcherGame[]>;
+  // Team-level season stats keyed by team name (as it appears in extraction.teams).
+  teamPitching: Record<string, TeamPitchingStats | null>;
+  teamHitting: Record<string, TeamHittingStats | null>;
 }
 
 async function buildMLBHistoryContext(
@@ -116,9 +123,11 @@ async function buildMLBHistoryContext(
     standings: [],
     exitVelo: {},
     pitcherCareerVsOpponent: {},
+    teamPitching: {},
+    teamHitting: {},
   };
 
-  // 1) Teams: fetch two-season results in parallel
+  // 1) Teams: fetch two-season results + season pitching/hitting in parallel
   const teamFetches = extraction.teams.map(async (name) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const slot = (mlbData as any)[name];
@@ -132,8 +141,14 @@ async function buildMLBHistoryContext(
       }
     }
     if (teamId) {
-      const ts = await getTeamTwoSeasonResults(teamId, teamName);
+      const [ts, pitching, hitting] = await Promise.all([
+        getTeamTwoSeasonResults(teamId, teamName),
+        getTeamPitchingStats(teamId),
+        getTeamHittingStats(teamId),
+      ]);
       ctx.teams[name] = ts;
+      ctx.teamPitching[name] = pitching;
+      ctx.teamHitting[name] = hitting;
     }
   });
 
@@ -1247,10 +1262,15 @@ function computeMLBInsights(
             ? "era"
             : "innings";
       const career = history.pitcherCareerVsOpponent?.[player];
+      const oppHitting = oppTeam ? history.teamHitting?.[oppTeam] : null;
       // Lazy-load to avoid pulling the lib unless we need it
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { buildPitcherInsights } = require("@/lib/mlb-insights");
-      return buildPitcherInsights({ pitcher, focus, line: extraction.line, oppTeam, career, homeTeam: extraction.homeTeam });
+      return buildPitcherInsights({
+        pitcher, focus, line: extraction.line, oppTeam, career,
+        homeTeam: extraction.homeTeam,
+        oppHitting,
+      });
     }
 
     const batter = history.batters?.[player];
@@ -1295,6 +1315,7 @@ function computeMLBInsights(
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildHitterInsights } = require("@/lib/mlb-insights");
     const statcast = history.exitVelo?.[player];
+    const oppPitching = oppTeam ? history.teamPitching?.[oppTeam] : null;
     return buildHitterInsights({
       batter,
       stat,
@@ -1305,6 +1326,7 @@ function computeMLBInsights(
       isHome,
       homeTeam: extraction.homeTeam,
       statcast,
+      oppPitching,
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
