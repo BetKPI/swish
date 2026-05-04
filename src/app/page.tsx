@@ -258,134 +258,165 @@ export default function Home() {
     <div className="w-full">
       {state === "upload" && (
         <>
-          {/* Hero section */}
-          <div className="text-center px-4 pt-8 sm:pt-16 pb-8 sm:pb-12">
-            <div className="max-w-3xl mx-auto space-y-6">
-              {/* Value prop - lead with what they GET */}
-              <div className="space-y-3">
-                <p className="text-accent text-sm font-semibold tracking-wide uppercase">Free. No sign-up. 20 seconds.</p>
-                <h2 className="text-3xl sm:text-5xl font-black tracking-tight leading-[1.1]">
-                  See the data behind
+          {/* HERO - sport-themed atmospheric backdrop */}
+          <div className="relative overflow-hidden">
+            {/* Field watermark grid - diamond + court + rink behind the hero */}
+            <div
+              className="absolute inset-0 pointer-events-none"
+              aria-hidden
+              style={{
+                background:
+                  "radial-gradient(ellipse at 20% 80%, rgba(16,122,73,0.10) 0%, transparent 55%)," +
+                  "radial-gradient(ellipse at 80% 20%, rgba(217,119,6,0.06) 0%, transparent 50%)," +
+                  "radial-gradient(ellipse at 50% 100%, rgba(56,189,248,0.05) 0%, transparent 60%)",
+              }}
+            />
+            {/* Diamond left */}
+            <div className="absolute -left-12 top-32 w-72 h-72 text-emerald-300/[0.05] pointer-events-none hidden sm:block" aria-hidden>
+              <svg viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
+                <polygon points="120,200 175,145 120,90 65,145" />
+                <circle cx="120" cy="145" r="6" />
+                <line x1="120" y1="200" x2="20" y2="180" />
+                <line x1="120" y1="200" x2="220" y2="180" />
+              </svg>
+            </div>
+            {/* Court right */}
+            <div className="absolute -right-8 top-12 w-56 h-56 text-amber-300/[0.05] pointer-events-none hidden sm:block" aria-hidden>
+              <svg viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="1.5" className="w-full h-full">
+                <rect x="86" y="10" width="68" height="80" />
+                <circle cx="120" cy="90" r="32" />
+                <path d="M 50 10 L 50 70 A 70 70 0 0 0 190 70 L 190 10" />
+              </svg>
+            </div>
+
+            <div className="relative px-4 pt-12 sm:pt-20 pb-8 sm:pb-12">
+              <div className="max-w-2xl mx-auto">
+                {/* Logo lockup - sport ticker */}
+                <div className="flex items-center justify-center gap-2 text-[10px] uppercase tracking-[0.3em] font-bold text-muted/70 mb-5">
+                  <span>⚾ MLB</span>
+                  <span className="text-muted/30">·</span>
+                  <span>🏀 NBA</span>
+                  <span className="text-muted/30">·</span>
+                  <span>🏈 NFL</span>
+                  <span className="text-muted/30">·</span>
+                  <span>🏒 NHL</span>
+                  <span className="text-muted/30">·</span>
+                  <span>⛳ PGA</span>
+                </div>
+
+                <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[0.95] text-center">
+                  The take,
                   <br />
-                  <span className="text-accent">any bet, instantly.</span>
-                </h2>
-              </div>
+                  <span className="text-accent">before you take the bet.</span>
+                </h1>
 
-              <p className="text-muted text-base sm:text-lg max-w-lg mx-auto leading-relaxed">
-                Upload a screenshot of your bet slip and get hit rates,
-                historical charts, and a confidence score - powered by
-                real stats, not vibes.
-              </p>
+                <p className="text-foreground/80 text-base sm:text-lg max-w-md mx-auto leading-relaxed mt-6 text-center">
+                  Drop a bet slip. We pull every game log, xStat, ballpark factor,
+                  and matchup angle, then give you the % chance it hits.
+                </p>
 
-              {/* Social proof / differentiator */}
-              <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 text-xs text-muted">
-                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Props &amp; parlays</span>
-                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> NFL / NBA / MLB / NHL / Golf / Tennis</span>
-                <span className="flex items-center gap-1.5"><span className="text-accent">&#10003;</span> Shareable charts</span>
-              </div>
+                {/* Upload box - prominent, sport-tinted glow */}
+                <div className="max-w-lg mx-auto mt-8 sm:mt-10">
+                  <div
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      setDragOver(true);
+                    }}
+                    onDragLeave={() => setDragOver(false)}
+                    onDrop={handleDrop}
+                    onClick={() => fileInputRef.current?.click()}
+                    className={`relative rounded-2xl p-7 sm:p-9 text-center cursor-pointer transition-all overflow-hidden ${
+                      dragOver
+                        ? "bg-accent/[0.12] border-2 border-dashed border-accent shadow-[0_0_40px_rgba(16,185,129,0.25)]"
+                        : imagePreview
+                        ? "bg-surface border border-accent/60"
+                        : "bg-surface hover:bg-surface-light border-2 border-dashed border-border hover:border-accent/60"
+                    }`}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileInput}
+                      className="hidden"
+                    />
 
-              {/* Upload CTA */}
-              <div className="max-w-lg mx-auto pt-2">
-                <div
-                  onDragOver={(e) => {
-                    e.preventDefault();
-                    setDragOver(true);
-                  }}
-                  onDragLeave={() => setDragOver(false)}
-                  onDrop={handleDrop}
-                  onClick={() => fileInputRef.current?.click()}
-                  className={`rounded-2xl p-6 sm:p-8 text-center cursor-pointer transition-all ${
-                    dragOver
-                      ? "bg-accent/15 border-2 border-dashed border-accent"
-                      : imagePreview
-                      ? "bg-surface border border-accent/50"
-                      : "bg-surface hover:bg-surface-light border-2 border-dashed border-border hover:border-accent/50"
-                  }`}
-                >
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileInput}
-                    className="hidden"
-                  />
-
-                  {imagePreview ? (
-                    <div className="space-y-4">
-                      <img
-                        src={imagePreview}
-                        alt="Bet screenshot"
-                        className="max-h-56 mx-auto rounded-lg"
-                      />
-                      <p className="text-muted text-sm">Tap to change</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-3">
-                      <div className="mx-auto w-14 h-14 rounded-full bg-accent/10 border-2 border-dashed border-accent/40 flex items-center justify-center">
-                        <svg className="w-7 h-7 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
-                        </svg>
+                    {imagePreview ? (
+                      <div className="space-y-4 relative">
+                        <img
+                          src={imagePreview}
+                          alt="Bet screenshot"
+                          className="max-h-56 mx-auto rounded-lg"
+                        />
+                        <p className="text-muted text-sm">Tap to swap</p>
                       </div>
-                      <p className="text-lg sm:text-xl font-bold">
-                        Drop your bet screenshot here
-                      </p>
-                      <p className="text-muted text-sm">
-                        DraftKings, FanDuel, PrizePicks, Underdog - any app
-                      </p>
-                      <p className="text-accent text-xs font-medium">
-                        Props / parlays / O/U / spreads / moneylines
-                      </p>
-                    </div>
+                    ) : (
+                      <div className="space-y-3 relative">
+                        <div className="mx-auto w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center">
+                          <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9 4.5-4.5m0 0 4.5 4.5M12 3v13.5" />
+                          </svg>
+                        </div>
+                        <p className="text-lg sm:text-xl font-bold">
+                          Drop a screenshot
+                        </p>
+                        <p className="text-muted text-xs">
+                          DraftKings · FanDuel · PrizePicks · Underdog · any app
+                        </p>
+                      </div>
+                    )}
+                  </div>
+
+                  {imagePreview && (
+                    <button
+                      onClick={analyze}
+                      className="w-full mt-3 py-4 px-6 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-lg cursor-pointer"
+                    >
+                      Run the numbers
+                    </button>
                   )}
                 </div>
 
-                {imagePreview && (
-                  <button
-                    onClick={analyze}
-                    className="w-full mt-3 py-4 px-6 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-lg cursor-pointer"
-                  >
-                    Analyze This Bet
-                  </button>
-                )}
+                {/* Honest one-liner — no marketing fluff */}
+                <p className="text-muted/60 text-xs text-center mt-6 max-w-md mx-auto">
+                  Free. No account. Charts and probabilities, not picks.
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Spacer */}
-          <div className="py-2" />
-
-          {/* Bet History */}
-          <div className="max-w-lg mx-auto px-4 py-8">
-            <BetHistory onLoad={loadFromHistory} />
+          {/* What we actually pull - real signals, not bullet checkmarks */}
+          <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14">
+            <p className="text-xs uppercase tracking-[0.25em] font-bold text-muted text-center mb-6">
+              What we cross-reference
+            </p>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+              {[
+                { label: "Game logs", value: "L5 · L10 · season" },
+                { label: "xStats", value: "xBA · xSLG · xwOBA" },
+                { label: "Park factors", value: "all 30 stadiums" },
+                { label: "Opp pitching", value: "ERA · K/9 · staff" },
+                { label: "Defensive matchup", value: "ppg vs lg avg" },
+                { label: "Pace tilt", value: "fast / slow" },
+                { label: "Series leverage", value: "elimination · pivotal" },
+                { label: "Probability", value: "% chance to hit" },
+              ].map((s) => (
+                <div key={s.label} className="bg-surface/50 border border-border/40 rounded-xl p-3">
+                  <div className="text-[10px] uppercase tracking-wider font-bold text-muted">{s.label}</div>
+                  <div className="text-sm font-bold tabular-nums mt-1">{s.value}</div>
+                </div>
+              ))}
+            </div>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-border/30" />
+          {/* Bet History */}
+          <div className="max-w-lg mx-auto px-4 py-2">
+            <BetHistory onLoad={loadFromHistory} />
+          </div>
 
           {/* Example output */}
           <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16">
             <ExampleShowcase />
-          </div>
-
-          {/* Bottom CTA */}
-          <div className="border-t border-border/30" />
-          <div className="text-center px-4 py-12 sm:py-16">
-            <div className="max-w-lg mx-auto space-y-4">
-              <p className="text-2xl sm:text-3xl font-black leading-tight">
-                Stop guessing.
-                <br />
-                <span className="text-accent">Start knowing.</span>
-              </p>
-              <p className="text-muted text-base mt-2">
-                Every tool like this charges $10-200/mo. Swish is free.
-              </p>
-              <button
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="mt-2 py-3.5 px-8 bg-accent hover:bg-emerald-400 text-black font-bold rounded-2xl transition-colors text-base cursor-pointer"
-              >
-                Upload a Bet
-              </button>
-            </div>
           </div>
         </>
       )}

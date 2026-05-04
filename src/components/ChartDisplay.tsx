@@ -35,6 +35,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
   const [rated, setRated] = useState<"up" | "down" | null>(null);
   const [window, setWindow] = useState<number | null>(null); // null = all data
+  const [collapsed, setCollapsed] = useState(false);
 
   // Time window filter - applies to hitrate, line, and bar charts (not tables)
   const showToggle = type !== "table" && data.length > 10;
@@ -86,11 +87,23 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
     <div ref={chartRef} className="bg-surface rounded-xl p-4 sm:p-5 space-y-3 relative group border border-border/50 hover:border-border transition-colors">
       <div>
         <div className="flex items-start justify-between gap-2">
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-sm">{title}</h3>
+          <button
+            onClick={() => setCollapsed((v) => !v)}
+            className="flex-1 min-w-0 text-left cursor-pointer group/title"
+            aria-expanded={!collapsed}
+          >
+            <h3 className="font-semibold text-sm flex items-center gap-1.5">
+              {title}
+              <svg
+                className={`w-3.5 h-3.5 text-muted/60 transition-transform ${collapsed ? "" : "rotate-180"}`}
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5"
+              >
+                <polyline points="6 9 12 15 18 9" />
+              </svg>
+            </h3>
             <p className="text-muted text-xs leading-relaxed">{relevance}</p>
-          </div>
-          {showToggle && (
+          </button>
+          {showToggle && !collapsed && (
             <div className="flex gap-1 flex-shrink-0">
               {windowOptions.map((opt) => (
                 <button
@@ -110,7 +123,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
         </div>
       </div>
 
-      {type === "table" ? (
+      {!collapsed && (type === "table" ? (
         <TableChart data={data} columns={columns} />
       ) : type === "line" ? (
         <RechartsLine data={filteredData} xKey={xKey} yKeys={yKeys} />
@@ -123,9 +136,10 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
           yKeys={yKeys}
           isDistribution={type === "distribution"}
         />
-      )}
+      ))}
 
-      {/* Action row - bottom-right, always visible (doesn't fight toggles) */}
+      {/* Action row - hidden when collapsed (no chart to share/rate) */}
+      {!collapsed && (
       <div className="flex justify-end gap-1 pt-1 -mb-1">
         {rated ? (
           <span className="px-2 py-1 text-[10px] text-muted">{rated === "up" ? "Thanks!" : "Noted"}</span>
@@ -167,6 +181,7 @@ export default function ChartDisplay({ config, extraction }: { config: ChartConf
           )}
         </button>
       </div>
+      )}
     </div>
   );
 }
