@@ -303,10 +303,34 @@ export default function AnalysisResults({
         </div>
       )}
 
-      {/* Charts */}
-      {charts.map((chart, i) => (
-        <ChartDisplay key={i} config={chart} extraction={extraction} />
-      ))}
+      {/* Charts - for themed sports (MLB/NBA/NHL) put green/red bar charts
+          (hitrate / bar) first and collapse the tables behind a single
+          "Matchup details" toggle so the page feels less like a stat dump. */}
+      {(() => {
+        if (!themedSport) {
+          return charts.map((chart, i) => (
+            <ChartDisplay key={i} config={chart} extraction={extraction} />
+          ));
+        }
+        const visualCharts = charts.filter((c) => c.type === "hitrate" || c.type === "bar" || c.type === "line" || c.type === "distribution");
+        const tableCharts = charts.filter((c) => c.type === "table");
+        return (
+          <>
+            {visualCharts.map((chart, i) => (
+              <ChartDisplay key={`v-${i}`} config={chart} extraction={extraction} />
+            ))}
+            {tableCharts.length > 0 && (
+              <CollapsibleSection label="Matchup details" count={tableCharts.length}>
+                <div className="space-y-3 pt-2">
+                  {tableCharts.map((chart, i) => (
+                    <ChartDisplay key={`t-${i}`} config={chart} extraction={extraction} />
+                  ))}
+                </div>
+              </CollapsibleSection>
+            )}
+          </>
+        );
+      })()}
 
       {/* Share Analysis - captures the entire analysis as one watermarked image */}
       <button
@@ -395,4 +419,41 @@ function sportColorClass(sport: string): string {
     NCAAF: "bg-amber-500/20 text-amber-400",
   };
   return map[normalizeSport(sport)] || "bg-accent/20 text-accent";
+}
+
+function CollapsibleSection({
+  label,
+  count,
+  defaultOpen = false,
+  children,
+}: {
+  label: string;
+  count?: number;
+  defaultOpen?: boolean;
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = useState(defaultOpen);
+  return (
+    <div className="bg-surface rounded-xl border border-border/50">
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="w-full flex items-center justify-between px-4 py-3 text-left cursor-pointer"
+        aria-expanded={open}
+      >
+        <span className="text-xs uppercase tracking-widest font-bold text-muted flex items-center gap-2">
+          {label}
+          {count != null && count > 0 && (
+            <span className="text-[10px] bg-surface-light text-muted px-1.5 py-0.5 rounded tabular-nums">{count}</span>
+          )}
+        </span>
+        <svg
+          className={`w-4 h-4 text-muted transition-transform ${open ? "rotate-180" : ""}`}
+          viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </button>
+      {open && <div className="px-4 pb-4">{children}</div>}
+    </div>
+  );
 }

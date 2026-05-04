@@ -316,8 +316,9 @@ export function buildNBATeamH2HTable(
 export type NBAPlayerStatKey = "PTS" | "REB" | "AST" | "3PM" | "STL" | "BLK" | "TO" | "MIN" | "FGM" | "FGA";
 
 function findStat(game: NBAPlayerGame, key: NBAPlayerStatKey): number | null {
-  // ESPN labels for NBA gamelog typically: "PTS", "REB", "AST", "3PT" (e.g. 3-7), "FG", "STL", "BLK", "TO", "MIN".
-  // We only read numeric fields, so "3PM"/"FGM" may be missing - try common aliases.
+  // ESPN gamelog labels: PTS, REB, AST, STL, BLK, TO, MIN, 3PT, FG, FT.
+  // The dash-formatted shooting stats (3PT="3-7", FG="9-15") now resolve to
+  // the leading made-shots count in the stats record after ingestion.
   const s = game.stats;
   if (key === "PTS") return s.PTS ?? null;
   if (key === "REB") return s.REB ?? null;
@@ -326,8 +327,8 @@ function findStat(game: NBAPlayerGame, key: NBAPlayerStatKey): number | null {
   if (key === "BLK") return s.BLK ?? null;
   if (key === "TO") return s.TO ?? null;
   if (key === "MIN") return s.MIN ?? null;
-  if (key === "3PM") return s["3PM"] ?? null;
-  if (key === "FGM") return s.FGM ?? null;
+  if (key === "3PM") return s["3PT"] ?? s["3PM"] ?? null;
+  if (key === "FGM") return s.FG ?? s.FGM ?? null;
   if (key === "FGA") return s.FGA ?? null;
   return null;
 }

@@ -249,8 +249,16 @@ async function fetchPlayerSeasonLog(playerId: string, season: number): Promise<N
         const stats: Record<string, number> = {};
         labels.forEach((label, i) => {
           const v = values[i];
-          const num = Number(v);
-          if (!isNaN(num) && !String(v).includes("-")) stats[label] = num;
+          const s = String(v);
+          // For dash-formatted shooting stats ("3-7"), keep the leading
+          // number (made shots) under the label. Otherwise standard parse.
+          if (s.includes("-")) {
+            const made = Number(s.slice(0, s.indexOf("-")));
+            if (!isNaN(made)) stats[label] = made;
+          } else {
+            const num = Number(v);
+            if (!isNaN(num)) stats[label] = num;
+          }
         });
         games.push({
           eventId: String(ev.eventId || ""),
