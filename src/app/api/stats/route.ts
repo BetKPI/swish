@@ -1165,31 +1165,9 @@ async function analyzeSingleBet(
   // "Shaky" because it expects a different data shape. Use the projection's
   // edge + bullet positivity to compute a meaningful score.
   const insights = mlbInsights || nbaInsights;
-  if (insights?.projection && extraction.betType === "player_prop") {
-    const edge = Math.abs(insights.projection.edge);
-    const posBullets = insights.bullets.filter((b: { tone: string }) => b.tone === "pos").length;
-    const negBullets = insights.bullets.filter((b: { tone: string }) => b.tone === "neg").length;
-    // Score: 50 baseline, +/-30 from edge magnitude, +5 per net positive bullet,
-    // -3 per risk flag. Clamp to 0-100.
-    let raw = 50;
-    raw += Math.min(30, edge * 100); // strong over edge=0.20 → +20
-    raw += (posBullets - negBullets) * 5;
-    raw -= (insights.flags?.length || 0) * 3;
-    // Direction adjustment: under-leans flip to "negative" for over bets - but
-    // since the user picks side, we just measure conviction magnitude.
-    raw = Math.max(20, Math.min(95, raw));
-    const lean = insights.projection.lean;
-    const label =
-      raw >= 80 ? "Strong" :
-      raw >= 65 ? "Solid" :
-      raw >= 50 ? "Toss-Up" :
-      raw >= 35 ? "Shaky" :
-      "Weak";
-    swishScore = {
-      score: Math.round(raw) / 10,
-      label,
-      detail: `${insights.bullets.length} insight${insights.bullets.length === 1 ? "" : "s"}, projection ${lean}.`,
-    };
+  const overridden = scoreFromInsights(insights);
+  if (overridden && extraction.betType === "player_prop") {
+    swishScore = overridden;
   }
 
   if (isSummaryOnly) {
@@ -1220,6 +1198,40 @@ async function analyzeSingleBet(
     suggestions,
     mlbInsights,
     nbaInsights,
+  };
+}
+
+/**
+ * Convert structured insights (MLB or NBA - they share shape) into a Swish
+ * Score. Used both on single bets and per parlay leg so a leg with strong
+ * positive evidence ranks Solid/Strong instead of falling back to the
+ * generic 4.5/Shaky.
+ */
+function scoreFromInsights(
+  insights:
+    | { projection?: { edge: number; lean: string }; bullets: { tone: string }[]; flags: string[] }
+    | undefined
+): { score: number; label: string; detail: string } | undefined {
+  if (!insights?.projection) return undefined;
+  const edge = Math.abs(insights.projection.edge);
+  const posBullets = insights.bullets.filter((b) => b.tone === "pos").length;
+  const negBullets = insights.bullets.filter((b) => b.tone === "neg").length;
+  let raw = 50;
+  raw += Math.min(30, edge * 100);
+  raw += (posBullets - negBullets) * 5;
+  raw -= (insights.flags?.length || 0) * 3;
+  raw = Math.max(20, Math.min(95, raw));
+  const lean = insights.projection.lean;
+  const label =
+    raw >= 80 ? "Strong" :
+    raw >= 65 ? "Solid" :
+    raw >= 50 ? "Toss-Up" :
+    raw >= 35 ? "Shaky" :
+    "Weak";
+  return {
+    score: Math.round(raw) / 10,
+    label,
+    detail: `${insights.bullets.length} insight${insights.bullets.length === 1 ? "" : "s"}, projection ${lean}.`,
   };
 }
 
@@ -1289,6 +1301,17 @@ function computeMLBInsights(
         ? extraction.teams[0].toLowerCase() === extraction.homeTeam.toLowerCase()
         : undefined;
 
+    // Anytime / yes-no props (no numeric line): treat as line=0.5 so the
+    // hitter logic can still produce a hit-rate verdict + projection. For
+    // hits / HR / SB / RBI, "anytime" or "to record" means 1+, and value > 0.5
+    // is equivalent to value >= 1.
+    const effectiveLine =
+      extraction.line != null
+        ? extraction.line
+        : (m.includes("anytime") || m.includes("to record") || m.includes("to hit") || m.includes("to steal") || m.includes("to homer"))
+          ? 0.5
+          : null;
+
     // Resolve opposing pitcher - match probable pitcher to BvP pitcher name,
     // or pick any probable pitcher if BvP missing (better than nothing).
     let oppPitcher: unknown = undefined;
@@ -1311,7 +1334,7 @@ function computeMLBInsights(
       }
     }
 
-    if (extraction.line == null) return undefined;
+    if (effectiveLine == null) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildHitterInsights } = require("@/lib/mlb-insights");
     const statcast = history.exitVelo?.[player];
@@ -1319,7 +1342,7 @@ function computeMLBInsights(
     return buildHitterInsights({
       batter,
       stat,
-      line: extraction.line,
+      line: effectiveLine,
       oppTeam,
       oppPitcher,
       bvp,
@@ -1840,17 +1863,36 @@ export async function POST(request: NextRequest) {
       );
 
       // Step 5: Combine charts + summaries + game status + swish scores
+      // Pre-compute per-leg insights for parlay legs so the score override
+      // can differentiate them. Done before the synchronous map below since
+      // computeNBAInsights is async.
+      const legInsightsArr = await Promise.all(
+        legData.map(async (ld) => {
+          if (!ld.teamData) return undefined;
+          const mlb = computeMLBInsights(ld.leg, ld.teamData);
+          if (mlb) return mlb;
+          const nba = await computeNBAInsights(ld.leg, ld.teamData);
+          return nba || undefined;
+        }),
+      );
+
       const finalLegs = legData.map((ld, i) => {
         const aiLeg = legSummaries[i] || {};
         const legCharts = ld.charts.length > 0 ? ld.charts : (aiLeg.charts as unknown[]) || [];
         const legSummary = (aiLeg.summary as string) || null;
         const legStats = (aiLeg.stats as unknown[]) || [];
         const hasAnything = legCharts.length > 0 || legSummary || legStats.length > 0;
+        const legInsights = legInsightsArr[i];
 
-        // Per-leg Swish Score
+        // Per-leg Swish Score - prefer insight-driven score (uses real
+        // edge / bullet tone) over the default scorer's flat 4.5/Shaky.
         let legSwishScore = undefined;
         if (ld.computed && ld.teamData) {
           legSwishScore = computeSwishScore(ld.leg.betType, ld.computed, ld.leg, ld.teamData);
+        }
+        const overridden = scoreFromInsights(legInsights);
+        if (overridden && ld.leg.betType === "player_prop") {
+          legSwishScore = overridden;
         }
 
         // Per-leg Hit Rate
