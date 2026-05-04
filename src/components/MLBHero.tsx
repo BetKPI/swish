@@ -52,6 +52,38 @@ function formatStatLabel(market?: string, description?: string): string {
   return market || "Bet";
 }
 
+/**
+ * For "to record a hit" / "to hit a home run" / "anytime HR" style props with
+ * no over/under line, return a short imperative phrase to display under the
+ * player name. Returns null when the prop has a normal numeric line and the
+ * stat + line block already covers it.
+ */
+function extractActionPhrase(description?: string, market?: string, line?: number): string | null {
+  if (line != null) return null; // numeric line is already shown in the line block
+  const desc = (description || "").trim();
+  if (!desc) return market || null;
+  const m = `${desc} ${market || ""}`.toLowerCase();
+
+  // Common yes/no patterns
+  if (m.includes("anytime") && (m.includes("hr") || m.includes("home run"))) return "Anytime HR";
+  if (m.includes("hit a home run") || m.includes("to homer")) return "To Hit a HR";
+  if (m.includes("record a hit") || m.includes("to get a hit")) return "To Record a Hit";
+  if (m.includes("stolen base") && (m.includes("record") || m.includes("get"))) return "To Steal a Base";
+  if (m.includes("rbi") && (m.includes("record") || m.includes("get"))) return "To Record an RBI";
+  if (m.includes("first run") || m.includes("first to score")) return "First to Score";
+  if (m.includes("nrfi")) return "No Runs 1st Inning";
+  if (m.includes("yrfi")) return "Yes Run 1st Inning";
+
+  // Fallback: take the part of the description after the player name, before "in the" / "@"
+  const trimmed = desc
+    .replace(/\b(?:in the|of the|from the|@|at|vs\.?)\b.*$/i, "")
+    .replace(/\s+to\s+/i, " — ")
+    .trim();
+  // Drop any leading player-team-name noise
+  const tail = trimmed.split(/\s+—\s+/).pop() || trimmed;
+  return tail.length > 4 && tail.length < 50 ? tail : null;
+}
+
 export default function MLBHero({ extraction, visuals, swishScore, variant = "full" }: Props) {
   const playerName = extraction.players[0];
   const teamVisuals = (visuals?.teams || {}) as Record<string, { logo?: string; color?: string }>;
@@ -66,6 +98,7 @@ export default function MLBHero({ extraction, visuals, swishScore, variant = "fu
   const stat = formatStatLabel(extraction.market, extraction.description);
   const line = extraction.line;
   const isPlayerProp = extraction.betType === "player_prop";
+  const action = extractActionPhrase(extraction.description, extraction.market, line);
 
   const compact = variant === "compact";
 
@@ -157,6 +190,11 @@ export default function MLBHero({ extraction, visuals, swishScore, variant = "fu
             <h2 className={`font-black ${compact ? "text-base" : "text-xl sm:text-2xl"} leading-tight tracking-tight uppercase truncate text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.6)]`}>
               {playerName || (teamA && teamB ? `${teamA} vs ${teamB}` : extraction.description)}
             </h2>
+            {action && (
+              <p className={`${compact ? "text-xs" : "text-sm sm:text-base"} font-bold uppercase tracking-wide text-accent mt-0.5 truncate`}>
+                {action}
+              </p>
+            )}
             <p className="text-xs sm:text-sm text-white/70 mt-1 font-semibold tracking-wide">
               {playerName && teamA ? (
                 <>

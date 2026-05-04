@@ -150,7 +150,16 @@ export default function MLBPlayerPropCard({
   const isMiss = grade === "miss";
 
   return (
-    <div className="space-y-4" id="mlb-card">
+    <div className="space-y-4 relative" id="mlb-card">
+      {/* Page-level field tint — extreme subtle grass green washing through everything */}
+      <div
+        className="pointer-events-none fixed inset-0 -z-10"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 100%, rgba(16, 122, 73, 0.08) 0%, transparent 60%)",
+        }}
+      />
       {/* HIT/MISS banner when graded */}
       {isFinal && (isHit || isMiss) && (
         <div className={`rounded-xl p-4 text-center border-2 ${
@@ -193,7 +202,17 @@ export default function MLBPlayerPropCard({
 
       {/* PRIMARY CHART */}
       {primaryChart && allRows.length > 0 && line != null && (
-        <div className="bg-surface rounded-xl border border-border/50 p-4 sm:p-5 space-y-3">
+        <div className="relative bg-surface rounded-xl border border-border/50 p-4 sm:p-5 space-y-3 overflow-hidden">
+          {/* Subtle diamond watermark — top-right corner */}
+          <div className="pointer-events-none absolute -top-4 -right-4 w-32 h-32 text-emerald-400/[0.06]" aria-hidden>
+            <svg viewBox="0 0 240 240" fill="none" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" className="w-full h-full">
+              <polygon points="120,200 175,145 120,90 65,145" />
+              <circle cx="120" cy="145" r="5" />
+              <line x1="120" y1="200" x2="40" y2="120" strokeOpacity="0.5" />
+              <line x1="120" y1="200" x2="200" y2="120" strokeOpacity="0.5" />
+            </svg>
+          </div>
+          <div className="relative">
           {/* Time toggles */}
           <div className="flex gap-1.5 overflow-x-auto scrollbar-hide -mx-1 px-1">
             {TIME_WINDOWS.map((w) => {
@@ -286,6 +305,7 @@ export default function MLBPlayerPropCard({
               </Bar>
             </BarChart>
           </ResponsiveContainer>
+          </div>
         </div>
       )}
 
@@ -478,12 +498,14 @@ function InsightGroup({
 }) {
   const styles =
     accent === "emerald"
-      ? { box: "bg-emerald-500/[0.04] border-emerald-500/30", title: "text-emerald-400", value: "text-emerald-300" }
+      ? { box: "bg-emerald-500/[0.04] border-emerald-500/30", title: "text-emerald-400", value: "text-emerald-300", topStripe: "bg-emerald-500/40" }
       : accent === "red"
-        ? { box: "bg-red-500/[0.04] border-red-500/30", title: "text-red-400", value: "text-red-300" }
-        : { box: "bg-surface border-border/50", title: "text-muted", value: "text-foreground" };
+        ? { box: "bg-red-500/[0.04] border-red-500/30", title: "text-red-400", value: "text-red-300", topStripe: "bg-red-500/40" }
+        : { box: "bg-surface border-border/50", title: "text-muted", value: "text-foreground", topStripe: "bg-border" };
   return (
-    <div className={`rounded-xl border p-3 sm:p-4 ${styles.box}`}>
+    <div className={`relative rounded-xl border p-3 sm:p-4 overflow-hidden ${styles.box}`}>
+      {/* Foul-line accent — diagonal pinstripe at the top */}
+      <div className={`absolute top-0 left-0 right-0 h-0.5 ${styles.topStripe}`} aria-hidden />
       <div className={`text-[10px] uppercase tracking-widest font-bold mb-2 ${styles.title}`}>
         {title}
       </div>
