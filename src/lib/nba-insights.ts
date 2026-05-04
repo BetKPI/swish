@@ -48,28 +48,49 @@ const STAT_LABELS: Record<NBAStat, string> = {
   ra: "REB+AST",
 };
 
+// ESPN's NBA gamelog stat keys are uppercase abbreviations: PTS, REB, AST,
+// STL, BLK, TO, MIN, "3PM"/"3PT" (made; sometimes formatted as "3-7"), FGM, FGA.
+function num(s: Record<string, unknown>, ...keys: string[]): number {
+  for (const k of keys) {
+    const v = s[k];
+    if (typeof v === "number" && !isNaN(v)) return v;
+    if (typeof v === "string") {
+      // For "3PT" formatted like "3-7", grab the leading number (made shots)
+      const dash = v.indexOf("-");
+      if (dash > 0) {
+        const n = Number(v.slice(0, dash));
+        if (!isNaN(n)) return n;
+      }
+      const n = Number(v);
+      if (!isNaN(n)) return n;
+    }
+  }
+  return 0;
+}
+
 function pickStat(g: NBAPlayerGame, stat: NBAStat): number {
-  const s = g.stats || {};
+  const s = (g.stats || {}) as Record<string, unknown>;
+  const pts = num(s, "PTS", "pts", "points");
+  const reb = num(s, "REB", "reb", "rebounds");
+  const ast = num(s, "AST", "ast", "assists");
   switch (stat) {
-    case "pts": return Number(s.pts || s.points || 0);
-    case "reb": return Number(s.reb || s.rebounds || 0);
-    case "ast": return Number(s.ast || s.assists || 0);
-    case "stl": return Number(s.stl || s.steals || 0);
-    case "blk": return Number(s.blk || s.blocks || 0);
-    case "fg3m": return Number(s.fg3m || s.threesMade || s["3pm"] || 0);
-    case "tov": return Number(s.tov || s.turnovers || 0);
-    case "pra":
-      return (Number(s.pts || 0) + Number(s.reb || 0) + Number(s.ast || 0));
-    case "pr": return Number(s.pts || 0) + Number(s.reb || 0);
-    case "pa": return Number(s.pts || 0) + Number(s.ast || 0);
-    case "ra": return Number(s.reb || 0) + Number(s.ast || 0);
+    case "pts": return pts;
+    case "reb": return reb;
+    case "ast": return ast;
+    case "stl": return num(s, "STL", "stl", "steals");
+    case "blk": return num(s, "BLK", "blk", "blocks");
+    case "fg3m": return num(s, "3PM", "3PT", "fg3m", "threesMade");
+    case "tov": return num(s, "TO", "TOV", "tov", "turnovers");
+    case "pra": return pts + reb + ast;
+    case "pr": return pts + reb;
+    case "pa": return pts + ast;
+    case "ra": return reb + ast;
   }
 }
 
 function pickMinutes(g: NBAPlayerGame): number {
-  const s = g.stats || {};
-  const m = s.min ?? s.minutes ?? s.mins;
-  return typeof m === "number" ? m : 0;
+  const s = (g.stats || {}) as Record<string, unknown>;
+  return num(s, "MIN", "min", "minutes", "mins");
 }
 
 function mean(arr: number[]): number {
