@@ -13,6 +13,7 @@ import type {
   MLBPitcherGame,
   MLBBatterVsPitcher,
 } from "./mlb-history";
+import { getParkFactors } from "./mlb-park-factors";
 
 export type Tone = "pos" | "neg" | "neutral";
 
@@ -99,10 +100,12 @@ export function buildHitterInsights(args: {
   stat: HitterStat;
   line: number;
   oppTeam?: string;
+  oppPitcher?: MLBPitcherTwoSeason;
   bvp?: MLBBatterVsPitcher;
   isHome?: boolean;
+  homeTeam?: string;
 }): MLBInsights {
-  const { batter, stat, line, oppTeam, bvp, isHome } = args;
+  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam } = args;
   const games = batter.currentSeason;
   const lastSeason = batter.lastSeason;
   const statLabel = STAT_LABELS[stat];
@@ -197,6 +200,51 @@ export function buildHitterInsights(args: {
     }
   }
 
+  // Ballpark factor — adds context when notable
+  if (homeTeam) {
+    const pf = getParkFactors(homeTeam);
+    if (pf) {
+      let val: string;
+      let tone: Tone = "neutral";
+      const factor = stat === "homeRuns" ? pf.hr : stat === "totalBases" ? Math.round((pf.hr + pf.hits) / 2) : stat === "hits" ? pf.hits : pf.runs;
+      const diff = factor - 100;
+      const sign = diff > 0 ? "+" : "";
+      val = `${pf.parkName.replace(/\s+(Field|Park|Stadium|Center|Centre)\b/g, " $1").replace(/Daikin Park/, "Daikin Park")} (${sign}${diff}%)`;
+      if (Math.abs(diff) >= 5) {
+        tone = diff > 0 ? "pos" : "neg";
+        bullets.push({ label: stat === "homeRuns" ? "Park HR factor" : stat === "hits" ? "Park hits factor" : "Park run factor", value: val, tone });
+      }
+    }
+  }
+
+  // Opposing pitcher form — concrete matchup edge
+  if (oppPitcher && oppPitcher.currentSeason.length >= 3) {
+    const cur = oppPitcher.currentSeason;
+    let ip = 0, er = 0, k = 0, h = 0;
+    for (const g of cur) { ip += g.ip; er += g.er; k += g.k; h += g.h; }
+    const era = ip > 0 ? round1((er / ip) * 9) : 0;
+    const kPer9 = ip > 0 ? round1((k / ip) * 9) : 0;
+    const hPer9 = ip > 0 ? round1((h / ip) * 9) : 0;
+    let value: string;
+    let tone: Tone = "neutral";
+    if (stat === "strikeOuts") {
+      value = `${kPer9} K/9, ${era} ERA`;
+      tone = kPer9 >= 10 ? "neg" : kPer9 <= 7.5 ? "pos" : "neutral";
+    } else if (stat === "homeRuns") {
+      const hrPer9 = ip > 0 ? round1((cur.reduce((s, g) => s + g.hr, 0) / ip) * 9) : 0;
+      value = `${era} ERA, ${hrPer9} HR/9`;
+      tone = hrPer9 >= 1.5 ? "pos" : hrPer9 <= 0.7 ? "neg" : "neutral";
+    } else {
+      value = `${era} ERA, ${hPer9} H/9, ${kPer9} K/9`;
+      tone = hPer9 >= 9.5 ? "pos" : kPer9 >= 10 ? "neg" : "neutral";
+    }
+    bullets.push({
+      label: `Facing ${oppPitcher.pitcherName}`,
+      value,
+      tone,
+    });
+  }
+
   // BvP — small sample but include if it's there
   if (bvp && bvp.pa >= 5) {
     const tone: Tone =
@@ -260,8 +308,9 @@ export function buildPitcherInsights(args: {
   line?: number;
   oppTeam?: string;
   career?: MLBPitcherGame[];
+  homeTeam?: string;
 }): MLBInsights {
-  const { pitcher, focus, line, oppTeam, career } = args;
+  const { pitcher, focus, line, oppTeam, career, homeTeam } = args;
   const games = pitcher.currentSeason;
   const values = games.map((g) => pickPitcher(g, focus));
   const last10 = values.slice(-10);
@@ -318,6 +367,33 @@ export function buildPitcherInsights(args: {
       value: `${proj}`,
       tone: "neutral",
     });
+  }
+
+  // Ballpark factor for pitcher props
+  if (homeTeam) {
+    const pf = getParkFactors(homeTeam);
+    if (pf) {
+      // For K's: higher k factor = more K-friendly = good for over
+      // For ERA: higher run factor = bad for ERA (more runs)
+      // For IP: park doesn't move IP much, skip
+      if (focus === "strikeouts" && Math.abs(pf.k - 100) >= 3) {
+        const diff = pf.k - 100;
+        const sign = diff > 0 ? "+" : "";
+        bullets.push({
+          label: "Park K factor",
+          value: `${pf.parkName} (${sign}${diff}%)`,
+          tone: diff > 0 ? "pos" : "neg",
+        });
+      } else if (focus === "era" && Math.abs(pf.runs - 100) >= 5) {
+        const diff = pf.runs - 100;
+        const sign = diff > 0 ? "+" : "";
+        bullets.push({
+          label: "Park run factor",
+          value: `${pf.parkName} (${sign}${diff}%)`,
+          tone: diff < 0 ? "pos" : "neg", // fewer runs = pitcher-friendly
+        });
+      }
+    }
   }
 
   // Career vs opponent

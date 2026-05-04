@@ -1181,7 +1181,7 @@ function computeMLBInsights(
       // Lazy-load to avoid pulling the lib unless we need it
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { buildPitcherInsights } = require("@/lib/mlb-insights");
-      return buildPitcherInsights({ pitcher, focus, line: extraction.line, oppTeam, career });
+      return buildPitcherInsights({ pitcher, focus, line: extraction.line, oppTeam, career, homeTeam: extraction.homeTeam });
     }
 
     const batter = history.batters?.[player];
@@ -1199,6 +1199,29 @@ function computeMLBInsights(
       extraction.homeTeam && extraction.teams[0]
         ? extraction.teams[0].toLowerCase() === extraction.homeTeam.toLowerCase()
         : undefined;
+
+    // Resolve opposing pitcher — match probable pitcher to BvP pitcher name,
+    // or pick any probable pitcher if BvP missing (better than nothing).
+    let oppPitcher: unknown = undefined;
+    const probable = (history.probablePitchers || {}) as Record<string, unknown>;
+    if (bvp?.pitcherName) {
+      const target = bvp.pitcherName.toLowerCase();
+      for (const tn of Object.keys(probable)) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const p = probable[tn] as any;
+        if (p?.pitcherName && p.pitcherName.toLowerCase() === target) {
+          oppPitcher = p;
+          break;
+        }
+      }
+    }
+    if (!oppPitcher) {
+      // Fallback: take whichever probable pitcher exists
+      for (const tn of Object.keys(probable)) {
+        if (probable[tn]) { oppPitcher = probable[tn]; break; }
+      }
+    }
+
     if (extraction.line == null) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { buildHitterInsights } = require("@/lib/mlb-insights");
@@ -1207,8 +1230,10 @@ function computeMLBInsights(
       stat,
       line: extraction.line,
       oppTeam,
+      oppPitcher,
       bvp,
       isHome,
+      homeTeam: extraction.homeTeam,
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
