@@ -1202,17 +1202,45 @@ async function analyzeSingleBet(
 }
 
 /**
- * Convert structured insights (MLB or NBA - they share shape) into a Swish
- * Score. Used both on single bets and per parlay leg so a leg with strong
- * positive evidence ranks Solid/Strong instead of falling back to the
- * generic 4.5/Shaky.
+ * Convert structured insights into a Swish Score. The score equals the
+ * estimated probability the bet hits, on a 0-10 scale (probability * 10).
+ * 7.0 = ~70% chance of hitting. 5.0 = coin flip.
+ *
+ * Falls back to edge-based scoring when probability isn't computable
+ * (e.g. team bets that don't go through hitter/pitcher insights paths).
  */
 function scoreFromInsights(
   insights:
-    | { projection?: { edge: number; lean: string }; bullets: { tone: string }[]; flags: string[] }
+    | {
+        projection?: { edge: number; lean: string };
+        probability?: number;
+        bullets: { tone: string }[];
+        flags: string[];
+      }
     | undefined
 ): { score: number; label: string; detail: string } | undefined {
-  if (!insights?.projection) return undefined;
+  if (!insights) return undefined;
+
+  // Preferred path: use the computed hit probability directly
+  if (typeof insights.probability === "number") {
+    const p = Math.max(0.05, Math.min(0.95, insights.probability));
+    const pct = Math.round(p * 100);
+    const score = Math.round(p * 100) / 10;
+    const label =
+      p >= 0.75 ? "Strong" :
+      p >= 0.62 ? "Solid" :
+      p >= 0.48 ? "Toss-Up" :
+      p >= 0.35 ? "Shaky" :
+      "Weak";
+    return {
+      score,
+      label,
+      detail: `~${pct}% chance to hit (model estimate)`,
+    };
+  }
+
+  // Fallback: edge / bullet-tone heuristic for paths without probability
+  if (!insights.projection) return undefined;
   const edge = Math.abs(insights.projection.edge);
   const posBullets = insights.bullets.filter((b) => b.tone === "pos").length;
   const negBullets = insights.bullets.filter((b) => b.tone === "neg").length;
@@ -1927,16 +1955,30 @@ export async function POST(request: NextRequest) {
         };
       });
 
-      // Compute average Swish Score across all legs (scores are 0-10 scale)
-      const legScores = finalLegs
-        .map((l) => l.swishScore?.score)
-        .filter((s): s is number => s != null);
-      const avgScore = legScores.length > 0
-        ? Math.round((legScores.reduce((s, v) => s + v, 0) / legScores.length) * 10) / 10
-        : undefined;
-      const parlaySwishScore = avgScore != null
-        ? { score: avgScore, label: avgScore <= 3 ? "Weak" : avgScore <= 4.5 ? "Shaky" : avgScore <= 5.5 ? "Toss-Up" : avgScore <= 7 ? "Solid" : avgScore <= 8.5 ? "Strong" : "Lock", detail: `Average across ${legScores.length} legs` }
-        : undefined;
+      // Parlay Swish Score = product of leg probabilities (assumes
+      // independence, which is approximately right except for SGPs;
+      // close enough as a directional read). Each leg's swishScore
+      // score IS that leg's probability * 10, so we recover it.
+      const legProbs = finalLegs
+        .map((l) => l.swishScore?.score != null ? l.swishScore.score / 10 : undefined)
+        .filter((p): p is number => p != null);
+      let parlaySwishScore: { score: number; label: string; detail: string } | undefined;
+      if (legProbs.length > 0) {
+        const combined = legProbs.reduce((acc, p) => acc * p, 1);
+        const pct = Math.round(combined * 100);
+        const score = Math.round(combined * 100) / 10;
+        const label =
+          combined >= 0.50 ? "Strong" :
+          combined >= 0.30 ? "Solid" :
+          combined >= 0.18 ? "Toss-Up" :
+          combined >= 0.10 ? "Shaky" :
+          "Long shot";
+        parlaySwishScore = {
+          score,
+          label,
+          detail: `~${pct}% chance to hit all ${legProbs.length} legs`,
+        };
+      }
 
       // Log successful parlay to Discord
       logParlayToDiscord(extraction, finalLegs);

@@ -95,6 +95,8 @@ export interface MLBInsights {
     edge: number;
     lean: 'strong over' | 'lean over' | 'pass' | 'lean under' | 'strong under';
   };
+  /** Estimated probability the bet hits, 0-1. Drives the Swish Score. */
+  probability?: number;
   bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
   flags: string[];
 }
@@ -107,6 +109,7 @@ export interface NBAInsights {
     edge: number;
     lean: 'strong over' | 'lean over' | 'pass' | 'lean under' | 'strong under';
   };
+  probability?: number;
   bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
   flags: string[];
 }

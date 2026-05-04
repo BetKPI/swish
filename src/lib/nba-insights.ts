@@ -26,8 +26,37 @@ export interface NBAInsights {
     edge: number;
     lean: "strong over" | "lean over" | "pass" | "lean under" | "strong under";
   };
+  probability?: number;
   bullets: InsightBullet[];
   flags: string[];
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, n));
+}
+
+function estimateHitProbability(args: {
+  l5Rate: number; l5N: number;
+  l10Rate: number; l10N: number;
+  seasonRate: number; seasonN: number;
+  proj: number;
+  line: number;
+  posBullets: number;
+  negBullets: number;
+}): number {
+  const { l5Rate, l5N, l10Rate, l10N, seasonRate, seasonN, proj, line, posBullets, negBullets } = args;
+  let weighted = 0;
+  let totalW = 0;
+  if (l10N >= 3) { weighted += l10Rate * 0.5; totalW += 0.5; }
+  if (l5N >= 3) { weighted += l5Rate * 0.2; totalW += 0.2; }
+  if (seasonN >= 5) { weighted += seasonRate * 0.3; totalW += 0.3; }
+  let p = totalW > 0 ? weighted / totalW : 0.5;
+  if (line > 0) {
+    const projEdge = (proj - line) / line;
+    p += clamp(projEdge * 0.5, -0.15, 0.15);
+  }
+  p += (posBullets - negBullets) * 0.015;
+  return clamp(p, 0.05, 0.95);
 }
 
 export type NBAStat =
@@ -382,12 +411,33 @@ export function buildNBAPlayerInsights(args: {
     flags.push("Series just started -no playoff data yet, regular-season only.");
   }
 
+  // Probability the over hits — drives Swish Score
+  const posBulletsCount = bullets.filter((b) => b.tone === "pos").length;
+  const negBulletsCount = bullets.filter((b) => b.tone === "neg").length;
+  const allValuesProb = allGames.map((g) => pickStat(g, stat));
+  const probability =
+    line > 0 && last10.length >= 3
+      ? estimateHitProbability({
+          l5Rate: last5.length ? overs(last5) / last5.length : 0,
+          l5N: last5.length,
+          l10Rate: last10.length ? overs(last10) / last10.length : 0,
+          l10N: last10.length,
+          seasonRate: allValuesProb.length ? allValuesProb.filter((v) => v > line).length / allValuesProb.length : 0,
+          seasonN: allValuesProb.length,
+          proj,
+          line,
+          posBullets: posBulletsCount,
+          negBullets: negBulletsCount,
+        })
+      : undefined;
+
   return {
     verdict,
     projection:
       last10.length >= 3
         ? { proj, diff, edge: round1(edge), lean }
         : undefined,
+    probability,
     bullets,
     flags,
   };
