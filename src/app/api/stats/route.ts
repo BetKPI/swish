@@ -1091,19 +1091,46 @@ async function analyzeSingleBet(
   }
 
   // Compute Swish Score
-  let swishScore = computeSwishScore(extraction.betType, computed, extraction, teamData);
+  let swishScore;
+  try {
+    swishScore = computeSwishScore(extraction.betType, computed, extraction, teamData);
+  } catch (e) {
+    console.error("[Stats] computeSwishScore failed:", e);
+    swishScore = { score: 5, label: "Toss-Up", detail: "Score unavailable" };
+  }
 
   // Compute Key Insight
-  const keyInsight = computeKeyInsight(extraction, computed, teamData);
+  let keyInsight = "";
+  try {
+    keyInsight = computeKeyInsight(extraction, computed, teamData);
+  } catch (e) {
+    console.error("[Stats] computeKeyInsight failed:", e);
+  }
 
   // Compute smart suggestion chips
-  const suggestions = computeSmartSuggestions(extraction, computed, teamData);
+  let suggestions: string[] = [];
+  try {
+    suggestions = computeSmartSuggestions(extraction, computed, teamData);
+  } catch (e) {
+    console.error("[Stats] computeSmartSuggestions failed:", e);
+  }
 
   // Extract visual metadata (logos, headshots, colors) from team data
-  const visuals = extractVisuals(teamData, extraction);
+  let visuals: ReturnType<typeof extractVisuals> = { teams: {}, players: {} };
+  try {
+    visuals = extractVisuals(teamData, extraction);
+  } catch (e) {
+    console.error("[Stats] extractVisuals failed:", e);
+  }
 
   // Compute hit rate and prepend to stats
-  const hitRate = computeHitRate(extraction, computed, teamData);
+  let hitRate;
+  try {
+    hitRate = computeHitRate(extraction, computed, teamData);
+  } catch (e) {
+    console.error("[Stats] computeHitRate failed:", e);
+    hitRate = null;
+  }
   const aiStats = (aiResult.stats || []) as { label: string; value: string; context: string }[];
   const allStats = hitRate ? [hitRate, ...aiStats] : aiStats;
 
@@ -1794,16 +1821,21 @@ export async function POST(request: NextRequest) {
     const result = await analyzeSingleBet(extraction, apiKey);
     return NextResponse.json(result);
   } catch (error) {
+    const errMsg = error instanceof Error ? error.message : "Unknown error";
+    const errStack = error instanceof Error && error.stack ? error.stack.split("\n").slice(0, 6).join("\n") : "";
     console.error("Stats error:", error);
     // Try to log to Discord - extraction may not be available if parsing failed
     try {
       const body = await request.clone().json().catch(() => null);
       if (body?.extraction) {
-        logToDiscord("error", body.extraction, error instanceof Error ? error.message : "Unknown error");
+        logToDiscord("error", body.extraction, `${errMsg}\n${errStack}`);
       }
     } catch { /* silent */ }
     return NextResponse.json(
-      { error: "Failed to generate stats" },
+      // Echo the error message + first stack lines so failures are debuggable
+      // from the client (eval scripts, browser console, etc.) instead of an
+      // opaque "Failed to generate stats".
+      { error: "Failed to generate stats", detail: errMsg, where: errStack.split("\n")[1] || undefined },
       { status: 500 }
     );
   }
