@@ -1051,9 +1051,16 @@ async function analyzeSingleBet(
   }
 
   const isSummaryOnly = isDeterministic && charts.length > 0;
-  const prompt = isSummaryOnly
-    ? buildSummaryPrompt(extraction, computed, teamData)
-    : buildFullAIPrompt(extraction, computed, teamData);
+  let prompt: string;
+  try {
+    prompt = isSummaryOnly
+      ? buildSummaryPrompt(extraction, computed, teamData)
+      : buildFullAIPrompt(extraction, computed, teamData);
+  } catch (e) {
+    console.error("[Stats] Prompt build failed:", e);
+    // Use a minimal fallback prompt so we still call Gemini and return charts
+    prompt = `Bet: ${extraction.description}. Sport: ${extraction.sport}. Give a brief one-paragraph summary based on general knowledge. Return JSON {"summary":"...","stats":[]}.`;
+  }
 
   // Run Gemini + game status check in parallel
   const [text, gameStatus] = await Promise.all([
@@ -2057,17 +2064,23 @@ function buildDataContext(
   }
 
   for (const [name, m] of Object.entries(teamMetrics)) {
-    ctx += `\n\n${name}: ${m.record.wins}-${m.record.losses} (${(m.record.pct * 100).toFixed(0)}%)`;
+    if (!m) continue;
+    const rec = m.record || { wins: 0, losses: 0, pct: 0 };
+    ctx += `\n\n${name}: ${rec.wins}-${rec.losses} (${((rec.pct || 0) * 100).toFixed(0)}%)`;
     if (m.homeRecord) ctx += ` | Home ${m.homeRecord.wins}-${m.homeRecord.losses}`;
     if (m.awayRecord) ctx += ` | Away ${m.awayRecord.wins}-${m.awayRecord.losses}`;
-    ctx += `\n  Streak: ${m.streak.type}${m.streak.count} | Last 5: ${m.recentForm.last5.join("")}`;
-    ctx += `\n  Scoring: ${m.scoring.avgPointsFor} for / ${m.scoring.avgPointsAgainst} against (L5: ${m.scoring.last5AvgFor}/${m.scoring.last5AvgAgainst})`;
-    ctx += `\n  Avg Total: ${m.scoring.avgTotalPoints} (L5: ${m.scoring.last5AvgTotal})`;
+    const streak = m.streak || { type: "?", count: 0 };
+    const last5Arr = m.recentForm?.last5 || [];
+    ctx += `\n  Streak: ${streak.type}${streak.count} | Last 5: ${last5Arr.join("")}`;
+    const sc = m.scoring || { avgPointsFor: 0, avgPointsAgainst: 0, avgTotalPoints: 0, last5AvgFor: 0, last5AvgAgainst: 0, last5AvgTotal: 0 };
+    ctx += `\n  Scoring: ${sc.avgPointsFor} for / ${sc.avgPointsAgainst} against (L5: ${sc.last5AvgFor}/${sc.last5AvgAgainst})`;
+    ctx += `\n  Avg Total: ${sc.avgTotalPoints} (L5: ${sc.last5AvgTotal})`;
     if (m.restDays !== undefined) ctx += ` | Rest: ${m.restDays}d`;
-    if (m.ats) ctx += `\n  ATS: ${m.ats.covers}-${m.ats.fails} (${(m.ats.coverRate * 100).toFixed(0)}%)`;
-    if (m.overUnder) ctx += `\n  O/U: ${m.overUnder.overs}-${m.overUnder.unders} over (${(m.overUnder.overRate * 100).toFixed(0)}%, avg ${m.overUnder.avgTotal})`;
+    if (m.ats) ctx += `\n  ATS: ${m.ats.covers}-${m.ats.fails} (${((m.ats.coverRate || 0) * 100).toFixed(0)}%)`;
+    if (m.overUnder) ctx += `\n  O/U: ${m.overUnder.overs}-${m.overUnder.unders} over (${((m.overUnder.overRate || 0) * 100).toFixed(0)}%, avg ${m.overUnder.avgTotal})`;
 
-    for (const g of m.recentGames.slice(-5)) {
+    const recentGames = m.recentGames || [];
+    for (const g of recentGames.slice(-5)) {
       ctx += `\n    ${g.date ? new Date(g.date).toLocaleDateString() : "?"} ${g.won ? "W" : "L"} ${g.teamScore}-${g.opponentScore} vs ${g.opponent} (${g.home ? "H" : "A"}, margin ${g.margin > 0 ? "+" : ""}${g.margin})`;
     }
   }
@@ -2076,7 +2089,7 @@ function buildDataContext(
     ctx += `\n\nH2H: ${headToHead.team1Wins}-${headToHead.team2Wins}, avg margin ${headToHead.avgMargin > 0 ? "+" : ""}${headToHead.avgMargin}, avg total ${headToHead.avgTotal}`;
   }
 
-  if (Object.keys(betTypeInsights).length > 1) {
+  if (betTypeInsights && Object.keys(betTypeInsights).length > 1) {
     ctx += `\n\nINSIGHTS: ${JSON.stringify(betTypeInsights)}`;
   }
 
