@@ -315,36 +315,39 @@ function scoreMoneyline(
     return { score: toDisplay(45), label: getLabel(45), detail: "Not enough data for moneyline analysis" };
   }
 
-  // Data-only probability estimate from team metrics
-  let dataProb = 0.5;
+  // Data-only probability estimate as a clean weighted average.
+  // Each contributing signal is already a probability (0-1).
+  let weighted = 0;
   let weight = 0;
   if (team.record && team.record.pct > 0) {
-    dataProb += team.record.pct * 0.30;
+    weighted += team.record.pct * 0.30;
     weight += 0.30;
   }
   if (team.recentForm) {
-    dataProb += (team.recentForm.wins / 5) * 0.25;
+    weighted += (team.recentForm.wins / 5) * 0.25;
     weight += 0.25;
   }
   if (team.scoring) {
     const ptDiff = team.scoring.avgPointsFor - team.scoring.avgPointsAgainst;
-    // logistic-ish: +5 ppg ≈ 70%, -5 ppg ≈ 30%
+    // +5 ppg ≈ 70%, -5 ppg ≈ 30%
     const ptDiffProb = 0.5 + Math.max(-0.30, Math.min(0.30, ptDiff * 0.04));
-    dataProb += ptDiffProb * 0.20;
+    weighted += ptDiffProb * 0.20;
     weight += 0.20;
   }
   if (team.homeRecord) {
-    dataProb += team.homeRecord.pct * 0.15;
+    weighted += team.homeRecord.pct * 0.15;
     weight += 0.15;
   }
   if (team.streak) {
-    const streakAdj = (team.streak.type === "W" ? 0.5 + team.streak.count * 0.02 : 0.5 - team.streak.count * 0.02);
-    dataProb += Math.max(0.2, Math.min(0.8, streakAdj)) * 0.10;
+    const streakProb = team.streak.type === "W"
+      ? Math.min(0.70, 0.5 + team.streak.count * 0.02)
+      : Math.max(0.30, 0.5 - team.streak.count * 0.02);
+    weighted += streakProb * 0.10;
     weight += 0.10;
   }
-  // Subtract baseline (0.5 * weight) and re-add to normalize back to a prob
-  dataProb = weight > 0 ? (dataProb - 0.5 * weight) / weight + 0.5 : 0.5;
-  dataProb = Math.max(0.10, Math.min(0.90, dataProb));
+  const dataProb = weight > 0
+    ? Math.max(0.10, Math.min(0.90, weighted / weight))
+    : 0.5;
 
   // Anchor to market implied probability when we have odds. The market
   // accounts for opponent strength which our team-only metrics ignore;
