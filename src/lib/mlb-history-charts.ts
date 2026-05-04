@@ -286,9 +286,17 @@ export function buildMLBPitcherHitRateChart(
 export function buildMLBPitcherSeasonRecord(
   home: MLBPitcherTwoSeason | undefined,
   away: MLBPitcherTwoSeason | undefined,
+  homeTeamName?: string,
+  awayTeamName?: string,
 ): ChartConfig | null {
   const pitchers = [home, away].filter((p): p is MLBPitcherTwoSeason => !!p);
   if (pitchers.length === 0) return null;
+  // Track which side is missing so we can flag TBD in the title and add a
+  // placeholder row instead of silently showing only one pitcher.
+  const missingSide: "home" | "away" | null =
+    !home && !!away ? "home" : !away && !!home ? "away" : null;
+  const missingTeamName =
+    missingSide === "home" ? homeTeamName : missingSide === "away" ? awayTeamName : undefined;
 
   type Row = { pitcher: string; season: string; gs: number; record: string; era: string; kPer9: string };
   const rows: Row[] = [];
@@ -323,10 +331,25 @@ export function buildMLBPitcherSeasonRecord(
   }
   if (rows.length === 0) return null;
 
+  // Append explicit TBD row so the user sees the other starter is unannounced
+  // rather than wondering why "only one pitcher" is shown.
+  if (missingSide && missingTeamName) {
+    rows.push({
+      pitcher: `${missingTeamName} starter`,
+      season: "TBD",
+      gs: 0,
+      record: "—",
+      era: "—",
+      kPer9: "—",
+    });
+  }
+
   const heading =
     pitchers.length === 2
       ? `${pitchers[0].pitcherName} vs ${pitchers[1].pitcherName} — Season W-L, ERA, K/9`
-      : `${pitchers[0].pitcherName} — Season W-L, ERA, K/9`;
+      : missingTeamName
+        ? `${pitchers[0].pitcherName} vs ${missingTeamName} (starter TBD) — Season W-L, ERA, K/9`
+        : `${pitchers[0].pitcherName} — Season W-L, ERA, K/9`;
 
   return {
     type: "table",
@@ -334,7 +357,9 @@ export function buildMLBPitcherSeasonRecord(
     relevance:
       pitchers.length === 2
         ? "Both probable pitchers' season records side by side — wins/losses, ERA, and strikeouts per nine."
-        : "Probable pitcher's season record, ERA, and strikeouts per nine.",
+        : missingTeamName
+          ? `${pitchers[0].pitcherName}'s season record. The opposing starter for ${missingTeamName} hadn't been announced when the data was pulled.`
+          : "Probable pitcher's season record, ERA, and strikeouts per nine.",
     data: rows,
     columns: [
       { key: "pitcher", label: "Pitcher" },
@@ -1176,12 +1201,16 @@ export function buildMLBDefaultCharts(
   // Both probable pitchers compared side by side — replaces the old per-team
   // ERA chart and pitcher-vs-opponent-team table which users said felt wrong
   // ("Yamamoto vs Mets" when they really wanted pitcher-vs-pitcher).
-  const homeTeamName = teams[0];
-  const awayTeamName = teams[1];
-  const homePitcher = homeTeamName ? history.probablePitchers[homeTeamName] : undefined;
-  const awayPitcher = awayTeamName ? history.probablePitchers[awayTeamName] : undefined;
+  // We pass team names through so the chart can flag a TBD starter explicitly
+  // instead of silently showing only one pitcher.
+  const team0Name = teams[0];
+  const team1Name = teams[1];
+  const homeKey = homeTeam || team0Name;
+  const awayKey = awayTeam || team1Name;
+  const homePitcher = homeKey ? history.probablePitchers[homeKey] : undefined;
+  const awayPitcher = awayKey ? history.probablePitchers[awayKey] : undefined;
   if (homePitcher || awayPitcher) {
-    const record = buildMLBPitcherSeasonRecord(homePitcher, awayPitcher);
+    const record = buildMLBPitcherSeasonRecord(homePitcher, awayPitcher, homeKey, awayKey);
     if (record) out.push(record);
     // Recent starts table removed — redundant with the full season record above
   }

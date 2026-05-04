@@ -9,6 +9,7 @@ import type {
   ParlayLegResult,
   GameStatusData,
   MLBInsights,
+  NBAInsights,
 } from "@/types";
 import AnalysisResults from "@/components/AnalysisResults";
 import ParlayResults from "@/components/ParlayResults";
@@ -33,6 +34,7 @@ export default function Home() {
   const [keyInsight, setKeyInsight] = useState<string>("");
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [mlbInsights, setMlbInsights] = useState<MLBInsights | null>(null);
+  const [nbaInsights, setNbaInsights] = useState<NBAInsights | null>(null);
   const [error, setError] = useState<string>("");
   const [statusMsg, setStatusMsg] = useState<string>("");
   const [dragOver, setDragOver] = useState(false);
@@ -102,6 +104,7 @@ export default function Home() {
     setKeyInsight(statsData.keyInsight || "");
     setSuggestions(statsData.suggestions || []);
     setMlbInsights(statsData.mlbInsights || null);
+    setNbaInsights(statsData.nbaInsights || null);
     setState("results");
     saveToHistory({
       extraction: ext,
@@ -245,6 +248,7 @@ export default function Home() {
     setSwishScore(null);
     setKeyInsight("");
     setMlbInsights(null);
+    setNbaInsights(null);
     setError("");
     setStatusMsg("");
     clearPending();
@@ -487,6 +491,7 @@ export default function Home() {
             keyInsight={keyInsight || undefined}
             suggestions={suggestions.length > 0 ? suggestions : undefined}
             mlbInsights={mlbInsights ?? undefined}
+            nbaInsights={nbaInsights ?? undefined}
             onReset={reset}
           />
         </div>

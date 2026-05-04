@@ -1,0 +1,219 @@
+{
+  "_comment": "Representative bet extractions across MLB regular season and NBA playoffs for analysis-quality eval. Hand-built to span the prop types a sharp bettor would actually look at, not random.",
+  "bets": [
+    {
+      "id": "mlb-pitcher-ks",
+      "label": "MLB pitcher strikeouts (regular season)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "player_prop",
+        "teams": ["New York Yankees", "Boston Red Sox"],
+        "players": ["Gerrit Cole"],
+        "homeTeam": "Boston Red Sox",
+        "awayTeam": "New York Yankees",
+        "line": 6.5,
+        "odds": "+105",
+        "market": "Strikeouts",
+        "description": "Gerrit Cole over 6.5 strikeouts at Boston Red Sox",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-batter-tb",
+      "label": "MLB batter total bases (regular season)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "player_prop",
+        "teams": ["New York Yankees", "Boston Red Sox"],
+        "players": ["Aaron Judge"],
+        "homeTeam": "Boston Red Sox",
+        "awayTeam": "New York Yankees",
+        "line": 1.5,
+        "odds": "+115",
+        "market": "Total Bases",
+        "description": "Aaron Judge over 1.5 total bases vs Red Sox",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-batter-hits",
+      "label": "MLB batter hits (regular season)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "player_prop",
+        "teams": ["Los Angeles Dodgers", "San Francisco Giants"],
+        "players": ["Mookie Betts"],
+        "homeTeam": "Los Angeles Dodgers",
+        "awayTeam": "San Francisco Giants",
+        "line": 0.5,
+        "odds": "-180",
+        "market": "Hits",
+        "description": "Mookie Betts over 0.5 hits vs Giants",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-anytime-hr",
+      "label": "MLB anytime home run (yes/no, no line)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "player_prop",
+        "teams": ["New York Yankees", "Boston Red Sox"],
+        "players": ["Aaron Judge"],
+        "homeTeam": "Boston Red Sox",
+        "awayTeam": "New York Yankees",
+        "odds": "+260",
+        "market": "Anytime Home Run",
+        "description": "Aaron Judge to hit a home run at Boston Red Sox",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-runline",
+      "label": "MLB run line (regular season)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "spread",
+        "teams": ["New York Yankees", "Boston Red Sox"],
+        "homeTeam": "Boston Red Sox",
+        "awayTeam": "New York Yankees",
+        "line": -1.5,
+        "odds": "+150",
+        "market": "Run Line",
+        "description": "New York Yankees -1.5 at Boston Red Sox",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-total",
+      "label": "MLB game total (regular season)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "over_under",
+        "teams": ["Philadelphia Phillies", "Miami Marlins"],
+        "homeTeam": "Miami Marlins",
+        "awayTeam": "Philadelphia Phillies",
+        "line": 8.5,
+        "odds": "-110",
+        "market": "Total Runs",
+        "description": "Over 8.5 total runs in Phillies @ Marlins",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "mlb-nrfi",
+      "label": "MLB NRFI (no runs first inning)",
+      "extraction": {
+        "sport": "MLB",
+        "betType": "game_prop",
+        "teams": ["New York Yankees", "Boston Red Sox"],
+        "homeTeam": "Boston Red Sox",
+        "awayTeam": "New York Yankees",
+        "odds": "-120",
+        "market": "NRFI",
+        "description": "No Runs First Inning Yankees @ Red Sox",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-points",
+      "label": "NBA playoff star player points",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "player_prop",
+        "teams": ["Boston Celtics", "Cleveland Cavaliers"],
+        "players": ["Jayson Tatum"],
+        "homeTeam": "Boston Celtics",
+        "awayTeam": "Cleveland Cavaliers",
+        "line": 28.5,
+        "odds": "-110",
+        "market": "Points",
+        "description": "Jayson Tatum over 28.5 points vs Cavaliers",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-threes",
+      "label": "NBA playoff threes made",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "player_prop",
+        "teams": ["Oklahoma City Thunder", "Denver Nuggets"],
+        "players": ["Shai Gilgeous-Alexander"],
+        "homeTeam": "Oklahoma City Thunder",
+        "awayTeam": "Denver Nuggets",
+        "line": 2.5,
+        "odds": "+105",
+        "market": "3-Pointers Made",
+        "description": "Shai Gilgeous-Alexander over 2.5 threes vs Nuggets",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-pra",
+      "label": "NBA playoff PRA combo prop",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "player_prop",
+        "teams": ["Los Angeles Lakers", "Minnesota Timberwolves"],
+        "players": ["LeBron James"],
+        "homeTeam": "Minnesota Timberwolves",
+        "awayTeam": "Los Angeles Lakers",
+        "line": 38.5,
+        "odds": "-110",
+        "market": "Points + Rebounds + Assists",
+        "description": "LeBron James over 38.5 PRA at Timberwolves",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-spread",
+      "label": "NBA playoff spread",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "spread",
+        "teams": ["Boston Celtics", "Cleveland Cavaliers"],
+        "homeTeam": "Boston Celtics",
+        "awayTeam": "Cleveland Cavaliers",
+        "line": -5.5,
+        "odds": "-110",
+        "market": "Spread",
+        "description": "Boston Celtics -5.5 vs Cavaliers",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-total",
+      "label": "NBA playoff game total",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "over_under",
+        "teams": ["Oklahoma City Thunder", "Denver Nuggets"],
+        "homeTeam": "Oklahoma City Thunder",
+        "awayTeam": "Denver Nuggets",
+        "line": 218.5,
+        "odds": "-110",
+        "market": "Total Points",
+        "description": "Over 218.5 total points Thunder vs Nuggets",
+        "confidence": 1
+      }
+    },
+    {
+      "id": "nba-rebounds",
+      "label": "NBA playoff rebounds prop",
+      "extraction": {
+        "sport": "NBA",
+        "betType": "player_prop",
+        "teams": ["Minnesota Timberwolves", "Los Angeles Lakers"],
+        "players": ["Anthony Davis"],
+        "homeTeam": "Minnesota Timberwolves",
+        "awayTeam": "Los Angeles Lakers",
+        "line": 11.5,
+        "odds": "-115",
+        "market": "Rebounds",
+        "description": "Anthony Davis over 11.5 rebounds at Timberwolves",
+        "confidence": 1
+      }
+    }
+  ]
+}

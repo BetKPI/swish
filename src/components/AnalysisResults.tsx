@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData, MLBInsights } from "@/types";
+import type { BetExtraction, ChartConfig, StatDataPoint, GameStatusData, MLBInsights, NBAInsights } from "@/types";
 import ChartDisplay from "./ChartDisplay";
 import AnalysisChat from "./AnalysisChat";
 import FeedbackShare from "./FeedbackShare";
@@ -29,6 +29,7 @@ interface AnalysisResultsProps {
   keyInsight?: string;
   suggestions?: string[];
   mlbInsights?: MLBInsights;
+  nbaInsights?: NBAInsights;
   onReset: () => void;
 }
 
@@ -63,6 +64,7 @@ export default function AnalysisResults({
   keyInsight,
   suggestions,
   mlbInsights,
+  nbaInsights,
   onReset,
 }: AnalysisResultsProps) {
   const [shareState, setShareState] = useState<"idle" | "capturing" | "copied" | "downloaded">("idle");
@@ -102,9 +104,14 @@ export default function AnalysisResults({
   const isMiss = gradeResult === "miss";
   const isGraded = isFinal && (isHit || isMiss);
 
-  // Specialized layout for MLB player props — denser, mobile-first, props.cash-style
+  // Specialized denser layout for player props in MLB and NBA — both insight
+  // shapes are structurally identical so we pass whichever applies.
   const sportNorm = normalizeSport(extraction.sport);
-  if (sportNorm === "MLB" && extraction.betType === "player_prop") {
+  const playerPropInsights =
+    sportNorm === "MLB" ? mlbInsights :
+    sportNorm === "NBA" ? nbaInsights :
+    undefined;
+  if ((sportNorm === "MLB" || sportNorm === "NBA") && extraction.betType === "player_prop") {
     return (
       <MLBPlayerPropCard
         extraction={extraction}
@@ -116,7 +123,7 @@ export default function AnalysisResults({
         swishScore={swishScore}
         keyInsight={keyInsight}
         suggestions={suggestions}
-        insights={mlbInsights}
+        insights={playerPropInsights}
         onReset={onReset}
       />
     );

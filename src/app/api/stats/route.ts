@@ -1091,7 +1091,7 @@ async function analyzeSingleBet(
   }
 
   // Compute Swish Score
-  const swishScore = computeSwishScore(extraction.betType, computed, extraction, teamData);
+  let swishScore = computeSwishScore(extraction.betType, computed, extraction, teamData);
 
   // Compute Key Insight
   const keyInsight = computeKeyInsight(extraction, computed, teamData);
@@ -1109,6 +1109,39 @@ async function analyzeSingleBet(
 
   // MLB player-prop: deterministic structured insights (verdict, projection, bullets, flags)
   const mlbInsights = computeMLBInsights(extraction, teamData);
+  const nbaInsights = computeNBAInsights(extraction, teamData);
+
+  // Insights-driven Swish Score override — when we have a real projection
+  // (MLB or NBA player prop), the default scorer tends to bottom out at
+  // "Shaky" because it expects a different data shape. Use the projection's
+  // edge + bullet positivity to compute a meaningful score.
+  const insights = mlbInsights || nbaInsights;
+  if (insights?.projection && extraction.betType === "player_prop") {
+    const edge = Math.abs(insights.projection.edge);
+    const posBullets = insights.bullets.filter((b: { tone: string }) => b.tone === "pos").length;
+    const negBullets = insights.bullets.filter((b: { tone: string }) => b.tone === "neg").length;
+    // Score: 50 baseline, +/-30 from edge magnitude, +5 per net positive bullet,
+    // -3 per risk flag. Clamp to 0-100.
+    let raw = 50;
+    raw += Math.min(30, edge * 100); // strong over edge=0.20 → +20
+    raw += (posBullets - negBullets) * 5;
+    raw -= (insights.flags?.length || 0) * 3;
+    // Direction adjustment: under-leans flip to "negative" for over bets — but
+    // since the user picks side, we just measure conviction magnitude.
+    raw = Math.max(20, Math.min(95, raw));
+    const lean = insights.projection.lean;
+    const label =
+      raw >= 80 ? "Strong" :
+      raw >= 65 ? "Solid" :
+      raw >= 50 ? "Toss-Up" :
+      raw >= 35 ? "Shaky" :
+      "Weak";
+    swishScore = {
+      score: Math.round(raw) / 10,
+      label,
+      detail: `${insights.bullets.length} insight${insights.bullets.length === 1 ? "" : "s"}, projection ${lean}.`,
+    };
+  }
 
   if (isSummaryOnly) {
     return {
@@ -1122,6 +1155,7 @@ async function analyzeSingleBet(
       keyInsight,
       suggestions,
       mlbInsights,
+      nbaInsights,
     };
   }
 
@@ -1136,6 +1170,7 @@ async function analyzeSingleBet(
     keyInsight,
     suggestions,
     mlbInsights,
+    nbaInsights,
   };
 }
 
@@ -1237,6 +1272,80 @@ function computeMLBInsights(
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
+    return undefined;
+  }
+}
+
+/**
+ * NBA player-prop deterministic insights — pulls the in-memory NBA history
+ * context (when present on teamData) and produces a verdict/projection/bullets
+ * structure parallel to mlbInsights. Includes playoff-aware splits.
+ */
+function computeNBAInsights(
+  extraction: BetExtraction,
+  rawData: Record<string, unknown>
+) {
+  const sport = (extraction.sport || "").toUpperCase();
+  if (sport !== "NBA" && sport !== "BASKETBALL") return undefined;
+  if (extraction.betType !== "player_prop") return undefined;
+  const player = extraction.players[0];
+  if (!player) return undefined;
+  if (extraction.line == null) return undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const history = (rawData as any)?._nbaHistory;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerData = history?.players?.[player] || (rawData as any)?._players?.[player];
+  if (!playerData) return undefined;
+
+  // Coerce into NBAPlayerTwoSeason shape if we got the alt format
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const games = playerData.games || playerData.gameLog || [];
+  if (!Array.isArray(games) || games.length === 0) return undefined;
+
+  // Normalize game shape: insights expects { stats, opponent, home, seasonType }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const normalized = games.map((g: any) => ({
+    eventId: g.eventId || g.id || "",
+    date: g.date || "",
+    season: g.season || 0,
+    seasonType: g.seasonType === "playoffs" ? "playoffs" : "regular",
+    opponent: g.opponent || g.opp || "",
+    home: typeof g.home === "boolean" ? g.home : !!g.isHome,
+    stats: g.stats || g, // some shapes flatten stats
+  }));
+
+  const ts = {
+    playerId: playerData.playerId || playerData.id || "",
+    playerName: playerData.playerName || playerData.fullName || player,
+    games: normalized,
+    lastSeason: playerData.lastSeason || 0,
+    currentSeason: playerData.currentSeason || 0,
+  };
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { detectNBAStat, buildNBAPlayerInsights } = require("@/lib/nba-insights");
+    const stat = detectNBAStat(extraction.market, extraction.description);
+    if (!stat) return undefined;
+
+    // Detect if any of the player's games are tagged as playoffs in the
+    // current season — if so, treat as playoff context.
+    const isPlayoffs = normalized.some(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (g: any) => g.seasonType === "playoffs",
+    );
+    const oppTeam = extraction.teams.find((t) => t !== extraction.players[0]) || extraction.teams[1];
+
+    return buildNBAPlayerInsights({
+      player: ts,
+      stat,
+      line: extraction.line,
+      oppTeam,
+      isPlayoffs,
+    });
+  } catch (e) {
+    console.error("[NBA Insights] failed:", e);
     return undefined;
   }
 }

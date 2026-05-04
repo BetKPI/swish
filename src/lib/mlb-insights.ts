@@ -1,5 +1,5 @@
 /**
- * MLB player-prop insights — deterministic narrative generation.
+ * MLB player-prop insights -deterministic narrative generation.
  *
  * Takes raw MLB history data + the bet, returns structured punchy insights:
  * verdict, projection vs line, bullet stats, risk flags. No LLM needed —
@@ -132,13 +132,13 @@ export function buildHitterInsights(args: {
   const totalOvers = overs(values);
   let verdict: string;
   if (overStreak >= 3) {
-    verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length} — ${overStreak} straight.`;
+    verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length} -${overStreak} straight.`;
   } else if (underStreak >= 3) {
-    verdict = `Under ${line} ${statLabel} in ${last10.length - overs(last10)} of last ${last10.length} — ${underStreak} straight under.`;
+    verdict = `Under ${line} ${statLabel} in ${last10.length - overs(last10)} of last ${last10.length} -${underStreak} straight under.`;
   } else if (total > 0) {
     verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length}, ${totalOvers}/${total} season.`;
   } else {
-    verdict = `Limited current-season data — ${lastSeason.length} games last year to lean on.`;
+    verdict = `Limited current-season data -${lastSeason.length} games last year to lean on.`;
   }
 
   const bullets: InsightBullet[] = [];
@@ -200,24 +200,22 @@ export function buildHitterInsights(args: {
     }
   }
 
-  // Ballpark factor — adds context when notable
+  // Ballpark factor -adds context when notable
   if (homeTeam) {
     const pf = getParkFactors(homeTeam);
     if (pf) {
-      let val: string;
-      let tone: Tone = "neutral";
       const factor = stat === "homeRuns" ? pf.hr : stat === "totalBases" ? Math.round((pf.hr + pf.hits) / 2) : stat === "hits" ? pf.hits : pf.runs;
       const diff = factor - 100;
       const sign = diff > 0 ? "+" : "";
-      val = `${pf.parkName.replace(/\s+(Field|Park|Stadium|Center|Centre)\b/g, " $1").replace(/Daikin Park/, "Daikin Park")} (${sign}${diff}%)`;
+      const val = `${pf.parkName} (${sign}${diff}%)`;
       if (Math.abs(diff) >= 5) {
-        tone = diff > 0 ? "pos" : "neg";
+        const tone: Tone = diff > 0 ? "pos" : "neg";
         bullets.push({ label: stat === "homeRuns" ? "Park HR factor" : stat === "hits" ? "Park hits factor" : "Park run factor", value: val, tone });
       }
     }
   }
 
-  // Opposing pitcher form — concrete matchup edge
+  // Opposing pitcher form -concrete matchup edge
   if (oppPitcher && oppPitcher.currentSeason.length >= 3) {
     const cur = oppPitcher.currentSeason;
     let ip = 0, er = 0, k = 0, h = 0;
@@ -245,7 +243,7 @@ export function buildHitterInsights(args: {
     });
   }
 
-  // BvP — small sample but include if it's there
+  // BvP -small sample but include if it's there
   if (bvp && bvp.pa >= 5) {
     const tone: Tone =
       stat === "strikeOuts"
@@ -281,9 +279,9 @@ export function buildHitterInsights(args: {
   }
 
   const flags: string[] = [];
-  if (total < 10) flags.push(`Only ${total} games this season — early-season noise.`);
+  if (total < 10) flags.push(`Only ${total} games this season -early-season noise.`);
   if (last10.length > 0 && overs(last10) === 0 && totalOvers > 0) {
-    flags.push("0-for-10 recently after a stronger season — cold streak.");
+    flags.push("0-for-10 recently after a stronger season -cold streak.");
   }
 
   return {
@@ -331,9 +329,9 @@ export function buildPitcherInsights(args: {
     const overStreak = streakFromEnd(values, line, "over");
     const underStreak = streakFromEnd(values, line, "under");
     if (overStreak >= 3) {
-      verdict = `Cleared ${line} ${focusLabel} in ${overs(last10, line)} of last ${last10.length} — ${overStreak} straight.`;
+      verdict = `Cleared ${line} ${focusLabel} in ${overs(last10, line)} of last ${last10.length} -${overStreak} straight.`;
     } else if (underStreak >= 3) {
-      verdict = `Under ${line} ${focusLabel} in ${last10.length - overs(last10, line)} of last ${last10.length} — ${underStreak} straight under.`;
+      verdict = `Under ${line} ${focusLabel} in ${last10.length - overs(last10, line)} of last ${last10.length} -${underStreak} straight under.`;
     } else {
       verdict = `Cleared ${line} ${focusLabel} in ${overs(last10, line)} of last ${last10.length}.`;
     }
@@ -433,7 +431,7 @@ export function buildPitcherInsights(args: {
   }
 
   const flags: string[] = [];
-  if (games.length < 6) flags.push(`Only ${games.length} starts this season — small sample.`);
+  if (games.length < 6) flags.push(`Only ${games.length} starts this season -small sample.`);
 
   return {
     verdict,
