@@ -1330,8 +1330,24 @@ function computeMLBInsights(
   // Detect pitcher vs hitter prop
   const isPitcher =
     m.includes("strikeout") || /\bks?\b/.test(m) || m.includes("earned run") || m.includes("inning");
-  const oppTeam = extraction.teams.find((t) => !history.pitchersByName?.[player] || true) ||
-    extraction.teams[0];
+
+  // Resolve the OPPOSING team correctly. The previous expression always
+  // returned teams[0] (it boolean-coerced to true). For a pitcher prop,
+  // the opp team is whichever team in extraction.teams is NOT the team
+  // whose probable pitcher is this player. For a batter prop, it's
+  // whichever team's probable pitcher this batter has BvP against — but
+  // since we don't have the batter's team here, fall back to teams[1].
+  let oppTeam = extraction.teams[1] || extraction.teams[0];
+  if (isPitcher) {
+    // Find which team's probable pitcher matches this player; opposing = the other
+    for (const tn of extraction.teams) {
+      const pp = history.probablePitchers?.[tn];
+      if (pp?.pitcherName?.toLowerCase() === player.toLowerCase()) {
+        oppTeam = extraction.teams.find((t) => t !== tn) || extraction.teams[1] || tn;
+        break;
+      }
+    }
+  }
 
   try {
     if (isPitcher) {
