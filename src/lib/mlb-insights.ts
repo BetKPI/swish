@@ -19,6 +19,7 @@ import type {
   PitcherPlatoonSplits,
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
+import type { GameWeather } from "./mlb-weather";
 
 export type Tone = "pos" | "neg" | "neutral";
 
@@ -151,8 +152,10 @@ export function buildHitterInsights(args: {
   platoonSplits?: PlatoonSplits | null;
   /** Opposing pitcher handedness — drives which platoon split applies */
   oppPitcherHand?: "L" | "R" | null;
+  /** Game-time weather at the home park */
+  weather?: GameWeather | null;
 }): MLBInsights {
-  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast, oppPitching, platoonSplits, oppPitcherHand } = args;
+  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast, oppPitching, platoonSplits, oppPitcherHand, weather } = args;
   const games = batter.currentSeason;
   const lastSeason = batter.lastSeason;
   const statLabel = STAT_LABELS[stat];
@@ -330,6 +333,64 @@ export function buildHitterInsights(args: {
         tone,
       });
     }
+  }
+
+  // Weather - wind / temp affect HR + total bases significantly. Skip on
+  // closed-roof games (or retractables when rainy) since the field is
+  // effectively indoor.
+  if (weather && !weather.effectivelyIndoor) {
+    const isPower = stat === "homeRuns" || stat === "totalBases";
+    const isContact = stat === "hits" || stat === "rbi" || stat === "runs";
+    const parts: string[] = [];
+    let tone: Tone = "neutral";
+
+    // Wind effects (most material for HR / TB)
+    if (weather.windMph >= 8 && isPower) {
+      if (weather.windDir === "out to CF") {
+        parts.push(`wind ${weather.windMph} mph out to CF`);
+        tone = "pos";
+      } else if (weather.windDir === "in from CF") {
+        parts.push(`wind ${weather.windMph} mph in from CF`);
+        tone = "neg";
+      } else {
+        parts.push(`wind ${weather.windMph} mph ${weather.windDir}`);
+      }
+    } else if (weather.windMph >= 12) {
+      // Strong cross-wind affects all batted balls
+      parts.push(`wind ${weather.windMph} mph ${weather.windDir}`);
+    }
+
+    // Temp / humidity (warm + humid = ball carries more)
+    if (isPower && weather.tempF >= 80) {
+      parts.push(`${weather.tempF}°F (warm)`);
+      if (tone !== "neg") tone = "pos";
+    } else if (isPower && weather.tempF <= 55) {
+      parts.push(`${weather.tempF}°F (cold, ball doesn't carry)`);
+      tone = "neg";
+    } else if (isContact && weather.tempF <= 50) {
+      parts.push(`${weather.tempF}°F (cold)`);
+      tone = "neg";
+    }
+
+    // Rain - affects everyone's batted-ball quality
+    if (weather.precipProb >= 60) {
+      parts.push(`${weather.precipProb}% rain`);
+      tone = "neg";
+    }
+
+    if (parts.length > 0) {
+      bullets.push({
+        label: "Weather",
+        value: parts.join(", "),
+        tone,
+      });
+    }
+  } else if (weather && weather.effectivelyIndoor) {
+    bullets.push({
+      label: "Weather",
+      value: weather.roof === "closed" ? "Indoor (no wind)" : "Roof likely closed (rain)",
+      tone: "neutral",
+    });
   }
 
   // Ballpark factor -adds context when notable

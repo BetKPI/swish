@@ -119,6 +119,8 @@ interface MLBHistoryContextShape {
   pitcherPlatoon: Record<string, PitcherPlatoonSplits | null>;
   // Pitch hand for probable pitchers, keyed by team name
   pitcherHand: Record<string, "L" | "R" | null>;
+  // Weather forecast at the home park
+  weather: Awaited<ReturnType<typeof import("@/lib/mlb-weather").getGameWeather>> | null;
 }
 
 async function buildMLBHistoryContext(
@@ -139,6 +141,7 @@ async function buildMLBHistoryContext(
     platoonSplits: {},
     pitcherPlatoon: {},
     pitcherHand: {},
+    weather: null,
   };
 
   // 1) Teams: fetch two-season results + season pitching/hitting in parallel
@@ -240,7 +243,19 @@ async function buildMLBHistoryContext(
     }
   });
 
-  await Promise.all([...teamFetches, ...pitcherFetches, ...playerFetches, ...pitcherHandFetches]);
+  // Weather fetch — for the home park if we can identify it.
+  const homeTeamName = extraction.homeTeam || extraction.teams[0];
+  const weatherFetch = (async () => {
+    if (!homeTeamName) return;
+    try {
+      const { getGameWeather } = await import("@/lib/mlb-weather");
+      ctx.weather = await getGameWeather(homeTeamName);
+    } catch (e) {
+      console.error("[MLB Weather] failed:", e);
+    }
+  })();
+
+  await Promise.all([...teamFetches, ...pitcherFetches, ...playerFetches, ...pitcherHandFetches, weatherFetch]);
 
   // 4) Batter-vs-pitcher: resolve opposing probable pitcher by team id, then query career split.
   // Also collect per-team probable pitcher id/name so we can query career vs opponent depth later.
@@ -1429,6 +1444,8 @@ function computeMLBInsights(
     const oppPitching = oppTeam ? history.teamPitching?.[oppTeam] : null;
     const platoonSplits = history.platoonSplits?.[player];
     const oppPitcherHand = oppTeam ? history.pitcherHand?.[oppTeam] : null;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const weather = (history as any)?.weather || null;
     return buildHitterInsights({
       batter,
       stat,
@@ -1442,6 +1459,7 @@ function computeMLBInsights(
       oppPitching,
       platoonSplits,
       oppPitcherHand,
+      weather,
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);

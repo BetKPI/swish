@@ -385,30 +385,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* What we actually pull - real signals, not bullet checkmarks */}
-          <div className="max-w-3xl mx-auto px-4 py-10 sm:py-14">
-            <p className="text-xs uppercase tracking-[0.25em] font-bold text-muted text-center mb-6">
-              What we cross-reference
-            </p>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              {[
-                { label: "Game logs", value: "L5 · L10 · season" },
-                { label: "xStats", value: "xBA · xSLG · xwOBA" },
-                { label: "Park factors", value: "all 30 stadiums" },
-                { label: "Opp pitching", value: "ERA · K/9 · staff" },
-                { label: "Defensive matchup", value: "ppg vs lg avg" },
-                { label: "Pace tilt", value: "fast / slow" },
-                { label: "Series leverage", value: "elimination · pivotal" },
-                { label: "Probability", value: "% chance to hit" },
-              ].map((s) => (
-                <div key={s.label} className="bg-surface/50 border border-border/40 rounded-xl p-3">
-                  <div className="text-[10px] uppercase tracking-wider font-bold text-muted">{s.label}</div>
-                  <div className="text-sm font-bold tabular-nums mt-1">{s.value}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Bet History */}
           <div className="max-w-lg mx-auto px-4 py-2">
             <BetHistory onLoad={loadFromHistory} />
