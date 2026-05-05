@@ -16,6 +16,7 @@ import ParlayResults from "@/components/ParlayResults";
 import ExampleShowcase from "@/components/ExampleShowcase";
 import BetHistory from "@/components/BetHistory";
 import AnalyzingAnimation from "@/components/AnalyzingAnimation";
+import WaitlistCapture from "@/components/WaitlistCapture";
 import { saveToHistory, isFull, savePending, getPending, clearPending, type HistoryEntry } from "@/lib/history";
 
 export default function Home() {
@@ -390,9 +391,19 @@ export default function Home() {
             <BetHistory onLoad={loadFromHistory} />
           </div>
 
+          {/* Waitlist - daily digest */}
+          <div className="max-w-lg mx-auto px-4 py-8">
+            <WaitlistCapture source="landing-mid" />
+          </div>
+
           {/* Example output */}
           <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16">
             <ExampleShowcase />
+          </div>
+
+          {/* Footer waitlist - second chance for someone who scrolled past */}
+          <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
+            <WaitlistCapture source="landing-footer" />
           </div>
         </>
       )}
