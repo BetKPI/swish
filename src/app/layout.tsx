@@ -69,9 +69,9 @@ export default function RootLayout({
                 swish
               </h1>
             </div>
-            <span className="text-muted text-xs sm:text-sm">
-              run the bet through the numbers
-            </span>
+            <a href="/tonight" className="text-muted text-xs sm:text-sm hover:text-accent transition-colors">
+              tonight's edge →
+            </a>
           </div>
         </header>
         <main className="flex-1">{children}</main>

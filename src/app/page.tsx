@@ -399,17 +399,12 @@ export default function Home() {
             <BetHistory onLoad={loadFromHistory} />
           </div>
 
-          {/* Waitlist - daily digest */}
-          <div className="max-w-lg mx-auto px-4 py-8">
-            <WaitlistCapture source="landing-mid" />
-          </div>
-
           {/* Example output */}
           <div className="max-w-5xl mx-auto px-4 py-12 sm:py-16">
             <ExampleShowcase />
           </div>
 
-          {/* Footer waitlist - second chance for someone who scrolled past */}
+          {/* Single waitlist after they've seen what the tool does */}
           <div className="max-w-lg mx-auto px-4 py-8 sm:py-12">
             <WaitlistCapture source="landing-footer" />
           </div>
