@@ -13,6 +13,8 @@ import {
   tryFetchBatterExitVelocity,
   getTeamPitchingStats,
   getTeamHittingStats,
+  getBatterPlatoonSplits,
+  getPitcherHandedness,
   getLastAndCurrentSeasons,
   type MLBTeamTwoSeason,
   type MLBPitcherTwoSeason,
@@ -21,6 +23,7 @@ import {
   type MLBBatterVsPitcher,
   type TeamPitchingStats,
   type TeamHittingStats,
+  type PlatoonSplits,
 } from "@/lib/mlb-history";
 import {
   resolveNBATeam,
@@ -108,6 +111,10 @@ interface MLBHistoryContextShape {
   // Team-level season stats keyed by team name (as it appears in extraction.teams).
   teamPitching: Record<string, TeamPitchingStats | null>;
   teamHitting: Record<string, TeamHittingStats | null>;
+  // Batter platoon splits keyed by player name
+  platoonSplits: Record<string, PlatoonSplits | null>;
+  // Pitch hand for probable pitchers, keyed by team name
+  pitcherHand: Record<string, "L" | "R" | null>;
 }
 
 async function buildMLBHistoryContext(
@@ -125,6 +132,8 @@ async function buildMLBHistoryContext(
     pitcherCareerVsOpponent: {},
     teamPitching: {},
     teamHitting: {},
+    platoonSplits: {},
+    pitcherHand: {},
   };
 
   // 1) Teams: fetch two-season results + season pitching/hitting in parallel
@@ -190,15 +199,35 @@ async function buildMLBHistoryContext(
           ctx.pitchersByName[playerName] = log;
           return;
         }
-        const log = await getBatterTwoSeasonLog(player.id, player.fullName);
+        const [log, statcast, splits] = await Promise.all([
+          getBatterTwoSeasonLog(player.id, player.fullName),
+          tryFetchBatterExitVelocity(player.id),
+          getBatterPlatoonSplits(player.id),
+        ]);
         ctx.batters[playerName] = log;
         batterTeamIds[playerName] = player.currentTeam?.id;
-        ctx.exitVelo[playerName] = await tryFetchBatterExitVelocity(player.id);
+        ctx.exitVelo[playerName] = statcast;
+        ctx.platoonSplits[playerName] = splits;
       })(),
     );
   }
 
-  await Promise.all([...teamFetches, ...pitcherFetches, ...playerFetches]);
+  // 3b) Probable pitcher hand (LHP / RHP) for handedness platoon read
+  const pitcherHandFetches = extraction.teams.map(async (teamName) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const slot = (mlbData as any)[teamName];
+    const pp = slot?.probablePitchers;
+    if (!pp) return;
+    const teamObjName: string = slot?.team?.name || teamName;
+    const homeTeamName: string | undefined = pp.homeTeam;
+    const isHome = homeTeamName && typeof homeTeamName === "string" && homeTeamName.toLowerCase().includes(teamObjName.toLowerCase());
+    const ownPitcher = isHome ? pp.homePitcher : pp.awayPitcher;
+    if (ownPitcher?.id) {
+      ctx.pitcherHand[teamName] = await getPitcherHandedness(ownPitcher.id);
+    }
+  });
+
+  await Promise.all([...teamFetches, ...pitcherFetches, ...playerFetches, ...pitcherHandFetches]);
 
   // 4) Batter-vs-pitcher: resolve opposing probable pitcher by team id, then query career split.
   // Also collect per-team probable pitcher id/name so we can query career vs opponent depth later.
@@ -1367,6 +1396,8 @@ function computeMLBInsights(
     const { buildHitterInsights } = require("@/lib/mlb-insights");
     const statcast = history.exitVelo?.[player];
     const oppPitching = oppTeam ? history.teamPitching?.[oppTeam] : null;
+    const platoonSplits = history.platoonSplits?.[player];
+    const oppPitcherHand = oppTeam ? history.pitcherHand?.[oppTeam] : null;
     return buildHitterInsights({
       batter,
       stat,
@@ -1378,6 +1409,8 @@ function computeMLBInsights(
       homeTeam: extraction.homeTeam,
       statcast,
       oppPitching,
+      platoonSplits,
+      oppPitcherHand,
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);

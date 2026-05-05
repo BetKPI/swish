@@ -15,6 +15,7 @@ import type {
   BatterStatcast,
   TeamPitchingStats,
   TeamHittingStats,
+  PlatoonSplits,
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
 
@@ -146,8 +147,11 @@ export function buildHitterInsights(args: {
   homeTeam?: string;
   statcast?: BatterStatcast;
   oppPitching?: TeamPitchingStats | null;
+  platoonSplits?: PlatoonSplits | null;
+  /** Opposing pitcher handedness — drives which platoon split applies */
+  oppPitcherHand?: "L" | "R" | null;
 }): MLBInsights {
-  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast, oppPitching } = args;
+  const { batter, stat, line, oppTeam, oppPitcher, bvp, isHome, homeTeam, statcast, oppPitching, platoonSplits, oppPitcherHand } = args;
   const games = batter.currentSeason;
   const lastSeason = batter.lastSeason;
   const statLabel = STAT_LABELS[stat];
@@ -238,6 +242,31 @@ export function buildHitterInsights(args: {
         label: `vs ${oppTeam}`,
         value: `${vsOppOvers}/${vsOpp.length} (${pct(vsOppOvers, vsOpp.length)}%)`,
         tone: pct(vsOppOvers, vsOpp.length) >= 60 ? "pos" : pct(vsOppOvers, vsOpp.length) <= 40 ? "neg" : "neutral",
+      });
+    }
+  }
+
+  // Handedness platoon - the matchup read sharps care most about. When we
+  // know the opposing pitcher's hand, surface the batter's vs-L or vs-R
+  // split so the user sees how the player actually performs against this
+  // type of arm.
+  if (platoonSplits && oppPitcherHand) {
+    const split = oppPitcherHand === "L" ? platoonSplits.vsL : platoonSplits.vsR;
+    if (split && split.ab >= 20) {
+      const fmtAvg = (n: number) => `.${(Math.round(n * 1000)).toString().padStart(3, "0")}`;
+      const tone: Tone =
+        stat === "homeRuns" ? (split.slg >= 0.500 ? "pos" : split.slg <= 0.380 ? "neg" : "neutral") :
+        stat === "totalBases" ? (split.ops >= 0.800 ? "pos" : split.ops <= 0.650 ? "neg" : "neutral") :
+        (split.avg >= 0.290 ? "pos" : split.avg <= 0.230 ? "neg" : "neutral");
+      const handLabel = oppPitcherHand === "L" ? "LHP" : "RHP";
+      const valStr =
+        stat === "homeRuns" ? `${fmtAvg(split.avg)} / ${fmtAvg(split.slg)} SLG, ${split.hr} HR` :
+        stat === "totalBases" ? `${fmtAvg(split.ops)} OPS in ${split.ab} AB` :
+        `${fmtAvg(split.avg)} in ${split.ab} AB`;
+      bullets.push({
+        label: `vs ${handLabel}`,
+        value: valStr,
+        tone,
       });
     }
   }

@@ -595,6 +595,112 @@ export async function getTeamHittingStats(teamId: number): Promise<TeamHittingSt
   }
 }
 
+// ── Platoon splits (vs LHP / vs RHP) ──────────────────────────────
+
+export interface PlatoonSplit {
+  pa: number;
+  ab: number;
+  avg: number;
+  slg: number;
+  ops: number;
+  hr: number;
+}
+
+export interface PlatoonSplits {
+  vsL?: PlatoonSplit;
+  vsR?: PlatoonSplit;
+}
+
+function parsePlatoonStat(stat: Record<string, unknown>): PlatoonSplit | undefined {
+  const ab = Number(stat.atBats);
+  if (!Number.isFinite(ab) || ab < 1) return undefined;
+  const parseAvg = (s: unknown): number => {
+    const n = Number(s);
+    return Number.isFinite(n) ? n : 0;
+  };
+  return {
+    pa: Number(stat.plateAppearances) || 0,
+    ab,
+    avg: parseAvg(stat.avg),
+    slg: parseAvg(stat.slg),
+    ops: parseAvg(stat.ops),
+    hr: Number(stat.homeRuns) || 0,
+  };
+}
+
+/**
+ * Pull a batter's platoon splits (vs LHP, vs RHP) for the current
+ * season. Sharps live for these — a hitter's true edge often shows
+ * only on one side of the platoon.
+ */
+export async function getBatterPlatoonSplits(batterId: number): Promise<PlatoonSplits | null> {
+  if (!batterId) return null;
+  const year = new Date().getFullYear();
+  try {
+    const r = await fetch(
+      `${BASE}/people/${batterId}/stats?stats=statSplits&group=hitting&season=${year}&sitCodes=vl,vr`,
+      { signal: AbortSignal.timeout(8000) },
+    );
+    if (!r.ok) return null;
+    const j = await r.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const splits = j?.stats?.[0]?.splits || [];
+    const out: PlatoonSplits = {};
+    for (const s of splits) {
+      const code = s?.split?.code;
+      const stat = s?.stat || {};
+      const parsed = parsePlatoonStat(stat);
+      if (!parsed) continue;
+      if (code === "vl") out.vsL = parsed;
+      else if (code === "vr") out.vsR = parsed;
+    }
+    if (!out.vsL && !out.vsR) {
+      // Fallback to last season
+      const lastYear = year - 1;
+      const r2 = await fetch(
+        `${BASE}/people/${batterId}/stats?stats=statSplits&group=hitting&season=${lastYear}&sitCodes=vl,vr`,
+        { signal: AbortSignal.timeout(8000) },
+      );
+      if (!r2.ok) return null;
+      const j2 = await r2.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const splits2 = j2?.stats?.[0]?.splits || [];
+      for (const s of splits2) {
+        const code = s?.split?.code;
+        const stat = s?.stat || {};
+        const parsed = parsePlatoonStat(stat);
+        if (!parsed) continue;
+        if (code === "vl") out.vsL = parsed;
+        else if (code === "vr") out.vsR = parsed;
+      }
+    }
+    return out.vsL || out.vsR ? out : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Look up a person's pitch hand ("L" or "R") via the MLB Stats API.
+ */
+export async function getPitcherHandedness(pitcherId: number): Promise<"L" | "R" | null> {
+  if (!pitcherId) return null;
+  try {
+    const r = await fetch(
+      `${BASE}/people/${pitcherId}`,
+      { signal: AbortSignal.timeout(6000) },
+    );
+    if (!r.ok) return null;
+    const j = await r.json();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const code = j?.people?.[0]?.pitchHand?.code;
+    if (code === "L" || code === "R") return code;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 // ── Statcast / xStats — actual + expected hitting stats ────────────
 
 export interface BatterStatcast {
