@@ -701,6 +701,67 @@ export async function getPitcherHandedness(pitcherId: number): Promise<"L" | "R"
   }
 }
 
+/**
+ * Pitcher's vs-L and vs-R splits (current season). For K props especially,
+ * a pitcher who carves up RHB but bleeds against LHB is a totally different
+ * bet depending on the opposing lineup tilt.
+ */
+export interface PitcherPlatoonSplit {
+  pa: number;
+  ba: number;
+  ops: number;
+  kPct: number;
+  bbPct: number;
+  hrPer9: number;
+}
+
+export interface PitcherPlatoonSplits {
+  vsL?: PitcherPlatoonSplit;
+  vsR?: PitcherPlatoonSplit;
+}
+
+export async function getPitcherPlatoonSplits(pitcherId: number): Promise<PitcherPlatoonSplits | null> {
+  if (!pitcherId) return null;
+  const year = new Date().getFullYear();
+  const tryYear = async (y: number): Promise<PitcherPlatoonSplits | null> => {
+    try {
+      const r = await fetch(
+        `${BASE}/people/${pitcherId}/stats?stats=statSplits&group=pitching&season=${y}&sitCodes=vl,vr`,
+        { signal: AbortSignal.timeout(8000) },
+      );
+      if (!r.ok) return null;
+      const j = await r.json();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const splits = j?.stats?.[0]?.splits || [];
+      const out: PitcherPlatoonSplits = {};
+      for (const s of splits) {
+        const code = s?.split?.code;
+        const stat = s?.stat || {};
+        const pa = Number(stat.battersFaced ?? stat.plateAppearances) || 0;
+        if (pa < 20) continue;
+        const k = Number(stat.strikeOuts) || 0;
+        const bb = Number(stat.baseOnBalls) || 0;
+        const ip = Number(stat.inningsPitched) || 0;
+        const hr = Number(stat.homeRuns) || 0;
+        const parsed: PitcherPlatoonSplit = {
+          pa,
+          ba: Number(stat.avg) || 0,
+          ops: Number(stat.ops) || 0,
+          kPct: Math.round((k / pa) * 1000) / 1000,
+          bbPct: Math.round((bb / pa) * 1000) / 1000,
+          hrPer9: ip > 0 ? Math.round((hr / ip) * 9 * 10) / 10 : 0,
+        };
+        if (code === "vl") out.vsL = parsed;
+        else if (code === "vr") out.vsR = parsed;
+      }
+      return out.vsL || out.vsR ? out : null;
+    } catch {
+      return null;
+    }
+  };
+  return (await tryYear(year)) || (await tryYear(year - 1));
+}
+
 // ── Statcast / xStats — actual + expected hitting stats ────────────
 
 export interface BatterStatcast {

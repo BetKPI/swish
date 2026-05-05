@@ -16,6 +16,7 @@ import type {
   TeamPitchingStats,
   TeamHittingStats,
   PlatoonSplits,
+  PitcherPlatoonSplits,
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
 
@@ -246,6 +247,22 @@ export function buildHitterInsights(args: {
     }
   }
 
+  // Last game - recency bias is real, sharps look at the most recent line.
+  if (games.length >= 1) {
+    const last = games[games.length - 1];
+    const lastVal = pickHitter(last, stat);
+    const lastDate = last.date?.slice(5) || "";
+    const trail =
+      lastVal >= line * 2.5 ? " (huge — sell-high?)" :
+      lastVal === 0 && line >= 0.5 ? " (collared)" :
+      "";
+    bullets.push({
+      label: `Last game ${lastDate}`,
+      value: `${lastVal} ${statLabel}${trail}`,
+      tone: lastVal >= line ? "pos" : "neg",
+    });
+  }
+
   // Handedness platoon - the matchup read sharps care most about. When we
   // know the opposing pitcher's hand, surface the batter's vs-L or vs-R
   // split so the user sees how the player actually performs against this
@@ -465,8 +482,9 @@ export function buildPitcherInsights(args: {
   career?: MLBPitcherGame[];
   homeTeam?: string;
   oppHitting?: TeamHittingStats | null;
+  pitcherSplits?: PitcherPlatoonSplits | null;
 }): MLBInsights {
-  const { pitcher, focus, line, oppTeam, career, homeTeam, oppHitting } = args;
+  const { pitcher, focus, line, oppTeam, career, homeTeam, oppHitting, pitcherSplits } = args;
   const games = pitcher.currentSeason;
   const values = games.map((g) => pickPitcher(g, focus));
   const last10 = values.slice(-10);
@@ -575,6 +593,78 @@ export function buildPitcherInsights(args: {
         label: `${oppTeam} R/G`,
         value: `${rpg.toFixed(1)}${rpg >= 5.0 ? " (high-scoring offense)" : rpg <= 3.8 ? " (low-scoring)" : ""}`,
         tone,
+      });
+    }
+  }
+
+  // Pitcher's own platoon splits — strong signal for K props.
+  // Sharps care which side of the plate this guy carves up.
+  if (pitcherSplits && (pitcherSplits.vsL || pitcherSplits.vsR) && focus === "strikeouts") {
+    const vL = pitcherSplits.vsL;
+    const vR = pitcherSplits.vsR;
+    if (vL && vR) {
+      const tone: Tone = "neutral";
+      const lKpct = `${(vL.kPct * 100).toFixed(1)}%`;
+      const rKpct = `${(vR.kPct * 100).toFixed(1)}%`;
+      bullets.push({
+        label: "K% vs L/R",
+        value: `${lKpct} vs LHB · ${rKpct} vs RHB`,
+        tone,
+      });
+    } else if (vL) {
+      bullets.push({
+        label: "K% vs LHB",
+        value: `${(vL.kPct * 100).toFixed(1)}%`,
+        tone: vL.kPct >= 0.25 ? "pos" : "neutral",
+      });
+    } else if (vR) {
+      bullets.push({
+        label: "K% vs RHB",
+        value: `${(vR.kPct * 100).toFixed(1)}%`,
+        tone: vR.kPct >= 0.25 ? "pos" : "neutral",
+      });
+    }
+  }
+
+  // Last start - what just happened. For K props especially this matters
+  // a lot: a pitcher who just went 8 K's last start has momentum / rhythm.
+  if (games.length >= 1) {
+    const last = games[games.length - 1];
+    const lastVal = pickPitcher(last, focus);
+    const lastIp = round1(last.ip || 0);
+    const trail =
+      line != null && line > 0 && focus === "strikeouts" && lastVal >= line * 1.4
+        ? " (dealing)"
+        : line != null && line > 0 && focus === "strikeouts" && lastVal <= line * 0.5
+          ? " (struggled)"
+          : "";
+    bullets.push({
+      label: `Last start ${last.date?.slice(5) || ""}`,
+      value: `${lastVal} ${focusLabel}${focus !== "innings" ? ` in ${lastIp} IP` : ""}${trail}`,
+      tone:
+        line != null && lastVal > line ? "pos" :
+        line != null && lastVal < line ? "neg" :
+        "neutral",
+    });
+  }
+
+  // Recent IP per start - pitcher workload / leash. Manager pulls early
+  // = fewer K opportunities. Going deep = K upside.
+  if (games.length >= 3) {
+    const last3 = games.slice(-3);
+    const avgIp = round1(last3.reduce((s, g) => s + (g.ip || 0), 0) / last3.length);
+    if (avgIp > 0) {
+      const trail =
+        avgIp >= 6.0 ? " (deep into games)" :
+        avgIp <= 4.5 ? " (short leash)" :
+        "";
+      bullets.push({
+        label: "L3 IP/start",
+        value: `${avgIp}${trail}`,
+        tone:
+          focus === "strikeouts"
+            ? avgIp >= 6.0 ? "pos" : avgIp <= 4.5 ? "neg" : "neutral"
+            : "neutral",
       });
     }
   }

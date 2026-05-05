@@ -318,6 +318,31 @@ export function buildNBAPlayerInsights(args: {
     }
   }
 
+  // Rest days - back-to-back hurts performance, full rest helps. Compute
+  // from gap between most recent game and today.
+  if (allGames.length >= 1) {
+    const lastGameDate = allGames[allGames.length - 1]?.date;
+    if (lastGameDate) {
+      const lastTs = Date.parse(lastGameDate);
+      if (Number.isFinite(lastTs)) {
+        const days = Math.round((Date.now() - lastTs) / (24 * 60 * 60 * 1000));
+        if (days <= 1) {
+          bullets.push({
+            label: "Rest",
+            value: "B2B (no rest day)",
+            tone: stat === "pts" || stat === "pra" || stat === "fg3m" ? "neg" : "neutral",
+          });
+        } else if (days >= 3 && days <= 7) {
+          bullets.push({
+            label: "Rest",
+            value: `${days} days off (rested)`,
+            tone: stat === "pts" || stat === "pra" ? "pos" : "neutral",
+          });
+        }
+      }
+    }
+  }
+
   // Defensive matchup -opponent's recent points-allowed per game as a
   // defensive quality proxy. For a points / PRA / scoring prop, a stingy
   // defense suggests under, a leaky defense suggests over.
@@ -341,6 +366,48 @@ export function buildNBAPlayerInsights(args: {
         value: `${ppgAllowed} ppg${trail} (${vsLeague > 0 ? "+" : ""}${vsLeague} vs lg)`,
         tone,
       });
+    }
+  }
+
+  // Last game performance — recency bias is real, sharps look at the
+  // most recent game line directly. If player just put up a monster
+  // game the next-game regression is a sell signal; if they bombed,
+  // bounce-back potential.
+  if (primary.length >= 1) {
+    const last = primary[primary.length - 1];
+    const lastVal = pickStat(last, stat);
+    const lastDate = last.date?.slice(5) || ""; // mm-dd
+    if (lastVal > 0 || stat === "pts" || stat === "pra") {
+      const trail =
+        line > 0 && lastVal >= line * 1.4 ? " (huge — sell-high candidate)" :
+        line > 0 && lastVal <= line * 0.5 ? " (bombed — bounce-back?)" :
+        "";
+      bullets.push({
+        label: `Last game ${lastDate}`,
+        value: `${lastVal} ${STAT_LABELS[stat]}${trail}`,
+        tone:
+          line > 0 && lastVal >= line ? "pos" :
+          line > 0 && lastVal < line ? "neg" : "neutral",
+      });
+    }
+  }
+
+  // Usage / role trend — minutes consistency is a big predictor of prop
+  // outcomes, especially in playoffs (rotations tighten).
+  if (recentMinutes.length >= 3) {
+    const last3 = recentMinutes.slice(-3);
+    const avg3 = last3.reduce((a, b) => a + b, 0) / last3.length;
+    const earlier = recentMinutes.slice(0, -3);
+    if (earlier.length >= 3) {
+      const earlierAvg = earlier.reduce((a, b) => a + b, 0) / earlier.length;
+      const swing = round1(avg3 - earlierAvg);
+      if (Math.abs(swing) >= 4) {
+        bullets.push({
+          label: "Minutes trend",
+          value: `${round1(avg3)} L3 vs ${round1(earlierAvg)} earlier (${swing > 0 ? "+" : ""}${swing})`,
+          tone: swing > 0 ? "pos" : "neg",
+        });
+      }
     }
   }
 
