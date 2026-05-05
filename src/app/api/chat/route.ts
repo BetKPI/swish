@@ -397,6 +397,63 @@ ${insights ? `\nMODEL INSIGHTS (deterministic, derived from raw data - reference
 ${(insights.bullets || []).map((b: { label: string; value: string; tone: string }) => `  - ${b.label}: ${b.value} [${b.tone}]`).join("\n")}
 ${insights.flags?.length ? `- Flags: ${insights.flags.join("; ")}` : ""}` : ""}
 ${statToolsContext}
+${(() => {
+  // Surface the rich MLB history signals explicitly so the chat LLM
+  // knows what it can answer without fetching more data. The user can
+  // ask "what's the weather", "what does Cole throw", "vs LHP split"
+  // and the answer is already loaded.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cdAny = computedData as any;
+  const h = cdAny?._mlbHistory;
+  if (!h) return "";
+  const lines: string[] = ["RICH MLB SIGNALS LOADED (you can answer questions from these directly):"];
+  if (h.weather) {
+    const w = h.weather;
+    lines.push(`- Weather at ${w.parkName}: ${w.tempF}°F, wind ${w.windMph} mph ${w.windDir}, ${w.humidity}% humidity, ${w.precipProb}% rain, roof=${w.roof}`);
+  }
+  for (const [name, ars] of Object.entries(h.pitcherArsenal || {})) {
+    if (!ars) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const pitches = (ars as any).pitches?.slice(0, 5) || [];
+    if (pitches.length === 0) continue;
+    const mix = pitches.map((p: { pitchType: string; usagePct: number; whiffPct: number; woba: number }) =>
+      `${p.pitchType} ${Math.round(p.usagePct)}% (whiff ${p.whiffPct.toFixed(1)}%, woba ${p.woba.toFixed(3)})`
+    ).join(" | ");
+    lines.push(`- ${name} pitch arsenal: ${mix}`);
+  }
+  for (const [name, sp] of Object.entries(h.platoonSplits || {})) {
+    if (!sp) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const s = sp as any;
+    if (s.vsL || s.vsR) {
+      const parts: string[] = [];
+      if (s.vsL) parts.push(`vs LHP: ${s.vsL.avg.toFixed(3)} BA, ${s.vsL.slg.toFixed(3)} SLG, ${s.vsL.hr} HR in ${s.vsL.ab} AB`);
+      if (s.vsR) parts.push(`vs RHP: ${s.vsR.avg.toFixed(3)} BA, ${s.vsR.slg.toFixed(3)} SLG, ${s.vsR.hr} HR in ${s.vsR.ab} AB`);
+      lines.push(`- ${name} platoon splits: ${parts.join(" | ")}`);
+    }
+  }
+  for (const [name, sp] of Object.entries(h.pitcherPlatoon || {})) {
+    if (!sp) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const s = sp as any;
+    const parts: string[] = [];
+    if (s.vsL) parts.push(`vs LHB K%: ${(s.vsL.kPct * 100).toFixed(1)}%`);
+    if (s.vsR) parts.push(`vs RHB K%: ${(s.vsR.kPct * 100).toFixed(1)}%`);
+    if (parts.length) lines.push(`- ${name} pitcher splits: ${parts.join(" | ")}`);
+  }
+  for (const [name, ev] of Object.entries(h.exitVelo || {})) {
+    if (!ev) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const e = ev as any;
+    if (!e.available) continue;
+    const parts: string[] = [];
+    if (e.xba != null && e.ba != null) parts.push(`xBA ${e.xba.toFixed(3)} vs BA ${e.ba.toFixed(3)}`);
+    if (e.xslg != null && e.slg != null) parts.push(`xSLG ${e.xslg.toFixed(3)} vs SLG ${e.slg.toFixed(3)}`);
+    if (e.xwoba != null) parts.push(`xwOBA ${e.xwoba.toFixed(3)}`);
+    if (parts.length) lines.push(`- ${name} Statcast: ${parts.join(", ")}`);
+  }
+  return lines.length > 1 ? `\n${lines.join("\n")}\n` : "";
+})()}
 EXISTING DATA WE ALREADY HAVE:
 ${JSON.stringify(computedData, null, 2)}
 
