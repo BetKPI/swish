@@ -1,21 +1,25 @@
 {
-  "name": "swish — know before you bet",
+  "name": "swish - run the bet through the numbers",
   "short_name": "swish",
-  "description": "Screenshot any bet. Get the stats that actually matter — in seconds.",
+  "description": "Drop a bet screenshot. Real probability, every game log, every matchup angle.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0d1b2a",
-  "theme_color": "#0d1b2a",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "categories": ["sports", "utilities"],
   "icons": [
     {
       "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

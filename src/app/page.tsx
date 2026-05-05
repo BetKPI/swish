@@ -305,14 +305,14 @@ export default function Home() {
                 </div>
 
                 <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-[0.95] text-center">
-                  The take,
+                  Run the bet
                   <br />
-                  <span className="text-accent">before you take the bet.</span>
+                  <span className="text-accent">through the numbers.</span>
                 </h1>
 
                 <p className="text-foreground/80 text-base sm:text-lg max-w-md mx-auto leading-relaxed mt-6 text-center">
-                  Drop a bet slip. We pull every game log, xStat, ballpark factor,
-                  and matchup angle, then give you the % chance it hits.
+                  Drop a screenshot. We do the research and give you a real
+                  probability — game logs, xStats, matchup, the works.
                 </p>
 
                 {/* Upload box - prominent, sport-tinted glow */}

@@ -10,21 +10,30 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://swish-jet.vercel.app"),
-  title: "swish - know before you bet",
+  title: "swish - run the bet through the numbers",
   description:
-    "Screenshot any bet. Get the stats that actually matter - in seconds.",
+    "Drop a bet screenshot. Real probability, every game log, every matchup angle.",
+  applicationName: "swish",
+  appleWebApp: {
+    capable: true,
+    title: "swish",
+    statusBarStyle: "black-translucent",
+  },
+  formatDetection: {
+    telephone: false,
+  },
   openGraph: {
-    title: "swish - know before you bet",
+    title: "swish - run the bet through the numbers",
     description:
-      "Screenshot any bet. Get the stats that actually matter - in seconds.",
+      "Drop a bet screenshot. Real probability, every game log, every matchup angle.",
     siteName: "swish",
     images: [{ url: "/og.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "swish - know before you bet",
+    title: "swish - run the bet through the numbers",
     description:
-      "Screenshot any bet. Get the stats that actually matter - in seconds.",
+      "Drop a bet screenshot. Real probability, every game log, every matchup angle.",
     images: ["/og.png"],
   },
 };
@@ -33,7 +42,8 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#0d1b2a",
+  themeColor: "#0a0a0a",
+  viewportFit: "cover", // safe-area inset support for iPhone notch / home indicator
 };
 
 export default function RootLayout({
@@ -51,7 +61,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
       <body className="min-h-full flex flex-col bg-background text-foreground">
-        <header className="border-b border-border/50 px-4 py-4">
+        <header className="border-b border-border/50 px-4 py-4 pt-[max(1rem,env(safe-area-inset-top))]">
           <div className="max-w-4xl mx-auto flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img src="/logo.svg" alt="swish" className="w-9 h-9 rounded-lg" />
@@ -60,7 +70,7 @@ export default function RootLayout({
               </h1>
             </div>
             <span className="text-muted text-xs sm:text-sm">
-              know before you bet
+              run the bet through the numbers
             </span>
           </div>
         </header>
