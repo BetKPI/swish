@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getTonightMLB, type TonightGame, type TonightStarter } from "@/lib/tonight-edge";
 
-// Revalidate the page every hour - data churns through the day (lineups,
-// weather updates) and this is the main SEO driver, so freshness matters.
-export const revalidate = 3600;
+// Render on each request (with the underlying cachedFetch + module-cache
+// keeping API calls fast). Pre-rendering at build time blew past Vercel's
+// 60s budget loading every starter's pitch arsenal.
+export const dynamic = "force-dynamic";
+export const fetchCache = "default-cache";
 
 export async function generateMetadata(): Promise<Metadata> {
   const date = new Date().toISOString().slice(0, 10);
@@ -145,7 +147,10 @@ function GameCard({ game }: { game: TonightGame }) {
 }
 
 export default async function TonightPage() {
-  const games = await getTonightMLB().catch(() => []);
+  // Lite mode skips arsenal + splits (the heavy fetches). Page still has
+  // ERA / K/9 / hand / weather / park - rich enough to be useful and fast
+  // enough to render on cold start without timing out.
+  const games = await getTonightMLB(undefined, { lite: true }).catch(() => []);
   const date = new Date().toISOString().slice(0, 10);
   const friendly = new Date().toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
 

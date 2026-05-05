@@ -74,8 +74,9 @@ async function fetchPitcherSummary(pitcherId: number): Promise<{ pitchHand?: "L"
  * Pull tonight's MLB games. If `date` omitted, defaults to today in the
  * caller's timezone (server-time). Cached 1h via cachedFetch.
  */
-export async function getTonightMLB(dateOverride?: string): Promise<TonightGame[]> {
+export async function getTonightMLB(dateOverride?: string, options?: { lite?: boolean }): Promise<TonightGame[]> {
   const date = dateOverride || new Date().toISOString().slice(0, 10);
+  const lite = options?.lite ?? false;
   const url = `https://statsapi.mlb.com/api/v1/schedule?sportId=1&date=${date}&hydrate=probablePitcher`;
   const data = await cachedFetch<MlbScheduleResponse>(url, TTL.MEDIUM);
   const games = data?.dates?.[0]?.games || [];
@@ -100,34 +101,39 @@ export async function getTonightMLB(dateOverride?: string): Promise<TonightGame[
 
     const homeStarterFetch = homePP?.id && homePP?.fullName
       ? (async () => {
-          const [summary, arsenal, splits] = await Promise.all([
-            fetchPitcherSummary(homePP.id!),
-            getPitcherArsenal(homePP.id!),
-            getPitcherPlatoonSplits(homePP.id!),
-          ]);
+          // Lite mode: just the summary (era / k9 / hand) - skip arsenal and
+          // splits since those are heavy. Used for the /tonight SEO page so
+          // it renders fast even on cold starts.
+          const fetches: Promise<unknown>[] = [fetchPitcherSummary(homePP.id!)];
+          if (!lite) {
+            fetches.push(getPitcherArsenal(homePP.id!));
+            fetches.push(getPitcherPlatoonSplits(homePP.id!));
+          }
+          const [summary, arsenal, splits] = await Promise.all(fetches);
           game.homeStarter = {
             id: homePP.id!,
             name: homePP.fullName!,
-            ...summary,
-            arsenal,
-            splits,
+            ...(summary as Awaited<ReturnType<typeof fetchPitcherSummary>>),
+            arsenal: (arsenal as PitcherArsenal | null | undefined) ?? null,
+            splits: (splits as PitcherPlatoonSplits | null | undefined) ?? null,
           };
         })()
       : Promise.resolve();
 
     const awayStarterFetch = awayPP?.id && awayPP?.fullName
       ? (async () => {
-          const [summary, arsenal, splits] = await Promise.all([
-            fetchPitcherSummary(awayPP.id!),
-            getPitcherArsenal(awayPP.id!),
-            getPitcherPlatoonSplits(awayPP.id!),
-          ]);
+          const fetches: Promise<unknown>[] = [fetchPitcherSummary(awayPP.id!)];
+          if (!lite) {
+            fetches.push(getPitcherArsenal(awayPP.id!));
+            fetches.push(getPitcherPlatoonSplits(awayPP.id!));
+          }
+          const [summary, arsenal, splits] = await Promise.all(fetches);
           game.awayStarter = {
             id: awayPP.id!,
             name: awayPP.fullName!,
-            ...summary,
-            arsenal,
-            splits,
+            ...(summary as Awaited<ReturnType<typeof fetchPitcherSummary>>),
+            arsenal: (arsenal as PitcherArsenal | null | undefined) ?? null,
+            splits: (splits as PitcherPlatoonSplits | null | undefined) ?? null,
           };
         })()
       : Promise.resolve();
