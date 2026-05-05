@@ -20,6 +20,7 @@ import type {
 } from "./mlb-history";
 import { getParkFactors } from "./mlb-park-factors";
 import type { GameWeather } from "./mlb-weather";
+import type { PitcherArsenal } from "./mlb-pitch-arsenal";
 
 export type Tone = "pos" | "neg" | "neutral";
 
@@ -544,8 +545,9 @@ export function buildPitcherInsights(args: {
   homeTeam?: string;
   oppHitting?: TeamHittingStats | null;
   pitcherSplits?: PitcherPlatoonSplits | null;
+  arsenal?: PitcherArsenal | null;
 }): MLBInsights {
-  const { pitcher, focus, line, oppTeam, career, homeTeam, oppHitting, pitcherSplits } = args;
+  const { pitcher, focus, line, oppTeam, career, homeTeam, oppHitting, pitcherSplits, arsenal } = args;
   const games = pitcher.currentSeason;
   const values = games.map((g) => pickPitcher(g, focus));
   const last10 = values.slice(-10);
@@ -655,6 +657,42 @@ export function buildPitcherInsights(args: {
         value: `${rpg.toFixed(1)}${rpg >= 5.0 ? " (high-scoring offense)" : rpg <= 3.8 ? " (low-scoring)" : ""}`,
         tone,
       });
+    }
+  }
+
+  // Pitch arsenal - what does this guy actually throw, and what's the
+  // K rate per pitch? Sharps want to know "his slider has 38% whiff"
+  // before betting K's.
+  if (arsenal && arsenal.pitches.length > 0) {
+    const top3 = arsenal.pitches.slice(0, 3);
+    const mixStr = top3.map((p) => `${p.pitchType} ${Math.round(p.usagePct)}%`).join(" / ");
+    bullets.push({
+      label: "Pitch mix",
+      value: mixStr,
+      tone: "neutral",
+    });
+    if (focus === "strikeouts") {
+      // Highlight the best K-pitch (highest whiff rate) when notable
+      const bestK = [...arsenal.pitches].sort((a, b) => b.whiffPct - a.whiffPct)[0];
+      if (bestK && bestK.whiffPct >= 28) {
+        bullets.push({
+          label: `${bestK.pitchType} whiff%`,
+          value: `${bestK.whiffPct.toFixed(1)}% (elite K-pitch)`,
+          tone: "pos",
+        });
+      }
+    } else if (focus === "era") {
+      // Worst pitch (highest opp wOBA) for ERA props - the one that gets hit
+      const worstPitch = [...arsenal.pitches]
+        .filter((p) => p.usagePct >= 10)
+        .sort((a, b) => b.woba - a.woba)[0];
+      if (worstPitch && worstPitch.woba >= 0.380) {
+        bullets.push({
+          label: `${worstPitch.pitchType} woba`,
+          value: `${(worstPitch.woba * 1000).toFixed(0).padStart(3, "0")} allowed (vulnerable)`,
+          tone: "neg",
+        });
+      }
     }
   }
 

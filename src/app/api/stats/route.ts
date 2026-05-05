@@ -119,6 +119,8 @@ interface MLBHistoryContextShape {
   pitcherPlatoon: Record<string, PitcherPlatoonSplits | null>;
   // Pitch hand for probable pitchers, keyed by team name
   pitcherHand: Record<string, "L" | "R" | null>;
+  // Pitch arsenal (per-pitch-type breakdown) keyed by pitcher name
+  pitcherArsenal: Record<string, Awaited<ReturnType<typeof import("@/lib/mlb-pitch-arsenal").getPitcherArsenal>>>;
   // Weather forecast at the home park
   weather: Awaited<ReturnType<typeof import("@/lib/mlb-weather").getGameWeather>> | null;
 }
@@ -141,6 +143,7 @@ async function buildMLBHistoryContext(
     platoonSplits: {},
     pitcherPlatoon: {},
     pitcherHand: {},
+    pitcherArsenal: {},
     weather: null,
   };
 
@@ -184,13 +187,16 @@ async function buildMLBHistoryContext(
     if (ownPitcher?.id && ownPitcher?.fullName) {
       pitcherFetches.push(
         (async () => {
-          const [log, splits] = await Promise.all([
+          const { getPitcherArsenal } = await import("@/lib/mlb-pitch-arsenal");
+          const [log, splits, arsenal] = await Promise.all([
             getPitcherTwoSeasonLog(ownPitcher.id, ownPitcher.fullName),
             getPitcherPlatoonSplits(ownPitcher.id),
+            getPitcherArsenal(ownPitcher.id),
           ]);
           ctx.probablePitchers[teamName] = log;
           ctx.pitchersByName[ownPitcher.fullName] = log;
           ctx.pitcherPlatoon[ownPitcher.fullName] = splits;
+          ctx.pitcherArsenal[ownPitcher.fullName] = arsenal;
         })(),
       );
     }
@@ -207,12 +213,15 @@ async function buildMLBHistoryContext(
         if (!player) return;
         const isPitcher = player.primaryPosition?.abbreviation === "P";
         if (isPitcher) {
-          const [log, splits] = await Promise.all([
+          const { getPitcherArsenal } = await import("@/lib/mlb-pitch-arsenal");
+          const [log, splits, arsenal] = await Promise.all([
             getPitcherTwoSeasonLog(player.id, player.fullName),
             getPitcherPlatoonSplits(player.id),
+            getPitcherArsenal(player.id),
           ]);
           ctx.pitchersByName[playerName] = log;
           ctx.pitcherPlatoon[playerName] = splits;
+          ctx.pitcherArsenal[playerName] = arsenal;
           return;
         }
         const [log, statcast, splits] = await Promise.all([
@@ -1377,6 +1386,7 @@ function computeMLBInsights(
       const career = history.pitcherCareerVsOpponent?.[player];
       const oppHitting = oppTeam ? history.teamHitting?.[oppTeam] : null;
       const pitcherSplits = history.pitcherPlatoon?.[player];
+      const arsenal = history.pitcherArsenal?.[player];
       // Lazy-load to avoid pulling the lib unless we need it
       // eslint-disable-next-line @typescript-eslint/no-require-imports
       const { buildPitcherInsights } = require("@/lib/mlb-insights");
@@ -1385,6 +1395,7 @@ function computeMLBInsights(
         homeTeam: extraction.homeTeam,
         oppHitting,
         pitcherSplits,
+        arsenal,
       });
     }
 
