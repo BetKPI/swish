@@ -382,6 +382,14 @@ export default function Home() {
                 <p className="text-muted/60 text-xs text-center mt-6 max-w-md mx-auto">
                   Free. No account. Charts and probabilities, not picks.
                 </p>
+                <p className="text-center mt-4">
+                  <a
+                    href="/tonight"
+                    className="text-accent text-xs font-bold uppercase tracking-wider hover:text-emerald-400"
+                  >
+                    Tonight's MLB edge →
+                  </a>
+                </p>
               </div>
             </div>
           </div>
