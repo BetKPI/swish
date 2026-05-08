@@ -1228,6 +1228,7 @@ async function analyzeSingleBet(
   // MLB player-prop: deterministic structured insights (verdict, projection, bullets, flags)
   const mlbInsights = computeMLBInsights(extraction, teamData);
   const nbaInsights = await computeNBAInsights(extraction, teamData);
+  const soccerInsights = await computeSoccerInsights(extraction, teamData);
 
   // Insights-driven Swish Score override - when we have a real projection
   // (MLB or NBA player prop), the default scorer tends to bottom out at
@@ -1237,6 +1238,19 @@ async function analyzeSingleBet(
   const overridden = scoreFromInsights(insights);
   if (overridden && extraction.betType === "player_prop") {
     swishScore = overridden;
+  }
+  // Soccer insights provide their own probability for ML / spread / total bets.
+  if (soccerInsights?.probability != null) {
+    const p = soccerInsights.probability;
+    const score = Math.round(p * 100) / 10;
+    const label =
+      p >= 0.75 ? "Strong" : p >= 0.62 ? "Solid" : p >= 0.48 ? "Toss-Up" :
+      p >= 0.35 ? "Shaky" : "Weak";
+    swishScore = {
+      score,
+      label,
+      detail: `~${Math.round(p * 100)}% chance to win (model estimate, soccer-specific)`,
+    };
   }
 
   if (isSummaryOnly) {
@@ -1252,6 +1266,7 @@ async function analyzeSingleBet(
       suggestions,
       mlbInsights,
       nbaInsights,
+      soccerInsights,
     };
   }
 
@@ -1267,6 +1282,7 @@ async function analyzeSingleBet(
     suggestions,
     mlbInsights,
     nbaInsights,
+    soccerInsights,
   };
 }
 
@@ -1477,6 +1493,63 @@ function computeMLBInsights(
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
+    return undefined;
+  }
+}
+
+/**
+ * Soccer team-bet insights for ML / spread / total / BTTS markets.
+ * Reads team form from ESPN, computes recent form, goal differential,
+ * H2H, home/away splits, BTTS rate. Returns probability for the bet
+ * accounting for opponent strength + venue.
+ */
+async function computeSoccerInsights(
+  extraction: BetExtraction,
+  rawData: Record<string, unknown>,
+) {
+  const sport = (extraction.sport || "").toUpperCase();
+  if (sport !== "SOCCER" && sport !== "MLS" && sport !== "EPL") return undefined;
+  if (extraction.teams.length < 1) return undefined;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { getSoccerTeamForm } = require("@/lib/soccer-history");
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { buildSoccerInsights } = require("@/lib/soccer-insights");
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = rawData as any;
+    const teamA = extraction.teams[0];
+    const teamB = extraction.teams[1];
+    const slotA = data?.[teamA];
+    const slotB = teamB ? data?.[teamB] : null;
+    const tA = slotA?.team;
+    const tB = slotB?.team;
+    if (!tA?.id) return undefined;
+    const leagueA = tA._resolvedLeague || "eng.1";
+    const leagueB = tB?._resolvedLeague || leagueA;
+
+    const [formA, formB] = await Promise.all([
+      getSoccerTeamForm(leagueA, Number(tA.id), tA.displayName || teamA),
+      tB?.id ? getSoccerTeamForm(leagueB, Number(tB.id), tB.displayName || teamB) : Promise.resolve(null),
+    ]);
+    if (!formA) return undefined;
+
+    const isHome =
+      extraction.homeTeam && extraction.teams[0]
+        ? extraction.teams[0].toLowerCase() === extraction.homeTeam.toLowerCase()
+        : undefined;
+
+    return buildSoccerInsights({
+      betType: extraction.betType,
+      market: extraction.market,
+      line: extraction.line,
+      team: formA,
+      opp: formB,
+      isHome,
+    });
+  } catch (e) {
+    console.error("[Soccer Insights] failed:", e);
     return undefined;
   }
 }

@@ -113,3 +113,10 @@ export interface NBAInsights {
   bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
   flags: string[];
 }
+
+export interface SoccerInsights {
+  verdict: string;
+  probability?: number;
+  bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
+  flags: string[];
+}
