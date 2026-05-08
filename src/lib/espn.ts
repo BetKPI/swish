@@ -198,16 +198,20 @@ export async function fetchPlayerData(
 
 // ── Team search & stats ────────────────────────────────────────────
 
-export async function searchTeam(
-  sport: string,
-  teamName: string
-): Promise<Record<string, unknown> | null> {
-  const { sport: s, league } = getLeagueInfoOrThrow(sport);
+// Soccer leagues to search across when the user's bet sport is generic
+// "Soccer" - default-MLS often misses EPL / La Liga / Serie A teams.
+const SOCCER_LEAGUES = ["eng.1", "esp.1", "ger.1", "ita.1", "fra.1", "uefa.champions", "usa.1", "mex.1"];
+
+async function searchTeamInLeague(
+  espnSport: string,
+  league: string,
+  teamName: string,
+): Promise<{ team: Record<string, unknown>; league: string } | null> {
   try {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const data: any = await cachedFetch(
-      `${BASE}/${s}/${league}/teams?limit=100`,
-      TTL.LONG
+      `${BASE}/${espnSport}/${league}/teams?limit=100`,
+      TTL.LONG,
     );
     if (!data) return null;
     const teams = data.sports?.[0]?.leagues?.[0]?.teams || [];
@@ -220,31 +224,67 @@ export async function searchTeam(
           team.shortDisplayName?.toLowerCase().includes(name) ||
           team.abbreviation?.toLowerCase() === name ||
           team.name?.toLowerCase().includes(name) ||
-          name.includes(team.name?.toLowerCase()) ||
-          name.includes(team.displayName?.toLowerCase())
+          (team.name && name.includes(team.name.toLowerCase())) ||
+          (team.displayName && name.includes(team.displayName.toLowerCase()))
         );
-      }
+      },
     );
-    return match?.team || null;
+    return match?.team ? { team: match.team, league } : null;
   } catch {
     return null;
   }
 }
 
-export async function getTeamStats(
+export async function searchTeam(
   sport: string,
-  teamId: string
+  teamName: string
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}/statistics`, TTL.LONG);
+  // Soccer: try the mapped league first, then fall back to scanning the
+  // big international leagues. Generic "Soccer" sport defaults to MLS,
+  // which means EPL teams (Liverpool / Chelsea / etc.) returned null
+  // before this fan-out.
+  if (s === "soccer") {
+    const primary = await searchTeamInLeague(s, league, teamName);
+    if (primary) {
+      // Annotate the team with the league it was found in so downstream
+      // calls (getTeamStats / getTeamRecord) hit the right endpoints.
+      return { ...primary.team, _resolvedLeague: primary.league };
+    }
+    for (const fallback of SOCCER_LEAGUES) {
+      if (fallback === league) continue;
+      const hit = await searchTeamInLeague(s, fallback, teamName);
+      if (hit) {
+        console.log(`[ESPN] Soccer team "${teamName}" found in fallback league "${fallback}"`);
+        return { ...hit.team, _resolvedLeague: hit.league };
+      }
+    }
+    return null;
+  }
+
+  // Non-soccer: original single-league lookup
+  const found = await searchTeamInLeague(s, league, teamName);
+  return found?.team || null;
+}
+
+export async function getTeamStats(
+  sport: string,
+  teamId: string,
+  leagueOverride?: string,
+): Promise<Record<string, unknown> | null> {
+  const { sport: s, league } = getLeagueInfoOrThrow(sport);
+  const useLeague = leagueOverride || league;
+  return cachedFetch(`${BASE}/${s}/${useLeague}/teams/${teamId}/statistics`, TTL.LONG);
 }
 
 export async function getTeamRecord(
   sport: string,
-  teamId: string
+  teamId: string,
+  leagueOverride?: string,
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
-  return cachedFetch(`${BASE}/${s}/${league}/teams/${teamId}`, TTL.LONG);
+  const useLeague = leagueOverride || league;
+  return cachedFetch(`${BASE}/${s}/${useLeague}/teams/${teamId}`, TTL.LONG);
 }
 
 export async function getScoreboard(
@@ -360,19 +400,22 @@ export interface StandingsEntry {
 export async function getTeamSchedule(
   sport: string,
   teamId: string,
-  season?: number
+  season?: number,
+  leagueOverride?: string,
 ): Promise<Record<string, unknown> | null> {
   const { sport: s, league } = getLeagueInfoOrThrow(sport);
+  const useLeague = leagueOverride || league;
+  void useLeague; // soccer leagues don't have separate seasontype params; reuse below
   const seasonParam = season ? `&season=${season}` : "";
 
   // Fetch regular season (type 2) and postseason (type 3) in parallel
   const [regular, postseason] = await Promise.all([
     cachedFetch<Record<string, unknown>>(
-      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=2${seasonParam}`,
+      `${BASE}/${s}/${useLeague}/teams/${teamId}/schedule?seasontype=2${seasonParam}`,
       season ? TTL.LONG : TTL.SHORT
     ),
     cachedFetch<Record<string, unknown>>(
-      `${BASE}/${s}/${league}/teams/${teamId}/schedule?seasontype=3${seasonParam}`,
+      `${BASE}/${s}/${useLeague}/teams/${teamId}/schedule?seasontype=3${seasonParam}`,
       season ? TTL.LONG : TTL.SHORT
     ),
   ]);
@@ -433,11 +476,14 @@ export async function fetchAllTeamData(
 
     anyFound = true;
     const teamId = (team as { id: string }).id;
-    console.log(`[ESPN] Found team: "${name}" → id=${teamId}`);
+    // Soccer searchTeam annotates the team with the league it was actually
+    // found in, so downstream calls hit the correct league endpoint.
+    const resolvedLeague = (team as { _resolvedLeague?: string })._resolvedLeague;
+    console.log(`[ESPN] Found team: "${name}" → id=${teamId}${resolvedLeague ? ` (league=${resolvedLeague})` : ""}`);
     const [stats, record, schedule] = await Promise.all([
-      getTeamStats(sport, teamId),
-      getTeamRecord(sport, teamId),
-      getTeamSchedule(sport, teamId),
+      getTeamStats(sport, teamId, resolvedLeague),
+      getTeamRecord(sport, teamId, resolvedLeague),
+      getTeamSchedule(sport, teamId, undefined, resolvedLeague),
     ]);
 
     results[name] = {
