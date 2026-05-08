@@ -63,7 +63,7 @@ export type NBAStat =
   | "pts" | "reb" | "ast" | "stl" | "blk" | "fg3m" | "tov"
   | "pra" | "pr" | "pa" | "ra"
   | "ftm" | "fgm" | "stl_blk"
-  | "min"; // FanDuel: Player Minutes O/U is a common prop
+  | "min" | "fg3a" | "fga" | "fta"; // FD: minutes, 3-pt attempted, FG attempted, FT attempted
 
 /** Period scope - "full" = whole game, "q1"-"q4" = single quarter,
  *  "h1"/"h2" = half. Quarter / half data is only populated for points
@@ -101,6 +101,9 @@ const STAT_LABELS: Record<NBAStat, string> = {
   fgm: "FGM",
   stl_blk: "STL+BLK",
   min: "MIN",
+  fg3a: "3PA",
+  fga: "FGA",
+  fta: "FTA",
 };
 
 // ESPN's NBA gamelog stat keys are uppercase abbreviations: PTS, REB, AST,
@@ -166,6 +169,9 @@ function pickStat(g: NBAPlayerGame, stat: NBAStat, scope: PeriodScope = "full"):
     case "fgm": return num(s, "FG", "FGM", "fgm");
     case "stl_blk": return num(s, "STL", "stl", "steals") + num(s, "BLK", "blk", "blocks");
     case "min": return num(s, "MIN", "min", "minutes", "mins");
+    case "fg3a": return num(s, "FG3A", "fg3a", "3PA", "threePointAttempts", "3pa");
+    case "fga": return num(s, "FGA", "fga", "fieldGoalAttempts");
+    case "fta": return num(s, "FTA", "fta", "freeThrowAttempts");
   }
 }
 
@@ -233,9 +239,12 @@ export function detectNBAStat(market?: string, description?: string): NBAStat | 
   if (m.includes("steal")) return "stl";
   if (m.includes("block")) return "blk";
   if (m.includes("turnover")) return "tov";
-  // Player Minutes - watch for "minutes played" specifically; "first minute"
-  // / "first quarter" should NOT match here.
   if ((m.includes("minutes") || /\bmin\b/.test(m)) && !m.includes("first") && !m.includes("quarter")) return "min";
+  // Attempts - "3-pt attempted" / "field goals attempted" / "free throws
+  // attempted" must match BEFORE the made variants below.
+  if ((m.includes("3-pt attempted") || m.includes("threes attempted") || m.includes("3pa") || (m.includes("3-pointer") && m.includes("attempt")))) return "fg3a";
+  if ((m.includes("field goal") || m.includes("fg")) && m.includes("attempt")) return "fga";
+  if ((m.includes("free throw") || m.includes("ft")) && m.includes("attempt")) return "fta";
   if (m.includes("point") || m.includes("score")) return "pts";
   return null;
 }
