@@ -155,6 +155,51 @@ export function buildComboFanOut(args: {
 }
 
 /**
+ * Single-team rate of meeting a per-game threshold. Used for "Team X
+ * to record N+ points in first 3 quarters" style bets - only one team
+ * has to clear the condition.
+ */
+export function buildSingleTeamThreshold(args: {
+  team: string;
+  games: GameLike[];
+  meets: (g: GameLike) => boolean;
+  condition: string;
+}): ComboInsights {
+  const { team, games, meets, condition } = args;
+  const hits = games.filter(meets).length;
+  const total = games.length;
+  const rate = total > 0 ? hits / total : 0;
+  const last10 = games.slice(-10);
+  const last10Hits = last10.filter(meets).length;
+  const last10Rate = last10.length > 0 ? last10Hits / last10.length : 0;
+  const tone = (r: number): Tone => r >= 0.55 ? "pos" : r <= 0.35 ? "neg" : "neutral";
+
+  const breakdown: ComboInsights["breakdown"] = [
+    { label: `Last ${last10.length}`, value: last10Hits, pct: Math.round(last10Rate * 100), tone: tone(last10Rate) },
+    { label: "Season", value: hits, pct: Math.round(rate * 100), tone: tone(rate) },
+  ];
+  const bullets: ComboBullet[] = [
+    { label: `${team} season`, value: `${hits}/${total} (${Math.round(rate * 100)}%) ${condition}`, tone: tone(rate) },
+    { label: `${team} L10`, value: `${last10Hits}/${last10.length} (${Math.round(last10Rate * 100)}%) ${condition}`, tone: tone(last10Rate) },
+  ];
+
+  // Probability blends recent form (60%) with season rate (40%)
+  const probability = 0.6 * last10Rate + 0.4 * rate;
+
+  const verdict =
+    last10Hits >= 7
+      ? `${team} hit ${condition} in ${last10Hits} of last ${last10.length} - rolling.`
+      : last10Hits <= 3
+        ? `${team} only ${last10Hits} of last ${last10.length} for ${condition} - cold.`
+        : `${team} clears ${condition} ${Math.round(rate * 100)}% on the season, ${Math.round(last10Rate * 100)}% L10.`;
+
+  const flags: string[] = [];
+  if (total < 10) flags.push(`Small sample - only ${total} games loaded.`);
+
+  return { verdict, breakdown, bullets, flags, probability };
+}
+
+/**
  * Detect whether a market description is a "both teams meet condition" combo.
  * Returns the parsed condition or null.
  */
@@ -164,6 +209,10 @@ export function detectComboMarket(market?: string, description?: string):
   | { kind: "yrfi"; }
   | { kind: "btts"; }
   | { kind: "both_period_score"; period: number; sport: "NHL" | "NBA" | "MLB" }
+  | { kind: "team_first_3_quarters"; threshold: number }
+  | { kind: "team_first_half"; threshold: number }
+  | { kind: "team_second_half"; threshold: number }
+  | { kind: "team_quarter"; threshold: number; quarter: 1 | 2 | 3 | 4 }
   | null {
   const m = `${market || ""} ${description || ""}`.toLowerCase();
 
@@ -191,6 +240,29 @@ export function detectComboMarket(market?: string, description?: string):
   const quarterMatch = m.match(/(\d+)\s*\+?\s*(?:points?|pts?)?\s*(?:in\s+)?each\s+quarter/);
   if (quarterMatch) {
     return { kind: "both_quarters_score", threshold: Number(quarterMatch[1]) };
+  }
+
+  // Single-team "X+ in first 3 quarters" / "X+ through 3"
+  const f3qMatch = m.match(/(\d+)\s*\+?\s*(?:points?|pts?)?\s*(?:in\s+)?(?:the\s+)?(?:first|1st|f)\s*3\s*(?:quarters?|qtrs?|q)\b/);
+  if (f3qMatch) return { kind: "team_first_3_quarters", threshold: Number(f3qMatch[1]) };
+  if (m.match(/through\s+3/) && /(\d+)\s*\+/.test(m)) {
+    const t = m.match(/(\d+)\s*\+/);
+    if (t) return { kind: "team_first_3_quarters", threshold: Number(t[1]) };
+  }
+
+  // Single-team "X+ in 1st half" / "X+ in first half"
+  const fhMatch = m.match(/(\d+)\s*\+?\s*(?:points?|pts?)?\s*(?:in\s+)?(?:the\s+)?(?:first|1st)\s*half\b/);
+  if (fhMatch) return { kind: "team_first_half", threshold: Number(fhMatch[1]) };
+  const shMatch = m.match(/(\d+)\s*\+?\s*(?:points?|pts?)?\s*(?:in\s+)?(?:the\s+)?(?:second|2nd)\s*half\b/);
+  if (shMatch) return { kind: "team_second_half", threshold: Number(shMatch[1]) };
+
+  // Single-team "X+ in 1st/2nd/3rd/4th quarter"
+  const qMatch = m.match(/(\d+)\s*\+?\s*(?:points?|pts?)?\s*(?:in\s+)?(?:the\s+)?(?:(\d)(?:st|nd|rd|th)|first|second|third|fourth)\s*quarter\b/);
+  if (qMatch) {
+    const n = qMatch[2] ? Number(qMatch[2]) : { first: 1, second: 2, third: 3, fourth: 4 }[qMatch[0].match(/first|second|third|fourth/)?.[0] || ""] || 1;
+    if (n >= 1 && n <= 4) {
+      return { kind: "team_quarter", threshold: Number(qMatch[1]), quarter: n as 1 | 2 | 3 | 4 };
+    }
   }
 
   return null;

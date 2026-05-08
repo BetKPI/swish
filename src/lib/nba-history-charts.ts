@@ -641,10 +641,18 @@ function detectFuturesKind(
   betType: string,
 ): "division" | "conference" | "title" | null {
   const m = `${market} ${description}`.toLowerCase();
+  // Bail early for intra-game props (quarters / halves / first basket / etc).
+  // Without this, "100+ pts in first 3 quarters" was being classified as
+  // futures and rendering championship-history tables instead of quarter-
+  // scoring analysis.
+  const isIntraGame = /\bq[1-4]\b|quarter|half|first basket|first 3|first half|second half|f3q|3q|through 3/.test(m);
+  if (isIntraGame) return null;
   if (m.includes("champion") && !m.includes("division") && !m.includes("conference")) return "title";
   if (m.includes("conference") || m.includes("east") || m.includes("west")) return "conference";
   if (m.includes("division")) return "division";
-  if (betType === "futures" || betType === "game_prop") return "division";
+  // Only fall back to "futures" when the bet type is explicitly futures.
+  // Treating game_prop as futures was a bug — game props are intra-game.
+  if (betType === "futures") return "division";
   return null;
 }
 

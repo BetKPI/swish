@@ -404,9 +404,10 @@ async function buildNBAHistoryContext(
 
   // Quarter / half score enrichment - expensive but loads quarter scores
   // per game so we can answer ANY period prop. Match liberally so we don't
-  // miss "1st quarter points", "Q3 over", "first half scoring", "by half".
+  // miss "1st quarter points", "Q3 over", "first half scoring", "by half",
+  // "first 3 quarters", "F3Q".
   const isQuarterBet =
-    /\b(q[1-4]\b|1h\b|2h\b|h1\b|h2\b|first half|second half|1st half|2nd half|first quarter|second quarter|third quarter|fourth quarter|1st quarter|2nd quarter|3rd quarter|4th quarter|by quarter|each quarter|each half|by half|through 3|first 3 quarter|1st 3 quarter)/.test(marketLower);
+    /\b(q[1-4]\b|1h\b|2h\b|h1\b|h2\b|first half|second half|1st half|2nd half|first quarter|second quarter|third quarter|fourth quarter|1st quarter|2nd quarter|3rd quarter|4th quarter|by quarter|each quarter|each half|by half|through 3|first 3 quarter|1st 3 quarter|f3q\b|first 3 qtrs?|3 qtrs?)/.test(marketLower);
   if (isQuarterBet) {
     await Promise.all([
       ...Object.values(ctx.teams).map((t) => enrichRecentQuarterScores(t, 40)),
@@ -1533,7 +1534,7 @@ function computeComboInsights(
   if (extraction.teams.length < 2) return undefined;
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { detectComboMarket, buildComboFanOut } = require("@/lib/combo-insights");
+    const { detectComboMarket, buildComboFanOut, buildSingleTeamThreshold } = require("@/lib/combo-insights");
     const combo = detectComboMarket(extraction.market, extraction.description);
     if (!combo) return undefined;
 
@@ -1595,6 +1596,40 @@ function computeComboInsights(
         gamesA, gamesB, meets,
         condition: "2+ combined 1st-inning runs (YRFI proxy)",
       });
+    }
+
+    // Single-team "X+ in first 3 quarters / 1st half / 2nd half / specific Q"
+    if (
+      combo.kind === "team_first_3_quarters" ||
+      combo.kind === "team_first_half" ||
+      combo.kind === "team_second_half" ||
+      combo.kind === "team_quarter"
+    ) {
+      const teamsByName = data?._nbaHistory?.teams || {};
+      // Pick the team named in the bet - usually first listed (or only one).
+      const t = teamsByName[teamA];
+      if (!t) return undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const games = (t.games || []).filter((g: any) => g.q1 != null);
+      if (games.length === 0) return undefined;
+      const threshold = combo.threshold;
+      let meets: (g: { q1?: number; q2?: number; q3?: number; q4?: number }) => boolean;
+      let condition: string;
+      if (combo.kind === "team_first_3_quarters") {
+        meets = (g) => ((g.q1 || 0) + (g.q2 || 0) + (g.q3 || 0)) >= threshold;
+        condition = `${threshold}+ pts in first 3 Q`;
+      } else if (combo.kind === "team_first_half") {
+        meets = (g) => ((g.q1 || 0) + (g.q2 || 0)) >= threshold;
+        condition = `${threshold}+ pts in 1H`;
+      } else if (combo.kind === "team_second_half") {
+        meets = (g) => ((g.q3 || 0) + (g.q4 || 0)) >= threshold;
+        condition = `${threshold}+ pts in 2H`;
+      } else {
+        const qKey = `q${combo.quarter}` as "q1" | "q2" | "q3" | "q4";
+        meets = (g) => (g[qKey] || 0) >= threshold;
+        condition = `${threshold}+ pts in Q${combo.quarter}`;
+      }
+      return buildSingleTeamThreshold({ team: teamA, games, meets, condition });
     }
 
     // Soccer BTTS - both teams scored
