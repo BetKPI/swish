@@ -63,6 +63,9 @@ export default function Home() {
     if (statsData.parlay) {
       setExtraction(ext);
       setParlayLegs(statsData.legs || []);
+      // Parlay-level swish score (product of leg probabilities). User asked
+      // for this in Discord — was computed server-side but never displayed.
+      setSwishScore(statsData.swishScore || null);
       setState("parlay");
       const parlayLegsData = statsData.legs || [];
       const parlayGraded = parlayLegsData.filter((l: { gameStatus?: { grade?: { result: string } } }) => l.gameStatus?.grade?.result && l.gameStatus.grade.result !== "pending");
@@ -469,6 +472,7 @@ export default function Home() {
             <ParlayResults
               extraction={extraction}
               legs={parlayLegs}
+              parlaySwishScore={swishScore ?? undefined}
               onReset={reset}
             />
           ) : (

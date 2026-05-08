@@ -12,6 +12,7 @@ import { resolveThemedSport } from "@/lib/sport-themes";
 interface ParlayResultsProps {
   extraction: BetExtraction;
   legs: ParlayLegResult[];
+  parlaySwishScore?: { score: number; label: string; detail: string };
   onReset: () => void;
 }
 
@@ -27,6 +28,7 @@ function sportEmoji(sport: string): string {
 export default function ParlayResults({
   extraction,
   legs,
+  parlaySwishScore,
   onReset,
 }: ParlayResultsProps) {
   const [activeTab, setActiveTab] = useState(0);
@@ -46,6 +48,12 @@ export default function ParlayResults({
   const missedLegs = gradedLegs.filter((l) => l.gameStatus?.grade?.result === "miss");
   const liveLegs = legs.filter((l) => l.gameStatus?.state === "in");
   const hasGrades = gradedLegs.length > 0 || liveLegs.length > 0;
+
+  // Parlay-level swish styling
+  const psScore = parlaySwishScore?.score;
+  const psLabel = parlaySwishScore?.label;
+  const psTone = psScore == null ? "muted" :
+    psScore >= 5.5 ? "emerald" : psScore >= 3.5 ? "yellow" : "red";
 
   return (
     <div className="space-y-6">
@@ -70,6 +78,25 @@ export default function ParlayResults({
                 {analyzedLegs.length}/{legs.length} analyzed
               </span>
             </div>
+            {parlaySwishScore && (
+              <div className={`mt-3 rounded-lg border px-3 py-2 inline-flex items-baseline gap-2 flex-wrap ${
+                psTone === "emerald" ? "border-emerald-500/40 bg-emerald-500/5" :
+                psTone === "yellow"  ? "border-yellow-500/40 bg-yellow-500/5" :
+                psTone === "red"     ? "border-red-500/40 bg-red-500/5" :
+                "border-border/50 bg-surface-light"
+              }`}>
+                <span className="text-[10px] uppercase tracking-widest font-bold text-muted">Parlay Swish</span>
+                <span className={`text-lg font-black tabular-nums ${
+                  psTone === "emerald" ? "text-emerald-400" :
+                  psTone === "yellow"  ? "text-yellow-400" :
+                  psTone === "red"     ? "text-red-400" : "text-foreground"
+                }`}>{psScore}/10</span>
+                <span className="text-xs text-muted">{psLabel}</span>
+                {parlaySwishScore.detail && (
+                  <span className="text-xs text-muted/70">- {parlaySwishScore.detail}</span>
+                )}
+              </div>
+            )}
           </div>
         </div>
       </div>
