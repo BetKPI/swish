@@ -63,6 +63,26 @@ export type NBAStat =
   | "pts" | "reb" | "ast" | "stl" | "blk" | "fg3m" | "tov"
   | "pra" | "pr" | "pa" | "ra";
 
+/** Period scope - "full" = whole game, "q1"-"q4" = single quarter,
+ *  "h1"/"h2" = half. Quarter / half data is only populated for points
+ *  (the most-bet quarter prop); other stats fall back to full-game.
+ */
+export type PeriodScope = "full" | "q1" | "q2" | "q3" | "q4" | "h1" | "h2";
+
+/** Detect the period scope of an NBA player prop from the market and
+ *  description text. Defaults to "full" when no period qualifier is found.
+ */
+export function detectNBAPeriodScope(market?: string, description?: string): PeriodScope {
+  const m = `${market || ""} ${description || ""}`.toLowerCase();
+  if (/\b(q1|1st quarter|first quarter)\b/.test(m)) return "q1";
+  if (/\b(q2|2nd quarter|second quarter)\b/.test(m)) return "q2";
+  if (/\b(q3|3rd quarter|third quarter)\b/.test(m)) return "q3";
+  if (/\b(q4|4th quarter|fourth quarter)\b/.test(m)) return "q4";
+  if (/\b(1h|h1|first half|1st half)\b/.test(m)) return "h1";
+  if (/\b(2h|h2|second half|2nd half)\b/.test(m)) return "h2";
+  return "full";
+}
+
 const STAT_LABELS: Record<NBAStat, string> = {
   pts: "PTS",
   reb: "REB",
@@ -97,11 +117,31 @@ function num(s: Record<string, unknown>, ...keys: string[]): number {
   return 0;
 }
 
-function pickStat(g: NBAPlayerGame, stat: NBAStat): number {
+function pickStat(g: NBAPlayerGame, stat: NBAStat, scope: PeriodScope = "full"): number {
   const s = (g.stats || {}) as Record<string, unknown>;
   const pts = num(s, "PTS", "pts", "points");
   const reb = num(s, "REB", "reb", "rebounds");
   const ast = num(s, "AST", "ast", "assists");
+
+  // Period-scoped stats. We only have per-quarter POINTS (the most common
+  // quarter / half prop). For non-points stats with a period scope, callers
+  // should detect that case and surface a "data not available" flag.
+  if (scope !== "full") {
+    if (stat !== "pts") return 0; // signal: no data for this scope+stat combo
+    const q1 = (g as { q1Pts?: number }).q1Pts ?? 0;
+    const q2 = (g as { q2Pts?: number }).q2Pts ?? 0;
+    const q3 = (g as { q3Pts?: number }).q3Pts ?? 0;
+    const q4 = (g as { q4Pts?: number }).q4Pts ?? 0;
+    switch (scope) {
+      case "q1": return q1;
+      case "q2": return q2;
+      case "q3": return q3;
+      case "q4": return q4;
+      case "h1": return q1 + q2;
+      case "h2": return q3 + q4;
+    }
+  }
+
   switch (stat) {
     case "pts": return pts;
     case "reb": return reb;
@@ -115,6 +155,13 @@ function pickStat(g: NBAPlayerGame, stat: NBAStat): number {
     case "pa": return pts + ast;
     case "ra": return reb + ast;
   }
+}
+
+/** Whether a game has the per-quarter data needed for a scoped pick. */
+function hasScopedData(g: NBAPlayerGame, scope: PeriodScope): boolean {
+  if (scope === "full") return true;
+  const q1 = (g as { q1Pts?: number }).q1Pts;
+  return q1 != null;
 }
 
 function pickMinutes(g: NBAPlayerGame): number {
@@ -183,9 +230,18 @@ export function buildNBAPlayerInsights(args: {
   seriesContext?: string;
   /** Game number in series — 5/6/7 carry leverage. */
   gameInSeries?: number;
+  /** Period scope - "full" by default; "q1"-"q4" / "h1"-"h2" for quarter / half props. */
+  scope?: PeriodScope;
 }): NBAInsights {
   const { player, stat, line, oppTeam, oppTeamData, isPlayoffs, seriesContext, gameInSeries } = args;
-  const allGames = player.games || [];
+  const scope: PeriodScope = args.scope || "full";
+  // For period-scoped props (quarter / half), only include games where the
+  // play-by-play enrichment actually populated q1Pts-q4Pts. Mixing in
+  // unenriched games would zero out averages and tank the projection.
+  const allGamesAll = player.games || [];
+  const allGames = scope === "full"
+    ? allGamesAll
+    : allGamesAll.filter((g) => hasScopedData(g, scope));
 
   // Split by season type -playoff games carry different signal than regular
   const playoffGames = allGames.filter((g) => g.seasonType === "playoffs");
@@ -194,12 +250,17 @@ export function buildNBAPlayerInsights(args: {
   // Default to regular season for most context, but if we're in playoffs and
   // there's enough playoff sample, that becomes primary.
   const primary = isPlayoffs && playoffGames.length >= 3 ? playoffGames : regSeasonGames;
-  const values = primary.map((g) => pickStat(g, stat));
+  const values = primary.map((g) => pickStat(g, stat, scope));
   const last10 = values.slice(-10);
   const last5 = values.slice(-5);
   const last3 = values.slice(-3);
 
-  const statLabel = STAT_LABELS[stat];
+  // Stat label includes period scope when set ("Q3 PTS", "1H PTS", etc.)
+  const scopeLabel =
+    scope === "q1" ? "Q1 " : scope === "q2" ? "Q2 " :
+    scope === "q3" ? "Q3 " : scope === "q4" ? "Q4 " :
+    scope === "h1" ? "1H " : scope === "h2" ? "2H " : "";
+  const statLabel = `${scopeLabel}${STAT_LABELS[stat]}`;
   const overs = (vs: number[]) => vs.filter((v) => v > line).length;
 
   // Projection: weighted toward L10 (recent form), fall back to season
@@ -213,10 +274,12 @@ export function buildNBAPlayerInsights(args: {
 
   // Verdict
   let verdict: string;
-  if (overStreak >= 3) {
+  if (scope !== "full" && primary.length === 0) {
+    verdict = `No play-by-play data loaded for this period scope yet.`;
+  } else if (overStreak >= 3) {
     verdict = `${overs(last10)} of last ${last10.length} over ${line} ${statLabel} -${overStreak} straight.`;
   } else if (underStreak >= 3) {
-    verdict = `${last10.length - overs(last10)} of last ${last10.length} under ${line} -${underStreak} straight under.`;
+    verdict = `${last10.length - overs(last10)} of last ${last10.length} under ${line} ${statLabel} -${underStreak} straight under.`;
   } else if (last10.length > 0) {
     verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length}.`;
   } else if (playoffGames.length === 0 && isPlayoffs) {
@@ -270,8 +333,8 @@ export function buildNBAPlayerInsights(args: {
 
   // Playoff vs regular split (when both samples exist)
   if (playoffGames.length >= 3 && regSeasonGames.length >= 10) {
-    const playoffAvg = round1(mean(playoffGames.map((g) => pickStat(g, stat))));
-    const regAvg = round1(mean(regSeasonGames.map((g) => pickStat(g, stat))));
+    const playoffAvg = round1(mean(playoffGames.map((g) => pickStat(g, stat, scope))));
+    const regAvg = round1(mean(regSeasonGames.map((g) => pickStat(g, stat, scope))));
     const bump = round1(playoffAvg - regAvg);
     if (Math.abs(bump) >= line * 0.05) {
       bullets.push({
@@ -289,8 +352,8 @@ export function buildNBAPlayerInsights(args: {
       oppTeam.toLowerCase().includes(g.opponent.toLowerCase().split(/\s+/).pop() || "")
     );
     if (vsOpp.length >= 2) {
-      const vsOppOvers = vsOpp.filter((g) => pickStat(g, stat) > line).length;
-      const vsOppAvg = round1(mean(vsOpp.map((g) => pickStat(g, stat))));
+      const vsOppOvers = vsOpp.filter((g) => pickStat(g, stat, scope) > line).length;
+      const vsOppAvg = round1(mean(vsOpp.map((g) => pickStat(g, stat, scope))));
       bullets.push({
         label: `vs ${oppTeam}`,
         value: `${vsOppOvers}/${vsOpp.length} (avg ${vsOppAvg})`,
@@ -305,8 +368,8 @@ export function buildNBAPlayerInsights(args: {
     const homeGames = venueGames.filter((g) => g.home);
     const awayGames = venueGames.filter((g) => !g.home);
     if (homeGames.length >= 3 && awayGames.length >= 3) {
-      const homeAvg = round1(mean(homeGames.map((g) => pickStat(g, stat))));
-      const awayAvg = round1(mean(awayGames.map((g) => pickStat(g, stat))));
+      const homeAvg = round1(mean(homeGames.map((g) => pickStat(g, stat, scope))));
+      const awayAvg = round1(mean(awayGames.map((g) => pickStat(g, stat, scope))));
       const bigGap = Math.abs(homeAvg - awayAvg) >= line * 0.1;
       if (bigGap) {
         bullets.push({
@@ -375,7 +438,7 @@ export function buildNBAPlayerInsights(args: {
   // bounce-back potential.
   if (primary.length >= 1) {
     const last = primary[primary.length - 1];
-    const lastVal = pickStat(last, stat);
+    const lastVal = pickStat(last, stat, scope);
     const lastDate = last.date?.slice(5) || ""; // mm-dd
     if (lastVal > 0 || stat === "pts" || stat === "pra") {
       const trail =
@@ -439,7 +502,7 @@ export function buildNBAPlayerInsights(args: {
   }
 
   // Career-vs-recent regression flag -sharp bettors always look for buy/sell
-  const allValues = allGames.map((g) => pickStat(g, stat));
+  const allValues = allGames.map((g) => pickStat(g, stat, scope));
   if (allValues.length >= 30 && last10.length >= 5) {
     const careerAvg = round1(mean(allValues));
     const last10Avg = round1(mean(last10));
@@ -481,7 +544,7 @@ export function buildNBAPlayerInsights(args: {
   // Probability the over hits — drives Swish Score
   const posBulletsCount = bullets.filter((b) => b.tone === "pos").length;
   const negBulletsCount = bullets.filter((b) => b.tone === "neg").length;
-  const allValuesProb = allGames.map((g) => pickStat(g, stat));
+  const allValuesProb = allGames.map((g) => pickStat(g, stat, scope));
   const probability =
     line > 0 && last10.length >= 3
       ? estimateHitProbability({

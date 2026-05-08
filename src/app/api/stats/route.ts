@@ -1530,9 +1530,10 @@ async function computeNBAInsights(
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { detectNBAStat, buildNBAPlayerInsights } = require("@/lib/nba-insights");
+    const { detectNBAStat, detectNBAPeriodScope, buildNBAPlayerInsights } = require("@/lib/nba-insights");
     const stat = detectNBAStat(extraction.market, extraction.description);
     if (!stat) return undefined;
+    const scope = detectNBAPeriodScope(extraction.market, extraction.description);
 
     // Detect if any of the player's games are tagged as playoffs in the
     // current season - if so, treat as playoff context.
@@ -1607,6 +1608,7 @@ async function computeNBAInsights(
       isPlayoffs,
       seriesContext,
       gameInSeries,
+      scope,
     });
   } catch (e) {
     console.error("[NBA Insights] failed:", e);
