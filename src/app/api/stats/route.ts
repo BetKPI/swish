@@ -401,10 +401,11 @@ async function buildNBAHistoryContext(
     ctx.standings = await getNBAStandingsForSeasons([last - 2, last - 1, last, current]);
   }
 
-  // Quarter-score enrichment only for 1H / 3Q bets - expensive, so gated.
+  // Quarter / half score enrichment - expensive but loads quarter scores
+  // per game so we can answer ANY period prop. Match liberally so we don't
+  // miss "1st quarter points", "Q3 over", "first half scoring", "by half".
   const isQuarterBet =
-    /\b(1h|first half|1st half|3q|3rd quarter|third quarter|first 3 quarter|1st 3 quarter)\b/.test(marketLower) ||
-    marketLower.includes("through 3");
+    /\b(q[1-4]\b|1h\b|2h\b|h1\b|h2\b|first half|second half|1st half|2nd half|first quarter|second quarter|third quarter|fourth quarter|1st quarter|2nd quarter|3rd quarter|4th quarter|by quarter|each quarter|each half|by half|through 3|first 3 quarter|1st 3 quarter)/.test(marketLower);
   if (isQuarterBet) {
     await Promise.all(
       Object.values(ctx.teams).map((t) => enrichRecentQuarterScores(t, 40)),

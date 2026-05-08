@@ -32,12 +32,18 @@ export function detectExoticMarket(
   const s = (sport || "").toUpperCase();
 
   // First basket / first scorer (NBA)
+  // CRITICAL: don't match quarter / half props ("1st quarter points",
+  // "first half rebounds") - those are intra-game scoring totals, not
+  // first-basket props.
   if (s === "NBA" || s === "BASKETBALL" || s === "NCAAB" || !s) {
-    // Match if text contains "first" AND ("basket" or "scorer" or "fg" or "score")
-    if (text.includes("first") && (text.includes("basket") || text.includes("scorer") || text.includes(" fg") || text.includes("1st"))) {
+    const isPeriodBet =
+      /\b(quarter|qtr|q[1-4]\b|half|1h\b|2h\b|h1\b|h2\b|first half|second half|1st quarter|2nd quarter|3rd quarter|4th quarter|first quarter|second quarter|third quarter|fourth quarter)/.test(text);
+    if (isPeriodBet) return null;
+    // First basket / scorer / FG
+    if (text.includes("first") && (text.includes("basket") || text.includes("scorer") || text.includes(" fg"))) {
       return "first_basket";
     }
-    if (text.includes("1st") && (text.includes("basket") || text.includes("score"))) {
+    if (text.includes("1st") && text.includes("basket")) {
       return "first_basket";
     }
   }

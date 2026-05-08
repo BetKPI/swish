@@ -398,6 +398,93 @@ ${(insights.bullets || []).map((b: { label: string; value: string; tone: string 
 ${insights.flags?.length ? `- Flags: ${insights.flags.join("; ")}` : ""}` : ""}
 ${statToolsContext}
 ${(() => {
+  // Filterable game logs - expose every player's per-game record in a
+  // flat structure so the chat LLM can answer "playoffs only", "vs Sixers",
+  // "last 5 home games" by filtering the array. Without this, Gemini
+  // tends to bail to no_data instead of computing on the data.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cdAny = computedData as any;
+  const lines: string[] = [];
+  // NBA player gamelog (flat with quarters when available)
+  const nbaPlayers = cdAny?._nbaHistory?.players || {};
+  for (const [name, p] of Object.entries(nbaPlayers)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const games = (p as any)?.games || [];
+    if (games.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = games.slice(-30).map((g: any) => ({
+      date: g.date,
+      opp: g.opponent,
+      home: g.home,
+      seasonType: g.seasonType,
+      pts: g.stats?.PTS ?? g.stats?.pts,
+      reb: g.stats?.REB ?? g.stats?.reb,
+      ast: g.stats?.AST ?? g.stats?.ast,
+      threes: g.stats?.["3PT"] ?? g.stats?.["3PM"],
+      min: g.stats?.MIN ?? g.stats?.min,
+    }));
+    lines.push(`FILTERABLE_GAMELOG ${name} (NBA, last ${flat.length} games):\n${JSON.stringify(flat)}`);
+  }
+  // NBA team game logs with quarter scores (when enriched)
+  const nbaTeams = cdAny?._nbaHistory?.teams || {};
+  for (const [name, t] of Object.entries(nbaTeams)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const games = (t as any)?.games || [];
+    if (games.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hasQuarters = games.some((g: any) => g.q1 != null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = games.slice(-25).map((g: any) => {
+      const row: Record<string, unknown> = {
+        date: g.date, opp: g.opponent, home: g.home, seasonType: g.seasonType,
+        teamScore: g.teamScore, oppScore: g.opponentScore, total: g.total, won: g.won,
+      };
+      if (hasQuarters) {
+        row.q1 = g.q1; row.q2 = g.q2; row.q3 = g.q3; row.q4 = g.q4;
+        row.oppQ1 = g.oppQ1; row.oppQ2 = g.oppQ2; row.oppQ3 = g.oppQ3; row.oppQ4 = g.oppQ4;
+        // Pre-compute halves so the LLM doesn't have to add q1+q2
+        const fh = (g.q1 || 0) + (g.q2 || 0);
+        const sh = (g.q3 || 0) + (g.q4 || 0);
+        const oppFh = (g.oppQ1 || 0) + (g.oppQ2 || 0);
+        const oppSh = (g.oppQ3 || 0) + (g.oppQ4 || 0);
+        row.firstHalf = fh; row.secondHalf = sh;
+        row.oppFirstHalf = oppFh; row.oppSecondHalf = oppSh;
+      }
+      return row;
+    });
+    lines.push(`FILTERABLE_TEAMLOG ${name} (NBA, last ${flat.length}${hasQuarters ? ", with quarters/halves" : ""}):\n${JSON.stringify(flat)}`);
+  }
+  // MLB batter game logs
+  const mlbBatters = cdAny?._mlbHistory?.batters || {};
+  for (const [name, b] of Object.entries(mlbBatters)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cs = (b as any)?.currentSeason || [];
+    if (cs.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = cs.slice(-30).map((g: any) => ({
+      date: g.date, opp: g.opponent,
+      hits: g.hits, hr: g.hr, rbi: g.rbi, runs: g.runs, tb: g.totalBases,
+      so: g.so, sb: g.stolenBases, ab: g.ab,
+    }));
+    lines.push(`FILTERABLE_GAMELOG ${name} (MLB hitter, last ${flat.length}):\n${JSON.stringify(flat)}`);
+  }
+  // MLB pitcher game logs
+  const mlbPitchers = cdAny?._mlbHistory?.pitchersByName || {};
+  for (const [name, p] of Object.entries(mlbPitchers)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cs = (p as any)?.currentSeason || [];
+    if (cs.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = cs.slice(-15).map((g: any) => ({
+      date: g.date, opp: g.opponent,
+      ip: g.ip, k: g.k, h: g.h, er: g.er, bb: g.bb, hr: g.hr,
+      win: g.win, loss: g.loss, era: g.era,
+    }));
+    lines.push(`FILTERABLE_GAMELOG ${name} (MLB pitcher, last ${flat.length} starts):\n${JSON.stringify(flat)}`);
+  }
+  return lines.length > 0 ? `\n${lines.join("\n\n")}\n` : "";
+})()}
+${(() => {
   // Surface the rich MLB history signals explicitly so the chat LLM
   // knows what it can answer without fetching more data. The user can
   // ask "what's the weather", "what does Cole throw", "vs LHP split"
@@ -512,6 +599,8 @@ FORMAT 4 - The user is asking a non-data question (about the app, feedback, how 
 }
 
 RULES:
+- USE THE FILTERABLE_GAMELOG / FILTERABLE_TEAMLOG arrays above to answer drill-down questions. They are flat, queryable, and have explicit fields (date, opp, home, seasonType, q1-q4, firstHalf, secondHalf, etc). When the user asks "playoffs only", "vs Sixers", "last 5 home games", "by quarter", "by half" - FILTER these arrays in your head and return a chart with the filtered subset. Do NOT return no_data when these arrays exist - that data IS the answer.
+- BREVITY: keep "message" responses to ONE sentence. For no_data, say it in 5-10 words ("We don't have half-by-half player scoring yet.") - do not restate the bet, do not explain why, do not list what we DO have. The user knows what they asked.
 - DRILL-DOWN / ITERATIVE FILTERING: The user may ask follow-up questions that NARROW or FILTER previous results. ALWAYS produce a new chart that reflects the narrowed view, not just text. Recognized filters include:
   • Home/away: "just home games", "road only", "at home" → filter by home/away flag in game data
   • Recency: "last 5 games", "last 10", "most recent" → slice game data
