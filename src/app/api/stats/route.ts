@@ -1438,13 +1438,19 @@ function computeMLBInsights(
 
     const batter = history.batters?.[player];
     if (!batter) return undefined;
-    const stat: "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases" =
+    // FanDuel + DK common hitter markets. The H+R+RBI combo ("hits + runs +
+    // RBIs") needs to match BEFORE individual hits / runs / rbi rules so
+    // it gets routed to the combined stat path.
+    type HitStat = "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases" | "walks" | "hrr";
+    const stat: HitStat =
+      (m.includes("hits + runs + rbi") || (m.includes("hits") && m.includes("runs") && m.includes("rbi"))) ? "hrr" :
       m.includes("total base") ? "totalBases" :
       m.includes("home run") || /\bhr\b/.test(m) ? "homeRuns" :
       m.includes("rbi") || m.includes("runs batted") ? "rbi" :
       m.includes("stolen base") ? "stolenBases" :
       m.includes("run scored") || m.includes("runs scored") ? "runs" :
       m.includes("strikeout") ? "strikeOuts" :
+      m.includes("walk") || m.includes("base on balls") || /\bbb\b/.test(m) ? "walks" :
       "hits";
     const bvp = history.batterVsPitcher?.[player];
     const isHome =

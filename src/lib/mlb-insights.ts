@@ -80,7 +80,8 @@ function estimateHitProbability(args: {
 }
 
 type HitterStat =
-  | "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases";
+  | "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases"
+  | "walks" | "hrr"; // FD additions: BB, and Hits+Runs+RBIs combo
 
 const STAT_LABELS: Record<HitterStat, string> = {
   hits: "hits",
@@ -90,6 +91,8 @@ const STAT_LABELS: Record<HitterStat, string> = {
   runs: "runs",
   strikeOuts: "K's",
   stolenBases: "SB",
+  walks: "BB",
+  hrr: "H+R+RBI",
 };
 
 function pickHitter(g: MLBBatterGame, stat: HitterStat): number {
@@ -101,6 +104,8 @@ function pickHitter(g: MLBBatterGame, stat: HitterStat): number {
     case "runs": return g.runs;
     case "strikeOuts": return g.so;
     case "stolenBases": return g.stolenBases;
+    case "walks": return g.bb;
+    case "hrr": return g.hits + g.runs + g.rbi;
   }
 }
 

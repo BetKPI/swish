@@ -61,7 +61,8 @@ function estimateHitProbability(args: {
 
 export type NBAStat =
   | "pts" | "reb" | "ast" | "stl" | "blk" | "fg3m" | "tov"
-  | "pra" | "pr" | "pa" | "ra";
+  | "pra" | "pr" | "pa" | "ra"
+  | "ftm" | "fgm" | "stl_blk"; // FanDuel additions: free throws made, field goals made, steals+blocks combo
 
 /** Period scope - "full" = whole game, "q1"-"q4" = single quarter,
  *  "h1"/"h2" = half. Quarter / half data is only populated for points
@@ -95,6 +96,9 @@ const STAT_LABELS: Record<NBAStat, string> = {
   pr: "PTS+REB",
   pa: "PTS+AST",
   ra: "REB+AST",
+  ftm: "FTM",
+  fgm: "FGM",
+  stl_blk: "STL+BLK",
 };
 
 // ESPN's NBA gamelog stat keys are uppercase abbreviations: PTS, REB, AST,
@@ -154,6 +158,11 @@ function pickStat(g: NBAPlayerGame, stat: NBAStat, scope: PeriodScope = "full"):
     case "pr": return pts + reb;
     case "pa": return pts + ast;
     case "ra": return reb + ast;
+    // ESPN gamelog stores FT and FG as "made-attempted" strings; num() picks
+    // the leading made shots when ingestion stored them.
+    case "ftm": return num(s, "FT", "FTM", "ftm");
+    case "fgm": return num(s, "FG", "FGM", "fgm");
+    case "stl_blk": return num(s, "STL", "stl", "steals") + num(s, "BLK", "blk", "blocks");
   }
 }
 
@@ -209,13 +218,31 @@ export function detectNBAStat(market?: string, description?: string): NBAStat | 
   if (m.includes("points") && m.includes("rebound")) return "pr";
   if (m.includes("points") && m.includes("assist")) return "pa";
   if (m.includes("rebound") && m.includes("assist")) return "ra";
+  // Steals + Blocks combo (FanDuel "Stocks") market
+  if (m.includes("steal") && m.includes("block")) return "stl_blk";
   if (m.includes("three") || /\b3pt\b|\b3s\b|\b3pm\b/.test(m)) return "fg3m";
+  if (m.includes("free throw") || /\bftm?\b/.test(m)) return "ftm";
+  // Distinguish "field goal" from "first basket" - field goals made is a stat,
+  // first basket is an exotic.
+  if ((m.includes("field goal") || /\bfgm?\b/.test(m)) && !m.includes("first")) return "fgm";
   if (m.includes("rebound")) return "reb";
   if (m.includes("assist")) return "ast";
   if (m.includes("steal")) return "stl";
   if (m.includes("block")) return "blk";
   if (m.includes("turnover")) return "tov";
   if (m.includes("point") || m.includes("score")) return "pts";
+  return null;
+}
+
+/**
+ * Detect double-double / triple-double yes/no markets. These don't fit the
+ * over/under scoring shape - they're boolean outcomes per game. Returned
+ * separately so the caller can route to a yes-rate handler.
+ */
+export function detectNBABooleanProp(market?: string, description?: string): "double_double" | "triple_double" | null {
+  const m = `${market || ""} ${description || ""}`.toLowerCase();
+  if (m.includes("triple double") || m.includes("triple-double")) return "triple_double";
+  if (m.includes("double double") || m.includes("double-double")) return "double_double";
   return null;
 }
 
