@@ -468,6 +468,45 @@ ${(() => {
     }));
     lines.push(`FILTERABLE_GAMELOG ${name} (MLB hitter, last ${flat.length}):\n${JSON.stringify(flat)}`);
   }
+  // MLB team game logs with inning scores (NRFI / F3 / F5 already pre-computed)
+  const mlbTeams = cdAny?._mlbHistory?.teams || {};
+  for (const [name, t] of Object.entries(mlbTeams)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cs = (t as any)?.currentSeason || [];
+    if (cs.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = cs.slice(-25).map((g: any) => ({
+      date: g.date, opp: g.opponent, home: g.isHome,
+      teamScore: g.teamScore, oppScore: g.oppScore, totalRuns: g.totalRuns,
+      won: g.won,
+      firstInningRuns: g.firstInningRuns,
+      f3Runs: g.f3Runs,
+      f5Runs: g.f5Runs,
+    }));
+    lines.push(`FILTERABLE_TEAMLOG ${name} (MLB, last ${flat.length}, with first inning / F3 / F5 runs):\n${JSON.stringify(flat)}`);
+  }
+  // NHL team game logs with period scores when enriched
+  const nhlTeams = cdAny?._nhlHistory?.teams || {};
+  for (const [name, t] of Object.entries(nhlTeams)) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const cs = (t as any)?.currentSeason || [];
+    if (cs.length === 0) continue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const hasPeriods = cs.some((g: any) => g.p1Team != null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = cs.slice(-25).map((g: any) => {
+      const row: Record<string, unknown> = {
+        date: g.date, opp: g.opponent, home: g.isHome,
+        teamScore: g.teamScore, oppScore: g.oppScore, won: g.won,
+      };
+      if (hasPeriods) {
+        row.p1 = g.p1Team; row.p2 = g.p2Team; row.p3 = g.p3Team;
+        row.oppP1 = g.p1Opp; row.oppP2 = g.p2Opp; row.oppP3 = g.p3Opp;
+      }
+      return row;
+    });
+    lines.push(`FILTERABLE_TEAMLOG ${name} (NHL, last ${flat.length}${hasPeriods ? ", with period scores" : ""}):\n${JSON.stringify(flat)}`);
+  }
   // MLB pitcher game logs
   const mlbPitchers = cdAny?._mlbHistory?.pitchersByName || {};
   for (const [name, p] of Object.entries(mlbPitchers)) {

@@ -450,12 +450,11 @@ async function buildNHLHistoryContext(
     ctx.standings = await getNHLStandingsForRecentYears();
   }
 
-  const isFirstPeriod =
-    marketLower.includes("1st period") ||
-    marketLower.includes("first period") ||
-    /\b1p\b/.test(marketLower) ||
-    marketLower.includes("period 1");
-  if (isFirstPeriod) {
+  // Period-score enrichment for ANY period prop (P1 / P2 / P3 / 1P / 2P / 3P,
+  // "first period" / "second period" / "third period", "by period").
+  const isPeriodBet =
+    /\b(p[1-3]\b|[1-3]p\b|first period|second period|third period|1st period|2nd period|3rd period|by period|each period|period [1-3])/.test(marketLower);
+  if (isPeriodBet) {
     await Promise.all(
       Object.values(ctx.teams).map((t) => enrichNHLRecentPeriodScores(t, 30)),
     );
