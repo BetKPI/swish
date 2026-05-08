@@ -1415,12 +1415,23 @@ function computeMLBInsights(
     if (isPitcher) {
       const pitcher = history.pitchersByName?.[player];
       if (!pitcher) return undefined;
-      const focus: "strikeouts" | "era" | "innings" =
+      // Detect pitcher prop focus. New FanDuel markets: hits allowed,
+      // walks allowed, outs recorded. Order matters - "earned run" must
+      // beat the generic "run" match, "outs recorded" must beat IP.
+      const focus: "strikeouts" | "era" | "innings" | "hits_allowed" | "walks_allowed" | "earned_runs" | "outs_recorded" =
         m.includes("strikeout") || /\bks?\b/.test(m)
           ? "strikeouts"
-          : m.includes("earned run") || m.includes("era")
-            ? "era"
-            : "innings";
+          : m.includes("hits allowed") || m.includes("hit allowed") || (m.includes("hits") && m.includes("allowed"))
+            ? "hits_allowed"
+            : m.includes("walks allowed") || (m.includes("walks") && m.includes("allowed")) || (m.includes("bb") && m.includes("allowed"))
+              ? "walks_allowed"
+              : m.includes("earned run") || m.includes("era")
+                ? (m.includes("over") || m.includes("under") || /\d/.test(m)) && !m.includes("era")
+                  ? "earned_runs"
+                  : "era"
+                : m.includes("outs recorded") || m.includes("outs") && !m.includes("about")
+                  ? "outs_recorded"
+                  : "innings";
       const career = history.pitcherCareerVsOpponent?.[player];
       const oppHitting = oppTeam ? history.teamHitting?.[oppTeam] : null;
       const pitcherSplits = history.pitcherPlatoon?.[player];
@@ -1442,13 +1453,17 @@ function computeMLBInsights(
     // FanDuel + DK common hitter markets. The H+R+RBI combo ("hits + runs +
     // RBIs") needs to match BEFORE individual hits / runs / rbi rules so
     // it gets routed to the combined stat path.
-    type HitStat = "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases" | "walks" | "hrr";
+    type HitStat = "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases" | "walks" | "hrr" | "doubles" | "triples";
     const stat: HitStat =
       (m.includes("hits + runs + rbi") || (m.includes("hits") && m.includes("runs") && m.includes("rbi"))) ? "hrr" :
       m.includes("total base") ? "totalBases" :
       m.includes("home run") || /\bhr\b/.test(m) ? "homeRuns" :
       m.includes("rbi") || m.includes("runs batted") ? "rbi" :
       m.includes("stolen base") ? "stolenBases" :
+      // Doubles/triples must beat the generic "hits" match. "Triple"
+      // singular catches "anytime triple"; "doubles" plural covers O/U.
+      m.includes("triple") && !m.includes("triple double") ? "triples" :
+      (m.includes("double") && !m.includes("double-double") && !m.includes("doubleheader")) ? "doubles" :
       m.includes("run scored") || m.includes("runs scored") ? "runs" :
       m.includes("strikeout") ? "strikeOuts" :
       m.includes("walk") || m.includes("base on balls") || /\bbb\b/.test(m) ? "walks" :

@@ -62,7 +62,8 @@ function estimateHitProbability(args: {
 export type NBAStat =
   | "pts" | "reb" | "ast" | "stl" | "blk" | "fg3m" | "tov"
   | "pra" | "pr" | "pa" | "ra"
-  | "ftm" | "fgm" | "stl_blk"; // FanDuel additions: free throws made, field goals made, steals+blocks combo
+  | "ftm" | "fgm" | "stl_blk"
+  | "min"; // FanDuel: Player Minutes O/U is a common prop
 
 /** Period scope - "full" = whole game, "q1"-"q4" = single quarter,
  *  "h1"/"h2" = half. Quarter / half data is only populated for points
@@ -99,6 +100,7 @@ const STAT_LABELS: Record<NBAStat, string> = {
   ftm: "FTM",
   fgm: "FGM",
   stl_blk: "STL+BLK",
+  min: "MIN",
 };
 
 // ESPN's NBA gamelog stat keys are uppercase abbreviations: PTS, REB, AST,
@@ -163,6 +165,7 @@ function pickStat(g: NBAPlayerGame, stat: NBAStat, scope: PeriodScope = "full"):
     case "ftm": return num(s, "FT", "FTM", "ftm");
     case "fgm": return num(s, "FG", "FGM", "fgm");
     case "stl_blk": return num(s, "STL", "stl", "steals") + num(s, "BLK", "blk", "blocks");
+    case "min": return num(s, "MIN", "min", "minutes", "mins");
   }
 }
 
@@ -230,6 +233,9 @@ export function detectNBAStat(market?: string, description?: string): NBAStat | 
   if (m.includes("steal")) return "stl";
   if (m.includes("block")) return "blk";
   if (m.includes("turnover")) return "tov";
+  // Player Minutes - watch for "minutes played" specifically; "first minute"
+  // / "first quarter" should NOT match here.
+  if ((m.includes("minutes") || /\bmin\b/.test(m)) && !m.includes("first") && !m.includes("quarter")) return "min";
   if (m.includes("point") || m.includes("score")) return "pts";
   return null;
 }

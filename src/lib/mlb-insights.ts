@@ -81,7 +81,7 @@ function estimateHitProbability(args: {
 
 type HitterStat =
   | "hits" | "homeRuns" | "rbi" | "totalBases" | "runs" | "strikeOuts" | "stolenBases"
-  | "walks" | "hrr"; // FD additions: BB, and Hits+Runs+RBIs combo
+  | "walks" | "hrr" | "doubles" | "triples"; // FD additions: BB, H+R+RBI combo, doubles/triples
 
 const STAT_LABELS: Record<HitterStat, string> = {
   hits: "hits",
@@ -93,6 +93,8 @@ const STAT_LABELS: Record<HitterStat, string> = {
   stolenBases: "SB",
   walks: "BB",
   hrr: "H+R+RBI",
+  doubles: "doubles",
+  triples: "triples",
 };
 
 function pickHitter(g: MLBBatterGame, stat: HitterStat): number {
@@ -106,6 +108,8 @@ function pickHitter(g: MLBBatterGame, stat: HitterStat): number {
     case "stolenBases": return g.stolenBases;
     case "walks": return g.bb;
     case "hrr": return g.hits + g.runs + g.rbi;
+    case "doubles": return g.doubles;
+    case "triples": return g.triples;
   }
 }
 
@@ -193,6 +197,9 @@ export function buildHitterInsights(args: {
     isAnytime && stat === "hits" ? "Got a hit" :
     isAnytime && stat === "stolenBases" ? "Swiped a bag" :
     isAnytime && stat === "rbi" ? "Drove in a run" :
+    isAnytime && stat === "doubles" ? "Doubled" :
+    isAnytime && stat === "triples" ? "Tripled" :
+    isAnytime && stat === "walks" ? "Walked" :
     isAnytime ? `Got a ${statLabel}` :
     `Cleared ${line} ${statLabel}`;
   const underActionPhrase =
@@ -200,6 +207,9 @@ export function buildHitterInsights(args: {
     isAnytime && stat === "hits" ? "No hit" :
     isAnytime && stat === "stolenBases" ? "No SB" :
     isAnytime && stat === "rbi" ? "No RBI" :
+    isAnytime && stat === "doubles" ? "No double" :
+    isAnytime && stat === "triples" ? "No triple" :
+    isAnytime && stat === "walks" ? "No walk" :
     isAnytime ? `No ${statLabel}` :
     `Under ${line} ${statLabel}`;
 
@@ -555,15 +565,19 @@ export function buildHitterInsights(args: {
 
 // ── Pitcher insights ──────────────────────────────────────────────
 
-function pickPitcher(g: MLBPitcherGame, focus: "strikeouts" | "era" | "innings"): number {
+function pickPitcher(g: MLBPitcherGame, focus: "strikeouts" | "era" | "innings" | "hits_allowed" | "walks_allowed" | "earned_runs" | "outs_recorded"): number {
   if (focus === "strikeouts") return g.k;
   if (focus === "era") return round1(g.era);
+  if (focus === "hits_allowed") return g.h;
+  if (focus === "walks_allowed") return g.bb;
+  if (focus === "earned_runs") return g.er;
+  if (focus === "outs_recorded") return Math.round(g.ip * 3);
   return round1(g.ip);
 }
 
 export function buildPitcherInsights(args: {
   pitcher: MLBPitcherTwoSeason;
-  focus: "strikeouts" | "era" | "innings";
+  focus: "strikeouts" | "era" | "innings" | "hits_allowed" | "walks_allowed" | "earned_runs" | "outs_recorded";
   line?: number;
   oppTeam?: string;
   career?: MLBPitcherGame[];
@@ -578,7 +592,14 @@ export function buildPitcherInsights(args: {
   const last10 = values.slice(-10);
   const last5 = values.slice(-5);
 
-  const focusLabel = focus === "strikeouts" ? "K's" : focus === "era" ? "ERA" : "IP";
+  const focusLabel =
+    focus === "strikeouts" ? "K's" :
+    focus === "era" ? "ERA" :
+    focus === "hits_allowed" ? "H allowed" :
+    focus === "walks_allowed" ? "BB allowed" :
+    focus === "earned_runs" ? "ER" :
+    focus === "outs_recorded" ? "outs" :
+    "IP";
 
   const proj = round1(mean(last10.length ? last10 : values));
   const diff = line != null ? round1(proj - line) : 0;

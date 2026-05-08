@@ -66,6 +66,8 @@ export interface MLBBatterGame {
   season: number;
   ab: number;
   hits: number;
+  doubles: number;
+  triples: number;
   hr: number;
   rbi: number;
   runs: number;
@@ -371,6 +373,8 @@ async function fetchBatterSeason(
         season,
         ab: num(st.atBats),
         hits: num(st.hits),
+        doubles: num(st.doubles),
+        triples: num(st.triples),
         hr: num(st.homeRuns),
         rbi: num(st.rbi),
         runs: num(st.runs),
