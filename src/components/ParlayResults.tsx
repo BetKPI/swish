@@ -292,9 +292,13 @@ export default function ParlayResults({
         )
       ))}
 
-      {/* Per-leg Feedback */}
+      {/* Per-leg Feedback - keyed by activeTab so the "Thanks" state
+          resets when the user switches legs. scopeLabel makes it clear
+          to the user which leg the rating applies to. */}
       {activeLeg && !activeLeg.error && !activeLeg.unsupported && (
         <FeedbackShare
+          key={`leg-feedback-${activeTab}`}
+          scopeLabel={`Leg ${activeTab + 1}`}
           extraction={{
             ...extraction,
             description: `Leg ${activeTab + 1}: ${activeLeg.description}`,

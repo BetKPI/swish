@@ -8,12 +8,16 @@ interface FeedbackShareProps {
   extraction: BetExtraction;
   summary: string;
   gameStatus?: GameStatusData;
+  /** Label that scopes the feedback prompt - e.g. "Leg 2" so the user
+   *  knows the thumbs-up applies to the current leg, not the whole parlay. */
+  scopeLabel?: string;
 }
 
 export default function FeedbackShare({
   extraction,
   summary,
   gameStatus,
+  scopeLabel,
 }: FeedbackShareProps) {
   const [feedbackSent, setFeedbackSent] = useState(false);
   const [showComment, setShowComment] = useState(false);
@@ -67,10 +71,14 @@ export default function FeedbackShare({
         {/* Feedback */}
         <div className="flex items-center gap-3">
           {feedbackSent && !showComment ? (
-            <span className="text-sm text-muted">Thanks for the feedback</span>
+            <span className="text-sm text-muted">
+              Thanks{scopeLabel ? ` (${scopeLabel})` : ""}
+            </span>
           ) : !showComment ? (
             <>
-              <span className="text-sm text-muted">Was this useful?</span>
+              <span className="text-sm text-muted">
+                {scopeLabel ? `Rate ${scopeLabel}?` : "Was this useful?"}
+              </span>
               <div className="flex gap-1.5">
                 <button
                   onClick={() => handleThumb("up")}
