@@ -405,25 +405,32 @@ ${(() => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cdAny = computedData as any;
   const lines: string[] = [];
-  // NBA player gamelog (flat with quarters when available)
+  // NBA player gamelog (flat with quarter scoring when enriched)
   const nbaPlayers = cdAny?._nbaHistory?.players || {};
   for (const [name, p] of Object.entries(nbaPlayers)) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const games = (p as any)?.games || [];
     if (games.length === 0) continue;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const flat = games.slice(-30).map((g: any) => ({
-      date: g.date,
-      opp: g.opponent,
-      home: g.home,
-      seasonType: g.seasonType,
-      pts: g.stats?.PTS ?? g.stats?.pts,
-      reb: g.stats?.REB ?? g.stats?.reb,
-      ast: g.stats?.AST ?? g.stats?.ast,
-      threes: g.stats?.["3PT"] ?? g.stats?.["3PM"],
-      min: g.stats?.MIN ?? g.stats?.min,
-    }));
-    lines.push(`FILTERABLE_GAMELOG ${name} (NBA, last ${flat.length} games):\n${JSON.stringify(flat)}`);
+    const hasQuarterPts = games.some((g: any) => g.q1Pts != null);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const flat = games.slice(-30).map((g: any) => {
+      const row: Record<string, unknown> = {
+        date: g.date, opp: g.opponent, home: g.home, seasonType: g.seasonType,
+        pts: g.stats?.PTS ?? g.stats?.pts,
+        reb: g.stats?.REB ?? g.stats?.reb,
+        ast: g.stats?.AST ?? g.stats?.ast,
+        threes: g.stats?.["3PT"] ?? g.stats?.["3PM"],
+        min: g.stats?.MIN ?? g.stats?.min,
+      };
+      if (hasQuarterPts && g.q1Pts != null) {
+        row.q1Pts = g.q1Pts; row.q2Pts = g.q2Pts; row.q3Pts = g.q3Pts; row.q4Pts = g.q4Pts;
+        row.firstHalfPts = (g.q1Pts || 0) + (g.q2Pts || 0);
+        row.secondHalfPts = (g.q3Pts || 0) + (g.q4Pts || 0);
+      }
+      return row;
+    });
+    lines.push(`FILTERABLE_GAMELOG ${name} (NBA, last ${flat.length}${hasQuarterPts ? ", with q1-q4 + halves points" : ""}):\n${JSON.stringify(flat)}`);
   }
   // NBA team game logs with quarter scores (when enriched)
   const nbaTeams = cdAny?._nbaHistory?.teams || {};

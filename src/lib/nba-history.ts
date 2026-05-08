@@ -54,6 +54,13 @@ export interface NBAPlayerGame {
   opponent: string;
   home: boolean;
   stats: Record<string, number>;
+  // Per-quarter scoring (filled in by enrichPlayerQuarterScores). Points
+  // only - rebounds / assists per quarter aren't worth the play-by-play
+  // parsing cost since the use cases (Q1 / Q3 props) are scoring.
+  q1Pts?: number;
+  q2Pts?: number;
+  q3Pts?: number;
+  q4Pts?: number;
 }
 
 export interface NBAPlayerTwoSeason {
@@ -406,6 +413,78 @@ export async function enrichRecentQuarterScores(
         if (!qs) return;
         [g.q1, g.q2, g.q3, g.q4] = qs.q;
         [g.oppQ1, g.oppQ2, g.oppQ3, g.oppQ4] = qs.oppQ;
+      }),
+    );
+  }
+}
+
+/**
+ * Sum a player's points by quarter from ESPN play-by-play. ESPN's
+ * /summary endpoint returns a `plays` array; each scoring play has
+ * period.number, the scorer in participants[0], and scoreValue (1/2/3).
+ *
+ * Heavy: 1 fetch per game. Cached aggressively (events are immutable
+ * after final, so the cache is safe).
+ */
+async function fetchPlayerQuarterPoints(
+  eventId: string,
+  playerId: string,
+): Promise<[number, number, number, number] | null> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const data = await cachedFetch<any>(
+    `${WEB_BASE.replace("web.api", "api")}/sports/basketball/nba/summary?event=${eventId}`.replace(
+      "/apis/common/v3/sports/basketball/nba", "/apis/site/v2/sports/basketball/nba",
+    ),
+    TTL.LONG, // events are immutable after final
+  );
+  // The above URL transform is messy because WEB_BASE points at the v3
+  // common API but plays live on the site v2 API. Just compute directly:
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const direct = await cachedFetch<any>(
+    `https://site.api.espn.com/apis/site/v2/sports/basketball/nba/summary?event=${eventId}`,
+    TTL.LONG,
+  );
+  void data; // silence unused
+  const plays = (direct?.plays || []) as Array<{
+    period?: { number?: number };
+    scoringPlay?: boolean;
+    scoreValue?: number;
+    participants?: Array<{ athlete?: { id?: string | number } }>;
+  }>;
+  if (plays.length === 0) return null;
+  const q: [number, number, number, number] = [0, 0, 0, 0];
+  for (const p of plays) {
+    if (!p.scoringPlay) continue;
+    const period = p.period?.number;
+    if (period == null || period < 1 || period > 4) continue;
+    const value = p.scoreValue || 0;
+    if (value <= 0) continue;
+    const scorer = p.participants?.[0]?.athlete?.id;
+    if (scorer == null) continue;
+    if (String(scorer) !== String(playerId)) continue;
+    q[period - 1] += value;
+  }
+  return q;
+}
+
+/**
+ * Fill per-quarter point totals on the most-recent N games of a player.
+ * Mutates the games array in place. Heavier than team enrichment - one
+ * play-by-play fetch per game - so default limit is small.
+ */
+export async function enrichPlayerQuarterScores(
+  player: NBAPlayerTwoSeason,
+  limit: number = 12,
+): Promise<void> {
+  const targets = player.games.slice(-limit).filter((g) => g.eventId);
+  const CHUNK = 4;
+  for (let i = 0; i < targets.length; i += CHUNK) {
+    const slice = targets.slice(i, i + CHUNK);
+    await Promise.all(
+      slice.map(async (g) => {
+        const qs = await fetchPlayerQuarterPoints(g.eventId, player.playerId);
+        if (!qs) return;
+        [g.q1Pts, g.q2Pts, g.q3Pts, g.q4Pts] = qs;
       }),
     );
   }

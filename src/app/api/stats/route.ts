@@ -35,6 +35,7 @@ import {
   getNBAStandingsForSeasons,
   getCurrentAndLastNBASeasons,
   enrichRecentQuarterScores,
+  enrichPlayerQuarterScores,
   type NBATeamTwoSeason,
   type NBAPlayerTwoSeason,
 } from "@/lib/nba-history";
@@ -407,9 +408,11 @@ async function buildNBAHistoryContext(
   const isQuarterBet =
     /\b(q[1-4]\b|1h\b|2h\b|h1\b|h2\b|first half|second half|1st half|2nd half|first quarter|second quarter|third quarter|fourth quarter|1st quarter|2nd quarter|3rd quarter|4th quarter|by quarter|each quarter|each half|by half|through 3|first 3 quarter|1st 3 quarter)/.test(marketLower);
   if (isQuarterBet) {
-    await Promise.all(
-      Object.values(ctx.teams).map((t) => enrichRecentQuarterScores(t, 40)),
-    );
+    await Promise.all([
+      ...Object.values(ctx.teams).map((t) => enrichRecentQuarterScores(t, 40)),
+      // Player quarter scoring is heavier (1 fetch per game) so capped at 12 most-recent games.
+      ...Object.values(ctx.players).map((p) => enrichPlayerQuarterScores(p, 12)),
+    ]);
   }
 
   return ctx;
