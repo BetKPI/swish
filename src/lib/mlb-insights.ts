@@ -183,16 +183,36 @@ export function buildHitterInsights(args: {
   const overStreak = streakFromEnd(values, line, "over");
   const underStreak = streakFromEnd(values, line, "under");
 
-  // Verdict
+  // Verdict - language adapts to anytime / yes-no props (line=0.5) so we
+  // don't say awkward stuff like "Cleared 0.5 HR in 3 of last 10".
   const total = values.length;
   const totalOvers = overs(values);
+  const isAnytime = line === 0.5;
+  const actionPhrase =
+    isAnytime && stat === "homeRuns" ? "Homered" :
+    isAnytime && stat === "hits" ? "Got a hit" :
+    isAnytime && stat === "stolenBases" ? "Swiped a bag" :
+    isAnytime && stat === "rbi" ? "Drove in a run" :
+    isAnytime ? `Got a ${statLabel}` :
+    `Cleared ${line} ${statLabel}`;
+  const underActionPhrase =
+    isAnytime && stat === "homeRuns" ? "No HR" :
+    isAnytime && stat === "hits" ? "No hit" :
+    isAnytime && stat === "stolenBases" ? "No SB" :
+    isAnytime && stat === "rbi" ? "No RBI" :
+    isAnytime ? `No ${statLabel}` :
+    `Under ${line} ${statLabel}`;
+
   let verdict: string;
   if (overStreak >= 3) {
-    verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length} -${overStreak} straight.`;
+    verdict = `${actionPhrase} in ${overs(last10)} of last ${last10.length} -${overStreak} straight.`;
   } else if (underStreak >= 3) {
-    verdict = `Under ${line} ${statLabel} in ${last10.length - overs(last10)} of last ${last10.length} -${underStreak} straight under.`;
+    verdict = `${underActionPhrase} in ${underStreak} straight games.`;
+  } else if (isAnytime && total > 0) {
+    const seasonPct = pct(totalOvers, total);
+    verdict = `${actionPhrase.toLowerCase()} in ${seasonPct}% of games this season (${totalOvers}/${total}). League avg ~${stat === "homeRuns" ? "5" : stat === "stolenBases" ? "8" : "20"}%.`;
   } else if (total > 0) {
-    verdict = `Cleared ${line} ${statLabel} in ${overs(last10)} of last ${last10.length}, ${totalOvers}/${total} season.`;
+    verdict = `${actionPhrase} in ${overs(last10)} of last ${last10.length}, ${totalOvers}/${total} season.`;
   } else {
     verdict = `Limited current-season data -${lastSeason.length} games last year to lean on.`;
   }

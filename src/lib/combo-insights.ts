@@ -213,6 +213,7 @@ export function detectComboMarket(market?: string, description?: string):
   | { kind: "team_first_half"; threshold: number }
   | { kind: "team_second_half"; threshold: number }
   | { kind: "team_quarter"; threshold: number; quarter: 1 | 2 | 3 | 4 }
+  | { kind: "team_nhl_period"; threshold: number; period: 1 | 2 | 3 }
   | null {
   const m = `${market || ""} ${description || ""}`.toLowerCase();
 
@@ -262,6 +263,15 @@ export function detectComboMarket(market?: string, description?: string):
     const n = qMatch[2] ? Number(qMatch[2]) : { first: 1, second: 2, third: 3, fourth: 4 }[qMatch[0].match(/first|second|third|fourth/)?.[0] || ""] || 1;
     if (n >= 1 && n <= 4) {
       return { kind: "team_quarter", threshold: Number(qMatch[1]), quarter: n as 1 | 2 | 3 | 4 };
+    }
+  }
+
+  // NHL single-team period prop: "Rangers 1+ goals in 1st period"
+  const npMatch = m.match(/(\d+)\s*\+?\s*(?:goals?)?\s*(?:in\s+)?(?:the\s+)?(?:(\d)(?:st|nd|rd|th)|first|second|third)\s*period\b/);
+  if (npMatch) {
+    const n = npMatch[2] ? Number(npMatch[2]) : { first: 1, second: 2, third: 3 }[npMatch[0].match(/first|second|third/)?.[0] || ""] || 1;
+    if (n >= 1 && n <= 3) {
+      return { kind: "team_nhl_period", threshold: Number(npMatch[1]), period: n as 1 | 2 | 3 };
     }
   }
 

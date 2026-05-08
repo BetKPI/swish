@@ -246,6 +246,130 @@ export function detectNBABooleanProp(market?: string, description?: string): "do
   return null;
 }
 
+/**
+ * Build insights for a yes/no double-double or triple-double prop.
+ *
+ * DD = at least 2 of (PTS, REB, AST, STL, BLK) >= 10 in the same game
+ * TD = at least 3 of those >= 10
+ *
+ * Returns an NBAInsights structure: hit-rate verdict, probability,
+ * bullets that show season rate, L10 rate, recent streak.
+ */
+export function buildNBAPlayerBooleanInsights(args: {
+  player: NBAPlayerTwoSeason;
+  kind: "double_double" | "triple_double";
+  oppTeam?: string;
+  oppTeamData?: NBATeamTwoSeason;
+  isPlayoffs?: boolean;
+}): NBAInsights {
+  const { player, kind, oppTeam, oppTeamData, isPlayoffs } = args;
+  const allGames = player.games || [];
+  const playoffGames = allGames.filter((g) => g.seasonType === "playoffs");
+  const regSeasonGames = allGames.filter((g) => g.seasonType !== "playoffs");
+  const primary = isPlayoffs && playoffGames.length >= 3 ? playoffGames : regSeasonGames;
+
+  const meets = (g: NBAPlayerGame): boolean => {
+    const s = (g.stats || {}) as Record<string, unknown>;
+    const stats = [
+      num(s, "PTS", "pts"),
+      num(s, "REB", "reb"),
+      num(s, "AST", "ast"),
+      num(s, "STL", "stl"),
+      num(s, "BLK", "blk"),
+    ];
+    const hits = stats.filter((v) => v >= 10).length;
+    return kind === "triple_double" ? hits >= 3 : hits >= 2;
+  };
+
+  const hits = primary.filter(meets);
+  const hitCount = hits.length;
+  const total = primary.length;
+  const last10 = primary.slice(-10);
+  const last10Hits = last10.filter(meets).length;
+
+  const seasonRate = total > 0 ? hitCount / total : 0;
+  const last10Rate = last10.length > 0 ? last10Hits / last10.length : 0;
+
+  // Streak from end
+  let streak = 0;
+  for (let i = primary.length - 1; i >= 0; i--) {
+    if (meets(primary[i])) streak++;
+    else break;
+  }
+
+  const label = kind === "triple_double" ? "triple-double" : "double-double";
+  const bullets: InsightBullet[] = [
+    {
+      label: `${last10.length}-game rate`,
+      value: `${last10Hits}/${last10.length} games (${Math.round(last10Rate * 100)}%)`,
+      tone: last10Rate >= 0.40 ? "pos" : last10Rate <= 0.15 ? "neg" : "neutral",
+    },
+    {
+      label: "Season rate",
+      value: `${hitCount}/${total} games (${Math.round(seasonRate * 100)}%)`,
+      tone: seasonRate >= 0.30 ? "pos" : seasonRate <= 0.10 ? "neg" : "neutral",
+    },
+  ];
+  if (streak >= 2) {
+    bullets.push({
+      label: "Streak",
+      value: `${streak} straight ${label}s`,
+      tone: "pos",
+    });
+  }
+
+  // vs opponent rate
+  if (oppTeam) {
+    const vsOpp = allGames.filter((g) =>
+      g.opponent.toLowerCase().includes(oppTeam.toLowerCase()) ||
+      oppTeam.toLowerCase().includes(g.opponent.toLowerCase().split(/\s+/).pop() || ""),
+    );
+    if (vsOpp.length >= 2) {
+      const vsHits = vsOpp.filter(meets).length;
+      bullets.push({
+        label: `vs ${oppTeam}`,
+        value: `${vsHits}/${vsOpp.length} (${Math.round((vsHits / vsOpp.length) * 100)}%)`,
+        tone: vsHits / vsOpp.length >= 0.5 ? "pos" : vsHits / vsOpp.length <= 0.2 ? "neg" : "neutral",
+      });
+    }
+  }
+
+  // Opp defensive context — leaky D = more chances at high-stat games
+  if (oppTeamData) {
+    const recentDef = oppTeamData.games
+      .filter((g) => g.season === oppTeamData.currentSeason)
+      .slice(-20);
+    if (recentDef.length >= 8) {
+      const ppgAllowed = round1(mean(recentDef.map((g) => g.opponentScore)));
+      bullets.push({
+        label: `${oppTeam || "Opp"} D`,
+        value: `${ppgAllowed} ppg (${ppgAllowed >= 117 ? "leaky" : ppgAllowed <= 110 ? "stingy" : "avg"})`,
+        tone: ppgAllowed >= 117 ? "pos" : ppgAllowed <= 110 ? "neg" : "neutral",
+      });
+    }
+  }
+
+  // Probability: weighted L10 + season + streak bump
+  const probability = clamp(
+    last10Rate * 0.5 + seasonRate * 0.5 + (streak >= 3 ? 0.1 : 0),
+    0.02, 0.95,
+  );
+
+  const verdict =
+    streak >= 3
+      ? `${streak} straight games with a ${label} - rolling.`
+      : last10Rate >= 0.40
+        ? `${last10Hits} ${label}s in last ${last10.length} games (${Math.round(last10Rate * 100)}%).`
+        : seasonRate >= 0.20
+          ? `${hitCount} ${label}s in ${total} games (${Math.round(seasonRate * 100)}% rate).`
+          : `Rare event - ${hitCount} ${label}s in ${total} games (${Math.round(seasonRate * 100)}%).`;
+
+  const flags: string[] = [];
+  if (total < 10) flags.push(`Only ${total} games - small sample.`);
+
+  return { verdict, probability, bullets, flags };
+}
+
 export function buildNBAPlayerInsights(args: {
   player: NBAPlayerTwoSeason;
   stat: NBAStat;

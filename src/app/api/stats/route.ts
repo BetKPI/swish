@@ -1598,6 +1598,25 @@ function computeComboInsights(
       });
     }
 
+    // NHL single-team period prop: "Rangers 1+ goals in 1st period"
+    if (combo.kind === "team_nhl_period") {
+      const teamsByName = data?._nhlHistory?.teams || {};
+      const t = teamsByName[teamA];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const games = (t?.currentSeason || []).filter((g: any) => g.p1Team != null);
+      if (games.length === 0) return undefined;
+      const threshold = combo.threshold;
+      const periodKey = `p${combo.period}Team` as "p1Team" | "p2Team" | "p3Team";
+      const meets = (g: { p1Team?: number; p2Team?: number; p3Team?: number }) =>
+        (g[periodKey] || 0) >= threshold;
+      return buildSingleTeamThreshold({
+        team: teamA,
+        games,
+        meets,
+        condition: `${threshold}+ goals in P${combo.period}`,
+      });
+    }
+
     // Single-team "X+ in first 3 quarters / 1st half / 2nd half / specific Q"
     if (
       combo.kind === "team_first_3_quarters" ||
@@ -1765,7 +1784,41 @@ async function computeNBAInsights(
 
   try {
     // eslint-disable-next-line @typescript-eslint/no-require-imports
-    const { detectNBAStat, detectNBAPeriodScope, buildNBAPlayerInsights } = require("@/lib/nba-insights");
+    const { detectNBAStat, detectNBAPeriodScope, detectNBABooleanProp, buildNBAPlayerInsights, buildNBAPlayerBooleanInsights } = require("@/lib/nba-insights");
+
+    // DD / TD yes-no props get a boolean handler that counts qualifying
+    // games (2+ stats >= 10 for DD, 3+ for TD) instead of the over/under
+    // shape used by stat-line props.
+    const boolKind = detectNBABooleanProp(extraction.market, extraction.description);
+    if (boolKind) {
+      // Detect playoff context + opp team using the same logic as the
+      // regular path (deferred to after detection branches share data).
+      const isPlayoffsBool = normalized.some(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (g: any) => g.seasonType === "playoffs",
+      );
+      const oppCount: Record<string, number> = {};
+      for (const t of extraction.teams) {
+        const lower = t.toLowerCase();
+        oppCount[t] = normalized.filter(
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (g: any) => (g.opponent || "").toLowerCase().includes(lower) || lower.includes((g.opponent || "").toLowerCase()),
+        ).length;
+      }
+      const sortedByCount = Object.entries(oppCount).sort((a, b) => a[1] - b[1]);
+      const playerTeamBool = sortedByCount[0]?.[0];
+      const oppTeamBool = extraction.teams.find((t) => t !== playerTeamBool) || extraction.teams[1];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const oppTeamDataBool = oppTeamBool ? (history as any)?.teams?.[oppTeamBool] : undefined;
+      return buildNBAPlayerBooleanInsights({
+        player: ts,
+        kind: boolKind,
+        oppTeam: oppTeamBool,
+        oppTeamData: oppTeamDataBool,
+        isPlayoffs: isPlayoffsBool,
+      });
+    }
+
     const stat = detectNBAStat(extraction.market, extraction.description);
     if (!stat) return undefined;
     const scope = detectNBAPeriodScope(extraction.market, extraction.description);
