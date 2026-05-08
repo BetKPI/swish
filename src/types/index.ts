@@ -120,3 +120,11 @@ export interface SoccerInsights {
   bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
   flags: string[];
 }
+
+export interface ComboInsights {
+  verdict: string;
+  breakdown: Array<{ label: string; value: number; pct: number; tone: 'pos' | 'neg' | 'neutral' }>;
+  bullets: { label: string; value: string; tone: 'pos' | 'neg' | 'neutral' }[];
+  flags: string[];
+  probability?: number;
+}

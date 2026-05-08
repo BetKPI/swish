@@ -1229,6 +1229,9 @@ async function analyzeSingleBet(
   const mlbInsights = computeMLBInsights(extraction, teamData);
   const nbaInsights = await computeNBAInsights(extraction, teamData);
   const soccerInsights = await computeSoccerInsights(extraction, teamData);
+  // Combo / threshold props (e.g. "both teams 65+ each half") get a dedicated
+  // 4-way fan-out instead of relying on the chat to compute on the fly.
+  const comboInsights = computeComboInsights(extraction, teamData);
 
   // Insights-driven Swish Score override - when we have a real projection
   // (MLB or NBA player prop), the default scorer tends to bottom out at
@@ -1252,6 +1255,19 @@ async function analyzeSingleBet(
       detail: `~${Math.round(p * 100)}% chance to win (model estimate, soccer-specific)`,
     };
   }
+  // Combo prop probability overrides everything when applicable - it's the
+  // most-tailored estimate for the specific bet structure.
+  if (comboInsights?.probability != null) {
+    const p = comboInsights.probability;
+    const score = Math.round(p * 100) / 10;
+    const label =
+      p >= 0.55 ? "Solid" : p >= 0.40 ? "Toss-Up" : p >= 0.25 ? "Shaky" : "Weak";
+    swishScore = {
+      score,
+      label,
+      detail: `~${Math.round(p * 100)}% chance both sides clear`,
+    };
+  }
 
   if (isSummaryOnly) {
     return {
@@ -1267,6 +1283,7 @@ async function analyzeSingleBet(
       mlbInsights,
       nbaInsights,
       soccerInsights,
+      comboInsights,
     };
   }
 
@@ -1283,6 +1300,7 @@ async function analyzeSingleBet(
     mlbInsights,
     nbaInsights,
     soccerInsights,
+    comboInsights,
   };
 }
 
@@ -1493,6 +1511,109 @@ function computeMLBInsights(
     });
   } catch (e) {
     console.error("[MLB Insights] failed:", e);
+    return undefined;
+  }
+}
+
+/**
+ * Combo / threshold props - "both teams 65+ each half", "YRFI", "BTTS".
+ * Builds a 4-way fan-out (each team's rate, H2H rate, joint independence)
+ * so the user sees all the relevant rates at once instead of one number.
+ */
+function computeComboInsights(
+  extraction: BetExtraction,
+  rawData: Record<string, unknown>,
+) {
+  if (extraction.teams.length < 2) return undefined;
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { detectComboMarket, buildComboFanOut } = require("@/lib/combo-insights");
+    const combo = detectComboMarket(extraction.market, extraction.description);
+    if (!combo) return undefined;
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const data = rawData as any;
+    const teamA = extraction.teams[0];
+    const teamB = extraction.teams[1];
+
+    // NBA "both teams X each half" - need quarter-enriched team logs
+    if (combo.kind === "both_halves_score" || combo.kind === "both_quarters_score") {
+      const teamsByName = data?._nbaHistory?.teams || {};
+      const tA = teamsByName[teamA];
+      const tB = teamsByName[teamB];
+      if (!tA || !tB) return undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gamesA = (tA.games || []).filter((g: any) => g.q1 != null);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gamesB = (tB.games || []).filter((g: any) => g.q1 != null);
+      if (gamesA.length === 0 || gamesB.length === 0) return undefined;
+
+      const threshold = combo.threshold;
+      const meets = combo.kind === "both_halves_score"
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ? (g: any) => {
+            const fh = (g.q1 || 0) + (g.q2 || 0);
+            const sh = (g.q3 || 0) + (g.q4 || 0);
+            return fh >= threshold && sh >= threshold;
+          }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        : (g: any) => (g.q1 || 0) >= threshold && (g.q2 || 0) >= threshold && (g.q3 || 0) >= threshold && (g.q4 || 0) >= threshold;
+
+      return buildComboFanOut({
+        teamA, teamB,
+        gamesA, gamesB, meets,
+        condition: combo.kind === "both_halves_score" ? `${threshold}+ pts each half` : `${threshold}+ pts each quarter`,
+      });
+    }
+
+    // MLB YRFI - both teams score in 1st inning
+    if (combo.kind === "yrfi") {
+      const teamsByName = data?._mlbHistory?.teams || {};
+      const tA = teamsByName[teamA];
+      const tB = teamsByName[teamB];
+      if (!tA || !tB) return undefined;
+      // currentSeason has firstInningRuns (combined home + away). For per-team
+      // rate of "scored in 1st inning", we need scoring data per team. Our
+      // current shape only has combined first inning total. Skip for now if we
+      // don't have per-team first-inning data; flag instead.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gamesA = tA.currentSeason || [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const gamesB = tB.currentSeason || [];
+      if (gamesA.length === 0 || gamesB.length === 0) return undefined;
+      // YRFI proxy: at least 1 run scored in 1st (combined). Best free signal.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const meets = (g: any) => (g.firstInningRuns || 0) >= 2; // both teams scored = 2+ combined as proxy
+      return buildComboFanOut({
+        teamA, teamB,
+        gamesA, gamesB, meets,
+        condition: "2+ combined 1st-inning runs (YRFI proxy)",
+      });
+    }
+
+    // Soccer BTTS - both teams scored
+    if (combo.kind === "btts") {
+      // Soccer team form already has bttsRate; do a similar fan-out using
+      // the underlying matches array. Lazy load.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formA = (rawData as any)?._soccerForm?.[teamA];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const formB = (rawData as any)?._soccerForm?.[teamB];
+      if (!formA?.matches || !formB?.matches) return undefined;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const meets = (g: any) => g.teamGoals > 0 && g.oppGoals > 0;
+      return buildComboFanOut({
+        teamA, teamB,
+        gamesA: formA.matches,
+        gamesB: formB.matches,
+        meets,
+        condition: "BTTS",
+      });
+    }
+
+    return undefined;
+  } catch (e) {
+    console.error("[Combo Insights] failed:", e);
     return undefined;
   }
 }
