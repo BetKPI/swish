@@ -70,7 +70,7 @@ export default function RootLayout({
               </h1>
             </div>
             <a href="/tonight" className="text-muted text-xs sm:text-sm hover:text-accent transition-colors">
-              tonight's edge →
+              today's top picks →
             </a>
           </div>
         </header>

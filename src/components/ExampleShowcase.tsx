@@ -12,139 +12,139 @@ import {
   ReferenceLine,
 } from "recharts";
 
-const brunsonPts = [
-  { game: "ORL", pts: 23 },
-  { game: "MIA", pts: 16 },
-  { game: "BOS", pts: 31 },
-  { game: "PHI", pts: 29 },
-  { game: "CHI", pts: 36 },
-  { game: "CLE", pts: 37 },
-  { game: "MIL", pts: 31 },
-  { game: "IND", pts: 23 },
+// Anytime HR - 1 = homer, 0 = none. Visualizes "10 of last 20" rate.
+const judgeHR = [
+  { game: "BOS", hit: 0 },
+  { game: "TOR", hit: 1 },
+  { game: "TB", hit: 1 },
+  { game: "BAL", hit: 0 },
+  { game: "CLE", hit: 0 },
+  { game: "DET", hit: 1 },
+  { game: "MIN", hit: 1 },
+  { game: "HOU", hit: 0 },
+  { game: "TEX", hit: 1 },
+  { game: "SEA", hit: 1 },
 ];
 
-const schefflerRounds = [
-  { round: "R1 '24", score: 66 },
-  { round: "R2 '24", score: 72 },
-  { round: "R3 '24", score: 71 },
-  { round: "R4 '24", score: 68 },
-  { round: "R1 '25", score: 69 },
-  { round: "R2 '25", score: 67 },
-  { round: "R3 '25", score: 66 },
-  { round: "R4 '25", score: 65 },
+const skenesK = [
+  { game: "MIL", k: 9 },
+  { game: "STL", k: 11 },
+  { game: "CHC", k: 7 },
+  { game: "CIN", k: 10 },
+  { game: "PHI", k: 12 },
+  { game: "ATL", k: 8 },
+  { game: "NYM", k: 9 },
+  { game: "WAS", k: 10 },
 ];
 
-const lakersSpread = [
-  { game: "G1", margin: 7 },
-  { game: "G2", margin: -3 },
-  { game: "G3", margin: 12 },
-  { game: "G4", margin: -1 },
-  { game: "G5", margin: 5 },
-  { game: "G6", margin: -8 },
-  { game: "G7", margin: 15 },
-  { game: "G8", margin: 4 },
-  { game: "G9", margin: -2 },
-  { game: "G10", margin: 9 },
+const sgaPts = [
+  { game: "DAL", pts: 38 },
+  { game: "MIN", pts: 32 },
+  { game: "DEN", pts: 41 },
+  { game: "MEM", pts: 28 },
+  { game: "LAL", pts: 35 },
+  { game: "GSW", pts: 33 },
+  { game: "PHX", pts: 39 },
+  { game: "SAC", pts: 30 },
 ];
 
-const flaggPts = [
-  { game: "ORL", pts: 51 },
-  { game: "MIL", pts: 19 },
-  { game: "MIN", pts: 12 },
-  { game: "POR", pts: 24 },
-  { game: "DEN", pts: 26 },
-  { game: "GS", pts: 32 },
-  { game: "LAC", pts: 18 },
-  { game: "ATL", pts: 17 },
+const mcdavidPts = [
+  { game: "VGK", pts: 2 },
+  { game: "DAL", pts: 1 },
+  { game: "WPG", pts: 3 },
+  { game: "COL", pts: 0 },
+  { game: "LA", pts: 2 },
+  { game: "VAN", pts: 1 },
+  { game: "CGY", pts: 2 },
+  { game: "SEA", pts: 4 },
 ];
 
 const examples = [
   {
-    betLabel: "Brunson O 26.5 Pts -115",
-    insight: "28.3 avg over his last 8. Cleared 26.5 in 5 of them with the rolling average trending up.",
-    badge: "PLAYER PROP",
+    betLabel: "Judge Anytime HR +210",
+    insight: "Homered in 30% of games over his last 20. Park HR factor +6% at Yankee Stadium - and tonight's pitcher allows 1.6 HR/9.",
+    badge: "MLB ANYTIME",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={brunsonPts} barSize={16}>
+        <BarChart data={judgeHR} barSize={20}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[10, 40]} hide />
+          <YAxis domain={[0, 1]} hide />
           <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
-          <ReferenceLine y={26.5} stroke="#f59e0b" strokeDasharray="5 3" />
-          <Bar dataKey="pts" fill="#10b981" radius={[4, 4, 0, 0]} name="Points" />
+          <Bar dataKey="hit" fill="#10b981" radius={[4, 4, 0, 0]} name="HR" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "Last 8 avg", value: "28.3" },
-      { label: "Over rate", value: "63%" },
-      { label: "vs line", value: "+1.8" },
+      { label: "L20 HR rate", value: "30%" },
+      { label: "Barrel%", value: "21.4" },
+      { label: "Park factor", value: "+6%" },
     ],
   },
   {
-    betLabel: "Scheffler Top 5 Masters +300",
-    insight: "Top 5 in 3 of his last 4 majors. 68.0 avg strokes per round at Augusta across 2022-2025.",
-    badge: "GOLF",
+    betLabel: "Skenes O 7.5 Ks -135",
+    insight: "Cleared 7.5 K's in 6 of last 8 starts. Slider has 41% whiff rate and tonight's lineup ranks 3rd in K%.",
+    badge: "MLB PITCHER",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={schefflerRounds} barSize={16}>
+        <BarChart data={skenesK} barSize={16}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
-          <XAxis dataKey="round" tick={{ fill: "#555", fontSize: 9 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[62, 75]} hide />
+          <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 9 }} axisLine={false} tickLine={false} />
+          <YAxis domain={[5, 14]} hide />
           <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
-          <ReferenceLine y={72} stroke="#6366f1" strokeDasharray="5 3" />
-          <Bar dataKey="score" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Score" />
+          <ReferenceLine y={7.5} stroke="#f59e0b" strokeDasharray="5 3" />
+          <Bar dataKey="k" fill="#3b82f6" radius={[4, 4, 0, 0]} name="K's" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "Avg round", value: "68.0" },
-      { label: "Under par", value: "88%" },
-      { label: "Top 5 rate", value: "75%" },
+      { label: "L8 avg", value: "9.5" },
+      { label: "Over rate", value: "75%" },
+      { label: "Slider whiff%", value: "41" },
     ],
   },
   {
-    betLabel: "Lakers -3.5 vs Celtics",
-    insight: "Covered in 6 of last 10 overall, but 0-3 ATS as road underdogs this season.",
-    badge: "SPREAD",
+    betLabel: "SGA O 32.5 Pts -110",
+    insight: "Averages 34.5 in playoffs and 39.4 in last 3. Opp ranks 22nd in defensive rating - he doesn't get held under 30 here.",
+    badge: "NBA PLAYOFFS",
     chart: (
       <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={lakersSpread} barSize={20}>
+        <BarChart data={sgaPts} barSize={20}>
           <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
           <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis hide />
+          <YAxis domain={[20, 45]} hide />
           <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
-          <ReferenceLine y={-3.5} stroke="#ef4444" strokeDasharray="5 3" />
-          <Bar dataKey="margin" fill="#f59e0b" radius={[4, 4, 0, 0]} name="Margin" />
-        </BarChart>
-      </ResponsiveContainer>
-    ),
-    stats: [
-      { label: "ATS record", value: "6-4" },
-      { label: "H2H", value: "2-1" },
-      { label: "Avg margin", value: "+3.8" },
-    ],
-  },
-  {
-    betLabel: "Flagg O 24.5 Pts -110",
-    insight: "The rookie averages 24.9 with a 51-point eruption mixed in. High variance player \u2014 ceiling is massive, floor is low.",
-    badge: "PLAYER PROP",
-    chart: (
-      <ResponsiveContainer width="100%" height={120}>
-        <BarChart data={flaggPts} barSize={20}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
-          <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
-          <YAxis domain={[0, 55]} hide />
-          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
-          <ReferenceLine y={24.5} stroke="#f59e0b" strokeDasharray="5 3" />
+          <ReferenceLine y={32.5} stroke="#f59e0b" strokeDasharray="5 3" />
           <Bar dataKey="pts" fill="#a855f7" radius={[4, 4, 0, 0]} name="Points" />
         </BarChart>
       </ResponsiveContainer>
     ),
     stats: [
-      { label: "Last 8 avg", value: "24.9" },
-      { label: "Over rate", value: "38%" },
-      { label: "Std dev", value: "12.1" },
+      { label: "Playoff avg", value: "34.5" },
+      { label: "Over rate", value: "75%" },
+      { label: "vs line", value: "+2.0" },
+    ],
+  },
+  {
+    betLabel: "McDavid O 1.5 Points +105",
+    insight: "Multi-point game in 7 of last 10. Opp PK ranks 28th and Edmonton averaged 3.2 PPG in this matchup.",
+    badge: "NHL PLAYOFFS",
+    chart: (
+      <ResponsiveContainer width="100%" height={120}>
+        <BarChart data={mcdavidPts} barSize={20}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#1a1a1a" />
+          <XAxis dataKey="game" tick={{ fill: "#555", fontSize: 10 }} axisLine={false} tickLine={false} />
+          <YAxis domain={[0, 5]} hide />
+          <Tooltip contentStyle={{ background: "#111", border: "1px solid #222", borderRadius: 8, fontSize: 12 }} />
+          <ReferenceLine y={1.5} stroke="#f59e0b" strokeDasharray="5 3" />
+          <Bar dataKey="pts" fill="#ef4444" radius={[4, 4, 0, 0]} name="Points" />
+        </BarChart>
+      </ResponsiveContainer>
+    ),
+    stats: [
+      { label: "L10 avg", value: "1.8" },
+      { label: "Multi-pt rate", value: "70%" },
+      { label: "Opp PK rank", value: "28" },
     ],
   },
 ];

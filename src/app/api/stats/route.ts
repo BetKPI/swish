@@ -1229,6 +1229,7 @@ async function analyzeSingleBet(
   // MLB player-prop: deterministic structured insights (verdict, projection, bullets, flags)
   const mlbInsights = computeMLBInsights(extraction, teamData);
   const nbaInsights = await computeNBAInsights(extraction, teamData);
+  const nhlInsights = computeNHLInsights(extraction, teamData);
   const soccerInsights = await computeSoccerInsights(extraction, teamData);
   // Combo / threshold props (e.g. "both teams 65+ each half") get a dedicated
   // 4-way fan-out instead of relying on the chat to compute on the fly.
@@ -1238,7 +1239,7 @@ async function analyzeSingleBet(
   // (MLB or NBA player prop), the default scorer tends to bottom out at
   // "Shaky" because it expects a different data shape. Use the projection's
   // edge + bullet positivity to compute a meaningful score.
-  const insights = mlbInsights || nbaInsights;
+  const insights = mlbInsights || nbaInsights || nhlInsights;
   const overridden = scoreFromInsights(insights);
   if (overridden && extraction.betType === "player_prop") {
     swishScore = overridden;
@@ -1283,6 +1284,7 @@ async function analyzeSingleBet(
       suggestions,
       mlbInsights,
       nbaInsights,
+      nhlInsights,
       soccerInsights,
       comboInsights,
     };
@@ -1300,6 +1302,7 @@ async function analyzeSingleBet(
     suggestions,
     mlbInsights,
     nbaInsights,
+    nhlInsights,
     soccerInsights,
     comboInsights,
   };
@@ -1915,6 +1918,61 @@ async function computeNBAInsights(
     });
   } catch (e) {
     console.error("[NBA Insights] failed:", e);
+    return undefined;
+  }
+}
+
+function computeNHLInsights(
+  extraction: BetExtraction,
+  rawData: Record<string, unknown>
+) {
+  const sport = (extraction.sport || "").toUpperCase();
+  if (sport !== "NHL" && sport !== "HOCKEY") return undefined;
+  if (extraction.betType !== "player_prop") return undefined;
+  const player = extraction.players[0];
+  if (!player) return undefined;
+  if (extraction.line == null) return undefined;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const history = (rawData as any)?._nhlHistory;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const playerData: any = history?.players?.[player];
+  if (!playerData || !Array.isArray(playerData.games) || playerData.games.length === 0) return undefined;
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const { detectNHLPlayerStat, buildNHLPlayerInsights } = require("@/lib/nhl-insights");
+    const stat = detectNHLPlayerStat(extraction.market, extraction.description);
+    if (!stat) return undefined;
+
+    // Identify opp team using same trick as NBA - the team that appears
+    // LESS often in player game logs is the opposing team.
+    const oppCount: Record<string, number> = {};
+    for (const t of extraction.teams) {
+      const lower = t.toLowerCase();
+      oppCount[t] = playerData.games.filter(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (g: any) => (g.opponent || "").toLowerCase().includes(lower) || lower.includes((g.opponent || "").toLowerCase()),
+      ).length;
+    }
+    const sorted = Object.entries(oppCount).sort((a, b) => a[1] - b[1]);
+    const playerTeam = sorted[0]?.[0];
+    const oppTeam = extraction.teams.find((t) => t !== playerTeam) || extraction.teams[1];
+
+    const isPlayoffs = playerData.games.some(
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (g: any) => g.seasonType === "playoffs",
+    );
+
+    return buildNHLPlayerInsights({
+      player: playerData,
+      stat,
+      line: extraction.line,
+      oppTeam,
+      isPlayoffs,
+    });
+  } catch (e) {
+    console.error("[NHL Insights] failed:", e);
     return undefined;
   }
 }

@@ -11,11 +11,11 @@ export const fetchCache = "default-cache";
 export async function generateMetadata(): Promise<Metadata> {
   const date = new Date().toISOString().slice(0, 10);
   return {
-    title: `Tonight's MLB edge - ${date} | swish`,
-    description: `Tonight's pitcher matchups, pitch arsenals, and ballpark + weather context for every MLB game. Updated hourly. Run any prop through the model in 20 seconds.`,
+    title: `Today's MLB top picks - ${date} | swish`,
+    description: `Today's pitcher matchups, pitch arsenals, and ballpark + weather context for every MLB game. Updated hourly. Run any prop through the model in 20 seconds.`,
     openGraph: {
-      title: `Tonight's MLB edge - ${date}`,
-      description: `Pitcher matchups, pitch arsenals, ballpark + weather context for every MLB game tonight.`,
+      title: `Today's MLB top picks - ${date}`,
+      description: `Pitcher matchups, pitch arsenals, ballpark + weather context for every MLB game today.`,
     },
   };
 }
@@ -157,7 +157,7 @@ export default async function TonightPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 py-6 sm:py-10">
       <header className="mb-8 sm:mb-10 text-center">
-        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-accent mb-2">Tonight's MLB edge</p>
+        <p className="text-[10px] uppercase tracking-[0.3em] font-bold text-accent mb-2">Today's MLB top picks</p>
         <h1 className="text-3xl sm:text-4xl font-black tracking-tight leading-tight">
           {friendly}
         </h1>
@@ -168,7 +168,7 @@ export default async function TonightPage() {
 
       {games.length === 0 ? (
         <div className="bg-surface/50 rounded-xl p-8 text-center">
-          <p className="text-muted">No MLB games scheduled tonight.</p>
+          <p className="text-muted">No MLB games scheduled today.</p>
           <Link href="/" className="text-accent text-sm font-bold mt-3 inline-block">
             Try a different bet →
           </Link>
@@ -216,9 +216,9 @@ export default async function TonightPage() {
           __html: JSON.stringify({
             "@context": "https://schema.org",
             "@type": "WebPage",
-            name: `Tonight's MLB edge - ${date}`,
+            name: `Today's MLB top picks - ${date}`,
             datePublished: date,
-            description: "Probable starters, pitch arsenals, ballpark factors, and weather for every MLB game tonight.",
+            description: "Probable starters, pitch arsenals, ballpark factors, and weather for every MLB game today.",
           }),
         }}
       />
